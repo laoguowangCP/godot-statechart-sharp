@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://d17fja0knjfkl"]
+
+[ext_resource type="Script" path="res://samples/immsim_controller/player.cs" id="1_6cfcm"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ne7wi"]
+
+[node name="Node3D" type="CharacterBody3D"]
+script = ExtResource("1_6cfcm")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_ne7wi")
