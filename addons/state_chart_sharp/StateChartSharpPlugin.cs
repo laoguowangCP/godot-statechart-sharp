@@ -11,6 +11,9 @@ public partial class StateChartSharpPlugin : EditorPlugin
 		AddCustomType("StateChartHandler", "Node",
 			GD.Load<Script>("res://addons/state_chart_sharp/node/StateChartHandler.cs"),
 			null);
+		AddCustomType("CompondStateNode", "Node",
+			GD.Load<Script>("res://addons/state_chart_sharp/node/CompondStateNode.cs"),
+			null);
 		/*
 		AddCustomType("StateNode", "Node",
 			GD.Load<Script>("res://addons/state_chart_sharp/node/StateNode.cs"),
@@ -26,8 +29,9 @@ public partial class StateChartSharpPlugin : EditorPlugin
 	{
 		// Clean-up of the plugin goes here.
 		RemoveCustomType("StateChartHandler");
-		RemoveCustomType("StateNode");
-		RemoveCustomType("ParallelStateNode");
+		RemoveCustomType("CompondStateNode");
+		// RemoveCustomType("StateNode");
+		// RemoveCustomType("ParallelStateNode");
 	}
 }
 #endif

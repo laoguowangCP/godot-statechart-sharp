@@ -9,7 +9,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// <summary>
         /// Time on which the transition is checked.
         /// </summary>
-        [Export] public TransitionModeEnum transitOn = TransitionModeEnum.Process;
+        [Export] public TransitionModeEnum transitionMode = TransitionModeEnum.Process;
         // protected StateNode fromState;
         [Signal] public delegate void TransitionCheckEventHandler(TransitionNode transition);
         private bool _isChecked;
@@ -70,9 +70,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             // Commit the transition.
             if (_isChecked)
             {
-                parentState.currentSubState.Exit();
-                parentState.currentSubState = toState;
-                parentState.currentSubState.Enter();
+                parentState.currentSubstate.StateExit();
+                parentState.currentSubstate = toState;
+                parentState.currentSubstate.StateEnter();
             }
 
             return _isChecked;

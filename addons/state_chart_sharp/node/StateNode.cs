@@ -5,79 +5,54 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 {
     public partial class StateNode : Node
     {
-        [Signal] public delegate void StateEnteredEventHandler();
-        [Signal] public delegate void StateExitedEventHandler();
-        [Signal] public delegate void StateProcessEventHandler(double delta);
-        [Signal] public delegate void StatePhysicsProcessEventHandler(double delta);
-        [Signal] public delegate void StateInputEventHandler(InputEvent @event);
-        [Signal] public delegate void StateUnhandledInputEventHandler(InputEvent @event);
+        [Signal] public delegate void EnterEventHandler();
+        [Signal] public delegate void ExitEventHandler();
+        [Signal] public delegate void ProcessEventHandler(double delta);
+        [Signal] public delegate void PhysicsProcessEventHandler(double delta);
+        [Signal] public delegate void InputEventHandler(InputEvent @event);
+        [Signal] public delegate void UnhandledInputEventHandler(InputEvent @event);
         // private StateNode _parentState;
-        public StateNode currentSubState;
-        protected Array<StateNode> subStates;
-        protected Array<TransitionNode> transitions; // Transition nodes of this state.
+        public StateNode currentSubstate;
+        protected Array<StateNode> substates;
+        public Array<TransitionNode> transitions;
 
         public override void _Ready()
         {
-            subStates = new Array<StateNode>();
+            substates = new Array<StateNode>();
             transitions = new Array<TransitionNode>();
         }
 
-        /// <summary>
-        /// Initiate state recursively, compose direct child states and transitions.
-        /// </summary>
         public virtual void Init() {}
 
-        public virtual void Enter()
+        public virtual void StateEnter()
         {
-            // Enable current state
-            ProcessMode = Node.ProcessModeEnum.Inherit;
-            // Emit signal: state entered
-            EmitSignal(SignalName.StateEntered);
+            EmitSignal(SignalName.Enter);
+        }
+        public virtual void StateExit()
+        {
+            EmitSignal(SignalName.Exit);
         }
 
-        public virtual void Exit()
+        public virtual void SubstateTransit(TransitionNode.TransitionModeEnum mode) {}
+
+        public virtual void StateInput(InputEvent @event)
         {
-            // Disable current state
-            ProcessMode = Node.ProcessModeEnum.Disabled;
-            // Emit signal: state exited
-            EmitSignal(SignalName.StateExited);
+            EmitSignal(SignalName.Input, @event);
         }
 
-        public void CheckTransitions(TransitionNode.TransitionModeEnum transitOn)
+        public virtual void StateUnhandledInput(InputEvent @event)
         {
-            foreach(TransitionNode t in transitions)
-            {
-                // Check transitions,
-                // If timing and condition are both met, stop iteration.
-                if (t.transitOn == transitOn)
-                {
-                    if (t.CheckWithTransit(this))
-                    {
-                        break;
-                    }
-                }
-
-            }
+            EmitSignal(SignalName.UnhandledInput, @event);
         }
 
-        public override void _Input(InputEvent @event)
+        public virtual void StateProcess(double delta)
         {
-            EmitSignal(SignalName.StateInput, @event);
+            EmitSignal(SignalName.Process, delta);
         }
 
-        public override void _UnhandledInput(InputEvent @event)
+        public virtual void StatePhysicsProcess(double delta)
         {
-            EmitSignal(SignalName.StateUnhandledInput, @event);
-        }
-
-        public override void _Process(double delta)
-        {
-            EmitSignal(SignalName.StateProcess, delta);
-        }
-
-        public override void _PhysicsProcess(double delta)
-        {
-            EmitSignal(SignalName.StatePhysicsProcess, delta);
+            EmitSignal(SignalName.PhysicsProcess, delta);
         }
     }
 }

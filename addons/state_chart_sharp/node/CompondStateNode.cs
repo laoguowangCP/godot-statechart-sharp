@@ -7,22 +7,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     {
         [Export] protected StateNode defaultSubState;
 
-
-        public override void Enter()
-        {
-            base.Enter();
-            currentSubState.Enter();
-        }
-
-        public override void Exit()
-        {
-            currentSubState.Exit();
-            base.Exit();
-        }
-
         public override void Init()
         {
-            subStates.Clear();
+            substates.Clear();
             transitions.Clear();
             
             // Load child nodes
@@ -30,61 +17,48 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             {
                 if (child is StateNode s)
                 {
-                    // Initiate and compose all child states
                     s.Init();
-                    subStates.Add(s);
+                    substates.Add(s);
                 }
                 else if (child is TransitionNode t)
                 {
-                    // Compose all child transitions
                     transitions.Add(t);
                 }
                 else
                 {
-                    // Child node is not State or Transition.
-                    GD.PushError("LGWCP.GodotPlugin.State: Child node must be a State or a Transition.");
+                    GD.PushError("LGWCP.GodotPlugin.CompoundStateNode: Child must be StateNode or Transition.");
                 }
             }
         }
 
-        public override void _Input(InputEvent @event)
+        public override void StateEnter()
         {
-            base._Input(@event);
-
-            // Check current substate transitions.
-            currentSubState.CheckTransitions(TransitionNode.TransitionModeEnum.Input);
-            
-            // Substates's _Input() will be called in BFS order.
+            if (substates.Count > 0)
+            {
+                // First child state is default substate
+                currentSubstate = substates[0];
+                currentSubstate.StateEnter();
+            }
+            EmitSignal(SignalName.Enter);
         }
 
-        public override void _UnhandledInput(InputEvent @event)
+        public override void StateExit()
         {
-            base._UnhandledInput(@event);
-
-            // Check current substate transitions.
-            currentSubState.CheckTransitions(TransitionNode.TransitionModeEnum.UnhandledInput);
-            
-            // Substates's _UnhandledInput() will be called in BFS order.
+            if (substates.Count > 0)
+            {
+                currentSubstate.StateExit();
+            }
+            EmitSignal(SignalName.Exit);
         }
 
-        public override void _Process(double delta)
+        public override void SubstateTransit(TransitionNode.TransitionModeEnum mode)
         {
-            base._Process(delta);
-
-            // Check current substate transitions.
-            currentSubState.CheckTransitions(TransitionNode.TransitionModeEnum.Process);
-            
-            // Substates's _Process() will be called in BFS order.
-        }
-
-        public override void _PhysicsProcess(double delta)
-        {
-            base._PhysicsProcess(delta);
-
-            // Check current substate transitions.
-            currentSubState.CheckTransitions(TransitionNode.TransitionModeEnum.PhysicsProcess);
-            
-            // Substates's _PhysicsProcess() will be called in BFS order.
+            foreach(TransitionNode t in currentSubstate.transitions)
+            {
+                if (t.transitionMode == mode && t.CheckWithTransit(this))
+                    break;
+            }
+            currentSubstate.SubstateTransit(mode);
         }
     }
 }
