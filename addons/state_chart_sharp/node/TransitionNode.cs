@@ -21,19 +21,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             Input,
             UnhandledInput
         }
-
-        public override void _Ready()
-        {
-            /*
-            var parentNode = GetParent<Node>();
-            if (!(fromState is StateNode))
-            {
-                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Transision should be child of state.");
-                return;
-            }
-            fromState = parentNode as StateNode;
-            */
-        }
         
         /// <summary>
         /// Check whether the condition is met.
