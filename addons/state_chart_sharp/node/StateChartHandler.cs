@@ -27,25 +27,25 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void _Process(double delta)
         {
-            _rootState.SubstateTransit(TransitionNode.TransitionModeEnum.Process);
+            _rootState.SubstateTransit(Transition.TransitionModeEnum.Process);
             _rootState.StateProcess(delta);
         }
 
         public override void _PhysicsProcess(double delta)
         {
-            _rootState.SubstateTransit(TransitionNode.TransitionModeEnum.PhysicsProcess);
+            _rootState.SubstateTransit(Transition.TransitionModeEnum.PhysicsProcess);
             _rootState.StatePhysicsProcess(delta);
         }
 
         public override void _Input(InputEvent @event)
         {
-            _rootState.SubstateTransit(TransitionNode.TransitionModeEnum.Input);
+            _rootState.SubstateTransit(Transition.TransitionModeEnum.Input);
             _rootState.StateInput(@event);
         }
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            _rootState.SubstateTransit(TransitionNode.TransitionModeEnum.UnhandledInput);
+            _rootState.SubstateTransit(Transition.TransitionModeEnum.UnhandledInput);
             _rootState.StateUnhandledInput(@event);
         }
     }

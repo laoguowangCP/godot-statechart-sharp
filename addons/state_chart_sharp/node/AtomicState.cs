@@ -3,7 +3,7 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
-    public partial class AtomicStateNode : StateNode
+    public partial class AtomicState : StateNode
     {
         public override void Init()
         {
@@ -12,13 +12,13 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             
             foreach (Node child in GetChildren())
             {
-                if (child is TransitionNode t)
+                if (child is Transition t)
                 {
                     transitions.Add(t);
                 }
                 else
                 {
-                    GD.PushError("LGWCP.GodotPlugin.AtomicStateNode: Child node must be Transition.");
+                    GD.PushError("LGWCP.GodotPlugin.AtomicState: Child node must be Transition.");
                 }
             }
         }

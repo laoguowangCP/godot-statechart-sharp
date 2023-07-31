@@ -3,7 +3,7 @@ using Godot;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
-    public partial class TransitionNode : Node
+    public partial class Transition : Node
     {
         [Export] protected StateNode toState;
         /// <summary>
@@ -11,7 +11,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// </summary>
         [Export] public TransitionModeEnum transitionMode = TransitionModeEnum.Process;
         // protected StateNode fromState;
-        [Signal] public delegate void TransitionCheckEventHandler(TransitionNode transition);
+        [Signal] public delegate void TransitionCheckEventHandler(Transition transition);
         private bool _isChecked;
 
         public enum TransitionModeEnum : int

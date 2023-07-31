@@ -3,16 +3,13 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
-    public partial class CompondStateNode : StateNode
+    public partial class ParallelState : StateNode
     {
-        [Export] protected StateNode defaultSubState;
-
         public override void Init()
         {
             substates.Clear();
             transitions.Clear();
             
-            // Load child nodes
             foreach (Node child in GetChildren())
             {
                 if (child is StateNode s)
@@ -20,45 +17,42 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                     s.Init();
                     substates.Add(s);
                 }
-                else if (child is TransitionNode t)
+                else if (child is Transition t)
                 {
                     transitions.Add(t);
                 }
                 else
                 {
-                    GD.PushError("LGWCP.GodotPlugin.CompoundStateNode: Child must be StateNode or Transition.");
+                    GD.PushError("LGWCP.GodotPlugin.ParallelStateNode: Child must be StateNode or Transition.");
                 }
             }
         }
 
         public override void StateEnter()
         {
-            if (substates.Count > 0)
+            foreach(StateNode s in substates)
             {
-                // First child state is default substate
-                currentSubstate = substates[0];
-                currentSubstate.StateEnter();
+                s.StateEnter();
             }
             EmitSignal(SignalName.Enter);
         }
 
         public override void StateExit()
         {
-            if (substates.Count > 0)
+            foreach(StateNode s in substates)
             {
-                currentSubstate.StateExit();
+                s.StateExit();
             }
             EmitSignal(SignalName.Exit);
         }
 
-        public override void SubstateTransit(TransitionNode.TransitionModeEnum mode)
+        public override void SubstateTransit(Transition.TransitionModeEnum mode)
         {
-            foreach(TransitionNode t in currentSubstate.transitions)
+            foreach(StateNode s in substates)
             {
-                if (t.transitionMode == mode && t.CheckWithTransit(this))
-                    break;
+                s.SubstateTransit(mode);
             }
-            currentSubstate.SubstateTransit(mode);
         }
+
     }
 }

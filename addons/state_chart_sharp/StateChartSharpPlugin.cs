@@ -10,14 +10,17 @@ public partial class StateChartSharpPlugin : EditorPlugin
 		AddCustomType("StateChartHandler", "Node",
 			GD.Load<Script>("res://addons/state_chart_sharp/node/StateChartHandler.cs"),
 			null);
-		AddCustomType("CompondStateNode", "Node",
-			GD.Load<Script>("res://addons/state_chart_sharp/node/CompondStateNode.cs"),
+		AddCustomType("CompondState", "Node",
+			GD.Load<Script>("res://addons/state_chart_sharp/node/CompondState.cs"),
 			null);
-		AddCustomType("ParallelStateNode", "Node",
-			GD.Load<Script>("res://addons/state_chart_sharp/node/ParallelStateNode.cs"),
+		AddCustomType("ParallelState", "Node",
+			GD.Load<Script>("res://addons/state_chart_sharp/node/ParallelState.cs"),
 			null);
-		AddCustomType("AtomicStateNode", "Node",
-			GD.Load<Script>("res://addons/state_chart_sharp/node/AtomicStateNode.cs"),
+		AddCustomType("AtomicState", "Node",
+			GD.Load<Script>("res://addons/state_chart_sharp/node/AtomicState.cs"),
+			null);
+		AddCustomType("Transition", "Node",
+			GD.Load<Script>("res://addons/state_chart_sharp/node/Transition.cs"),
 			null);
 		
 	}
@@ -25,9 +28,10 @@ public partial class StateChartSharpPlugin : EditorPlugin
 	public override void _ExitTree()
 	{
 		RemoveCustomType("StateChartHandler");
-		RemoveCustomType("CompondStateNode");
-		RemoveCustomType("ParallelStateNode");
-		RemoveCustomType("AtomicStateNode");
+		RemoveCustomType("CompondState");
+		RemoveCustomType("ParallelState");
+		RemoveCustomType("AtomicState");
+		RemoveCustomType("Transition");
 	}
 }
 #endif

@@ -14,12 +14,12 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         // private StateNode _parentState;
         public StateNode currentSubstate;
         protected Array<StateNode> substates;
-        public Array<TransitionNode> transitions;
+        public Array<Transition> transitions;
 
         public override void _Ready()
         {
             substates = new Array<StateNode>();
-            transitions = new Array<TransitionNode>();
+            transitions = new Array<Transition>();
         }
 
         public virtual void Init() {}
@@ -33,7 +33,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             EmitSignal(SignalName.Exit);
         }
 
-        public virtual void SubstateTransit(TransitionNode.TransitionModeEnum mode) {}
+        public virtual void SubstateTransit(Transition.TransitionModeEnum mode) {}
 
         public virtual void StateInput(InputEvent @event)
         {

@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "State-chart-sharp", "State-chart-sharp.csproj", "{FE62DA49-502F-4735-9865-31D53F5D6F8C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "State-chart-sharp", "State-chart-sharp.csproj", "{18EA0C0E-5F36-4E9B-917F-63FB11DF592E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FE62DA49-502F-4735-9865-31D53F5D6F8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE62DA49-502F-4735-9865-31D53F5D6F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE62DA49-502F-4735-9865-31D53F5D6F8C}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{FE62DA49-502F-4735-9865-31D53F5D6F8C}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{FE62DA49-502F-4735-9865-31D53F5D6F8C}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{FE62DA49-502F-4735-9865-31D53F5D6F8C}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{18EA0C0E-5F36-4E9B-917F-63FB11DF592E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18EA0C0E-5F36-4E9B-917F-63FB11DF592E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18EA0C0E-5F36-4E9B-917F-63FB11DF592E}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{18EA0C0E-5F36-4E9B-917F-63FB11DF592E}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{18EA0C0E-5F36-4E9B-917F-63FB11DF592E}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{18EA0C0E-5F36-4E9B-917F-63FB11DF592E}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
 	EndGlobalSection
 EndGlobal
