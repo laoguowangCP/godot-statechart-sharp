@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://d17fja0knjfkl"]
+[gd_scene load_steps=7 format=3 uid="uid://d17fja0knjfkl"]
 
 [ext_resource type="Script" path="res://samples/immsim_controller/player.cs" id="1_6cfcm"]
+[ext_resource type="Script" path="res://addons/state_chart_sharp/node/StateChartHandler.cs" id="2_8in2v"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ne7wi"]
 
@@ -24,3 +25,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 environment = SubResource("Environment_uq8q6")
 attributes = SubResource("CameraAttributesPhysical_11jms")
 current = true
+
+[node name="StateChartHandler" type="Node" parent="."]
+script = ExtResource("2_8in2v")

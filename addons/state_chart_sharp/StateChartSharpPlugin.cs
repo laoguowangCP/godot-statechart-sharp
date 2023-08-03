@@ -5,8 +5,10 @@ using System;
 [Tool]
 public partial class StateChartSharpPlugin : EditorPlugin
 {
+	/*
 	public override void _EnterTree()
 	{
+		
 		AddCustomType("StateChartHandler", "Node",
 			GD.Load<Script>("res://addons/state_chart_sharp/node/StateChartHandler.cs"),
 			null);
@@ -33,5 +35,6 @@ public partial class StateChartSharpPlugin : EditorPlugin
 		RemoveCustomType("AtomicState");
 		RemoveCustomType("Transition");
 	}
+	*/
 }
 #endif

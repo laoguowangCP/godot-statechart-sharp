@@ -3,6 +3,7 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
+    [GlobalClass]
     public partial class ParallelState : StateNode
     {
         public override void Init()
@@ -23,7 +24,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 }
                 else
                 {
-                    GD.PushError("LGWCP.GodotPlugin.ParallelStateNode: Child must be StateNode or Transition.");
+                    GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Child must be StateNode or Transition.");
                 }
             }
         }

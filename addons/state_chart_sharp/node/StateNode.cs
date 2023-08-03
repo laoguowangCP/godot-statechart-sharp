@@ -3,6 +3,7 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
+    [GlobalClass]
     public partial class StateNode : Node
     {
         [Signal] public delegate void EnterEventHandler();
@@ -54,5 +55,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             EmitSignal(SignalName.PhysicsProcess, delta);
         }
+
+        public virtual bool IsInstant() { return false; }
     }
 }

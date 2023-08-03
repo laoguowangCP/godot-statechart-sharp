@@ -3,8 +3,10 @@ using Godot;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
+    [GlobalClass]
     public partial class Transition : Node
     {
+        protected StateNode fromState;
         [Export] protected StateNode toState;
         /// <summary>
         /// Time on which the transition is checked.
@@ -21,6 +23,33 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             Input,
             UnhandledInput
         }
+
+        public void Init()
+        {
+            var parent = GetParent<Node>();
+            if (!(parent is StateNode))
+            {
+                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Transition needs StateNode as parent.");
+                return;
+            }
+
+            fromState = parent as StateNode;
+
+            if (toState is null)
+            {
+                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Transition needs an assigned 'toState'.");
+                return;
+            }
+            if (toState.GetParent<Node>() != fromState.GetParent<Node>())
+            {
+                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: 'toState' must be sibling of attached state.");
+                return;
+            }
+            if (toState.IsInstant() && fromState.IsInstant())
+            {
+                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: Both attached state and 'toState' are instant, loop may happen in instant transition.");
+            }
+        }
         
         /// <summary>
         /// Check whether the condition is met.
@@ -30,10 +59,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             _isChecked = isChecked;
         }
 
-        /// <summary>
-        /// Call delegated check handler, 
-        /// return weather transition condition is met.
-        /// </summary>
         public bool Check()
         {
             // Transition condition is not met in default.
@@ -57,9 +82,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             // Commit the transition.
             if (_isChecked)
             {
-                parentState.currentSubstate.StateExit();
+                fromState.StateExit();
+                toState.StateEnter();
                 parentState.currentSubstate = toState;
-                parentState.currentSubstate.StateEnter();
             }
 
             return _isChecked;

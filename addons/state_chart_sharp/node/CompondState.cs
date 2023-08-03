@@ -3,8 +3,14 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
+    [GlobalClass]
     public partial class CompondState : StateNode
     {
+        /// <summary>
+        /// If state is instant, transitions will be checked instantly
+        /// when entered.
+        /// </summary>
+        [Export] protected bool isInstant = false;
         [Export] protected StateNode defaultSubState;
 
         public override void Init()
@@ -26,7 +32,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 }
                 else
                 {
-                    GD.PushError("LGWCP.GodotPlugin.CompoundStateNode: Child must be StateNode or Transition.");
+                    GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Child must be StateNode or Transition.");
                 }
             }
         }
@@ -51,13 +57,19 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             EmitSignal(SignalName.Exit);
         }
 
+        public override bool IsInstant() { return isInstant; }
+
         public override void SubstateTransit(Transition.TransitionModeEnum mode)
         {
-            foreach(Transition t in currentSubstate.transitions)
+            do
             {
-                if (t.transitionMode == mode && t.CheckWithTransit(this))
-                    break;
-            }
+                foreach(Transition t in currentSubstate.transitions)
+                {
+                    if (t.transitionMode == mode && t.CheckWithTransit(this))
+                        break;
+                }
+            } while (currentSubstate.IsInstant());
+            
             currentSubstate.SubstateTransit(mode);
         }
     }
