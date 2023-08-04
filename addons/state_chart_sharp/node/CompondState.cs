@@ -28,6 +28,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 }
                 else if (child is Transition t)
                 {
+                    t.Init();
                     transitions.Add(t);
                 }
                 else
@@ -35,6 +36,22 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                     GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Child must be StateNode or Transition.");
                 }
             }
+        }
+
+        public override bool IsInstant() { return isInstant; }
+
+        public override void SubstateTransit(Transition.TransitionModeEnum mode)
+        {
+            do
+            {
+                foreach(Transition t in currentSubstate.transitions)
+                {
+                    if (t.transitionMode == mode && t.CheckWithTransit(this))
+                        break;
+                }
+            } while (currentSubstate.IsInstant());
+            
+            currentSubstate.SubstateTransit(mode);
         }
 
         public override void StateEnter()
@@ -57,20 +74,28 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             EmitSignal(SignalName.Exit);
         }
 
-        public override bool IsInstant() { return isInstant; }
-
-        public override void SubstateTransit(Transition.TransitionModeEnum mode)
+        public override void StateInput(InputEvent @event)
         {
-            do
-            {
-                foreach(Transition t in currentSubstate.transitions)
-                {
-                    if (t.transitionMode == mode && t.CheckWithTransit(this))
-                        break;
-                }
-            } while (currentSubstate.IsInstant());
-            
-            currentSubstate.SubstateTransit(mode);
+            EmitSignal(SignalName.Input, @event);
+            currentSubstate.StateInput(@event);
+        }
+
+        public override void StateUnhandledInput(InputEvent @event)
+        {
+            EmitSignal(SignalName.UnhandledInput, @event);
+            currentSubstate.StateUnhandledInput(@event);
+        }
+
+        public override void StateProcess(double delta)
+        {
+            EmitSignal(SignalName.Process, delta);
+            currentSubstate.StateProcess(delta);
+        }
+
+        public override void StatePhysicsProcess(double delta)
+        {
+            EmitSignal(SignalName.PhysicsProcess, delta);
+            currentSubstate.StatePhysicsProcess(delta);
         }
     }
 }

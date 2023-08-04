@@ -3,7 +3,7 @@ using Godot;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class StateChartHandler : Node
+    public partial class StateChartHandler : IStateChartComponent
     {
         private StateNode _rootState = null;
         public override void _Ready()

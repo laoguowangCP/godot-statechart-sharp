@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://d17fja0knjfkl"]
 
-[ext_resource type="Script" path="res://samples/immsim_controller/player.cs" id="1_6cfcm"]
+[ext_resource type="Script" path="res://samples/immsim_controller/Player.cs" id="1_7gily"]
 [ext_resource type="Script" path="res://addons/state_chart_sharp/node/StateChartHandler.cs" id="2_8in2v"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ne7wi"]
@@ -14,8 +14,8 @@ sky_rotation = Vector3(2.13977, 1.87099, 2.13977)
 
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_11jms"]
 
-[node name="Node3D" type="CharacterBody3D"]
-script = ExtResource("1_6cfcm")
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_7gily")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_ne7wi")

@@ -20,6 +20,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             {
                 if (child is Transition t)
                 {
+                    t.Init();
                     transitions.Add(t);
                 }
                 else

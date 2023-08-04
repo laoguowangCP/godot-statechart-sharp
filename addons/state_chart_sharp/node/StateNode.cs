@@ -4,7 +4,7 @@ using Godot.Collections;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class StateNode : Node
+    public partial class StateNode : IStateChartComponent
     {
         [Signal] public delegate void EnterEventHandler();
         [Signal] public delegate void ExitEventHandler();
@@ -23,7 +23,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             transitions = new Array<Transition>();
         }
 
-        public virtual void Init() {}
+        public virtual void SubstateTransit(Transition.TransitionModeEnum mode) {}
+
+        public virtual bool IsInstant() { return false; }
 
         public virtual void StateEnter()
         {
@@ -33,8 +35,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             EmitSignal(SignalName.Exit);
         }
-
-        public virtual void SubstateTransit(Transition.TransitionModeEnum mode) {}
 
         public virtual void StateInput(InputEvent @event)
         {
@@ -55,7 +55,5 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             EmitSignal(SignalName.PhysicsProcess, delta);
         }
-
-        public virtual bool IsInstant() { return false; }
     }
 }

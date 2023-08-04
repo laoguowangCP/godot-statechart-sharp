@@ -4,7 +4,7 @@ using Godot;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class Transition : Node
+    public partial class Transition : IStateChartComponent
     {
         protected StateNode fromState;
         [Export] protected StateNode toState;
@@ -24,7 +24,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             UnhandledInput
         }
 
-        public void Init()
+        public override void Init()
         {
             var parent = GetParent<Node>();
             if (!(parent is StateNode))

@@ -20,12 +20,21 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 }
                 else if (child is Transition t)
                 {
+                    t.Init();
                     transitions.Add(t);
                 }
                 else
                 {
                     GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Child must be StateNode or Transition.");
                 }
+            }
+        }
+        
+        public override void SubstateTransit(Transition.TransitionModeEnum mode)
+        {
+            foreach(StateNode s in substates)
+            {
+                s.SubstateTransit(mode);
             }
         }
 
@@ -46,14 +55,41 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
             EmitSignal(SignalName.Exit);
         }
-
-        public override void SubstateTransit(Transition.TransitionModeEnum mode)
+        
+        public override void StateInput(InputEvent @event)
         {
+            EmitSignal(SignalName.Input, @event);
             foreach(StateNode s in substates)
             {
-                s.SubstateTransit(mode);
+                s.StateInput(@event);
             }
         }
 
+        public override void StateUnhandledInput(InputEvent @event)
+        {
+            EmitSignal(SignalName.UnhandledInput, @event);
+            foreach(StateNode s in substates)
+            {
+                s.StateUnhandledInput(@event);
+            }
+        }
+
+        public override void StateProcess(double delta)
+        {
+            EmitSignal(SignalName.Process, delta);
+            foreach(StateNode s in substates)
+            {
+                s.StateProcess(delta);
+            }
+        }
+
+        public override void StatePhysicsProcess(double delta)
+        {
+            EmitSignal(SignalName.PhysicsProcess, delta);
+            foreach(StateNode s in substates)
+            {
+                s.StatePhysicsProcess(delta);
+            }
+        }
     }
 }
