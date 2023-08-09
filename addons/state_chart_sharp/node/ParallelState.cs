@@ -4,16 +4,15 @@ using Godot.Collections;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class ParallelState : StateNode
+    public partial class ParallelState : State
     {
         public override void Init()
         {
-            substates.Clear();
-            transitions.Clear();
+            base.Init();
             
             foreach (Node child in GetChildren())
             {
-                if (child is StateNode s)
+                if (child is State s)
                 {
                     s.Init();
                     substates.Add(s);
@@ -21,7 +20,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 else if (child is Transition t)
                 {
                     t.Init();
-                    transitions.Add(t);
+                    GetTransitions(t.transitionMode).Add(t);
                 }
                 else
                 {
@@ -32,7 +31,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         
         public override void SubstateTransit(Transition.TransitionModeEnum mode)
         {
-            foreach(StateNode s in substates)
+            foreach(State s in substates)
             {
                 s.SubstateTransit(mode);
             }
@@ -40,7 +39,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void StateEnter()
         {
-            foreach(StateNode s in substates)
+            foreach(State s in substates)
             {
                 s.StateEnter();
             }
@@ -49,7 +48,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void StateExit()
         {
-            foreach(StateNode s in substates)
+            foreach(State s in substates)
             {
                 s.StateExit();
             }
@@ -59,7 +58,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public override void StateInput(InputEvent @event)
         {
             EmitSignal(SignalName.Input, @event);
-            foreach(StateNode s in substates)
+            foreach(State s in substates)
             {
                 s.StateInput(@event);
             }
@@ -68,7 +67,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public override void StateUnhandledInput(InputEvent @event)
         {
             EmitSignal(SignalName.UnhandledInput, @event);
-            foreach(StateNode s in substates)
+            foreach(State s in substates)
             {
                 s.StateUnhandledInput(@event);
             }
@@ -77,7 +76,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public override void StateProcess(double delta)
         {
             EmitSignal(SignalName.Process, delta);
-            foreach(StateNode s in substates)
+            foreach(State s in substates)
             {
                 s.StateProcess(delta);
             }
@@ -86,7 +85,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public override void StatePhysicsProcess(double delta)
         {
             EmitSignal(SignalName.PhysicsProcess, delta);
-            foreach(StateNode s in substates)
+            foreach(State s in substates)
             {
                 s.StatePhysicsProcess(delta);
             }

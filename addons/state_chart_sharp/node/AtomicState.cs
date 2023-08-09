@@ -4,7 +4,7 @@ using Godot.Collections;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class AtomicState : StateNode
+    public partial class AtomicState : State
     {
         /// <summary>
         /// If state is instant, transitions will be checked instantly
@@ -13,15 +13,14 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         [Export] protected bool isInstant = false;
         public override void Init()
         {
-            substates.Clear();
-            transitions.Clear();
+            base.Init();
             
             foreach (Node child in GetChildren())
             {
                 if (child is Transition t)
                 {
                     t.Init();
-                    transitions.Add(t);
+                    GetTransitions(t.transitionMode).Add(t);
                 }
                 else
                 {

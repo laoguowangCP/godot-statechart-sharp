@@ -4,7 +4,7 @@ using Godot.Collections;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class StateNode : IStateChartComponent
+    public partial class State : IStateChartComponent
     {
         [Signal] public delegate void EnterEventHandler();
         [Signal] public delegate void ExitEventHandler();
@@ -13,15 +13,39 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         [Signal] public delegate void InputEventHandler(InputEvent @event);
         [Signal] public delegate void UnhandledInputEventHandler(InputEvent @event);
         // private StateNode _parentState;
-        public StateNode currentSubstate;
-        protected Array<StateNode> substates;
-        public Array<Transition> transitions;
+        public State currentSubstate;
+        protected Array<State> substates;
+        public Array<Transition> processTrans;
+        public Array<Transition> physicsProcessTrans;
+        public Array<Transition> inputTrans;
+        public Array<Transition> unhandledInputTrans;
 
         public override void _Ready()
         {
-            substates = new Array<StateNode>();
-            transitions = new Array<Transition>();
+            substates = new Array<State>();
+            processTrans = new Array<Transition>();
+            physicsProcessTrans = new Array<Transition>();
+            inputTrans = new Array<Transition>();
+            unhandledInputTrans = new Array<Transition>();
         }
+
+        public override void Init()
+        {
+            substates.Clear();
+            processTrans.Clear();
+            physicsProcessTrans.Clear();
+            inputTrans.Clear();
+            unhandledInputTrans.Clear();
+        }
+
+        public Array<Transition> GetTransitions(Transition.TransitionModeEnum mode) => mode switch
+        {
+            Transition.TransitionModeEnum.Process => processTrans,
+            Transition.TransitionModeEnum.PhysicsProcess => physicsProcessTrans,
+            Transition.TransitionModeEnum.Input => inputTrans,
+            Transition.TransitionModeEnum.UnhandledInput => unhandledInputTrans,
+            _ => null
+        };
 
         public virtual void SubstateTransit(Transition.TransitionModeEnum mode) {}
 

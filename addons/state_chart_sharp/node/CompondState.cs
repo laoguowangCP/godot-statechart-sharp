@@ -4,24 +4,23 @@ using Godot.Collections;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class CompondState : StateNode
+    public partial class CompondState : State
     {
         /// <summary>
         /// If state is instant, transitions will be checked instantly
         /// when entered.
         /// </summary>
         [Export] protected bool isInstant = false;
-        [Export] protected StateNode defaultSubState;
+        [Export] protected State defaultSubState;
 
         public override void Init()
         {
-            substates.Clear();
-            transitions.Clear();
+            base.Init();
             
             // Load child nodes
             foreach (Node child in GetChildren())
             {
-                if (child is StateNode s)
+                if (child is State s)
                 {
                     s.Init();
                     substates.Add(s);
@@ -29,7 +28,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 else if (child is Transition t)
                 {
                     t.Init();
-                    transitions.Add(t);
+                    GetTransitions(t.transitionMode).Add(t);
                 }
                 else
                 {
@@ -44,10 +43,18 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             do
             {
-                foreach(Transition t in currentSubstate.transitions)
+                var transitions = currentSubstate.GetTransitions(mode);
+                if (transitions is null)
                 {
-                    if (t.transitionMode == mode && t.CheckWithTransit(this))
+                    GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Invalid transition mode.");
+                }
+                
+                foreach(Transition t in transitions)
+                {
+                    if (t.CheckWithTransit(this))
+                    {
                         break;
+                    }
                 }
             } while (currentSubstate.IsInstant());
             

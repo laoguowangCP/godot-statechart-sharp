@@ -5,7 +5,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     [GlobalClass]
     public partial class StateChartHandler : IStateChartComponent
     {
-        private StateNode _rootState = null;
+        private State _rootState = null;
         public override void _Ready()
         {
             if (GetChildCount() != 1)
@@ -15,13 +15,13 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
 
             var child = GetChild<Node>(0);
-            if (!(child is StateNode))
+            if (!(child is State))
             {
                 GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Root state must be a StateNode.");
                 return;
             }
 
-            _rootState = child as StateNode;
+            _rootState = child as State;
             _rootState.Init();
             _rootState.StateEnter();
         }

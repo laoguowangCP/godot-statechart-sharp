@@ -6,8 +6,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     [GlobalClass]
     public partial class Transition : IStateChartComponent
     {
-        protected StateNode fromState;
-        [Export] protected StateNode toState;
+        protected State fromState;
+        [Export] protected State toState;
         /// <summary>
         /// Time on which the transition is checked.
         /// </summary>
@@ -27,13 +27,13 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public override void Init()
         {
             var parent = GetParent<Node>();
-            if (!(parent is StateNode))
+            if (!(parent is State))
             {
                 GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Transition needs StateNode as parent.");
                 return;
             }
 
-            fromState = parent as StateNode;
+            fromState = parent as State;
 
             if (toState is null)
             {
@@ -73,7 +73,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// return weather transition condition is met.</br>
         /// If condition is met, commit the transition for parent state.
         /// </summary>
-        public bool CheckWithTransit(StateNode parentState)
+        public bool CheckWithTransit(State parentState)
         {
             // Transition condition is not met in default.
             _isChecked = false;
