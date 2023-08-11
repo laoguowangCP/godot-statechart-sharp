@@ -1,5 +1,6 @@
 using Godot;
 using Godot.Collections;
+using System;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
@@ -12,9 +13,10 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         [Signal] public delegate void PhysicsProcessEventHandler(double delta);
         [Signal] public delegate void InputEventHandler(InputEvent @event);
         [Signal] public delegate void UnhandledInputEventHandler(InputEvent @event);
-        // private StateNode _parentState;
+        
+        [Export] protected string stateName;
         public State currentSubstate;
-        protected Array<State> substates;
+        protected Dictionary<StringName, State> substates;
         public Array<Transition> processTrans;
         public Array<Transition> physicsProcessTrans;
         public Array<Transition> inputTrans;
@@ -22,7 +24,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void _Ready()
         {
-            substates = new Array<State>();
+            substates = new Dictionary<StringName, State>();
             processTrans = new Array<Transition>();
             physicsProcessTrans = new Array<Transition>();
             inputTrans = new Array<Transition>();
@@ -52,6 +54,10 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public virtual bool IsInstant() { return false; }
 
         public virtual void StateEnter()
+        {
+            EmitSignal(SignalName.Enter);
+        }
+        public virtual void StateEnter(string statePath)
         {
             EmitSignal(SignalName.Enter);
         }

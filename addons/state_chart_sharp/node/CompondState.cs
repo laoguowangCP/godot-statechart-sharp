@@ -16,6 +16,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public override void Init()
         {
             base.Init();
+            bool isFirstSubstate = true;
             
             // Load child nodes
             foreach (Node child in GetChildren())
@@ -23,7 +24,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 if (child is State s)
                 {
                     s.Init();
-                    substates.Add(s);
+                    substates.Add(s.Name, s);
+                    if (isFirstSubstate && defaultSubState is null)
+                    {
+                        defaultSubState = s;
+                    }
                 }
                 else if (child is Transition t)
                 {
@@ -66,10 +71,15 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             if (substates.Count > 0)
             {
                 // First child state is default substate
-                currentSubstate = substates[0];
+                currentSubstate = defaultSubState;
                 currentSubstate.StateEnter();
             }
             EmitSignal(SignalName.Enter);
+        }
+
+        public override void StateEnter(string statePath)
+        {
+            
         }
 
         public override void StateExit()

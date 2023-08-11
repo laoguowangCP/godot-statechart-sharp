@@ -3,21 +3,21 @@ using Godot;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class StateChartHandler : IStateChartComponent
+    public partial class StateChart : IStateChartComponent
     {
         private State _rootState = null;
         public override void _Ready()
         {
             if (GetChildCount() != 1)
             {
-                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Expecting exactly 1 child as root state.");
+                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Expecting 1 child root state.");
                 return;
             }
 
             var child = GetChild<Node>(0);
             if (!(child is State))
             {
-                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Root state must be a StateNode.");
+                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Root state must be a State.");
                 return;
             }
 
