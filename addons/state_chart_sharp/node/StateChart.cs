@@ -1,11 +1,14 @@
 using Godot;
+using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
     public partial class StateChart : IStateChartComponent
     {
-        private State _rootState = null;
+        protected State _rootState = null;
+        protected TransitHandler transitHandler;
+
         public override void _Ready()
         {
             if (GetChildCount() != 1)
@@ -24,6 +27,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             _rootState = child as State;
             _rootState.Init();
             _rootState.StateEnter();
+
+            transitHandler = new TransitHandler();
         }
 
         public override void _Process(double delta)

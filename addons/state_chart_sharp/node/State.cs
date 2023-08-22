@@ -15,6 +15,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         [Signal] public delegate void UnhandledInputEventHandler(InputEvent @event);
         
         [Export] protected string stateName;
+        public StateChart stateChart { get; protected set; }
+        public int stateLevel { get; protected set; }
+        public State parentState { get; protected set; }
         public State currentSubstate;
         protected Dictionary<StringName, State> substates;
         public Array<Transition> processTrans;
@@ -31,8 +34,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             unhandledInputTrans = new Array<Transition>();
         }
 
-        public override void Init()
+        public override void Init(StateChart stateChart, State parentState = null)
         {
+            this.stateChart = stateChart;
+            this.parentState = parentState;
+
             substates.Clear();
             processTrans.Clear();
             physicsProcessTrans.Clear();

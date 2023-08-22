@@ -4,7 +4,7 @@ using Godot;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class Transition : IStateChartComponent
+    public partial class Transition : Reaction
     {
         protected State fromState;
         [Export] protected State toState;
