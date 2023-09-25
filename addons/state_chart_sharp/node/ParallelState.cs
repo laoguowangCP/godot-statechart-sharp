@@ -15,7 +15,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 if (child is State s)
                 {
                     s.Init();
-                    substates.Add(s);
+                    substates.Add(s.Name, s);
                 }
                 else if (child is Transition t)
                 {
