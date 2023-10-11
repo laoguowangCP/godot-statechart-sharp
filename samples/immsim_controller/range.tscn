@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://b665ac0vbo8i8"]
-
-[ext_resource type="PackedScene" uid="uid://d17fja0knjfkl" path="res://samples/immsim_controller/player.tscn" id="1_jl32u"]
-
-[node name="Range" type="Node3D"]
-
-[node name="Player" parent="." instance=ExtResource("1_jl32u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

@@ -5,7 +5,7 @@ using System;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class State : IStateChartComponent
+    public partial class State : Node
     {
         [Signal] public delegate void EnterEventHandler();
         [Signal] public delegate void ExitEventHandler();
@@ -34,7 +34,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             unhandledInputTrans = new Array<Transition>();
         }
 
-        public override void Init(StateChart stateChart, State parentState = null)
+        public virtual void Init(StateChart stateChart, State parentState = null)
         {
             this.stateChart = stateChart;
             this.parentState = parentState;

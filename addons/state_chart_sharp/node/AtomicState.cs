@@ -11,9 +11,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// when entered.
         /// </summary>
         [Export] protected bool isInstant = false;
-        public override void Init()
+        public override void Init(StateChart stateChart, State parentState = null)
         {
-            base.Init();
+            base.Init(stateChart, parentState);
             
             foreach (Node child in GetChildren())
             {

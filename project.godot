@@ -11,8 +11,7 @@ config_version=5
 [application]
 
 config/name="State-chart-sharp"
-run/main_scene="res://samples/immsim_controller/player.tscn"
-config/features=PackedStringArray("4.2", "C#", "Forward Plus")
+config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [dotnet]
@@ -21,4 +20,4 @@ project/assembly_name="State-chart-sharp"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/state_chart_sharp/plugin.cfg")
+enabled=PackedStringArray()

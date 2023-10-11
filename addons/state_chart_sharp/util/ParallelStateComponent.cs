@@ -3,7 +3,8 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
-	public partial class Reaction : IStateChartComponent
-	{
-	}
+    public class ParallelStateComponent : StateComponent
+    {
+        
+    }
 }

@@ -4,7 +4,7 @@ using Godot.Collections;
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     [GlobalClass]
-    public partial class StateChart : IStateChartComponent
+    public partial class StateChart : Node
     {
         protected State _rootState = null;
         protected TransitHandler transitHandler;
@@ -27,7 +27,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
 
             _rootState = child as State;
-            _rootState.Init();
+            _rootState.Init(this);
             _rootState.StateEnter();
 
             transitHandler = new TransitHandler();
@@ -97,6 +97,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             _rootState.StateUnhandledInput(@event);
 
             isRunning = false;
+        }
+
+        public void Step()
+        {
+            // TODO: Lazy step, check transitions with "Lazy" mode.
         }
     }
 }
