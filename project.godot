@@ -20,4 +20,4 @@ project/assembly_name="State-chart-sharp"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/state_chart_sharp/plugin.cfg")

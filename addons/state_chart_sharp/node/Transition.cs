@@ -3,6 +3,14 @@ using Godot;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
+    public enum TransitionModeEnum : int
+    {
+        Process,
+        PhysicsProcess,
+        Input,
+        UnhandledInput
+    }
+
     [GlobalClass]
     public partial class Transition : Node
     {
@@ -15,14 +23,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         // protected StateNode fromState;
         [Signal] public delegate void TransitionCheckEventHandler(Transition transition);
         private bool _isChecked;
-
-        public enum TransitionModeEnum : int
-        {
-            Process,
-            PhysicsProcess,
-            Input,
-            UnhandledInput
-        }
 
         public void Init()
         {
@@ -38,11 +38,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             if (toState is null)
             {
                 GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Transition needs an assigned 'toState'.");
-                return;
-            }
-            if (toState.GetParent<Node>() != fromState.GetParent<Node>())
-            {
-                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: 'toState' must be sibling of attached state.");
                 return;
             }
             if (toState.IsInstant() && fromState.IsInstant())

@@ -6,16 +6,16 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 	[GlobalClass]
 	public partial class ParallelState : State
 	{
-		public override void Init()
+		public override void Init(StateChart stateChart,  State parentState = null)
 		{
-			base.Init();
+			base.Init(stateChart, parentState);
 			
 			foreach (Node child in GetChildren())
 			{
 				if (child is State s)
 				{
-					s.Init();
-					substates.Add(s.Name, s);
+					s.Init(stateChart, parentState);
+					substates.Add(s);
 				}
 				else if (child is Transition t)
 				{
@@ -29,7 +29,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 			}
 		}
 		
-		public override void SubstateTransit(Transition.TransitionModeEnum mode)
+		public override void SubstateTransit(TransitionModeEnum mode)
 		{
 			foreach(State s in substates)
 			{

@@ -10,7 +10,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// If state is instant, transitions will be checked instantly
         /// when entered.
         /// </summary>
-        [Export] protected bool isInstant = false;
         public override void Init(StateChart stateChart, State parentState = null)
         {
             base.Init(stateChart, parentState);
@@ -28,7 +27,5 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 }
             }
         }
-
-        public override bool IsInstant() { return isInstant; }
     }
 }

@@ -10,12 +10,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// If state is instant, transitions will be checked instantly
         /// when entered.
         /// </summary>
-        [Export] protected bool isInstant = false;
         [Export] protected State defaultSubState;
 
-        public override void Init()
+        public override void Init(StateChart stateChart,  State parentState = null)
         {
-            base.Init();
+            base.Init(stateChart, parentState);
             bool isFirstSubstate = true;
             
             // Load child nodes
@@ -23,8 +22,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             {
                 if (child is State s)
                 {
-                    s.Init();
-                    substates.Add(s.Name, s);
+                    s.Init(stateChart, parentState);
+                    substates.Add(s);
                     if (isFirstSubstate && defaultSubState is null)
                     {
                         defaultSubState = s;
@@ -42,9 +41,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
         }
 
-        public override bool IsInstant() { return isInstant; }
-
-        public override void SubstateTransit(Transition.TransitionModeEnum mode)
+        public override void SubstateTransit(TransitionModeEnum mode)
         {
             do
             {
@@ -75,11 +72,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 currentSubstate.StateEnter();
             }
             EmitSignal(SignalName.Enter);
-        }
-
-        public override void StateEnter(string statePath)
-        {
-            
         }
 
         public override void StateExit()
