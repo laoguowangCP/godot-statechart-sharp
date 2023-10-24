@@ -1,5 +1,4 @@
 using Godot;
-using Godot.Collections;
 using System.Collections.Generic;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
@@ -13,11 +12,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         protected State state;
         
-        protected List<State> substates;
         public List<Transition> processTrans;
         public List<Transition> physicsProcessTrans;
         public List<Transition> inputTrans;
         public List<Transition> unhandledInputTrans;
+        public List<Transition> stepTrans;
 
         protected List<Transition> GetTransitions(TransitionModeEnum mode) => mode switch
         {
@@ -29,21 +28,21 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 => inputTrans,
             TransitionModeEnum.UnhandledInput
                 => unhandledInputTrans,
+            TransitionModeEnum.Step
+                => stepTrans,
             _ => null
         };
 
         public StateComponent(State state)
         {
             this.state = state;
-            
-            // Initialize substate list
-            substates = new List<State>();
 
             // Initialize transition lists
             processTrans = new List<Transition>();
             physicsProcessTrans = new List<Transition>();
             inputTrans = new List<Transition>();
             unhandledInputTrans = new List<Transition>();
+            stepTrans = new List<Transition>();
         }
 
         public virtual void Init(StateChart stateChart, State parentState = null) {}
@@ -58,10 +57,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public virtual void StateUnhandledInput(InputEvent @event) {}
 
-        public virtual void StateProcess(double delta)
-        {
-            // state.EmitSignal(State.SignalName.Process, delta);
-        }
+        public virtual void StateProcess(double delta) {}
 
         public virtual void StatePhysicsProcess(double delta) {}
     }

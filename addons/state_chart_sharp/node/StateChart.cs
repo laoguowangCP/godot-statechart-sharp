@@ -101,7 +101,17 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public void Step()
         {
-            // TODO: Lazy step, check transitions with "Lazy" mode.
+            if (isRunning)
+            {
+                GD.PushWarning("State chart triggered on running.");
+                return;
+            }
+            
+            isRunning = true;
+
+            _rootState.SubstateTransit(TransitionModeEnum.Step);
+
+            isRunning = false;
         }
     }
 }

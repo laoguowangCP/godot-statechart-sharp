@@ -8,9 +8,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     
     public enum StateModeEnum : int
     {
+        Atomic, // TODO: maybe not necessary?
         Compond,
-        Parallel,
-        Atomic // TODO: maybe not necessary?
+        Parallel
     }
 
     [GlobalClass]
@@ -58,11 +58,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             // Initialize state component
             switch (stateMode)
             {
+                case StateModeEnum.Atomic:
+                    stateComponent = new AtomicStateComponent(this);
+                    break;
                 case StateModeEnum.Compond:
                     stateComponent = new CompondStateComponent(this);
-                    break;
-                case StateModeEnum.Atomic:
-                    stateComponent = new AtomicStateComponent();
                     break;
                 case StateModeEnum.Parallel:
                     stateComponent = new ParallelStateComponent(this);

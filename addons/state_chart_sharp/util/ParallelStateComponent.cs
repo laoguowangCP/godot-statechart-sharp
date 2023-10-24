@@ -1,11 +1,16 @@
 using Godot;
-using Godot.Collections;
+using System.Collections.Generic;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
     public class ParallelStateComponent : StateComponent
     {
-        public ParallelStateComponent(State state) : base(state) {}
+        protected List<State> substates;
+        public ParallelStateComponent(State state) : base(state)
+		{
+            // Initialize substate list
+            substates = new List<State>();
+		}
 
         public override void Init(StateChart stateChart, State parentState = null)
         {
@@ -20,8 +25,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 				}
 				else if (child is Transition t)
 				{
-					t.Init();
-					GetTransitions(t.transitionMode).Add(t);
+					t.Init(state);
+					GetTransitions(t.GetTransitionMode()).Add(t);
 				}
 				else
 				{
@@ -40,11 +45,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void StateEnter()
 		{
+			state.EmitSignal(State.SignalName.Enter);
 			foreach(State substate in substates)
 			{
 				substate.StateEnter();
 			}
-			state.EmitSignal(State.SignalName.Enter);
 		}
 
         public override void StateExit()

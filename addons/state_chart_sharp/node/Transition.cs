@@ -8,7 +8,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         Process,
         PhysicsProcess,
         Input,
-        UnhandledInput
+        UnhandledInput,
+        Step
     }
 
     [GlobalClass]
@@ -19,30 +20,23 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// <summary>
         /// Time on which the transition is checked.
         /// </summary>
-        [Export] public TransitionModeEnum transitionMode = TransitionModeEnum.Process;
+        [Export] protected TransitionModeEnum transitionMode = TransitionModeEnum.Process;
         // protected StateNode fromState;
         [Signal] public delegate void TransitionCheckEventHandler(Transition transition);
         private bool _isChecked;
 
-        public void Init()
+        public void Init(State parent)
         {
-            var parent = GetParent<Node>();
-            if (!(parent is State))
-            {
-                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Transition needs StateNode as parent.");
-                return;
-            }
-
-            fromState = parent as State;
+            fromState = parent;
 
             if (toState is null)
             {
-                GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Transition needs an assigned 'toState'.");
+                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: Transition needs an assigned 'toState'.");
                 return;
             }
             if (toState.IsInstant() && fromState.IsInstant())
             {
-                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: Both attached state and 'toState' are instant, loop may happen in instant transition.");
+                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: Both 'fromState' and 'toState' are instant, loop may happen in instant transition.");
             }
         }
         
@@ -70,6 +64,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// </summary>
         public bool CheckWithTransit(State parentState)
         {
+            if (toState is null)
+            {
+                return false;
+            }
+            
             // Transition condition is not met in default.
             _isChecked = false;
             EmitSignal(SignalName.TransitionCheck, this);
@@ -83,6 +82,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
 
             return _isChecked;
+        }
+
+        public TransitionModeEnum GetTransitionMode()
+        {
+            return transitionMode;
         }
     }
 }
