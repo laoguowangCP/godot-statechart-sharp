@@ -45,41 +45,39 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
         }
 
-        public override void SubstateTransit(TransitionModeEnum mode)
+        public override void SubstateTransit(TransitionModeEnum mode, bool recursive = true)
         {
-            bool isKeepCheck = true;
             bool isTransited = false;
-            while (isKeepCheck)
+            
+            var transitions = currentSubstate.GetTransitions(mode);
+            foreach(Transition t in transitions)
             {
-                isKeepCheck = false;
-                var transitions = currentSubstate.GetTransitions(mode);
-                if (transitions is null)
+                if (t.Check())
                 {
+                    // Transit to new state.
+                    // If new state is instant, keep check.
+                    currentSubstate.StateExit();
+                    currentSubstate = t.GetToState();
+                    currentSubstate.StateEnter(mode);
+                    isTransited = true;
                     break;
-                }
-                foreach(Transition t in transitions)
-                {
-                    if (t.CheckWithTransit(state))
-                    {
-                        // Transit to new state.
-                        // If new state is instant, keep check.
-                        isTransited = true;
-                        isKeepCheck = currentSubstate.IsInstant();
-                        break;
-                    }
                 }
             }
 
-            if (!isTransited)
+            if (recursive && !isTransited)
             {
                 currentSubstate.SubstateTransit(mode);
             }
         }
 
+        public override void InstantTransit(TransitionModeEnum mode)
+        {
+            SubstateTransit(mode, false);
+        }
+
         public override void StateEnter()
         {
             state.EmitSignal(State.SignalName.Enter);
-            // TODO: handle instant state transition here?
             if (defaultSubstate is not null)
             {
                 // First child state is default substate
@@ -88,11 +86,31 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
         }
 
+        public override void StateEnter(TransitionModeEnum mode)
+        {
+            state.EmitSignal(State.SignalName.Enter);
+            // TODO: handle instant state transition here?
+            // Forget about instant trans on init()
+            // Just fix instant trans on transition
+            if (state.IsInstant())
+            {
+                state.ParentState.InstantTransit(mode);
+            }
+
+            if (defaultSubstate is not null)
+            {
+                // First child state is default substate
+                currentSubstate = defaultSubstate;
+                currentSubstate.StateEnter(mode);
+            }
+        }
+
         public override void StateExit()
         {
             if (currentSubstate is not null)
             {
                 currentSubstate.StateExit();
+                currentSubstate = null;
             }
             state.EmitSignal(State.SignalName.Exit);
         }

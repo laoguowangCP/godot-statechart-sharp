@@ -29,6 +29,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             state.EmitSignal(State.SignalName.Enter);
         }
+
+        public override void StateEnter(TransitionModeEnum mode)
+        {
+            state.EmitSignal(State.SignalName.Enter);
+        }
         
         public override void StateExit()
         {

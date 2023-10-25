@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 
@@ -24,19 +25,28 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         // protected StateNode fromState;
         [Signal] public delegate void TransitionCheckEventHandler(Transition transition);
         private bool _isChecked;
+        // private State _siblingFromState = null;
 
         public void Init(State parent)
         {
             fromState = parent;
+
+            if (fromState.ParentState is null)
+            {
+                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: root state need no Transition.");
+                return;
+            }
 
             if (toState is null)
             {
                 GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: Transition needs an assigned 'toState'.");
                 return;
             }
-            if (toState.IsInstant() && fromState.IsInstant())
+
+            if (fromState.StateLevel < toState.StateLevel)
             {
-                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: Both 'fromState' and 'toState' are instant, loop may happen in instant transition.");
+                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: 'fromState' should be deeper than 'toState'.");
+                return;
             }
         }
         
@@ -50,6 +60,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public bool Check()
         {
+            if (fromState.ParentState is null || toState is null)
+            {
+                return false;
+            }
+
             // Transition condition is not met in default.
             _isChecked = false;
 
@@ -57,14 +72,15 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             return _isChecked;
         }
 
-        /// <summary>
-        /// Call delegated check handler, 
-        /// return weather transition condition is met.</br>
-        /// If condition is met, commit the transition for parent state.
-        /// </summary>
+        public State GetToState()
+        {
+            return toState;
+        }
+
+        /*
         public bool CheckWithTransit(State parentState)
         {
-            if (toState is null)
+            if (fromState.ParentState is null || toState is null)
             {
                 return false;
             }
@@ -83,6 +99,40 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
             return _isChecked;
         }
+
+        protected bool Transit(State from, State to)
+        {
+            if (from.StateChart != to.StateChart)
+            {
+                GD.PushWarning("Target state must be in same statechart");
+                return false;
+            }
+
+            while (from.ParentState != to.ParentState)
+            {
+                if (from.StateLevel > to.StateLevel)
+                {
+                    from = from.ParentState;
+                }
+                else // from.StateLevel <= to.StateLevel
+                {
+                    return false;
+                }
+            }
+
+            // from.ParentState == to.ParentState
+            if (from.ParentState is CompondState)
+            {
+                var innnerMostParent = from.ParentState as CompondState;
+            }
+            else
+            {
+                GD.PushWarning("Transition should happens under Compond State");
+                return false;
+            }
+
+            return true;
+        }*/
 
         public TransitionModeEnum GetTransitionMode()
         {

@@ -35,7 +35,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 			}
         }
 
-        public override void SubstateTransit(TransitionModeEnum mode)
+        public override void SubstateTransit(TransitionModeEnum mode, bool recursive = true)
 		{
 			foreach(State substate in substates)
 			{
@@ -49,6 +49,14 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 			foreach(State substate in substates)
 			{
 				substate.StateEnter();
+			}
+		}
+		public override void StateEnter(TransitionModeEnum mode)
+		{
+			state.EmitSignal(State.SignalName.Enter);
+			foreach(State substate in substates)
+			{
+				substate.StateEnter(mode);
 			}
 		}
 

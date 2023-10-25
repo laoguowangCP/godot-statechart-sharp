@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
@@ -47,9 +48,13 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public virtual void Init(StateChart stateChart, State parentState = null) {}
 
-        public virtual void SubstateTransit(TransitionModeEnum mode) {}
+        public virtual void SubstateTransit(TransitionModeEnum mode, bool recursive = true) {}
+        
+        public virtual void InstantTransit(TransitionModeEnum mode) {}
 
         public virtual void StateEnter() {}
+
+        public virtual void StateEnter(TransitionModeEnum mode) {}
         
         public virtual void StateExit() {}
 
@@ -60,5 +65,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public virtual void StateProcess(double delta) {}
 
         public virtual void StatePhysicsProcess(double delta) {}
+
     }
 }

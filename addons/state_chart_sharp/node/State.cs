@@ -32,10 +32,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         [Export] protected bool isInstant = false;
         protected StateComponent stateComponent;
 
-        public StateChart stateChart { get; protected set; }
-        public int stateLevel { get; protected set; }
-        public State parentState { get; protected set; }
-        public State currentSubstate;
+        public StateChart StateChart { get; protected set; }
+        public int StateLevel { get; protected set; }
+        public State ParentState { get; protected set; }
 
         // TODO: transfer lists to StateComponent
         protected List<State> substates;
@@ -72,20 +71,20 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
         }
 
-        public virtual void Init(StateChart stateChart, State parentState = null)
+        public void Init(StateChart stateChart, State parentState = null)
         {
             // stateComponent.Init(stateChart, parentState);
-            this.stateChart = stateChart;
-            this.parentState = parentState;
+            StateChart = stateChart;
+            ParentState = parentState;
 
             // Set state level, depth in state chart
             if (parentState is null)
             {
-                stateLevel = 0;
+                StateLevel = 0;
             }
             else
             {
-                stateLevel = parentState.stateLevel + 1;
+                StateLevel = parentState.StateLevel + 1;
             }
 
             stateComponent.Init(stateChart, parentState);
@@ -104,47 +103,51 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             _ => null
         };
 
-        public virtual void SubstateTransit(TransitionModeEnum mode)
+        public void SubstateTransit(TransitionModeEnum mode)
         {
             stateComponent.SubstateTransit(mode);
+        }
+        
+        public void InstantTransit(TransitionModeEnum mode)
+        {
+            stateComponent.InstantTransit(mode);
         }
 
         public bool IsInstant() { return isInstant; }
 
-        public virtual void StateEnter()
+        public void StateEnter()
         {
-            // stateComponent.StateEnter();
-            EmitSignal(SignalName.Enter);
+            stateComponent.StateEnter();
         }
 
-        public virtual void StateExit()
+        public void StateEnter(TransitionModeEnum mode)
         {
-            // stateComponent.StateExit();
-            EmitSignal(SignalName.Exit);
+            stateComponent.StateEnter(mode);
         }
 
-        public virtual void StateInput(InputEvent @event)
+        public void StateExit()
         {
-            // stateComponent.StateInput(@event);
-            EmitSignal(SignalName.Input, @event);
+            stateComponent.StateExit();
         }
 
-        public virtual void StateUnhandledInput(InputEvent @event)
+        public void StateInput(InputEvent @event)
         {
-            // stateComponent.StateUnhandledInput(@event);
-            EmitSignal(SignalName.UnhandledInput, @event);
+            stateComponent.StateInput(@event);
         }
 
-        public virtual void StateProcess(double delta)
+        public void StateUnhandledInput(InputEvent @event)
         {
-            // stateComponent.StateProcess(delta);
-            EmitSignal(SignalName.Process, delta);
+            stateComponent.StateUnhandledInput(@event);
         }
 
-        public virtual void StatePhysicsProcess(double delta)
+        public void StateProcess(double delta)
         {
-            // stateComponent.StatePhysicsProcess(delta);
-            EmitSignal(SignalName.PhysicsProcess, delta);
+            stateComponent.StateProcess(delta);
+        }
+
+        public void StatePhysicsProcess(double delta)
+        {
+            stateComponent.StatePhysicsProcess(delta);
         }
     }
 }

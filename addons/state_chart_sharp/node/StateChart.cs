@@ -7,7 +7,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     public partial class StateChart : Node
     {
         protected State _rootState = null;
-        protected TransitHandler transitHandler;
         // State chart should not be triggered while running
         private bool isRunning;
 
@@ -20,7 +19,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
 
             var child = GetChild<Node>(0);
-            if (!(child is State))
+            if (child is not State)
             {
                 GD.PushError("LGWCP.GodotPlugin.StateChartSharp: Root state must be a State.");
                 return;
@@ -29,8 +28,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             _rootState = child as State;
             _rootState.Init(this);
             _rootState.StateEnter();
-
-            transitHandler = new TransitHandler();
 
             isRunning = false;
         }
