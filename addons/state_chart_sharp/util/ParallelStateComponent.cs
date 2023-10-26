@@ -20,7 +20,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 			{
 				if (child is State substate)
 				{
-					substate.Init(stateChart, parentState);
+					substate.Init(stateChart, state);
 					substates.Add(substate);
 				}
 				else if (child is Transition t)
@@ -35,7 +35,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 			}
         }
 
-        public override void SubstateTransit(TransitionModeEnum mode, bool recursive = true)
+        public override void SubstateTransit(
+			TransitionModeEnum mode,
+			State fromState = null,
+			State toState = null,
+			bool recursive = true)
 		{
 			foreach(State substate in substates)
 			{

@@ -28,7 +28,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         
         #endregion
 
-        [Export] StateModeEnum stateMode = StateModeEnum.Compond;
+        [Export] protected StateModeEnum stateMode = StateModeEnum.Compond;
         [Export] protected bool isInstant = false;
         protected StateComponent stateComponent;
 
@@ -36,24 +36,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public int StateLevel { get; protected set; }
         public State ParentState { get; protected set; }
 
-        // TODO: transfer lists to StateComponent
-        protected List<State> substates;
-        public List<Transition> processTrans;
-        public List<Transition> physicsProcessTrans;
-        public List<Transition> inputTrans;
-        public List<Transition> unhandledInputTrans;
-
         public override void _Ready()
         {
-            // Initialize substate list
-            substates = new List<State>();
-
-            // Initialize transition lists
-            processTrans = new List<Transition>();
-            physicsProcessTrans = new List<Transition>();
-            inputTrans = new List<Transition>();
-            unhandledInputTrans = new List<Transition>();
-            
             // Initialize state component
             switch (stateMode)
             {
@@ -90,28 +74,26 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             stateComponent.Init(stateChart, parentState);
         }
 
-        public List<Transition> GetTransitions(TransitionModeEnum mode) => mode switch
+        public List<Transition> GetTransitions(TransitionModeEnum mode)
         {
-            TransitionModeEnum.Process
-                => processTrans,
-            TransitionModeEnum.PhysicsProcess
-                => physicsProcessTrans,
-            TransitionModeEnum.Input
-                => inputTrans,
-            TransitionModeEnum.UnhandledInput
-                => unhandledInputTrans,
-            _ => null
-        };
+            return stateComponent.GetTransitions(mode);
+        }
 
-        public void SubstateTransit(TransitionModeEnum mode)
+        public StateModeEnum GetStateMode()
         {
-            stateComponent.SubstateTransit(mode);
+            return stateMode;
+        }
+
+        public void SubstateTransit(TransitionModeEnum mode, State fromState = null, State toState = null, bool recursive = true)
+        {
+            stateComponent.SubstateTransit(mode, fromState, toState, recursive);
         }
         
+        /*
         public void InstantTransit(TransitionModeEnum mode)
         {
             stateComponent.InstantTransit(mode);
-        }
+        }*/
 
         public bool IsInstant() { return isInstant; }
 

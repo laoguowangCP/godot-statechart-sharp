@@ -19,7 +19,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public List<Transition> unhandledInputTrans;
         public List<Transition> stepTrans;
 
-        protected List<Transition> GetTransitions(TransitionModeEnum mode) => mode switch
+        public List<Transition> GetTransitions(TransitionModeEnum mode) => mode switch
         {
             TransitionModeEnum.Process
                 => processTrans,
@@ -48,7 +48,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public virtual void Init(StateChart stateChart, State parentState = null) {}
 
-        public virtual void SubstateTransit(TransitionModeEnum mode, bool recursive = true) {}
+        public virtual void SubstateTransit(TransitionModeEnum mode, State fromState = null, State toState = null, bool recursive = true) {}
         
         public virtual void InstantTransit(TransitionModeEnum mode) {}
 

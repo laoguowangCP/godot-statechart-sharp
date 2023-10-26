@@ -48,6 +48,11 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: 'fromState' should be deeper than 'toState'.");
                 return;
             }
+
+            if (fromState.StateChart != toState.StateChart)
+            {
+                GD.PushWarning("Target state must be in same statechart");
+            }
         }
         
         /// <summary>
@@ -67,7 +72,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
             // Transition condition is not met in default.
             _isChecked = false;
-
             EmitSignal(SignalName.TransitionCheck, this);
             return _isChecked;
         }
@@ -84,18 +88,14 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             {
                 return false;
             }
-            
+
             // Transition condition is not met in default.
             _isChecked = false;
             EmitSignal(SignalName.TransitionCheck, this);
-            
-            // Commit the transition.
-            if (_isChecked)
-            {
-                fromState.StateExit();
-                toState.StateEnter();
-                parentState.currentSubstate = toState;
-            }
+
+            currentSubstate.StateExit();
+            currentSubstate = t.GetToState();
+            currentSubstate.StateEnter(mode);
 
             return _isChecked;
         }

@@ -103,6 +103,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 GD.PushWarning("State chart triggered on running.");
                 return;
             }
+
+            GD.Print("StateChart Step");
             
             isRunning = true;
 
