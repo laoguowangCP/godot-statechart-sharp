@@ -15,7 +15,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             substates = new List<State>();
         }
 
-        public override void Init(StateChart stateChart,  State parentState = null)
+        public override void Init(StateChart stateChart,  State parentState)
         {
             // base.Init(stateChart, parentState);
             
@@ -47,13 +47,13 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void SubstateTransit(
             TransitionModeEnum mode,
-            State fromState = null,
-            State toState = null,
-            bool recursive = true)
+            State fromState,
+            State toState,
+            bool recursive)
         {
             bool doTransit = false;
 
-            if (fromState is not null && toState is not null)
+            if (fromState is not null && toState is not null && fromState != toState)
             {
                 // handle remote transition
                 fromState.StateExit();
@@ -61,71 +61,78 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 currentSubstate.StateEnter(mode);
                 return;
             }
-            else // fromState is null || toState is null
+            
+            // fromState is null || toState is null
+            // normal transition
+            if (currentSubstate is null)
             {
-                // normal transition
-                if (currentSubstate is null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                fromState = currentSubstate;
-                toState = null;
-                
-                var transitions = currentSubstate.GetTransitions(mode);
-                if (transitions is null)
+            fromState = currentSubstate;
+            toState = null;
+            
+            var transitions = currentSubstate.GetTransitions(mode);
+            foreach(Transition t in transitions)
+            {
+                if (t.Check())
                 {
-                    GD.Print(currentSubstate.Name, ": transitions list is null in mode ", mode);
+                    toState = t.GetToState();
+                    doTransit = true;
+                    break;
                 }
-                foreach(Transition t in transitions)
+            }
+
+            if (doTransit)
+            {
+                // cross level transit
+                while (fromState.ParentState != toState.ParentState)
                 {
-                    if (t.Check())
+                    if (fromState.StateLevel >= toState.StateLevel)
                     {
-                        toState = t.GetToState();
-                        doTransit = true;
-                        break;
+                        fromState = fromState.ParentState;
+                    }
+                    else // from.StateLevel < to.StateLevel
+                    {
+                        toState = toState.ParentState;
                     }
                 }
 
-                if (doTransit)
+                // from.ParentState == to.ParentState
+                if (fromState.ParentState == state)
                 {
-                    // cross level transit
-                    while (fromState.ParentState != toState.ParentState)
+                    // Local transit
+                    if (fromState != toState)
                     {
-                        if (fromState.StateLevel >= toState.StateLevel)
-                        {
-                            fromState = fromState.ParentState;
-                        }
-                        else // from.StateLevel < to.StateLevel
-                        {
-                            toState = toState.ParentState;
-                        }
-                    }
-
-                    // from.ParentState == to.ParentState
-                    if (fromState.ParentState == state)
-                    {
-                        // Local transit
                         fromState.StateExit();
                         currentSubstate = toState;
                         currentSubstate.StateEnter(mode);
                     }
-                    else if (fromState.ParentState.GetStateMode() == StateModeEnum.Compond)
-                    {
-                        // Remote transit
-                        fromState.ParentState.SubstateTransit(mode, fromState, toState);
-                    }
-                    else
-                    {
-                        // Invalid transit
-                        doTransit = false;
-                    }
                 }
-                
-                if (recursive && (!doTransit))
+                else if (fromState.ParentState.GetStateMode() == StateModeEnum.Compond)
+                {
+                    // remote transit
+                    fromState.ParentState.SubstateTransit(mode, fromState, toState);
+                }
+                else
+                {
+                    // invalid transit
+                    doTransit = false;
+                }
+            }
+            
+            // if no transit, do recurse 
+            if (!doTransit)
+            {
+                if (recursive)
                 {
                     currentSubstate.SubstateTransit(mode);
                 }
+                else
+                {
+                    currentSubstate.StateEnter(mode, checkInstant: false);
+                }
+                return;
             }
         }
 
@@ -140,15 +147,15 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
         }
 
-        public override void StateEnter(TransitionModeEnum mode)
+        public override void StateEnter(TransitionModeEnum mode, bool checkInstant = true)
         {
             state.EmitSignal(State.SignalName.Enter);
-            // TODO: handle instant state transition here?
-            // Forget about instant trans on init()
-            // Just fix instant trans on transition
-            if (state.IsInstant())
+            // handle instant state transition
+            // no instant transition on init()
+            if (checkInstant && state.IsInstant())
             {
                 state.ParentState.SubstateTransit(mode, recursive: false);
+                return;
             }
 
             if (defaultSubstate is not null)

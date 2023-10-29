@@ -8,7 +8,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     
     public enum StateModeEnum : int
     {
-        Atomic, // TODO: maybe not necessary?
         Compond,
         Parallel
     }
@@ -41,9 +40,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             // Initialize state component
             switch (stateMode)
             {
-                case StateModeEnum.Atomic:
-                    stateComponent = new AtomicStateComponent(this);
-                    break;
                 case StateModeEnum.Compond:
                     stateComponent = new CompondStateComponent(this);
                     break;
@@ -102,9 +98,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             stateComponent.StateEnter();
         }
 
-        public void StateEnter(TransitionModeEnum mode)
+        public void StateEnter(TransitionModeEnum mode, bool checkInstant = true)
         {
-            stateComponent.StateEnter(mode);
+            stateComponent.StateEnter(mode, checkInstant);
         }
 
         public void StateExit()

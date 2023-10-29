@@ -33,25 +33,20 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
             if (fromState.ParentState is null)
             {
-                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: root state need no Transition.");
+                GD.PushWarning(Name, ": root state need no Transition.");
                 return;
             }
 
             if (toState is null)
             {
-                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: Transition needs an assigned 'toState'.");
+                GD.PushWarning(Name, ": transition needs an assigned 'toState'.");
                 return;
             }
 
             if (fromState.StateLevel < toState.StateLevel)
             {
-                GD.PushWarning("LGWCP.GodotPlugin.StateChartSharp: 'fromState' should be deeper than 'toState'.");
+                GD.PushWarning(Name, ": fromState should be deeper than toState.");
                 return;
-            }
-
-            if (fromState.StateChart != toState.StateChart)
-            {
-                GD.PushWarning("Target state must be in same statechart");
             }
         }
         
@@ -67,6 +62,12 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             if (fromState.ParentState is null || toState is null)
             {
+                return false;
+            }
+            
+            if (fromState.StateChart != toState.StateChart)
+            {
+                GD.PushWarning(Name, ": target state must be in same statechart");
                 return false;
             }
 

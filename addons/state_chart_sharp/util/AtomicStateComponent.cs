@@ -7,7 +7,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     {
         public AtomicStateComponent(State state) : base(state) {}
 
-        public override void Init(StateChart stateChart, State parentState = null)
+        public override void Init(StateChart stateChart, State parentState)
         {
             base.Init(stateChart, parentState);
             
@@ -30,7 +30,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             state.EmitSignal(State.SignalName.Enter);
         }
 
-        public override void StateEnter(TransitionModeEnum mode)
+        public override void StateEnter(TransitionModeEnum mode, bool checkInstant)
         {
             state.EmitSignal(State.SignalName.Enter);
         }

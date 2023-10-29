@@ -46,15 +46,15 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             stepTrans = new List<Transition>();
         }
 
-        public virtual void Init(StateChart stateChart, State parentState = null) {}
+        public virtual void Init(StateChart stateChart, State parentState) {}
 
-        public virtual void SubstateTransit(TransitionModeEnum mode, State fromState = null, State toState = null, bool recursive = true) {}
+        public virtual void SubstateTransit(TransitionModeEnum mode, State fromState, State toState, bool recursive) {}
         
         public virtual void InstantTransit(TransitionModeEnum mode) {}
 
         public virtual void StateEnter() {}
 
-        public virtual void StateEnter(TransitionModeEnum mode) {}
+        public virtual void StateEnter(TransitionModeEnum mode, bool checkInstant) {}
         
         public virtual void StateExit() {}
 

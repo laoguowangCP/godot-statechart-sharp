@@ -16,6 +16,7 @@ public partial class Test : Node2D
 	{
 		if (Input.IsActionJustPressed("Space"))
 		{
+            GD.Print("---- StateChart Step ----");
 			stateChart.Step();
 		}
 	}
@@ -60,9 +61,32 @@ public partial class Test : Node2D
 		GD.Print("StateF Enter...");
 	}
 
+	public void OnStateGEnter()
+	{
+		GD.Print("StateG Enter...");
+	}
+
+	public void CheckAtoB(Transition t)
+	{
+		GD.Print("Check AtoB");
+		t.SetChecked(false);
+	}
+
 	public void CheckCtoD(Transition t)
 	{
 		GD.Print("Check CtoD");
+		t.SetChecked(true);
+	}
+
+	public void CheckDtoE(Transition t)
+	{
+		GD.Print("Check DtoE");
+		t.SetChecked(true);
+	}
+
+	public void CheckEtoA(Transition t)
+	{
+		GD.Print("Check EtoA");
 		t.SetChecked(true);
 	}
 }

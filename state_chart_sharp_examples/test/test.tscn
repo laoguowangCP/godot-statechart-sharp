@@ -1,0 +1,99 @@
+[gd_scene load_steps=6 format=3 uid="uid://befqwnymothiy"]
+
+[ext_resource type="Script" path="res://state_chart_sharp_examples/test/Test.cs" id="1_41un4"]
+[ext_resource type="Script" path="res://addons/state_chart_sharp/node/StateChart.cs" id="2_q1613"]
+[ext_resource type="Script" path="res://addons/state_chart_sharp/node/State.cs" id="3_p5p63"]
+[ext_resource type="Script" path="res://addons/state_chart_sharp/node/Transition.cs" id="4_jk6v3"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_170g6"]
+font_size = 32
+
+[node name="test" type="Node2D"]
+script = ExtResource("1_41un4")
+
+[node name="StateChart" type="Node" parent="."]
+script = ExtResource("2_q1613")
+
+[node name="Root_p" type="Node" parent="StateChart"]
+script = ExtResource("3_p5p63")
+stateMode = 2
+
+[node name="Top_c" type="Node" parent="StateChart/Root_p"]
+script = ExtResource("3_p5p63")
+
+[node name="StateA_c" type="Node" parent="StateChart/Root_p/Top_c"]
+script = ExtResource("3_p5p63")
+
+[node name="StateC" type="Node" parent="StateChart/Root_p/Top_c/StateA_c"]
+script = ExtResource("3_p5p63")
+isInstant = true
+
+[node name="CtoD" type="Node" parent="StateChart/Root_p/Top_c/StateA_c/StateC" node_paths=PackedStringArray("toState")]
+script = ExtResource("4_jk6v3")
+toState = NodePath("../../StateD")
+transitionMode = 4
+
+[node name="StateG" type="Node" parent="StateChart/Root_p/Top_c/StateA_c/StateC"]
+script = ExtResource("3_p5p63")
+stateMode = 2
+
+[node name="StateD" type="Node" parent="StateChart/Root_p/Top_c/StateA_c"]
+script = ExtResource("3_p5p63")
+
+[node name="DtoE" type="Node" parent="StateChart/Root_p/Top_c/StateA_c/StateD" node_paths=PackedStringArray("toState")]
+script = ExtResource("4_jk6v3")
+toState = NodePath("../../../StateB_p/StateE")
+transitionMode = 4
+
+[node name="AtoB" type="Node" parent="StateChart/Root_p/Top_c/StateA_c" node_paths=PackedStringArray("toState")]
+script = ExtResource("4_jk6v3")
+toState = NodePath("../../StateB_p")
+transitionMode = 4
+
+[node name="StateB_p" type="Node" parent="StateChart/Root_p/Top_c"]
+script = ExtResource("3_p5p63")
+stateMode = 2
+
+[node name="StateE" type="Node" parent="StateChart/Root_p/Top_c/StateB_p"]
+script = ExtResource("3_p5p63")
+
+[node name="EtoA" type="Node" parent="StateChart/Root_p/Top_c/StateB_p/StateE" node_paths=PackedStringArray("toState")]
+script = ExtResource("4_jk6v3")
+toState = NodePath("../../../StateA_c")
+transitionMode = 4
+
+[node name="StateF" type="Node" parent="StateChart/Root_p/Top_c/StateB_p"]
+script = ExtResource("3_p5p63")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Label" type="Label" parent="Camera2D"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -125.5
+offset_top = -13.0
+offset_right = 125.5
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Press \"Space\" to step statechart."
+label_settings = SubResource("LabelSettings_170g6")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="Enter" from="StateChart/Root_p" to="." method="OnRootEnter"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c" to="." method="OnTopEnter"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c/StateA_c" to="." method="OnStateAEnter"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c/StateA_c/StateC" to="." method="OnStateCEnter"]
+[connection signal="TransitionCheck" from="StateChart/Root_p/Top_c/StateA_c/StateC/CtoD" to="." method="CheckCtoD"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c/StateA_c/StateC/StateG" to="." method="OnStateGEnter"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c/StateA_c/StateD" to="." method="OnStateDEnter"]
+[connection signal="TransitionCheck" from="StateChart/Root_p/Top_c/StateA_c/StateD/DtoE" to="." method="CheckDtoE"]
+[connection signal="TransitionCheck" from="StateChart/Root_p/Top_c/StateA_c/AtoB" to="." method="CheckAtoB"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c/StateB_p" to="." method="OnStateBEnter"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c/StateB_p/StateE" to="." method="OnStateEEnter"]
+[connection signal="TransitionCheck" from="StateChart/Root_p/Top_c/StateB_p/StateE/EtoA" to="." method="CheckEtoA"]
+[connection signal="Enter" from="StateChart/Root_p/Top_c/StateB_p/StateF" to="." method="OnStateFEnter"]
