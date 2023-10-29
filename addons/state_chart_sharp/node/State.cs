@@ -46,9 +46,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 case StateModeEnum.Parallel:
                     stateComponent = new ParallelStateComponent(this);
                     break;
-                default:
-                    break;
             }
+
+            ProcessMode = Node.ProcessModeEnum.Disabled;
         }
 
         public void Init(StateChart stateChart, State parentState = null)
@@ -84,12 +84,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             stateComponent.SubstateTransit(mode, fromState, toState, recursive);
         }
-        
-        /*
-        public void InstantTransit(TransitionModeEnum mode)
-        {
-            stateComponent.InstantTransit(mode);
-        }*/
 
         public bool IsInstant() { return isInstant; }
 

@@ -14,7 +14,7 @@ public partial class Test : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if (Input.IsActionJustPressed("Space"))
+		if (Input.IsActionJustPressed("Jump"))
 		{
             GD.Print("---- StateChart Step ----");
 			stateChart.Step();

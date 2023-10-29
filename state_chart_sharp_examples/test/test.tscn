@@ -16,7 +16,6 @@ script = ExtResource("2_q1613")
 
 [node name="Root_p" type="Node" parent="StateChart"]
 script = ExtResource("3_p5p63")
-stateMode = 2
 
 [node name="Top_c" type="Node" parent="StateChart/Root_p"]
 script = ExtResource("3_p5p63")
@@ -35,7 +34,6 @@ transitionMode = 4
 
 [node name="StateG" type="Node" parent="StateChart/Root_p/Top_c/StateA_c/StateC"]
 script = ExtResource("3_p5p63")
-stateMode = 2
 
 [node name="StateD" type="Node" parent="StateChart/Root_p/Top_c/StateA_c"]
 script = ExtResource("3_p5p63")
@@ -52,7 +50,6 @@ transitionMode = 4
 
 [node name="StateB_p" type="Node" parent="StateChart/Root_p/Top_c"]
 script = ExtResource("3_p5p63")
-stateMode = 2
 
 [node name="StateE" type="Node" parent="StateChart/Root_p/Top_c/StateB_p"]
 script = ExtResource("3_p5p63")
@@ -84,7 +81,7 @@ label_settings = SubResource("LabelSettings_170g6")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[connection signal="Enter" from="StateChart/Root_p" to="." method="OnRootEnter"]
+[connection signal="Enter" from="StateChart/Root_p" to="." method="OnTopEnter"]
 [connection signal="Enter" from="StateChart/Root_p/Top_c" to="." method="OnTopEnter"]
 [connection signal="Enter" from="StateChart/Root_p/Top_c/StateA_c" to="." method="OnStateAEnter"]
 [connection signal="Enter" from="StateChart/Root_p/Top_c/StateA_c/StateC" to="." method="OnStateCEnter"]
