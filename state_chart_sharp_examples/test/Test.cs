@@ -28,7 +28,7 @@ public partial class Test : Node2D
 	
 	public void OnTopEnter()
 	{
-		GD.Print("Top Enter...");
+		GD.Print("Top_c Enter...");
 	}
 
 	public void OnStateAEnter()

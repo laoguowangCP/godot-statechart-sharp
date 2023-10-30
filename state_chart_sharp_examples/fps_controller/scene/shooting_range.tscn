@@ -1,5 +1,0 @@
-[gd_scene format=3 uid="uid://b4wyvffta7j4m"]
-
-[node name="shooting_range" type="Node3D"]
-
-[node name="world" type="Node3D" parent="."]
