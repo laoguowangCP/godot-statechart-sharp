@@ -13,7 +13,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         Step
     }
 
-    [GlobalClass]
+    [GlobalClass, Icon("res://addons/state_chart_sharp/icon/Transition.svg")]
     public partial class Transition : Node
     {
         protected State fromState;

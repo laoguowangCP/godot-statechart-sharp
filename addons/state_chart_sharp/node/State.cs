@@ -12,8 +12,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         Parallel
     }
 
-    [GlobalClass]
-    // [GlobalClass, Icon("res://Stats/StatsIcon.svg")]
+    [GlobalClass, Icon("res://addons/state_chart_sharp/icon/State.svg")]
     public partial class State : Node
     {
         #region define signals
