@@ -3,7 +3,7 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
-    [GlobalClass]
+    [GlobalClass, Icon("res://addons/state_chart_sharp/icon/StateChart.svg")]
     public partial class StateChart : Node
     {
         protected State _rootState = null;

@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="true"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="21.447795"
-     inkscape:cx="7.2501625"
-     inkscape:cy="13.847577"
+     inkscape:zoom="30.331763"
+     inkscape:cx="15.874448"
+     inkscape:cy="16.418433"
      inkscape:window-width="2560"
      inkscape:window-height="1316"
      inkscape:window-x="-12"
@@ -41,14 +41,14 @@
     <rect
        style="fill:#71cd00;fill-opacity:1;stroke:none;stroke-width:1.32292"
        id="rect1"
-       width="5.1593752"
-       height="1.3229167"
-       x="-7.8052087"
-       y="3.5718749"
+       width="4.7625003"
+       height="1.0583333"
+       x="-7.4083338"
+       y="3.7041667"
        transform="scale(-1,1)" />
     <path
        sodipodi:type="star"
-       style="fill:#71cd00;fill-opacity:1;stroke:none;stroke-width:0.980863;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#71cd00;fill-opacity:1;stroke:none;stroke-width:1.22608;stroke-dasharray:none;stroke-opacity:1"
        id="path1"
        inkscape:flatsided="false"
        sodipodi:sides="3"
@@ -61,27 +61,27 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 2.258442,3.3977979 0,-1.7077446 0,-1.70774455 1.4789503,0.85387232 1.4789501,0.85387223 -1.4789502,0.8538724 z"
-       inkscape:transform-center-x="0.4409725"
-       transform="matrix(-0.89449709,0,0,1.1619858,4.6660031,2.2695153)" />
+       inkscape:transform-center-x="0.35277797"
+       transform="matrix(-0.71559767,0,0,0.92958865,4.2619692,2.6622789)" />
     <rect
        style="fill:#71cd00;fill-opacity:1;stroke:none;stroke-width:0.826826;stroke-dasharray:none;stroke-opacity:1"
        id="rect2"
-       width="1.3229167"
-       height="2.778125"
-       x="-8.4666662"
-       y="1.4552084"
+       width="1.0583333"
+       height="2.1166666"
+       x="-7.9375"
+       y="2.1166666"
        transform="scale(-1,1)" />
     <path
-       style="fill:#71cd00;stroke-width:0.999999"
+       style="fill:#71cd00;stroke-width:0.999996"
        id="path2"
        sodipodi:type="arc"
-       sodipodi:cx="7.8052082"
+       sodipodi:cx="7.4083333"
        sodipodi:cy="4.2333331"
-       sodipodi:rx="0.66145831"
-       sodipodi:ry="0.66145831"
+       sodipodi:rx="0.52916664"
+       sodipodi:ry="0.52916664"
        sodipodi:start="0"
        sodipodi:end="1.5707963"
        sodipodi:arc-type="slice"
-       d="M 8.4666665,4.2333331 A 0.66145831,0.66145831 0 0 1 7.8052082,4.8947914 V 4.2333331 Z" />
+       d="M 7.9374999,4.2333331 A 0.52916664,0.52916664 0 0 1 7.4083333,4.7624997 V 4.2333331 Z" />
   </g>
 </svg>
