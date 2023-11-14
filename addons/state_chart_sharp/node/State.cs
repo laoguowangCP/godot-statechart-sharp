@@ -47,7 +47,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                     break;
             }
 
-            ProcessMode = Node.ProcessModeEnum.Disabled;
+            ProcessMode = ProcessModeEnum.Disabled;
         }
 
         public void Init(StateChart stateChart, State parentState = null)
