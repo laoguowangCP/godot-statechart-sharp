@@ -35,7 +35,6 @@ script = ExtResource("3_p5p63")
 [node name="CtoD" type="Node" parent="StateChart/Root_p/Top_c/StateA_c/StateC" node_paths=PackedStringArray("toState")]
 script = ExtResource("4_jk6v3")
 toState = NodePath("../../StateD")
-transitionMode = 4
 
 [node name="StateD" type="Node" parent="StateChart/Root_p/Top_c/StateA_c"]
 script = ExtResource("3_p5p63")
@@ -44,12 +43,10 @@ stateMode = 1
 [node name="DtoE" type="Node" parent="StateChart/Root_p/Top_c/StateA_c/StateD" node_paths=PackedStringArray("toState")]
 script = ExtResource("4_jk6v3")
 toState = NodePath("../../../StateB_p/StateE")
-transitionMode = 4
 
 [node name="AtoB" type="Node" parent="StateChart/Root_p/Top_c/StateA_c" node_paths=PackedStringArray("toState")]
 script = ExtResource("4_jk6v3")
 toState = NodePath("../../StateB_p")
-transitionMode = 4
 
 [node name="StateB_p" type="Node" parent="StateChart/Root_p/Top_c"]
 script = ExtResource("3_p5p63")
@@ -61,7 +58,6 @@ script = ExtResource("3_p5p63")
 [node name="EtoA" type="Node" parent="StateChart/Root_p/Top_c/StateB_p/StateE" node_paths=PackedStringArray("toState")]
 script = ExtResource("4_jk6v3")
 toState = NodePath("../../../StateA_c")
-transitionMode = 4
 
 [node name="StateF" type="Node" parent="StateChart/Root_p/Top_c/StateB_p"]
 script = ExtResource("3_p5p63")

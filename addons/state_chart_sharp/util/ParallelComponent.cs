@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
-    public class ParallelStateComponent : StateComponent
+    public class ParallelComponent : StateComponent
     {
         protected List<State> substates;
-        public ParallelStateComponent(State state) : base(state)
+        public ParallelComponent(State state) : base(state)
 		{
             // Initialize substate list
             substates = new List<State>();
@@ -26,7 +26,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 				else if (child is Transition t)
 				{
 					t.Init(state);
-					GetTransitions(t.GetTransitionMode()).Add(t);
+					// GetTransitions(t.GetTransitionMode()).Add(t);
 				}
 				else
 				{

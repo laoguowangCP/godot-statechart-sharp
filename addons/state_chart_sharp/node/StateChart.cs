@@ -6,6 +6,20 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     [GlobalClass, Icon("res://addons/state_chart_sharp/icon/StateChart.svg")]
     public partial class StateChart : Node
     {
+        #region Preset EventName
+
+        readonly StringName process = "process";
+        readonly StringName beforeProcess = "before_process";
+        readonly StringName physicsProcess = "physics_process";
+        readonly StringName beforePhysicsProcess = "before_physics_process";
+        readonly StringName input = "input";
+        readonly StringName beforeInput = "before_input";
+        readonly StringName unhandledInput = "unhandled_input";
+        readonly StringName beforeUnhandledInput = "before_unhandled_input";
+
+
+        #endregion
+
         protected State _rootState = null;
         // State chart should not be triggered while running
         private bool isRunning;
@@ -42,8 +56,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             
             isRunning = true;
 
-            _rootState.SubstateTransit(TransitionModeEnum.Process);
-            _rootState.StateProcess(delta);
+            _rootState.SubstateTransit(beforeProcess);
+            _rootState.SubstateTransit(process);
             
             isRunning = false;
         }
@@ -58,8 +72,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             
             isRunning = true;
 
-            _rootState.SubstateTransit(TransitionModeEnum.PhysicsProcess);
-            _rootState.StatePhysicsProcess(delta);
+            _rootState.SubstateTransit(beforePhysicsProcess);
+            _rootState.SubstateTransit(physicsProcess);
 
             isRunning = false;
         }
@@ -74,8 +88,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             
             isRunning = true;
 
-            _rootState.SubstateTransit(TransitionModeEnum.Input);
-            _rootState.StateInput(@event);
+            _rootState.SubstateTransit(beforeInput);
+            _rootState.SubstateTransit(input);
 
             isRunning = false;
         }
@@ -90,13 +104,13 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             
             isRunning = true;
 
-            _rootState.SubstateTransit(TransitionModeEnum.UnhandledInput);
-            _rootState.StateUnhandledInput(@event);
+            _rootState.SubstateTransit(beforeUnhandledInput);
+            _rootState.SubstateTransit(unhandledInput);
 
             isRunning = false;
         }
 
-        public void Step()
+        public void Step(StringName eventName = null)
         {
             if (isRunning)
             {
@@ -106,7 +120,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             
             isRunning = true;
 
-            _rootState.SubstateTransit(TransitionModeEnum.Step);
+            _rootState.SubstateTransit(eventName);
 
             isRunning = false;
         }

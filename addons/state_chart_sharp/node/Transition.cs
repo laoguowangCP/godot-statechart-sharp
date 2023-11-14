@@ -21,10 +21,12 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         /// <summary>
         /// Time on which the transition is checked.
         /// </summary>
-        [Export] protected TransitionModeEnum transitionMode = TransitionModeEnum.Process;
-        // protected StateNode fromState;
+        [Export] protected StringName transitEvent;
+        [Export] protected bool isInstant = false;
         [Signal] public delegate void TransitionCheckEventHandler(Transition transition);
         private bool _isChecked;
+        private InputEvent _inputEvent;
+        private double _deltaTime;
         // private State _siblingFromState = null;
 
         public void Init(State parent)
@@ -42,12 +44,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 GD.PushWarning(Name, ": transition needs an assigned 'toState'.");
                 return;
             }
-
-            if (fromState.StateLevel < toState.StateLevel)
-            {
-                GD.PushWarning(Name, ": fromState should be deeper than toState.");
-                return;
-            }
         }
         
         /// <summary>
@@ -58,8 +54,26 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             _isChecked = isChecked;
         }
 
-        public bool Check()
+        public double GetDeltaTime()
         {
+            return _deltaTime;
+        }
+
+        public InputEvent GetInputEvent()
+        {
+            return _inputEvent;
+        }
+
+        public bool IsInstant()
+        {
+            return isInstant;
+        }
+
+        public bool Check(double deltaTime = 0.0, InputEvent inputEvent = null)
+        {
+            _deltaTime = deltaTime;
+            _inputEvent = inputEvent;
+
             if (fromState.ParentState is null || toState is null)
             {
                 return false;
@@ -82,62 +96,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             return toState;
         }
 
-        /*
-        public bool CheckWithTransit(State parentState)
+        public StringName GetTransitionEvent()
         {
-            if (fromState.ParentState is null || toState is null)
-            {
-                return false;
-            }
-
-            // Transition condition is not met in default.
-            _isChecked = false;
-            EmitSignal(SignalName.TransitionCheck, this);
-
-            currentSubstate.StateExit();
-            currentSubstate = t.GetToState();
-            currentSubstate.StateEnter(mode);
-
-            return _isChecked;
-        }
-
-        protected bool Transit(State from, State to)
-        {
-            if (from.StateChart != to.StateChart)
-            {
-                GD.PushWarning("Target state must be in same statechart");
-                return false;
-            }
-
-            while (from.ParentState != to.ParentState)
-            {
-                if (from.StateLevel > to.StateLevel)
-                {
-                    from = from.ParentState;
-                }
-                else // from.StateLevel <= to.StateLevel
-                {
-                    return false;
-                }
-            }
-
-            // from.ParentState == to.ParentState
-            if (from.ParentState is CompondState)
-            {
-                var innnerMostParent = from.ParentState as CompondState;
-            }
-            else
-            {
-                GD.PushWarning("Transition should happens under Compond State");
-                return false;
-            }
-
-            return true;
-        }*/
-
-        public TransitionModeEnum GetTransitionMode()
-        {
-            return transitionMode;
+            return transitEvent;
         }
     }
 }

@@ -19,15 +19,10 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         [Signal] public delegate void EnterEventHandler();
         [Signal] public delegate void ExitEventHandler();
-        [Signal] public delegate void ProcessEventHandler(double delta);
-        [Signal] public delegate void PhysicsProcessEventHandler(double delta);
-        [Signal] public delegate void InputEventHandler(InputEvent @event);
-        [Signal] public delegate void UnhandledInputEventHandler(InputEvent @event);
         
         #endregion
 
         [Export] protected StateModeEnum stateMode = StateModeEnum.Compond;
-        [Export] protected bool isInstant = false;
         protected StateComponent stateComponent;
 
         public StateChart StateChart { get; protected set; }
@@ -40,10 +35,10 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             switch (stateMode)
             {
                 case StateModeEnum.Compond:
-                    stateComponent = new CompondStateComponent(this);
+                    stateComponent = new CompondComponent(this);
                     break;
                 case StateModeEnum.Parallel:
-                    stateComponent = new ParallelStateComponent(this);
+                    stateComponent = new ParallelComponent(this);
                     break;
             }
 
@@ -79,12 +74,10 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             return stateMode;
         }
 
-        public void SubstateTransit(TransitionModeEnum mode, State fromState = null, State toState = null, bool recursive = true)
+        public void SubstateTransit(StringName eventName, State fromState = null, State toState = null, bool recursive = true)
         {
-            stateComponent.SubstateTransit(mode, fromState, toState, recursive);
+            stateComponent.SubstateTransit(eventName, fromState, toState, recursive);
         }
-
-        public bool IsInstant() { return isInstant; }
 
         public void StateEnter()
         {
@@ -99,26 +92,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         public void StateExit()
         {
             stateComponent.StateExit();
-        }
-
-        public void StateInput(InputEvent @event)
-        {
-            stateComponent.StateInput(@event);
-        }
-
-        public void StateUnhandledInput(InputEvent @event)
-        {
-            stateComponent.StateUnhandledInput(@event);
-        }
-
-        public void StateProcess(double delta)
-        {
-            stateComponent.StateProcess(delta);
-        }
-
-        public void StatePhysicsProcess(double delta)
-        {
-            stateComponent.StatePhysicsProcess(delta);
         }
     }
 }

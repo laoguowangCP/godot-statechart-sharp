@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
-    public class CompondStateComponent : StateComponent
+    public class CompondComponent : StateComponent
     {
         protected List<State> substates;
         protected State currentSubstate = null;
         protected State defaultSubstate = null;
 
-        public CompondStateComponent(State state) : base(state)
+        public CompondComponent(State state) : base(state)
         {
             // Initialize substate list
             substates = new List<State>();
@@ -30,7 +30,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 else if (child is Transition t)
                 {
                     t.Init(state);
-                    GetTransitions(t.GetTransitionMode()).Add(t);
+                    // GetTransitions(t.GetTransitionMode()).Add(t);
                 }
                 else
 				{
