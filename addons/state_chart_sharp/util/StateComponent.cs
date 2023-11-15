@@ -47,24 +47,5 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         }
 
         public virtual void Init(StateChart stateChart, State parentState) {}
-
-        public virtual void SubstateTransit(TransitionModeEnum mode, State fromState, State toState, bool recursive) {}
-        
-        public virtual void InstantTransit(TransitionModeEnum mode) {}
-
-        public virtual void StateEnter() {}
-
-        public virtual void StateEnter(TransitionModeEnum mode, bool checkInstant) {}
-        
-        public virtual void StateExit() {}
-
-        public virtual void StateInput(InputEvent @event) {}
-
-        public virtual void StateUnhandledInput(InputEvent @event) {}
-
-        public virtual void StateProcess(double delta) {}
-
-        public virtual void StatePhysicsProcess(double delta) {}
-
     }
 }

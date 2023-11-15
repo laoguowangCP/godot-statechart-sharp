@@ -40,8 +40,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             }
 
             _rootState = child as State;
-            _rootState.Init(this);
-            _rootState.StateEnter();
+            // TODO: initiate statechart
 
             isRunning = false;
         }

@@ -74,24 +74,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             return stateMode;
         }
 
-        public void SubstateTransit(StringName eventName, State fromState = null, State toState = null, bool recursive = true)
+        public void SubstateTransit(StringName eventName, double delta = 0.0, InputEvent @event = null)
         {
-            stateComponent.SubstateTransit(eventName, fromState, toState, recursive);
-        }
-
-        public void StateEnter()
-        {
-            stateComponent.StateEnter();
-        }
-
-        public void StateEnter(TransitionModeEnum mode, bool checkInstant = true)
-        {
-            stateComponent.StateEnter(mode, checkInstant);
-        }
-
-        public void StateExit()
-        {
-            stateComponent.StateExit();
+            
         }
     }
 }
