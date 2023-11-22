@@ -26,8 +26,9 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         protected StateComponent stateComponent;
 
         public StateChart StateChart { get; protected set; }
-        public int StateLevel { get; protected set; }
         public State ParentState { get; protected set; }
+        public List<State> Substates { get; protected set; }
+        public bool isActive;
 
         public override void _Ready()
         {
@@ -45,23 +46,21 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             ProcessMode = ProcessModeEnum.Disabled;
         }
 
-        public void Init(StateChart stateChart, State parentState = null)
+        public void Init(StateChart stateChart, int stateId)
         {
             // stateComponent.Init(stateChart, parentState);
             StateChart = stateChart;
-            ParentState = parentState;
-
-            // Set state level, depth in state chart
-            if (parentState is null)
+            Node parent = GetParent<Node>();
+            if (parent is State)
             {
-                StateLevel = 0;
+                ParentState = parent as State;
             }
             else
             {
-                StateLevel = parentState.StateLevel + 1;
+                ParentState = null;
             }
 
-            stateComponent.Init(stateChart, parentState);
+            isActive = false;
         }
 
         public List<Transition> GetTransitions(TransitionModeEnum mode)
