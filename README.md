@@ -25,13 +25,14 @@
   - remove "isInstant" flag
   - remove `SubstateTransit`
   - eliminate loop function (StateProcess/StateInput etc.)
-  - store Transitions with `Dictionary<StringName, List<Transition>>` , "_" string as "NULL" event.
-  - SCXML standard: enter/transition use document order, exit use reversed document order
+  - store Transitions with `Dictionary<StringName, List<Transition>>` , "_" as eventless.
+  - enter/transition use document order, exit use reversed document order
   - add Save/Load method
   
 - Transition:
 
-  - add "isInstant" flag
+  - add "isAuto" flag (eventless, check on enter)
   - replace "transitionMode" with "event" (`StringName`)
+  - multiple targets: check targets have parallel least-common-ancestor
 
 - Component: shorten class name (parallelComponent/compondComponent)
