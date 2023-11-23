@@ -23,77 +23,75 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         #endregion
 
         // State chart should not be triggered while running
-        private bool _running;
-        private double _delta;
-        public double GetDelta() => _delta;
-        private InputEvent _inputEvent;
-        public InputEvent GetInputEvent() => _inputEvent;
-        private List<State> _states;
-        private List<State> _activeStates;
-        private List<State> _prevActiveStates;
-        private Stack<State> _iterStack;
-        private Queue<StringName> _queuedEvents;
+        protected bool IsRunning { get; set; }
+        public double Delta { get; protected set; }
+        public InputEvent InputEvent { get; protected set; }
+        protected List<State> States { get; set; }
+        protected List<State> ActiveStates { get; set; }
+        protected List<State> PrevActiveStates { get; set; }
+        protected Stack<State> IterStack { get; set; }
+        protected Queue<StringName> QueuedEvents { get; set; }
         
 
         public override void _Ready()
         {
+            // Initiate statechart
+            IsRunning = false;
+
+            States = new List<State>();
+            ActiveStates = new List<State>();
+            PrevActiveStates = new List<State>();
+            IterStack = new Stack<State>();
+            
             Node child = GetChild<Node>(0);
             if (child is null || child is not State)
             {
                 GD.PushError("Require 1 State as child.");
                 return;
             }
-
-            // TODO: initiate statechart
-            _running = false;
-
-            _states = new List<State>();
-            _activeStates = new List<State>();
-            _iterStack = new Stack<State>();
-
             State root = child as State;
-            _iterStack.Push(root);
-            while (_iterStack.Count > 0)
+            IterStack.Push(root);
+            while (IterStack.Count > 0)
             {
-                State top = _iterStack.Peek();
-                _states.Add(top);
-                top.Init(this, _states.Count-1);
+                // Init state
+                State top = IterStack.Peek();
+                States.Add(top);
+                top.Init(this, States.Count-1);
 
-                // update _activeStates
+                // Update ActiveStates
                 State topParent = top.ParentState;
                 if (topParent is null)
                 {
-                    // root is active
-                    top.isActive = true;
-                    _activeStates.Add(top);
+                    // Root is active
+                    top.IsActive = true;
+                    ActiveStates.Add(top);
                 }
-                else if (topParent.isActive)
+                else if (topParent.IsActive)
                 {
-                    if (topParent.GetStateMode() == StateModeEnum.Compond)
+                    if (topParent.StateMode == StateModeEnum.Compond)
                     {
-                        // for compound parent, first substate is active
+                        // For active compound, first substate is active
                         if (topParent.Substates.Count > 0 && top == topParent.Substates[0])
                         {
-                            top.isActive = true;
-                            _activeStates.Add(top);
+                            top.IsActive = true;
+                            ActiveStates.Add(top);
                         }
                     }
-                    else if (topParent.GetStateMode() == StateModeEnum.Parallel)
+                    else if (topParent.StateMode == StateModeEnum.Parallel)
                     {
-                        // for parallel parent, all substate is active
-                        top.isActive = true;
-                        _activeStates.Add(top);
+                        // For active parallel, all substate is active
+                        top.IsActive = true;
+                        ActiveStates.Add(top);
                     }
                 }
                 
-
                 // Iterate states
                 List<State> substates = top.Substates;
                 if (substates.Count > 0)
                 {
                     for (int i=substates.Count-1; i>0; i--)
                     {
-                        _iterStack.Push(substates[i]);
+                        IterStack.Push(substates[i]);
                     }
                 }
                 else // substates.Count == 0, Pop
@@ -101,60 +99,68 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                     State lastPop;
                     do
                     {
-                        lastPop = _iterStack.Pop();
-                    } while (_iterStack.Count > 0 && lastPop.ParentState != _iterStack.Peek());
+                        lastPop = IterStack.Pop();
+                    } while (IterStack.Count > 0 && lastPop.ParentState != IterStack.Peek());
                 }
             }
-
-            // Backup _activeStates
-            _prevActiveStates = new List<State>(_activeStates);
         }
 
         public override void _Process(double delta)
         {
-            _delta = delta;
+            Delta = delta;
             Step(BEFORE_PROCESS);
             Step(PROCESS);
         }
 
         public override void _PhysicsProcess(double delta)
         {
-            _delta = delta;
+            Delta = delta;
             Step(BEFORE_PHYSICS_PROCESS);
             Step(PHYSICS_PROCESS);
         }
 
         public override void _Input(InputEvent @event)
         {
-            _inputEvent = @event;
+            InputEvent = @event;
             Step(BEFORE_INPUT);
             Step(INPUT);
         }
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            _inputEvent = @event;
+            InputEvent = @event;
             Step(BEFORE_UNHANDLED_INPUT);
             Step(UNHANDLED_INPUT);
         }
 
         public void Step(StringName transEvent)
         {
-            _queuedEvents.Enqueue(transEvent);
-            if (_running)
+            QueuedEvents.Enqueue(transEvent);
+            if (IsRunning)
             {
                 // GD.PushWarning("State chart triggered when running.");
                 return;
             }
             
-            _running = true;
+            IsRunning = true;
 
-            while (_queuedEvents.Count > 0)
+            while (QueuedEvents.Count > 0)
             {
-                StringName eventName = _queuedEvents.Dequeue();
+                StringName eventName = QueuedEvents.Dequeue();
+                IterStack.Clear();
+
+                // Backup ActiveStates
+                PrevActiveStates.Clear();
+                PrevActiveStates.AddRange(ActiveStates);
+
+                // TODO: do Transition
+                
+                // TODO: after Transition, handle Exit & Enter
+                
+                
             }
 
-            _running = false;
+            IsRunning = false;
         }
     }
 }

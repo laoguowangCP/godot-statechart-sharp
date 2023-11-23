@@ -22,27 +22,19 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         
         #endregion
 
-        [Export] protected StateModeEnum stateMode = StateModeEnum.Compond;
-        protected StateComponent stateComponent;
-
+        [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
+        
         public StateChart StateChart { get; protected set; }
         public State ParentState { get; protected set; }
+        public int StateId { get; protected set; }
         public List<State> Substates { get; protected set; }
-        public bool isActive;
+        public List<Transition> Transitions { get; protected set; }
+        public bool IsActive { get; set; }
 
         public override void _Ready()
         {
             // Initialize state component
-            switch (stateMode)
-            {
-                case StateModeEnum.Compond:
-                    stateComponent = new CompondComponent(this);
-                    break;
-                case StateModeEnum.Parallel:
-                    stateComponent = new ParallelComponent(this);
-                    break;
-            }
-
+            Substates = new List<State>();
             ProcessMode = ProcessModeEnum.Disabled;
         }
 
@@ -51,31 +43,20 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             // stateComponent.Init(stateChart, parentState);
             StateChart = stateChart;
             Node parent = GetParent<Node>();
-            if (parent is State)
-            {
-                ParentState = parent as State;
-            }
-            else
+            if (parent is null)
             {
                 ParentState = null;
             }
+            else if (parent is State)
+            {
+                ParentState = parent as State;
+            }
 
-            isActive = false;
-        }
+            // TODO: get Substates
+            // TODO: get Transitions
 
-        public List<Transition> GetTransitions(TransitionModeEnum mode)
-        {
-            return stateComponent.GetTransitions(mode);
-        }
-
-        public StateModeEnum GetStateMode()
-        {
-            return stateMode;
-        }
-
-        public void SubstateTransit(StringName eventName, double delta = 0.0, InputEvent @event = null)
-        {
-            
+            StateId = stateId;
+            IsActive = false;
         }
     }
 }
