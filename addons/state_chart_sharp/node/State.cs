@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LGWCP.GodotPlugin.StateChartSharp
 {
@@ -26,6 +27,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         
         public StateChart StateChart { get; protected set; }
         public State ParentState { get; protected set; }
+        public State CurrentState { get; set; }
         public int StateId { get; protected set; }
         public List<State> Substates { get; protected set; }
         public List<Transition> Transitions { get; protected set; }
@@ -40,8 +42,14 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public void Init(StateChart stateChart, int stateId)
         {
+            #if DEBUG
+            GD.Print("State Init: ", Name);
+            #endif
+
             // stateComponent.Init(stateChart, parentState);
             StateChart = stateChart;
+            StateId = stateId;
+            IsActive = false;
             Node parent = GetParent<Node>();
             if (parent is null)
             {
@@ -52,11 +60,23 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 ParentState = parent as State;
             }
 
-            // TODO: get Substates
-            // TODO: get Transitions
+            // TODO: get Substates & Transitions
+            foreach(Node child in GetChildren())
+            {
+                if (child is State s)
+                {
+                    Substates.Add(s);
+                }
+                else if (child is Transition t)
+                {
+                    Transitions.Add(t);
+                }
+            }
 
-            StateId = stateId;
-            IsActive = false;
+            if (Substates.Count > 0)
+            {
+                CurrentState = Substates[0];
+            }
         }
     }
 }

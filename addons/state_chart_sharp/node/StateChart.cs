@@ -89,7 +89,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 List<State> substates = top.Substates;
                 if (substates.Count > 0)
                 {
-                    for (int i=substates.Count-1; i>0; i--)
+                    // Reversed push
+                    for (int i=substates.Count-1; i>=0; i--)
                     {
                         IterStack.Push(substates[i]);
                     }
@@ -100,9 +101,22 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                     do
                     {
                         lastPop = IterStack.Pop();
-                    } while (IterStack.Count > 0 && lastPop.ParentState != IterStack.Peek());
+                    } while (IterStack.Count > 0 && lastPop.ParentState == IterStack.Peek());
                 }
             }
+
+            #if DEBUG
+            GD.Print("-------- States --------");
+            foreach(State s in States)
+            {
+                GD.Print(s.Name);
+            }
+            GD.Print("-------- Initial ActiveStates --------");
+            foreach(State s in ActiveStates)
+            {
+                GD.Print(s.Name);
+            }
+            #endif
         }
 
         public override void _Process(double delta)
@@ -135,6 +149,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public void Step(StringName transEvent)
         {
+            return;
             QueuedEvents.Enqueue(transEvent);
             if (IsRunning)
             {

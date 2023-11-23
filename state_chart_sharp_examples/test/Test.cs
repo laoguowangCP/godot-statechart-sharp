@@ -17,7 +17,6 @@ public partial class Test : Node2D
 		if (Input.IsActionJustPressed("Jump"))
 		{
             GD.Print("---- StateChart Step ----");
-			stateChart.Step();
 		}
 	}
 
