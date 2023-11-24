@@ -68,24 +68,24 @@ public partial class Test : Node2D
 	public void CheckAtoB(Transition t)
 	{
 		GD.Print("Check AtoB");
-		t.SetChecked(false);
+		// t.SetChecked(false);
 	}
 
 	public void CheckCtoD(Transition t)
 	{
 		GD.Print("Check CtoD");
-		t.SetChecked(true);
+		// t.SetChecked(true);
 	}
 
 	public void CheckDtoE(Transition t)
 	{
 		GD.Print("Check DtoE");
-		t.SetChecked(true);
+		// t.SetChecked(true);
 	}
 
 	public void CheckEtoA(Transition t)
 	{
 		GD.Print("Check EtoA");
-		t.SetChecked(true);
+		// t.SetChecked(true);
 	}
 }

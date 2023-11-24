@@ -37,6 +37,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             // Initialize state component
             Substates = new List<State>();
+            Transitions = new List<Transition>();
             ProcessMode = ProcessModeEnum.Disabled;
         }
 
@@ -69,6 +70,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 }
                 else if (child is Transition t)
                 {
+                    t.Init(this);
                     Transitions.Add(t);
                 }
             }

@@ -11,18 +11,17 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         #region Preset EventName
 
         readonly StringName PROCESS = "process";
-        readonly StringName BEFORE_PROCESS = "before_process";
+        readonly StringName PRE_PROCESS = "pre_process";
         readonly StringName PHYSICS_PROCESS = "physics_process";
-        readonly StringName BEFORE_PHYSICS_PROCESS = "before_physics_process";
+        readonly StringName PRE_PHYSICS_PROCESS = "pre_physics_process";
         readonly StringName INPUT = "input";
-        readonly StringName BEFORE_INPUT = "before_input";
+        readonly StringName PRE_INPUT = "pre_input";
         readonly StringName UNHANDLED_INPUT = "unhandled_input";
-        readonly StringName BEFORE_UNHANDLED_INPUT = "before_unhandled_input";
+        readonly StringName PRE_UNHANDLED_INPUT = "pre_unhandled_input";
 
 
         #endregion
 
-        // State chart should not be triggered while running
         protected bool IsRunning { get; set; }
         public double Delta { get; protected set; }
         public InputEvent GameInput { get; protected set; }
@@ -75,6 +74,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                         {
                             top.IsActive = true;
                             ActiveStates.Add(top);
+                            topParent.CurrentState = top;
                         }
                     }
                     else if (topParent.StateMode == StateModeEnum.Parallel)
@@ -117,43 +117,19 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 GD.Print(s.Name);
             }
             #endif
-        }
 
-        public override void _Process(double delta)
-        {
-            Delta = delta;
-            Step(BEFORE_PROCESS);
-            Step(PROCESS);
-        }
-
-        public override void _PhysicsProcess(double delta)
-        {
-            Delta = delta;
-            Step(BEFORE_PHYSICS_PROCESS);
-            Step(PHYSICS_PROCESS);
-        }
-
-        public override void _Input(InputEvent @event)
-        {
-            GameInput = @event;
-            Step(BEFORE_INPUT);
-            Step(INPUT);
-        }
-
-        public override void _UnhandledInput(InputEvent @event)
-        {
-            GameInput = @event;
-            Step(BEFORE_UNHANDLED_INPUT);
-            Step(UNHANDLED_INPUT);
+            // Enter active states
+            foreach (State s in ActiveStates)
+            {
+                s.EmitSignal(State.SignalName.Enter);
+            }
         }
 
         public void Step(StringName transitionEvent)
         {
-            return;
             QueuedEvents.Enqueue(transitionEvent);
             if (IsRunning)
             {
-                // GD.PushWarning("State chart triggered when running.");
                 return;
             }
             
@@ -169,13 +145,58 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 PrevActiveStates.AddRange(ActiveStates);
 
                 // TODO: do Transition
+                IterStack.Push(ActiveStates[0]);
+                while (IterStack.Count > 0)
+                {
+                    // Iterate Transitions
+                    State top = IterStack.Peek();
+                    foreach(Transition t in top.Transitions)
+                    {
+                        t.Check(); // Check guard
+                        /*
+                            If t available:
+                                critic = t.LCCA
+                                IterStack.Pop() until critic
+                                List<State> enterStates = t.EnterStates
+                                IterStack.Push()
+                                break
+                        */
+                    }
+                }
                 
                 // TODO: after Transition, handle Exit & Enter
-                
                 
             }
 
             IsRunning = false;
+        }
+
+        public override void _Process(double delta)
+        {
+            Delta = delta;
+            Step(PRE_PROCESS);
+            Step(PROCESS);
+        }
+
+        public override void _PhysicsProcess(double delta)
+        {
+            Delta = delta;
+            Step(PRE_PHYSICS_PROCESS);
+            Step(PHYSICS_PROCESS);
+        }
+
+        public override void _Input(InputEvent @event)
+        {
+            GameInput = @event;
+            Step(PRE_INPUT);
+            Step(INPUT);
+        }
+
+        public override void _UnhandledInput(InputEvent @event)
+        {
+            GameInput = @event;
+            Step(PRE_UNHANDLED_INPUT);
+            Step(UNHANDLED_INPUT);
         }
     }
 }

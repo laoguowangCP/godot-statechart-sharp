@@ -1,13 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://dfbo3gwcydo12"]
+[gd_scene load_steps=6 format=3 uid="uid://dfbo3gwcydo12"]
 
 [ext_resource type="Script" path="res://state_chart_sharp_examples/test/Test.cs" id="1_41un4"]
 [ext_resource type="Script" path="res://addons/state_chart_sharp/node/StateChart.cs" id="2_q1613"]
 [ext_resource type="Script" path="res://addons/state_chart_sharp/node/State.cs" id="3_p5p63"]
+[ext_resource type="Script" path="res://addons/state_chart_sharp/node/Transition.cs" id="4_o48pw"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kopcr"]
 font_size = 32
 
-[node name="test" type="Node2D"]
+[node name="Test" type="Node2D"]
 script = ExtResource("1_41un4")
 
 [node name="StateChart" type="Node" parent="."]
@@ -23,11 +24,35 @@ script = ExtResource("3_p5p63")
 [node name="B" type="Node" parent="StateChart/Root/A"]
 script = ExtResource("3_p5p63")
 
+[node name="Transition" type="Node" parent="StateChart/Root/A/B" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o48pw")
+TargetStatesArray = [NodePath("../../C"), NodePath("../../../D")]
+
+[node name="Transition2" type="Node" parent="StateChart/Root/A/B" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o48pw")
+TargetStatesArray = []
+
+[node name="Transition3" type="Node" parent="StateChart/Root/A/B" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o48pw")
+TargetStatesArray = []
+
 [node name="C" type="Node" parent="StateChart/Root/A"]
 script = ExtResource("3_p5p63")
 
+[node name="Transition" type="Node" parent="StateChart/Root/A/C" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o48pw")
+TargetStatesArray = []
+
+[node name="Transition" type="Node" parent="StateChart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o48pw")
+TargetStatesArray = []
+
 [node name="D" type="Node" parent="StateChart/Root"]
 script = ExtResource("3_p5p63")
+
+[node name="Transition" type="Node" parent="StateChart/Root/D" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o48pw")
+TargetStatesArray = []
 
 [node name="Camera2D" type="Camera2D" parent="."]
 

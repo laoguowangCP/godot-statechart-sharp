@@ -27,11 +27,39 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         
         #endregion
 
+        #region define properties
+
         // If transitEvent is null, transition is auto (checked on state enter)
         [Export] public StringName TransitionEvent { get; protected set; }
-        [Export] protected Array<Transition> TargetStatesArray;
-        public List<Transition> TargetStates { get; protected set; }
+        [Export] protected Array<State> TargetStatesArray;
+        protected List<State> TargetStates { get; set; }
         public State SourceState { get; protected set; }
+        public State _lccaState;
+        public State LccaState
+        {
+            get
+            {
+                if (_lccaState is null)
+                {
+                    ComputeTransition();
+                }
+                return _lccaState;
+            }
+            protected set { _lccaState = value; }
+        }
+        public List<State> _enterStates;
+        public List<State> EnterStates
+        {
+            get
+            {
+                if (_enterStates.Count == 0)
+                {
+                    ComputeTransition();
+                }
+                return _enterStates;
+            }
+            protected set { _enterStates = value; }
+        }
         public StateChart HostStateChart { get; protected set; }
         public bool IsChecked { get; set; }
         public double Delta
@@ -42,6 +70,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             get { return HostStateChart.GameInput; }
         }
+
+        #endregion
 
         public void Init(State sourceState)
         {
@@ -54,38 +84,26 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 return;
             }
 
-            // TODO: check is this available
-            TargetStates = new List<Transition>(TargetStatesArray);
+            // Convert GD collection to CS collection
+            TargetStates = new List<State>(TargetStatesArray);
+            EnterStates = new List<State>();
         }
 
         public bool Check()
         {
-
-            if (SourceState.ParentState is null || TargetState is null)
-            {
-                return false;
-            }
-            
-            if (SourceState.HostStateChart != TargetState.StateChart)
-            {
-                GD.PushWarning(Name, ": target state must be in same statechart");
-                return false;
-            }
-
             // Transition condition is not met in default.
             IsChecked = false;
             EmitSignal(SignalName.Guard, this);
             return IsChecked;
         }
 
-        public State GetToState()
+        protected void ComputeTransition()
         {
-            return TargetState;
-        }
-
-        public StringName GetTransitionEvent()
-        {
-            return TransitionEvent;
+            /*
+                TODO:
+                    1. Find LCCA(Least Common Compound Ancestor) of source and targets.
+                    2. Record path from LCCA to targets in EnterStates, order: parent first, then reversed children
+            */
         }
     }
 }
