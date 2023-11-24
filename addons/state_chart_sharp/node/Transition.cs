@@ -32,20 +32,21 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         [Export] protected Array<Transition> TargetStatesArray;
         public List<Transition> TargetStates { get; protected set; }
         public State SourceState { get; protected set; }
-        public StateChart StateChart { get; protected set; }
+        public StateChart HostStateChart { get; protected set; }
         public bool IsChecked { get; set; }
         public double Delta
         {
-            get { return StateChart.Delta; }
+            get { return HostStateChart.Delta; }
         }
         public InputEvent GameInput
         {
-            get { return StateChart.GameInput; }
+            get { return HostStateChart.GameInput; }
         }
 
         public void Init(State sourceState)
         {
             SourceState = sourceState;
+            HostStateChart = SourceState.HostStateChart;
 
             if (SourceState.ParentState is null)
             {
@@ -65,7 +66,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 return false;
             }
             
-            if (SourceState.StateChart != TargetState.StateChart)
+            if (SourceState.HostStateChart != TargetState.StateChart)
             {
                 GD.PushWarning(Name, ": target state must be in same statechart");
                 return false;

@@ -25,7 +25,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
         
-        public StateChart StateChart { get; protected set; }
+        public StateChart HostStateChart { get; protected set; }
         public State ParentState { get; protected set; }
         public State CurrentState { get; set; }
         public int StateId { get; protected set; }
@@ -47,7 +47,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             #endif
 
             // stateComponent.Init(stateChart, parentState);
-            StateChart = stateChart;
+            HostStateChart = stateChart;
             StateId = stateId;
             IsActive = false;
             Node parent = GetParent<Node>();
