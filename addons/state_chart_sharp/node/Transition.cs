@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using Godot.Collections;
 
 
 namespace LGWCP.GodotPlugin.StateChartSharp
@@ -16,89 +17,74 @@ namespace LGWCP.GodotPlugin.StateChartSharp
     [GlobalClass, Icon("res://addons/state_chart_sharp/icon/Transition.svg")]
     public partial class Transition : Node
     {
-        protected State fromState;
-        [Export] protected State toState;
         /// <summary>
         /// Time on which the transition is checked.
         /// </summary>
-        [Export] protected StringName transitEvent;
-        [Export] protected bool isInstant = false;
-        [Signal] public delegate void TransitionCheckEventHandler(Transition transition);
-        private bool _isChecked;
-        private InputEvent _inputEvent;
-        private double _deltaTime;
-        // private State _siblingFromState = null;
 
-        public void Init(State parent)
+        #region define signals
+
+        [Signal] public delegate void GuardEventHandler(Transition t);
+        
+        #endregion
+
+        // If transitEvent is null, transition is auto (checked on state enter)
+        [Export] public StringName TransitionEvent { get; protected set; }
+        [Export] protected Array<Transition> TargetStatesArray;
+        public List<Transition> TargetStates { get; protected set; }
+        public State SourceState { get; protected set; }
+        public StateChart StateChart { get; protected set; }
+        public bool IsChecked { get; set; }
+        public double Delta
         {
-            fromState = parent;
+            get { return StateChart.Delta; }
+        }
+        public InputEvent GameInput
+        {
+            get { return StateChart.GameInput; }
+        }
 
-            if (fromState.ParentState is null)
+        public void Init(State sourceState)
+        {
+            SourceState = sourceState;
+
+            if (SourceState.ParentState is null)
             {
                 GD.PushWarning(Name, ": root state need no Transition.");
                 return;
             }
 
-            if (toState is null)
-            {
-                GD.PushWarning(Name, ": transition needs an assigned 'toState'.");
-                return;
-            }
-        }
-        
-        /// <summary>
-        /// Check whether the condition is met.
-        /// </summary>
-        public void SetChecked(bool isChecked)
-        {
-            _isChecked = isChecked;
+            // TODO: check is this available
+            TargetStates = new List<Transition>(TargetStatesArray);
         }
 
-        public double GetDeltaTime()
+        public bool Check()
         {
-            return _deltaTime;
-        }
 
-        public InputEvent GetInputEvent()
-        {
-            return _inputEvent;
-        }
-
-        public bool IsInstant()
-        {
-            return isInstant;
-        }
-
-        public bool Check(double deltaTime = 0.0, InputEvent inputEvent = null)
-        {
-            _deltaTime = deltaTime;
-            _inputEvent = inputEvent;
-
-            if (fromState.ParentState is null || toState is null)
+            if (SourceState.ParentState is null || TargetState is null)
             {
                 return false;
             }
             
-            if (fromState.StateChart != toState.StateChart)
+            if (SourceState.StateChart != TargetState.StateChart)
             {
                 GD.PushWarning(Name, ": target state must be in same statechart");
                 return false;
             }
 
             // Transition condition is not met in default.
-            _isChecked = false;
-            EmitSignal(SignalName.TransitionCheck, this);
-            return _isChecked;
+            IsChecked = false;
+            EmitSignal(SignalName.Guard, this);
+            return IsChecked;
         }
 
         public State GetToState()
         {
-            return toState;
+            return TargetState;
         }
 
         public StringName GetTransitionEvent()
         {
-            return transitEvent;
+            return TransitionEvent;
         }
     }
 }

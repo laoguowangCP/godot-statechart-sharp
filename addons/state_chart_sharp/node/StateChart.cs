@@ -25,7 +25,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         // State chart should not be triggered while running
         protected bool IsRunning { get; set; }
         public double Delta { get; protected set; }
-        public InputEvent InputEvent { get; protected set; }
+        public InputEvent GameInput { get; protected set; }
         protected List<State> States { get; set; }
         protected List<State> ActiveStates { get; set; }
         protected List<State> PrevActiveStates { get; set; }
@@ -135,22 +135,22 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void _Input(InputEvent @event)
         {
-            InputEvent = @event;
+            GameInput = @event;
             Step(BEFORE_INPUT);
             Step(INPUT);
         }
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            InputEvent = @event;
+            GameInput = @event;
             Step(BEFORE_UNHANDLED_INPUT);
             Step(UNHANDLED_INPUT);
         }
 
-        public void Step(StringName transEvent)
+        public void Step(StringName transitionEvent)
         {
             return;
-            QueuedEvents.Enqueue(transEvent);
+            QueuedEvents.Enqueue(transitionEvent);
             if (IsRunning)
             {
                 // GD.PushWarning("State chart triggered when running.");
@@ -161,7 +161,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
             while (QueuedEvents.Count > 0)
             {
-                StringName eventName = QueuedEvents.Dequeue();
+                StringName nextEvent = QueuedEvents.Dequeue();
                 IterStack.Clear();
 
                 // Backup ActiveStates
