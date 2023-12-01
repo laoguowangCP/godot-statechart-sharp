@@ -41,7 +41,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             {
                 if (_lccaState is null)
                 {
-                    ComputeTransition();
+                    FindLccaAndEnterStates();
                 }
                 return _lccaState;
             }
@@ -52,16 +52,16 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         {
             get
             {
-                if (_enterStates.Count == 0)
+                if (_enterStates is null)
                 {
-                    ComputeTransition();
+                    FindLccaAndEnterStates();
                 }
                 return _enterStates;
             }
             protected set { _enterStates = value; }
         }
         public StateChart HostStateChart { get; protected set; }
-        public bool IsChecked { get; set; }
+        public bool IsEnabled { get; set; }
         public double Delta
         {
             get { return HostStateChart.Delta; }
@@ -73,6 +73,12 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         #endregion
 
+        public override void _Ready()
+        {
+            // Convert GD collection to CS collection
+            TargetStates = new List<State>(TargetStatesArray);
+        }
+
         public void Init(State sourceState)
         {
             SourceState = sourceState;
@@ -83,27 +89,46 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 GD.PushWarning(Name, ": root state need no Transition.");
                 return;
             }
-
-            // Convert GD collection to CS collection
-            TargetStates = new List<State>(TargetStatesArray);
-            EnterStates = new List<State>();
         }
 
-        public bool Check()
+        public void Check()
         {
-            // Transition condition is not met in default.
-            IsChecked = false;
+            // Transition is enabled on default.
+            IsEnabled = true;
             EmitSignal(SignalName.Guard, this);
-            return IsChecked;
         }
 
-        protected void ComputeTransition()
+        protected void FindLccaAndEnterStates()
         {
+            // Init EnterStates
+            EnterStates = new List<State>();
+
             /*
                 TODO:
                     1. Find LCCA(Least Common Compound Ancestor) of source and targets.
                     2. Record path from LCCA to targets in EnterStates, order: parent first, then reversed children
             */
+            State iter = SourceState;
+            List<State> srcToRoot = new List<State>();
+            while (iter.ParentState != null)
+            {
+                iter = iter.ParentState;
+                srcToRoot.Add(iter);
+            }
+            
+            // Init LCCA as Root
+            LccaState = srcToRoot[srcToRoot.Count-1];
+            List<State> tgtToRoot = new List<State>();
+            foreach (State s in TargetStates)
+            {
+                tgtToRoot.Clear();
+                iter = s;
+                while (iter.ParentState != null)
+                {
+                    iter = iter.ParentState;
+                    tgtToRoot.Add(iter);
+                }
+            }
         }
     }
 }

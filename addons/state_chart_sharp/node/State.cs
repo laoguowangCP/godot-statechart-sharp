@@ -35,7 +35,6 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public override void _Ready()
         {
-            // Initialize state component
             Substates = new List<State>();
             Transitions = new List<Transition>();
             ProcessMode = ProcessModeEnum.Disabled;
