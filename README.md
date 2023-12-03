@@ -13,7 +13,7 @@
   - follow SCXML standard
   - add Save/Load feature
 
-- StateChart:
+- Statechart:
 
   - queue event when running
   - parse event, rather than process/input etc.

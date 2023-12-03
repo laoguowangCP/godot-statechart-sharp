@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LGWCP.GodotPlugin.StateChartSharp
+namespace LGWCP.GodotPlugin.StatechartSharp
 {
     
     public enum StateModeEnum : int
@@ -13,7 +13,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
         Parallel
     }
 
-    [GlobalClass, Icon("res://addons/state_chart_sharp/icon/State.svg")]
+    [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
     public partial class State : Node
     {
         #region define signals
@@ -25,7 +25,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
         
-        public StateChart HostStateChart { get; protected set; }
+        public Statechart HostStatechart { get; protected set; }
         public State ParentState { get; protected set; }
         public State CurrentState { get; set; }
         public int StateId { get; protected set; }
@@ -40,14 +40,14 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             ProcessMode = ProcessModeEnum.Disabled;
         }
 
-        public void Init(StateChart stateChart, int stateId)
+        public void Init(Statechart stateChart, int stateId)
         {
             #if DEBUG
             GD.Print("State Init: ", Name);
             #endif
 
             // stateComponent.Init(stateChart, parentState);
-            HostStateChart = stateChart;
+            HostStatechart = stateChart;
             StateId = stateId;
             IsActive = false;
             Node parent = GetParent<Node>();
@@ -69,7 +69,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 }
                 else if (child is Transition t)
                 {
-                    t.Init(this);
+                    // Init transition later
                     Transitions.Add(t);
                 }
             }

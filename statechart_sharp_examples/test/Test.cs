@@ -1,14 +1,14 @@
 using Godot;
-using LGWCP.GodotPlugin.StateChartSharp;
+using LGWCP.GodotPlugin.StatechartSharp;
 using System;
 
 public partial class Test : Node2D
 {
-	protected StateChart stateChart;
+	protected Statechart statechart;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		stateChart = GetNode<StateChart>("StateChart");
+		statechart = GetNode<Statechart>("Statechart");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -16,7 +16,7 @@ public partial class Test : Node2D
 	{
 		if (Input.IsActionJustPressed("Jump"))
 		{
-            GD.Print("---- StateChart Step ----");
+            GD.Print("---- Statechart Step ----");
 		}
 	}
 

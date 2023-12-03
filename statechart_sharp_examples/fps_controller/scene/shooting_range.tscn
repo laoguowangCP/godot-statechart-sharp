@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://koegmqcjeyfg"]
 
-[ext_resource type="PackedScene" uid="uid://wl437gp0h5fo" path="res://state_chart_sharp_examples/fps_controller/scene/player.tscn" id="1_0sgdp"]
+[ext_resource type="PackedScene" uid="uid://wl437gp0h5fo" path="res://statechart_sharp_examples/fps_controller/scene/player.tscn" id="1_0sgdp"]
 
 [node name="shooting_range" type="Node3D"]
 

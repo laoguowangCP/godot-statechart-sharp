@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c82wbu6xp0wjo"
-path="res://.godot/imported/StateChart.svg-05e4007c06c0e0d30cda97fe2109a633.ctex"
+path="res://.godot/imported/Statechart.svg-26997f68eb3238c9020ad257d34bde00.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/state_chart_sharp/icon/StateChart.svg"
-dest_files=["res://.godot/imported/StateChart.svg-05e4007c06c0e0d30cda97fe2109a633.ctex"]
+source_file="res://addons/statechart_sharp/icon/Statechart.svg"
+dest_files=["res://.godot/imported/Statechart.svg-26997f68eb3238c9020ad257d34bde00.ctex"]
 
 [params]
 

@@ -3,10 +3,10 @@ using Godot.Collections;
 using System;
 using System.Collections.Generic;
 
-namespace LGWCP.GodotPlugin.StateChartSharp
+namespace LGWCP.GodotPlugin.StatechartSharp
 {
-    [GlobalClass, Icon("res://addons/state_chart_sharp/icon/StateChart.svg")]
-    public partial class StateChart : Node
+    [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
+    public partial class Statechart : Node
     {
         #region Preset EventName
 
@@ -42,6 +42,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             PrevActiveStates = new List<State>();
             IterStack = new Stack<State>();
             
+            // Collect states, activate initial-states
             Node child = GetChild<Node>(0);
             if (child is null || child is not State)
             {
@@ -98,7 +99,7 @@ namespace LGWCP.GodotPlugin.StateChartSharp
                 else // substates.Count == 0, Pop
                 {
                     State lastPop;
-                    do
+                    do // Pop until: top is brother of the last pop state
                     {
                         lastPop = IterStack.Pop();
                     } while (IterStack.Count > 0 && lastPop.ParentState == IterStack.Peek());
@@ -109,12 +110,41 @@ namespace LGWCP.GodotPlugin.StateChartSharp
             GD.Print("-------- States --------");
             foreach(State s in States)
             {
-                GD.Print(s.Name);
+                GD.Print(s.StateId, ". ", s.Name);
+                foreach (var t in s.Transitions)
+                {
+                    GD.Print("  - ", t.Name);
+                }
             }
             GD.Print("-------- Initial ActiveStates --------");
             foreach(State s in ActiveStates)
             {
-                GD.Print(s.Name);
+                GD.Print(s.StateId, ". ", s.Name);
+            }
+            #endif
+
+            // Init Transitions
+            foreach (State s in States)
+            {
+                foreach (Transition t in s.Transitions)
+                {
+                    t.Init(s);
+                }
+            }
+
+            
+            #if DEBUG
+            GD.Print("-------- Transitions --------");
+            foreach (State s in States)
+            {
+                foreach (Transition t in s.Transitions)
+                {
+                    GD.Print(t.Name, ", Source", t.SourceState.Name);
+                    foreach(State es in t.EnterStates)
+                    {
+                        GD.Print("  - ", es.Name, " ", es.StateId);
+                    }
+                }
             }
             #endif
 
@@ -127,6 +157,8 @@ namespace LGWCP.GodotPlugin.StateChartSharp
 
         public void Step(StringName transitionEvent)
         {
+            return;
+            // Queue transition event
             QueuedEvents.Enqueue(transitionEvent);
             if (IsRunning)
             {
