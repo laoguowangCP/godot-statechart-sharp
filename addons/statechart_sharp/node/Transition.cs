@@ -25,7 +25,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         [Export] protected Array<State> TargetStatesArray;
         protected List<State> TargetStates { get; set; }
         public State SourceState { get; protected set; }
-        public State LccaState { get; protected set; }
+        public State LcaState { get; protected set; }
         public SortedSet<State> EnterStates  { get; protected set; }
         public Statechart HostStatechart { get; protected set; }
         public bool IsEnabled { get; set; }
@@ -65,8 +65,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
 
             /*
                 TODO:
-                    1. Find LCCA(Least Common Compound Ancestor) of source and targets.
-                    2. Record path from LCCA to targets in EnterStates, order: parent first, then reversed children
+                    1. Find LCA(Least Common Ancestor) of source and targets.
+                    2. Record path from LCA to targets in EnterStates, order: parent first, then reversed children
             */
             State iter = SourceState;
             List<State> srcToRoot = new List<State>();
@@ -76,8 +76,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 srcToRoot.Add(iter);
             }
             
-            // Init LCCA as SourceState, the last state in srcToRoot
-            int reversedLccaIdx = srcToRoot.Count;
+            // Init LCA as SourceState, the last state in srcToRoot
+            int reversedLcaIdx = srcToRoot.Count;
             List<State> tgtToRoot = new List<State>();
             foreach (State s in TargetStates)
             {
@@ -113,7 +113,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 }
 
 
-                // Update LCCA index
+                // Update LCA index
                 int maxIdx = 1;
                 for (int i = 1; i <= srcToRoot.Count && i <= tgtToRoot.Count; i++)
                 {
@@ -127,9 +127,9 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                         break;
                     }
                 }
-                if (maxIdx < reversedLccaIdx)
+                if (maxIdx < reversedLcaIdx)
                 {
-                    reversedLccaIdx = maxIdx;
+                    reversedLcaIdx = maxIdx;
                 }
 
                 // Update enter-states set
@@ -139,8 +139,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 }
             }
 
-            // LCCA
-            LccaState = srcToRoot[^reversedLccaIdx];
+            // LCA
+            LcaState = srcToRoot[^reversedLcaIdx];
         }
 
         public void Check()

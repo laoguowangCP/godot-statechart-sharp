@@ -1,6 +1,6 @@
-# state-chart-sharp
+# statechart-sharp
 
- A simple state chart for Godot, implemented in C#.
+ A simple statechart for Godot, implemented in C#.
 
 ---
 

@@ -187,7 +187,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                         t.Check(); // Check guard
                         /*
                             If t available:
-                                critic = t.LCCA
+                                critic = t.LCA
                                 IterStack.Pop() until critic
                                 List<State> enterStates = t.EnterStates
                                 IterStack.Push()
