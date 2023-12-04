@@ -10,14 +10,14 @@ namespace LGWCP.GodotPlugin.StatechartSharp
     {
         #region Preset EventName
 
-        readonly StringName PROCESS = "process";
-        readonly StringName PRE_PROCESS = "pre_process";
-        readonly StringName PHYSICS_PROCESS = "physics_process";
-        readonly StringName PRE_PHYSICS_PROCESS = "pre_physics_process";
-        readonly StringName INPUT = "input";
-        readonly StringName PRE_INPUT = "pre_input";
-        readonly StringName UNHANDLED_INPUT = "unhandled_input";
-        readonly StringName PRE_UNHANDLED_INPUT = "pre_unhandled_input";
+        public readonly StringName PRE_PROCESS = "pre_process";
+        public readonly StringName PRE_PHYSICS_PROCESS = "pre_physics_process";
+        public readonly StringName PRE_INPUT = "pre_input";
+        public readonly StringName PRE_UNHANDLED_INPUT = "pre_unhandled_input";
+        public readonly StringName PROCESS = "process";
+        public readonly StringName PHYSICS_PROCESS = "physics_process";
+        public readonly StringName INPUT = "input";
+        public readonly StringName UNHANDLED_INPUT = "unhandled_input";
 
 
         #endregion
@@ -148,7 +148,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
             #endif
 
-            // Enter active states
+            // Enter active states, document order
             foreach (State s in ActiveStates)
             {
                 s.EmitSignal(State.SignalName.Enter);

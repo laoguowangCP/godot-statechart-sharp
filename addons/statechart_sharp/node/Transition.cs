@@ -5,6 +5,19 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StatechartSharp
 {
+    public enum EventNameEnum : int
+    {
+        PRE_PROCESS,
+        PRE_PHYSICS_PROCESS,
+        PRE_INPUT,
+        PRE_UNHANDLED_INPUT,
+        PROCESS,
+        PHYSICS_PROCESS,
+        INPUT,
+        UNHANDLED_INPUT,
+        CUSTOM
+    }
+
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
     public partial class Transition : Node
     {
@@ -21,8 +34,11 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         #region define properties
 
         // If transitEvent is null, transition is auto (checked on state enter)
-        [Export] public StringName TransitionEvent { get; protected set; }
+        [Export] public bool IsAuto = false;
+        [Export] public EventNameEnum TransitionEvent { get; protected set; } = EventNameEnum.PRE_PROCESS;
+        [Export] public StringName CustomEventName { get; protected set; }
         [Export] protected Array<State> TargetStatesArray;
+        public StringName EventName { get; protected set; }
         protected List<State> TargetStates { get; set; }
         public State SourceState { get; protected set; }
         public State LcaState { get; protected set; }
@@ -51,6 +67,13 @@ namespace LGWCP.GodotPlugin.StatechartSharp
 
         public void Init(State sourceState)
         {
+            EventName = GetEventName(TransitionEvent);
+            if (!IsAuto && EventName == null)
+            {
+                #if DEBUG
+                GD.PushWarning(Name, ": no transition event, if is eventless, check IsAuto.");
+                #endif
+            }
             SourceState = sourceState;
             HostStatechart = SourceState.HostStatechart;
 
@@ -149,5 +172,19 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             IsEnabled = true;
             EmitSignal(SignalName.Guard, this);
         }
+
+        protected StringName GetEventName(EventNameEnum transitionEvent) => transitionEvent switch
+        {
+            EventNameEnum.PRE_PROCESS => "pre_process",
+            EventNameEnum.PRE_PHYSICS_PROCESS => "pre_physics_process",
+            EventNameEnum.PRE_INPUT => "pre_input",
+            EventNameEnum.PRE_UNHANDLED_INPUT => "pre_unhandled_input",
+            EventNameEnum.PROCESS => "process",
+            EventNameEnum.PHYSICS_PROCESS => "physics_process",
+            EventNameEnum.INPUT => "input",
+            EventNameEnum.UNHANDLED_INPUT => "unhandled_input",
+            EventNameEnum.CUSTOM => CustomEventName,
+            _ => null
+        };
     }
 }
