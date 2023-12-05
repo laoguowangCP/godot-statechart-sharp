@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -15,6 +16,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         PHYSICS_PROCESS,
         INPUT,
         UNHANDLED_INPUT,
+        AUTO,
         CUSTOM
     }
 
@@ -34,7 +36,6 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         #region define properties
 
         // If transitEvent is null, transition is auto (checked on state enter)
-        [Export] public bool IsAuto = false;
         [Export] public EventNameEnum TransitionEvent { get; protected set; } = EventNameEnum.PRE_PROCESS;
         [Export] public StringName CustomEventName { get; protected set; }
         [Export] protected Array<State> TargetStatesArray;
@@ -43,15 +44,16 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public State SourceState { get; protected set; }
         public State LcaState { get; protected set; }
         public SortedSet<State> EnterStates  { get; protected set; }
-        public Statechart HostStatechart { get; protected set; }
         public bool IsEnabled { get; set; }
+        public bool IsTargetless { get => TargetStates.Count == 0; }
+        public bool IsAuto { get; protected set; } = false;
         public double Delta
         {
-            get { return HostStatechart.Delta; }
+            get { return SourceState.HostStatechart.Delta; }
         }
         public InputEvent GameInput
         {
-            get { return HostStatechart.GameInput; }
+            get { return SourceState.HostStatechart.GameInput; }
         }
 
         #endregion
@@ -59,10 +61,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public override void _Ready()
         {
             // Convert GD collection to CS collection
-            if (TargetStatesArray.Count > 0)
-            {
-                TargetStates = new List<State>(TargetStatesArray);
-            }
+            TargetStates = new List<State>(TargetStatesArray);
         }
 
         public void Init(State sourceState)
@@ -75,13 +74,6 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 #endif
             }
             SourceState = sourceState;
-            HostStatechart = SourceState.HostStatechart;
-
-            // Targetless transition
-            if (TargetStates == null)
-            {
-                return;
-            }
 
             // Init EnterStates
             EnterStates = new SortedSet<State>(new StateComparer());
@@ -99,13 +91,13 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 srcToRoot.Add(iter);
             }
             
-            // Init LCA as SourceState, the last state in srcToRoot
+            // Init LCA as SourceState, the first state in srcToRoot
             int reversedLcaIdx = srcToRoot.Count;
             List<State> tgtToRoot = new List<State>();
             foreach (State s in TargetStates)
             {
                 // Record target-to-root, with validation
-                if (s.HostStatechart != HostStatechart)
+                if (s.HostStatechart != SourceState.HostStatechart)
                 {
                     #if DEBUG
                     GD.PushWarning(Name, ": target states should under same statechart.");
@@ -136,7 +128,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 }
 
 
-                // Update LCA index
+                // LCA between src and 1 tgt
                 int maxIdx = 1;
                 for (int i = 1; i <= srcToRoot.Count && i <= tgtToRoot.Count; i++)
                 {
@@ -146,7 +138,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     }
                     else
                     {
-                        // Last state is LCCA
+                        // Last state is LCA
                         break;
                     }
                 }
@@ -155,15 +147,26 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     reversedLcaIdx = maxIdx;
                 }
 
-                // Update enter-states set
-                foreach(State stateOnPath in tgtToRoot)
+                /*
+                    Update enter-states set:
+                        1. LCA is included in enter-states
+                        2. LCA is the first in enter-states
+                */
+                for (int i = maxIdx; i <= tgtToRoot.Count; i++)
                 {
-                    EnterStates.Add(stateOnPath);
+                    EnterStates.Add(tgtToRoot[^i]);
                 }
+            }
+
+            // Targetless, enter-states count is 0
+            if (IsTargetless)
+            {
+                return;
             }
 
             // LCA
             LcaState = srcToRoot[^reversedLcaIdx];
+            GD.Print("First element in EnterStates is LCA: ", EnterStates.First() == LcaState);
         }
 
         public void Check()
