@@ -75,7 +75,6 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                         {
                             top.IsActive = true;
                             ActiveStates.Add(top);
-                            topParent.CurrentState = top;
                         }
                     }
                     else if (topParent.StateMode == StateModeEnum.Parallel)

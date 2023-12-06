@@ -32,12 +32,48 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public List<State> Substates { get; protected set; }
         public List<Transition> Transitions { get; protected set; }
         public bool IsActive { get; set; }
+        /// <summary>
+        /// Descendant states count
+        /// </summary>
+        public int SubtreeCount { get; protected set; }
 
         public override void _Ready()
         {
             Substates = new List<State>();
             Transitions = new List<Transition>();
             ProcessMode = ProcessModeEnum.Disabled;
+            
+            IsActive = false;
+            Node parent = GetParent<Node>();
+            if (parent != null && parent is State)
+            {
+                ParentState = parent as State;
+            }
+            else
+            {
+                ParentState = null;
+            }
+
+            // Get Substates & Transitions
+            SubtreeCount = 0;
+            foreach(Node child in GetChildren())
+            {
+                if (child is State s)
+                {
+                    // Update subtree-count
+                    SubtreeCount = SubtreeCount + s.SubtreeCount + 1;
+                    Substates.Add(s);
+                }
+                else if (child is Transition t)
+                {
+                    Transitions.Add(t);
+                }
+            }
+
+            if (StateMode == StateModeEnum.Compond && Substates.Count > 0)
+            {
+                CurrentState = Substates[0];
+            }
         }
 
         public void Init(Statechart stateChart, int stateId)
@@ -49,35 +85,6 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             // stateComponent.Init(stateChart, parentState);
             HostStatechart = stateChart;
             StateId = stateId;
-            IsActive = false;
-            Node parent = GetParent<Node>();
-            if (parent is null)
-            {
-                ParentState = null;
-            }
-            else if (parent is State)
-            {
-                ParentState = parent as State;
-            }
-
-            // TODO: get Substates & Transitions
-            foreach(Node child in GetChildren())
-            {
-                if (child is State s)
-                {
-                    Substates.Add(s);
-                }
-                else if (child is Transition t)
-                {
-                    // Init transition later
-                    Transitions.Add(t);
-                }
-            }
-
-            if (Substates.Count > 0)
-            {
-                CurrentState = Substates[0];
-            }
         }
     }
 }
