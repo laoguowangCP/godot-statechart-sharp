@@ -154,11 +154,10 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
         }
 
-        public void Step(StringName transitionEvent)
+        public void Step(StringName eventName)
         {
-            return;
             // Queue transition event
-            QueuedEvents.Enqueue(transitionEvent);
+            QueuedEvents.Enqueue(eventName);
             if (IsRunning)
             {
                 return;
@@ -169,37 +168,25 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             while (QueuedEvents.Count > 0)
             {
                 StringName nextEvent = QueuedEvents.Dequeue();
-                IterStack.Clear();
-
-                // Backup ActiveStates
-                PrevActiveStates.Clear();
-                PrevActiveStates.AddRange(ActiveStates);
-
-                // TODO: do Transition
-                IterStack.Push(ActiveStates[0]);
-                while (IterStack.Count > 0)
-                {
-                    // Iterate Transitions
-                    State top = IterStack.Peek();
-                    foreach(Transition t in top.Transitions)
-                    {
-                        t.Check(); // Check guard
-                        /*
-                            If t available:
-                                critic = t.LCA
-                                IterStack.Pop() until critic
-                                List<State> enterStates = t.EnterStates
-                                IterStack.Push()
-                                break
-                        */
-                    }
-                }
-                
-                // TODO: after Transition, handle Exit & Enter
-                
+                HandleTransition(nextEvent);
             }
 
             IsRunning = false;
+        }
+
+        protected void HandleTransition(StringName eventName)
+        {
+            IterStack.Clear();
+
+            // Backup ActiveStates
+            PrevActiveStates.Clear();
+            PrevActiveStates.AddRange(ActiveStates);
+
+            // TODO: do Transition
+            
+            
+            // TODO: after Transition, handle Exit & Enter
+            
         }
 
         public override void _Process(double delta)
