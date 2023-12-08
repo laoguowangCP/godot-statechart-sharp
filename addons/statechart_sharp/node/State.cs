@@ -35,7 +35,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         /// <summary>
         /// Descendant states count
         /// </summary>
-        public int SubtreeCount { get; protected set; }
+        public int DescendantCount { get; protected set; }
 
         public override void _Ready()
         {
@@ -55,17 +55,22 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
 
             // Get Substates & Transitions
-            SubtreeCount = 0;
+            DescendantCount = 0;
             foreach(Node child in GetChildren())
             {
                 if (child is State s)
                 {
                     // Update subtree-count
-                    SubtreeCount = SubtreeCount + s.SubtreeCount + 1;
+                    DescendantCount = DescendantCount + s.DescendantCount + 1;
                     Substates.Add(s);
                 }
                 else if (child is Transition t)
                 {
+                    // Root state should not have transition
+                    if (ParentState == null)
+                    {
+                        continue;
+                    }
                     Transitions.Add(t);
                 }
             }

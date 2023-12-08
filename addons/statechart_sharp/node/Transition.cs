@@ -36,8 +36,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         #region define properties
 
         // If transitEvent is null, transition is auto (checked on state enter)
-        [Export] public EventNameEnum TransitionEvent { get; protected set; } = EventNameEnum.PRE_PROCESS;
-        [Export] public StringName CustomEventName { get; protected set; }
+        [Export] protected EventNameEnum TransitionEvent { get; set; } = EventNameEnum.PRE_PROCESS;
+        [Export] protected StringName CustomEventName { get; set; }
         [Export] protected Array<State> TargetStatesArray;
         public StringName EventName { get; protected set; }
         protected List<State> TargetStates { get; set; }
@@ -79,9 +79,9 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             EnterStates = new SortedSet<State>(new StateComparer());
 
             /*
-                TODO:
-                    1. Find LCA(Least Common Ancestor) of source and targets.
-                    2. Record path from LCA to targets in EnterStates, order: parent first, then reversed children
+            TODO:
+                1. Find LCA(Least Common Ancestor) of source and targets.
+                2. Record path from LCA to targets in EnterStates
             */
             State iter = SourceState;
             List<State> srcToRoot = new List<State>();

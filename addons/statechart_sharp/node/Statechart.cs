@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LGWCP.GodotPlugin.StatechartSharp
 {
@@ -24,12 +25,14 @@ namespace LGWCP.GodotPlugin.StatechartSharp
 
         protected bool IsRunning { get; set; }
         public double Delta { get; protected set; }
+        public double PhysicsDelta { get; protected set; }
         public InputEvent GameInput { get; protected set; }
         protected List<State> States { get; set; }
-        protected List<State> ActiveStates { get; set; }
-        protected List<State> PrevActiveStates { get; set; }
-        protected Stack<State> IterStack { get; set; }
+        protected SortedSet<State> ActiveStates { get; set; }
         protected Queue<StringName> QueuedEvents { get; set; }
+        protected Queue<Transition> QueuedTransitions { get; set; }
+        protected Queue<Transition> QueuedEventless { get; set; }
+        protected SortedSet<State> ExitSet { get; set; }
         
 
         public override void _Ready()
@@ -38,9 +41,12 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             IsRunning = false;
 
             States = new List<State>();
-            ActiveStates = new List<State>();
-            PrevActiveStates = new List<State>();
-            IterStack = new Stack<State>();
+            ActiveStates = new SortedSet<State>(new StateComparer());
+            QueuedTransitions = new Queue<Transition>();
+            QueuedEventless = new Queue<Transition>();
+            ExitSet = new SortedSet<State>(new StateComparer());
+
+            Stack<State> iterStack = new Stack<State>();
             
             // Collect states, activate initial-states
             Node child = GetChild<Node>(0);
@@ -50,11 +56,11 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 return;
             }
             State root = child as State;
-            IterStack.Push(root);
-            while (IterStack.Count > 0)
+            iterStack.Push(root);
+            while (iterStack.Count > 0)
             {
                 // Init state
-                State top = IterStack.Peek();
+                State top = iterStack.Peek();
                 States.Add(top);
                 top.Init(this, States.Count-1);
 
@@ -92,7 +98,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     // Reversed push
                     for (int i=substates.Count-1; i>=0; i--)
                     {
-                        IterStack.Push(substates[i]);
+                        iterStack.Push(substates[i]);
                     }
                 }
                 else // substates.Count == 0, Pop
@@ -100,8 +106,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     State lastPop;
                     do // Pop until: top is brother of the last pop state
                     {
-                        lastPop = IterStack.Pop();
-                    } while (IterStack.Count > 0 && lastPop.ParentState == IterStack.Peek());
+                        lastPop = iterStack.Pop();
+                    } while (iterStack.Count > 0 && lastPop.ParentState == iterStack.Peek());
                 }
             }
 
@@ -168,25 +174,110 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             while (QueuedEvents.Count > 0)
             {
                 StringName nextEvent = QueuedEvents.Dequeue();
-                HandleTransition(nextEvent);
+                HandleEvent(nextEvent);
             }
 
             IsRunning = false;
         }
 
-        protected void HandleTransition(StringName eventName)
+        /// <summary>
+        /// Macro step
+        /// </summary>
+        /// <param name="eventName"></param>
+        protected void HandleEvent(StringName eventName)
         {
-            IterStack.Clear();
-
             // Backup ActiveStates
-            PrevActiveStates.Clear();
-            PrevActiveStates.AddRange(ActiveStates);
+            SortedSet<State> prevActiveStates = new(ActiveStates);
+            ExitSet.Clear();
 
-            // TODO: do Transition
-            
-            
-            // TODO: after Transition, handle Exit & Enter
-            
+            /*
+            TODO: Step algorithm
+                1. Iter active-states, queue transitions
+                2. Iter queued transitions
+                    2.1 do transition
+                        2.1.1 validate confliction: src not in exit-set
+                        2.1.2 GetViewBitween(LCA.lower, LCA.upper) from active-states
+                        2.1.3 subtract view from active-states, union view to exit-states
+                        2.1.4 deduce descendants of enter-states
+                        2.1.5 for descendants of enter-states, queue eventless transitions
+                        2.1.6 union active-states and enter-states(include descendants)
+                    2.2 iter queued eventless transitions
+                        2.2.1 do transition(same above)
+                3. unchanged = prev - exit
+                4. Iter prev - unchanged
+                    4.1 do exit
+                5. Iter active - unchanged
+                    5.1 do enter
+            */
+
+            // 1. Iter active-states, queue transitions
+            foreach(State s in ActiveStates)
+            {
+                foreach (Transition t in s.Transitions)
+                {
+                    // filter eventless and not-this-event
+                    if (t.IsAuto || t.EventName != eventName)
+                    {
+                        continue;
+                    }
+
+                    // Check guard
+                    t.Check();
+
+                    // Targetless transition checks only
+                    if (!t.IsTargetless && t.IsEnabled)
+                    {
+                        QueuedTransitions.Enqueue(t);
+                        break;
+                    }
+                }
+            }
+
+            if (QueuedTransitions.Count == 0)
+            {
+                return;
+            }
+
+            // 2. Iter queued transitions
+            for (Transition t=QueuedTransitions.Dequeue();
+                QueuedTransitions.Count>0;
+                t=QueuedTransitions.Dequeue())
+            {
+                // Do transition
+                DoTransition(t);
+
+                if (QueuedEventless.Count == 0)
+                {
+                    return;
+                }
+
+                // Iter queued eventless transitions
+                for (Transition et=QueuedEventless.Dequeue();
+                    QueuedEventless.Count>0;
+                    et=QueuedEventless.Dequeue())
+                {
+                    DoTransition(et);
+                }
+            }
+        }
+
+        protected void DoTransition(Transition t)
+        {
+            // 1. Validate confliction: src not in exit-set
+            if (ExitSet.Contains(t.SourceState))
+            {
+                return;
+            }
+
+            // 2. GetViewBetween(LCA.lower, LCA.upper) from active-states
+            var lcaState = t.LcaState;
+            SortedSet<State> statesToExit = ActiveStates.GetViewBetween(lcaState.Substates[0], lcaState.Substates[^1]);
+
+
+            // 3. Subtract view from active-states, union view to exit-states
+            // 4. Deduce descendants of enter-states
+            // 5. For descendants of enter-states, queue eventless transitions
+            // 6. union active-states and enter-states(include descendants)
         }
 
         public override void _Process(double delta)
