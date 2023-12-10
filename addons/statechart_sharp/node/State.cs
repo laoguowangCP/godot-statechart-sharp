@@ -75,6 +75,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 }
             }
 
+            // Initial state
             if (StateMode == StateModeEnum.Compond && Substates.Count > 0)
             {
                 CurrentState = Substates[0];
