@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace LGWCP.GodotPlugin.StatechartSharp
 {
-    
     public enum StateModeEnum : int
     {
         Compond,
@@ -14,7 +13,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
     }
 
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
-    public partial class State : Node
+    public partial class State : StatechartComposition
     {
         #region define signals
 
@@ -32,16 +31,23 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public List<State> Substates { get; protected set; }
         public List<Transition> Transitions { get; protected set; }
         public bool IsActive { get; set; }
-        /// <summary>
-        /// Descendant states count
-        /// </summary>
         public int DescendantCount { get; protected set; }
+        protected StateComponent StateComponent { get; set; }
 
         public override void _Ready()
         {
             Substates = new List<State>();
             Transitions = new List<Transition>();
             ProcessMode = ProcessModeEnum.Disabled;
+            switch (StateMode)
+            {
+                case StateModeEnum.Compond:
+                    StateComponent = new CompondComponent(this);
+                    break;
+                case StateModeEnum.Parallel:
+                    StateComponent = new ParallelComponent(this);
+                    break;
+            }
             
             IsActive = false;
             Node parent = GetParent<Node>();
@@ -60,18 +66,17 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             {
                 if (child is State s)
                 {
-                    // Update subtree-count
+                    // Update descendant-count
                     DescendantCount = DescendantCount + s.DescendantCount + 1;
                     Substates.Add(s);
                 }
                 else if (child is Transition t)
                 {
                     // Root state should not have transition
-                    if (ParentState == null)
+                    if (ParentState != null)
                     {
-                        continue;
+                        Transitions.Add(t);
                     }
-                    Transitions.Add(t);
                 }
             }
 
@@ -91,6 +96,11 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             // stateComponent.Init(stateChart, parentState);
             HostStatechart = stateChart;
             StateId = stateId;
+        }
+
+        public bool SelectTransitions(StringName eventName)
+        {
+            return StateComponent.SelectTransitions(eventName);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
     }
 
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
-    public partial class Transition : Node
+    public partial class Transition : StatechartComposition
     {
         /// <summary>
         /// Time on which the transition is checked.
@@ -76,7 +76,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             SourceState = sourceState;
 
             // Init EnterStates
-            EnterStates = new SortedSet<State>(new StateComparer());
+            EnterStates = new SortedSet<State>(new StatechartCompositionComparer());
 
             /*
             TODO:

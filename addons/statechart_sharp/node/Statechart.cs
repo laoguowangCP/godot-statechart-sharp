@@ -28,6 +28,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public double PhysicsDelta { get; protected set; }
         public InputEvent GameInput { get; protected set; }
         protected List<State> States { get; set; }
+        protected State RootState { get; set; }
         protected SortedSet<State> ActiveStates { get; set; }
         protected Queue<StringName> QueuedEvents { get; set; }
         protected Queue<Transition> QueuedTransitions { get; set; }
@@ -56,8 +57,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 GD.PushError("Require 1 State as child.");
                 return;
             }
-            State root = child as State;
-            IterStack.Push(root);
+            RootState = child as State;
+            IterStack.Push(RootState);
             while (IterStack.Count > 0)
             {
                 // Init state
@@ -219,7 +220,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             */
 
             // 1. Iter active-states, queue transitions (recursively)
-            
+            RootState.SelectTransitions(eventName);
 
             // 2.
             foreach(State s in ActiveStates)
@@ -267,23 +268,10 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
         }
 
-        protected void DoTransition(Transition t)
+        public void RegisterTransition(Transition transition)
         {
-            // 1. Validate confliction: src not in exit-set
-            if (ExitSet.Contains(t.SourceState))
-            {
-                return;
-            }
-
-            // 2. GetViewBetween(LCA.lower, LCA.upper) from active-states
-            var lcaState = t.LcaState;
-            SortedSet<State> statesToExit = ActiveStates.GetViewBetween(lcaState.Substates[0], lcaState.Substates[^1]);
-
-
-            // 3. Subtract view from active-states, union view to exit-states
-            // 4. Deduce descendants of enter-states
-            // 5. For descendants of enter-states, queue eventless transitions
-            // 6. union active-states and enter-states(include descendants)
+            // TODO: Generate exit_set/enter_set here
+            QueuedTransitions.Enqueue(transition);
         }
 
         public override void _Process(double delta)
