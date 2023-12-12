@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace LGWCP.GodotPlugin.StatechartSharp
 {
-    class StatechartCompositionComparer : IComparer<StatechartComposition>
+    class CompositionComparer : IComparer<StatechartComposition>
     {
         public int Compare(StatechartComposition x, StatechartComposition y)
         {
@@ -10,7 +10,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         }
     }
 
-    class ReversedStatechartCompositionComparer : IComparer<StatechartComposition>
+    class ReversedCompositionComparer : IComparer<StatechartComposition>
     {
         public int Compare(StatechartComposition x, StatechartComposition y)
         {

@@ -30,8 +30,7 @@
 
 - Transition:
   
-  - add "isAuto" flag (eventless, check on enter)
-  - replace "transitionMode" with "event" (`StringName`)
-  - multiple targets: check targets have parallel least-common-ancestor
+  - The exit set of a set of transitions is the union of the exit sets of the individual transitions.
+  - The entry set of a set of transitions is the union of the entry sets of the individual transitions.
 
 - Component: shorten class name (parallelComponent/compondComponent)

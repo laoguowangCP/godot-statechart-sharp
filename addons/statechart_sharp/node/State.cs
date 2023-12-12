@@ -23,6 +23,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         #endregion
 
         [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
+        [Export] public State InitialState { get; protected set; }
         
         public Statechart HostStatechart { get; protected set; }
         public State ParentState { get; protected set; }
@@ -83,7 +84,14 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             // Initial state
             if (StateMode == StateModeEnum.Compond && Substates.Count > 0)
             {
-                CurrentState = Substates[0];
+                if (InitialState != null && InitialState.ParentState == this)
+                {
+                    CurrentState = InitialState;
+                }
+                else
+                {
+                    CurrentState = Substates[0];
+                }
             }
         }
 

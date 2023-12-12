@@ -30,6 +30,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         #region define signals
 
         [Signal] public delegate void GuardEventHandler(Transition t);
+        [Signal] public delegate void ActionEventHandler(Transition t);
         
         #endregion
 
@@ -76,7 +77,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             SourceState = sourceState;
 
             // Init EnterStates
-            EnterStates = new SortedSet<State>(new StatechartCompositionComparer());
+            EnterStates = new SortedSet<State>(new CompositionComparer());
 
             /*
             TODO:
