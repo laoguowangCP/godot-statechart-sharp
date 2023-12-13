@@ -23,12 +23,12 @@ namespace LGWCP.GodotPlugin.StatechartSharp
 
             if (isHandled)
             {
-                // All substates handled transition
+                // Any descendant handled transition
                 return true;
             }
             else
             {
-                // No transition enabled in at least 1 substates, or atomic state
+                // Atomic state, or no transition enabled in descendants
                 return base.SelectTransitions(eventName);
             }
         }

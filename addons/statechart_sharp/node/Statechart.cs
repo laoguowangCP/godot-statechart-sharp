@@ -34,6 +34,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         protected Queue<Transition> QueuedTransitions { get; set; }
         protected Queue<Transition> QueuedEventless { get; set; }
         protected SortedSet<State> ExitSet { get; set; }
+        protected SortedSet<State> EnterSet { get; set; }
         protected Stack<State> IterStack { get; set; }
         
 
@@ -47,6 +48,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             QueuedTransitions = new Queue<Transition>();
             QueuedEventless = new Queue<Transition>();
             ExitSet = new SortedSet<State>(new ReversedStateComparer());
+            EnterSet = new SortedSet<State>(new StateComparer());
 
             IterStack = new Stack<State>();
             
@@ -146,7 +148,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 foreach (Transition t in s.Transitions)
                 {
                     GD.Print(t.Name, ", Source", t.SourceState.Name);
-                    foreach(State es in t.EnterStates)
+                    foreach(State es in t.EnterRegion)
                     {
                         GD.Print("  - ", es.Name, " ", es.StateId);
                     }
@@ -190,35 +192,25 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             // Backup ActiveStates
             SortedSet<State> prevActiveStates = new(ActiveStates);
             ExitSet.Clear();
+            EnterSet.Clear();
             IterStack.Clear();
 
             /*
-            TODO: Step algorithm
-                1. Iter active-states, queue transitions
-                2. Do queued transitions
-                    2.1 Iter queued transitions
-                        2.1.1 validate confliction: src not in exit-set
-                        2.2.2 GetViewBitween(LCA.lower, LCA.upper) from active-states
-                        2.2.3 union view to exit-set
-                        2.2.4 deduce descendants of enter-states
-                        2.2.5 for descendants of enter-states, queue eventless transitions
-                        2.2.6 union active-states and descendants to enter-set
-                    2.2 
-                3. Do queued eventless transitions
-                    2.1 Iter queued eventless transitions
-                        2.1.1 validate confliction: src in enter-set
-                        2.2.2 GetViewBitween(LCA.lower, LCA.upper) from enter-set
-                        2.2.3 subtract view from enter-set
-                        2.2.4 deduce descendants of enter-states
-                        2.2.5 for descendants of enter-states, queue eventless transitions
-                        2.2.6 union active-states and descendants to enter-set
-                3. unchanged = prev - exit
-                4. Iter prev - unchanged
-                    4.1 do exit
-                5. Iter active - unchanged
-                    5.1 do enter
+                1. Do transition
+                    1.1 Find transitions: matched event-name && is enabled
+                    1.2 Foreach transition:
+                        - Check confliction: LCA in exit-set
+                        - Deduce enter-region to full-enter-set
+                        - Union exit-set and enter-set
+                    1.3 Update active-states
+                2. Do eventless transition
+                    1.1 Find transitions: eventless && is enabled
+                    1.2 Foreach transition:
+                        - Check confliction: LCA in exit-set
+                        - Deduce enter-region to full-enter-set
+                        - Union exit-set and enter-set
+                    1.3 Update active-states
             */
-
             // 1. Iter active-states, queue transitions (recursively)
             RootState.SelectTransitions(eventName);
 

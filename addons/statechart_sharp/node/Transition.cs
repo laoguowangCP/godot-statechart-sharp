@@ -44,7 +44,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         protected List<State> TargetStates { get; set; }
         public State SourceState { get; protected set; }
         public State LcaState { get; protected set; }
-        public SortedSet<State> EnterStates  { get; protected set; }
+        public SortedSet<State> EnterRegion  { get; protected set; }
+        public SortedSet<State> EnterRegionEdge { get; protected set; }
         public bool IsEnabled { get; set; }
         public bool IsTargetless { get => TargetStates.Count == 0; }
         public bool IsAuto { get; protected set; } = false;
@@ -77,7 +78,13 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             SourceState = sourceState;
 
             // Init EnterStates
-            EnterStates = new SortedSet<State>(new CompositionComparer());
+            EnterRegion = new SortedSet<State>(new StateComparer());
+
+            // Targetless, enter-states count is 0
+            if (IsTargetless)
+            {
+                return;
+            }
 
             /*
             TODO:
@@ -111,7 +118,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 while (iter.ParentState != null)
                 {
                     // Check transition conflicts
-                    if (iter.StateMode == StateModeEnum.Compond && EnterStates.Contains(iter))
+                    if (iter.StateMode == StateModeEnum.Compond && EnterRegion.Contains(iter))
                     {
                         isAvailable = false;
                         #if DEBUG
@@ -128,9 +135,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     continue;
                 }
 
-
                 // LCA between src and 1 tgt
-                int maxIdx = 1;
+                int maxIdx = 1; // Reversed
                 for (int i = 1; i <= srcToRoot.Count && i <= tgtToRoot.Count; i++)
                 {
                     if (srcToRoot[^i] == tgtToRoot[^i])
@@ -149,25 +155,46 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 }
 
                 /*
-                    Update enter-states set:
-                        1. LCA is included in enter-states
-                        2. LCA is the first in enter-states
+                    Update enter-region:
                 */
                 for (int i = maxIdx; i <= tgtToRoot.Count; i++)
                 {
-                    EnterStates.Add(tgtToRoot[^i]);
+                    EnterRegion.Add(tgtToRoot[^i]);
                 }
-            }
-
-            // Targetless, enter-states count is 0
-            if (IsTargetless)
-            {
-                return;
             }
 
             // LCA
             LcaState = srcToRoot[^reversedLcaIdx];
-            GD.Print("First element in EnterStates is LCA: ", EnterStates.First() == LcaState);
+            #if DEBUG
+            GD.Print("First element in EnterStates is LCA: ", EnterRegion.First() == LcaState);
+            #endif
+
+            /*
+                Refine enter-region:
+                1. For compond, if have substate, add to region
+                2. For parallel substate not in region, add to region and region-edge
+                3. Exclude LCA
+            */
+            SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
+            foreach (State s in EnterRegion)
+            {
+                if (s.StateMode == StateModeEnum.Compond)
+                {
+                    if (s.Substates.Count == 0) continue;
+                    EnterRegionEdge.Add(s);
+                }
+                else if (s.StateMode == StateModeEnum.Parallel)
+                {
+                    foreach (State substate in s.Substates)
+                    {
+                        if (EnterRegion.Contains(substate)) continue;
+                        extraEnterRegion.Add(substate);
+                        EnterRegionEdge.Add(substate);
+                    }
+                }
+            }
+            EnterRegion.UnionWith(extraEnterRegion);
+            EnterRegion.Remove(LcaState);
         }
 
         public void Check()
