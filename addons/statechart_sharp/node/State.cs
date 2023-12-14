@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace LGWCP.GodotPlugin.StatechartSharp
@@ -9,7 +10,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
     public enum StateModeEnum : int
     {
         Compond,
-        Parallel
+        Parallel,
+        History
     }
 
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
@@ -24,6 +26,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
 
         [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
         [Export] public State InitialState { get; protected set; }
+        [Export] public bool IsDeepHistory { get; protected set; }
         
         public Statechart HostStatechart { get; protected set; }
         public State ParentState { get; protected set; }
@@ -32,7 +35,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public List<State> Substates { get; protected set; }
         public List<Transition> Transitions { get; protected set; }
         public bool IsActive { get; set; }
-        public int DescendantCount { get; protected set; }
+        // public int DescendantCount { get; protected set; }
         protected StateComponent StateComponent { get; set; }
 
         public override void _Ready()
@@ -46,6 +49,9 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     StateComponent = new CompondComponent(this);
                     break;
                 case StateModeEnum.Parallel:
+                    StateComponent = new ParallelComponent(this);
+                    break;
+                case StateModeEnum.History:
                     StateComponent = new ParallelComponent(this);
                     break;
             }
@@ -62,13 +68,11 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
 
             // Get Substates & Transitions
-            DescendantCount = 0;
-            foreach(Node child in GetChildren())
+            var children = GetChildren();
+            foreach(Node child in children)
             {
                 if (child is State s)
                 {
-                    // Update descendant-count
-                    DescendantCount = DescendantCount + s.DescendantCount + 1;
                     Substates.Add(s);
                 }
                 else if (child is Transition t)
@@ -109,6 +113,16 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public bool SelectTransitions(StringName eventName)
         {
             return StateComponent.SelectTransitions(eventName);
+        }
+
+        public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false)
+        {
+            StateComponent.DeduceDescendants(deducedSet, isHistory);
+        }
+
+        public void RefineEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion = null)
+        {
+            StateComponent.RefineEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion);
         }
     }
 }

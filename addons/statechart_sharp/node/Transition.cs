@@ -46,6 +46,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public State LcaState { get; protected set; }
         public SortedSet<State> EnterRegion  { get; protected set; }
         public SortedSet<State> EnterRegionEdge { get; protected set; }
+        public SortedSet<State> DeducedEnterSet { get; protected set; }
         public bool IsEnabled { get; set; }
         public bool IsTargetless { get => TargetStates.Count == 0; }
         public bool IsAuto { get; protected set; } = false;
@@ -77,8 +78,10 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
             SourceState = sourceState;
 
-            // Init EnterStates
+            // Init Sets
             EnterRegion = new SortedSet<State>(new StateComparer());
+            EnterRegionEdge = new SortedSet<State>(new StateComparer());
+            DeducedEnterSet = new SortedSet<State>(new StateComparer());
 
             // Targetless, enter-states count is 0
             if (IsTargetless)
@@ -114,13 +117,13 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 }
                 tgtToRoot.Clear();
                 iter = s;
-                bool isAvailable = true;
+                bool isConflict = false;
                 while (iter.ParentState != null)
                 {
                     // Check transition conflicts
                     if (iter.StateMode == StateModeEnum.Compond && EnterRegion.Contains(iter))
                     {
-                        isAvailable = false;
+                        isConflict = true;
                         #if DEBUG
                         GD.PushWarning(GetPath(), ": target-state conflict, name: ", s.Name);
                         #endif
@@ -130,7 +133,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     iter = iter.ParentState;
                 }
                 // Transition t conflicts, not available
-                if (!isAvailable)
+                if (isConflict)
                 {
                     continue;
                 }
@@ -175,6 +178,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 2. For parallel substate not in region, add to region and region-edge
                 3. Exclude LCA
             */
+            // Store substates of parallel
             SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
             foreach (State s in EnterRegion)
             {
@@ -192,6 +196,11 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                         EnterRegionEdge.Add(substate);
                     }
                 }
+                else if (s.StateMode == StateModeEnum.History)
+                {
+                    EnterRegion.Remove(s);
+                    EnterRegionEdge.Add(s);
+                }
             }
             EnterRegion.UnionWith(extraEnterRegion);
             EnterRegion.Remove(LcaState);
@@ -202,6 +211,16 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             // Transition is enabled on default.
             IsEnabled = true;
             EmitSignal(SignalName.Guard, this);
+        }
+
+        public SortedSet<State> GetDeducedEnterSet()
+        {
+            DeducedEnterSet.Clear();
+            foreach (State s in EnterRegionEdge)
+            {
+                s.DeduceDescendants(DeducedEnterSet);
+            }
+            return DeducedEnterSet;
         }
 
         protected StringName GetEventName(EventNameEnum transitionEvent) => transitionEvent switch

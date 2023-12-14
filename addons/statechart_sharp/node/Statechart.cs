@@ -27,7 +27,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public double Delta { get; protected set; }
         public double PhysicsDelta { get; protected set; }
         public InputEvent GameInput { get; protected set; }
-        protected List<State> States { get; set; }
+        public List<State> States { get; protected set; }
         protected State RootState { get; set; }
         protected SortedSet<State> ActiveStates { get; set; }
         protected Queue<StringName> QueuedEvents { get; set; }
@@ -53,6 +53,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             IterStack = new Stack<State>();
             
             // Collect states, activate initial-states
+            // TODO: change init to recursive: 1 run for states, 1 run for transitions
             Node child = GetChild<Node>(0);
             if (child is null || child is not State)
             {

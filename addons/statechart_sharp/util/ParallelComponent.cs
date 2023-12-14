@@ -32,5 +32,14 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 return base.SelectTransitions(eventName);
             }
         }
+
+        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isDeepHistory)
+        {
+            foreach (State s in HostState.Substates)
+            {
+                deducedSet.Add(s);
+                s.DeduceDescendants(deducedSet, isDeepHistory);
+            }
+        }
     }
 }

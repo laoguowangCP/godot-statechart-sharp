@@ -32,5 +32,8 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
             return false;
         }
+
+        public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory) {}
+        public virtual void RefineEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion) {}
     }
 }

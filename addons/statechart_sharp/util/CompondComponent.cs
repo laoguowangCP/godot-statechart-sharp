@@ -28,5 +28,35 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                 return base.SelectTransitions(eventName);
             }
         }
+
+        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isDeepHistory)
+        {
+            State initialState;
+            if (isDeepHistory)
+            {
+                initialState = HostState.CurrentState;
+            }
+            else
+            {
+                initialState = HostState.InitialState;
+            }
+
+            if (initialState != null)
+            {
+                deducedSet.Add(initialState);
+                initialState.DeduceDescendants(deducedSet, isDeepHistory);
+            }
+        }
+
+        public override void RefineEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion)
+        {
+            if (HostState.Substates.Count == 0)
+            {
+                return;
+            }
+
+            // TODO: get lower descendant and upper descendants
+            SortedSet<State> descendantInRegion = enterRegion.GetViewBetween(HostState, );
+        }
     }
 }
