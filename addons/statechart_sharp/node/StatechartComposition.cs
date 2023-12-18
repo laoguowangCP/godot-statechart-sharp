@@ -9,10 +9,19 @@ namespace LGWCP.GodotPlugin.StatechartSharp
     public partial class StatechartComposition : Node
     {
         public int OrderId;
-        public StatechartComposition Host { get; protected set; }
-        public static bool HaveCommonHost(StatechartComposition x, StatechartComposition y)
+        public Statechart HostStatechart { get; protected set; }
+
+        public virtual void Init() {}
+        public virtual void Init(Statechart hostStatechart, ref int ancestorId)
         {
-            return x.Host == y.Host;
+            HostStatechart = hostStatechart;
+            ++ancestorId;
+            OrderId = ancestorId;
+        }
+        public virtual void PostInit() {}
+        public static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
+        {
+            return x.HostStatechart == y.HostStatechart;
         } 
     }
 }

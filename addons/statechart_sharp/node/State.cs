@@ -25,18 +25,20 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         #endregion
 
         [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
-        [Export] public State InitialState { get; protected set; }
+        [Export] public State InitialState { get; set; }
         [Export] public bool IsDeepHistory { get; protected set; }
         
-        public Statechart HostStatechart { get; protected set; }
-        public State ParentState { get; protected set; }
+        // public Statechart HostStatechart { get; protected set; }
+        public State ParentState { get; set; }
         public State CurrentState { get; set; }
-        public int StateId { get; protected set; }
-        public List<State> Substates { get; protected set; }
-        public List<Transition> Transitions { get; protected set; }
-        public bool IsActive { get; set; }
+        public List<State> Substates { get; set; }
+        public List<Transition> Transitions { get; set; }
+        public List<Action> Actions { get; set; }
+        // public bool IsActive { get; set; }
         // public int DescendantCount { get; protected set; }
         protected StateComponent StateComponent { get; set; }
+        public State LowerState { get; set; }
+        public State UpperState { get; set; }
 
         public override void _Ready()
         {
@@ -52,62 +54,15 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     StateComponent = new ParallelComponent(this);
                     break;
                 case StateModeEnum.History:
-                    StateComponent = new ParallelComponent(this);
+                    StateComponent = new HistoryComponent(this);
                     break;
-            }
-            
-            IsActive = false;
-            Node parent = GetParent<Node>();
-            if (parent != null && parent is State)
-            {
-                ParentState = parent as State;
-            }
-            else
-            {
-                ParentState = null;
-            }
-
-            // Get Substates & Transitions
-            var children = GetChildren();
-            foreach(Node child in children)
-            {
-                if (child is State s)
-                {
-                    Substates.Add(s);
-                }
-                else if (child is Transition t)
-                {
-                    // Root state should not have transition
-                    if (ParentState != null)
-                    {
-                        Transitions.Add(t);
-                    }
-                }
-            }
-
-            // Initial state
-            if (StateMode == StateModeEnum.Compond && Substates.Count > 0)
-            {
-                if (InitialState != null && InitialState.ParentState == this)
-                {
-                    CurrentState = InitialState;
-                }
-                else
-                {
-                    CurrentState = Substates[0];
-                }
             }
         }
 
-        public void Init(Statechart stateChart, int stateId)
+        public override void Init(Statechart hostStateChart, ref int ancestorId)
         {
-            #if DEBUG
-            GD.Print("State Init: ", Name);
-            #endif
-
-            // stateComponent.Init(stateChart, parentState);
-            HostStatechart = stateChart;
-            StateId = stateId;
+            base.Init(hostStateChart, ref ancestorId);
+            StateComponent.Init(hostStateChart, ref ancestorId);
         }
 
         public bool SelectTransitions(StringName eventName)

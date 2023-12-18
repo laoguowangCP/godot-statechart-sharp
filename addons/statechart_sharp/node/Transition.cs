@@ -6,20 +6,6 @@ using Godot.Collections;
 
 namespace LGWCP.GodotPlugin.StatechartSharp
 {
-    public enum EventNameEnum : int
-    {
-        PRE_PROCESS,
-        PRE_PHYSICS_PROCESS,
-        PRE_INPUT,
-        PRE_UNHANDLED_INPUT,
-        PROCESS,
-        PHYSICS_PROCESS,
-        INPUT,
-        UNHANDLED_INPUT,
-        AUTO,
-        CUSTOM
-    }
-
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
     public partial class Transition : StatechartComposition
     {
@@ -30,14 +16,14 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         #region define signals
 
         [Signal] public delegate void GuardEventHandler(Transition t);
-        [Signal] public delegate void ActionEventHandler(Transition t);
+        [Signal] public delegate void InvokeEventHandler(Transition t);
         
         #endregion
 
         #region define properties
 
         // If transitEvent is null, transition is auto (checked on state enter)
-        [Export] protected EventNameEnum TransitionEvent { get; set; } = EventNameEnum.PRE_PROCESS;
+        [Export] protected EventNameEnum TransitionEvent { get; set; } = EventNameEnum.PROCESS;
         [Export] protected StringName CustomEventName { get; set; }
         [Export] protected Array<State> TargetStatesArray;
         public StringName EventName { get; protected set; }
@@ -69,7 +55,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
 
         public void Init(State sourceState)
         {
-            EventName = GetEventName(TransitionEvent);
+            EventName = StatechartConfig.GetEventName(TransitionEvent, CustomEventName);
             if (!IsAuto && EventName == null)
             {
                 #if DEBUG
@@ -222,19 +208,5 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
             return DeducedEnterSet;
         }
-
-        protected StringName GetEventName(EventNameEnum transitionEvent) => transitionEvent switch
-        {
-            EventNameEnum.PRE_PROCESS => "pre_process",
-            EventNameEnum.PRE_PHYSICS_PROCESS => "pre_physics_process",
-            EventNameEnum.PRE_INPUT => "pre_input",
-            EventNameEnum.PRE_UNHANDLED_INPUT => "pre_unhandled_input",
-            EventNameEnum.PROCESS => "process",
-            EventNameEnum.PHYSICS_PROCESS => "physics_process",
-            EventNameEnum.INPUT => "input",
-            EventNameEnum.UNHANDLED_INPUT => "unhandled_input",
-            EventNameEnum.CUSTOM => CustomEventName,
-            _ => null
-        };
     }
 }

@@ -16,6 +16,20 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         {
             HostState = state;
         }
+
+        public virtual void Init(Statechart hostStateChart, ref int ancestorId)
+        {
+            // Get parent state
+            Node parent = HostState.GetParent<Node>();
+            if (parent != null && parent is State)
+            {
+                HostState.ParentState = parent as State;
+            }
+
+            // Register in host-statechart
+            HostStatechart.States.Add(HostState);
+        }
+
         public virtual bool SelectTransitions(StringName eventName)
         {
             foreach (Transition t in HostState.Transitions)

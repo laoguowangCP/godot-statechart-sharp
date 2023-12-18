@@ -9,6 +9,66 @@ namespace LGWCP.GodotPlugin.StatechartSharp
     {
         public ParallelComponent(State state) : base(state) {}
 
+        public override void Init(Statechart hostStateChart, ref int ancestorId)
+        {
+            base.Init(hostStateChart, ref ancestorId);
+
+            // Init & collect states, transitions, actions
+            // Get lower-state and upper-state
+            State lastSubstate = null;
+            foreach (Node child in HostState.GetChildren())
+            {
+                if (child is State s)
+                {
+                    if (s.StateMode == StateModeEnum.History)
+                    {
+                        GD.PushWarning(HostState.GetPath(), ": parallel-state should not have history as substate.");
+                        continue;
+                    }
+                    s.Init(hostStateChart, ref ancestorId);
+                    HostState.Substates.Add(s);
+
+                    // First substate is lower-state
+                    if (HostState.LowerState == null)
+                    {
+                        HostState.LowerState = s;
+                    }
+                    lastSubstate = s;
+                }
+                else if (child is Transition t)
+                {
+                    // Root state should not have transition
+                    if (HostState.ParentState == null)
+                    {
+                        continue;
+                    }
+                    t.Init(hostStateChart, ref ancestorId);
+                    HostState.Transitions.Add(t);
+                }
+                else if (child is Action a)
+                {
+                    a.Init(hostStateChart, ref ancestorId);
+                    HostState.Actions.Add(a);
+                }
+            }
+
+            if (lastSubstate != null)
+            {
+                State upper = lastSubstate.UpperState;
+                if (upper != null)
+                {
+                    // Last substate's upper is upper-state
+                    HostState.UpperState = upper;
+                }
+                else
+                {
+                    // Last substate is upper-state
+                    HostState.UpperState = lastSubstate;
+                }
+            }
+            // Else state is atomic, lower and upper are null
+        }
+
         public override bool SelectTransitions(StringName eventName)
         {
             bool isHandled = false;

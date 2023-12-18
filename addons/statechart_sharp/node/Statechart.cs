@@ -2,27 +2,14 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace LGWCP.GodotPlugin.StatechartSharp
 {
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
-    public partial class Statechart : Node
+    public partial class Statechart : StatechartComposition
     {
-        #region Preset EventName
-
-        public readonly StringName PRE_PROCESS = "pre_process";
-        public readonly StringName PRE_PHYSICS_PROCESS = "pre_physics_process";
-        public readonly StringName PRE_INPUT = "pre_input";
-        public readonly StringName PRE_UNHANDLED_INPUT = "pre_unhandled_input";
-        public readonly StringName PROCESS = "process";
-        public readonly StringName PHYSICS_PROCESS = "physics_process";
-        public readonly StringName INPUT = "input";
-        public readonly StringName UNHANDLED_INPUT = "unhandled_input";
-
-
-        #endregion
-
         protected bool IsRunning { get; set; }
         public double Delta { get; protected set; }
         public double PhysicsDelta { get; protected set; }
@@ -53,115 +40,35 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             IterStack = new Stack<State>();
             
             // Collect states, activate initial-states
-            // TODO: change init to recursive: 1 run for states, 1 run for transitions
-            Node child = GetChild<Node>(0);
-            if (child is null || child is not State)
-            {
-                GD.PushError("Require 1 State as child.");
-                return;
-            }
-            RootState = child as State;
-            IterStack.Push(RootState);
-            while (IterStack.Count > 0)
-            {
-                // Init state
-                State top = IterStack.Peek();
-                States.Add(top);
-                top.Init(this, States.Count-1);
-
-                // Update ActiveStates
-                State topParent = top.ParentState;
-                if (topParent is null)
-                {
-                    // Root is active
-                    top.IsActive = true;
-                    ActiveStates.Add(top);
-                }
-                else if (topParent.IsActive)
-                {
-                    if (topParent.StateMode == StateModeEnum.Compond)
-                    {
-                        // For active compound, first substate is active
-                        if (topParent.Substates.Count > 0 && top == topParent.Substates[0])
-                        {
-                            top.IsActive = true;
-                            ActiveStates.Add(top);
-                        }
-                    }
-                    else if (topParent.StateMode == StateModeEnum.Parallel)
-                    {
-                        // For active parallel, all substate is active
-                        top.IsActive = true;
-                        ActiveStates.Add(top);
-                    }
-                }
-                
-                // Iterate states
-                List<State> substates = top.Substates;
-                if (substates.Count > 0)
-                {
-                    // Reversed push
-                    for (int i=substates.Count-1; i>=0; i--)
-                    {
-                        IterStack.Push(substates[i]);
-                    }
-                }
-                else // substates.Count == 0, Pop
-                {
-                    State lastPop;
-                    do // Pop until: top is brother of the last pop state
-                    {
-                        lastPop = IterStack.Pop();
-                    } while (IterStack.Count > 0 && lastPop.ParentState == IterStack.Peek());
-                }
-            }
-
-            #if DEBUG
-            GD.Print("-------- States --------");
-            foreach(State s in States)
-            {
-                GD.Print(s.StateId, ". ", s.Name);
-                foreach (var t in s.Transitions)
-                {
-                    GD.Print("  - ", t.Name);
-                }
-            }
-            GD.Print("-------- Initial ActiveStates --------");
-            foreach(State s in ActiveStates)
-            {
-                GD.Print(s.StateId, ". ", s.Name);
-            }
-            #endif
+            Init();
 
             // Init Transitions
-            foreach (State s in States)
-            {
-                foreach (Transition t in s.Transitions)
-                {
-                    t.Init(s);
-                }
-            }
-
-            #if DEBUG
-            GD.Print("-------- Transitions --------");
-            foreach (State s in States)
-            {
-                foreach (Transition t in s.Transitions)
-                {
-                    GD.Print(t.Name, ", Source", t.SourceState.Name);
-                    foreach(State es in t.EnterRegion)
-                    {
-                        GD.Print("  - ", es.Name, " ", es.StateId);
-                    }
-                }
-            }
-            #endif
-
             // Enter active states, document order
-            foreach (State s in ActiveStates)
+            PostInit();
+        }
+
+        public override void Init()
+        {
+            OrderId = 0;
+            HostStatechart = this;
+            foreach (Node child in GetChildren())
             {
-                s.EmitSignal(State.SignalName.Enter);
+                if (child is State rootState)
+                {
+                    RootState = rootState;
+                }
             }
+            
+            if (RootState != null)
+            {
+                int ancestorId = 0;
+                RootState.Init(this, ref ancestorId);
+            }
+        }
+
+        public override void PostInit()
+        {
+            return;
         }
 
         public void Step(StringName eventName)
@@ -270,29 +177,25 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         public override void _Process(double delta)
         {
             Delta = delta;
-            Step(PRE_PROCESS);
-            Step(PROCESS);
+            Step(StatechartConfig.EVENT_PROCESS);
         }
 
         public override void _PhysicsProcess(double delta)
         {
             Delta = delta;
-            Step(PRE_PHYSICS_PROCESS);
-            Step(PHYSICS_PROCESS);
+            Step(StatechartConfig.EVENT_PHYSICS_PROCESS);
         }
 
         public override void _Input(InputEvent @event)
         {
             GameInput = @event;
-            Step(PRE_INPUT);
-            Step(INPUT);
+            Step(StatechartConfig.EVENT_INPUT);
         }
 
         public override void _UnhandledInput(InputEvent @event)
         {
             GameInput = @event;
-            Step(PRE_UNHANDLED_INPUT);
-            Step(UNHANDLED_INPUT);
+            Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
         }
     }
 }
