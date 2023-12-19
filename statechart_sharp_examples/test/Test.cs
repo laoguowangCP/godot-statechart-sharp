@@ -1,5 +1,5 @@
 using Godot;
-using LGWCP.GodotPlugin.StatechartSharp;
+using LGWCP.StatechartSharp;
 using System;
 
 public partial class Test : Node2D

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LGWCP.GodotPlugin.StatechartSharp
+namespace LGWCP.StatechartSharp
 {
     class CompositionComparer : IComparer<StatechartComposition>
     {

@@ -4,7 +4,7 @@ using Godot;
 using Godot.Collections;
 
 
-namespace LGWCP.GodotPlugin.StatechartSharp
+namespace LGWCP.StatechartSharp
 {
     public enum EventNameEnum : int
     {

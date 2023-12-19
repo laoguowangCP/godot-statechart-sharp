@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using Godot;
 
-namespace LGWCP.GodotPlugin.StatechartSharp
+namespace LGWCP.StatechartSharp
 {
     public class ParallelComponent : StateComponent
     {
@@ -20,6 +20,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             {
                 if (child is State s)
                 {
+                    // Parallel-state should not have history as substate
                     if (s.StateMode == StateModeEnum.History)
                     {
                         GD.PushWarning(HostState.GetPath(), ": parallel-state should not have history as substate.");

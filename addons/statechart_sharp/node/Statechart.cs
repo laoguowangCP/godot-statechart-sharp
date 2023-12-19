@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace LGWCP.GodotPlugin.StatechartSharp
+namespace LGWCP.StatechartSharp
 {
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
     public partial class Statechart : StatechartComposition

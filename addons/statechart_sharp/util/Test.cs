@@ -2,7 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
-using LGWCP.GodotPlugin.StatechartSharp;
+using LGWCP.StatechartSharp;
 
 
 public partial class TestStateChart : Node

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 
-namespace LGWCP.GodotPlugin.StatechartSharp
+namespace LGWCP.StatechartSharp
 {
     public class StateComponent
     {
@@ -30,6 +30,11 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             HostStatechart.States.Add(HostState);
         }
 
+        public virtual bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
+        {
+            return false;
+        }
+
         public virtual bool SelectTransitions(StringName eventName)
         {
             foreach (Transition t in HostState.Transitions)
@@ -48,6 +53,6 @@ namespace LGWCP.GodotPlugin.StatechartSharp
         }
 
         public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory) {}
-        public virtual void RefineEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion) {}
+        public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion) {}
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using Godot;
 
-namespace LGWCP.GodotPlugin.StatechartSharp
+namespace LGWCP.StatechartSharp
 {
     public class CompondComponent : StateComponent
     {
@@ -66,15 +66,24 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             // Set initial-state
             if (HostState.InitialState != null)
             {
-                // Check selected initial-state is available
+                // Check selected initial-state is substate
                 if (HostState.InitialState.ParentState != HostState)
                 {
                     GD.PushWarning(HostState.GetPath(), ": initial-state should be a substate.");
+                    HostState.InitialState = null;
+                }
+
+                // Check selected initial-state is not history
+                if (HostState.InitialState.StateMode == StateModeEnum.History)
+                {
+                    GD.PushWarning(HostState.GetPath(), ": initial-state should not be history.");
+                    HostState.InitialState = null;
                 }
             }
-            else
+
+            // No selected initial-state, use first non-history substate
+            if (HostState.InitialState == null)
             {
-                // No selected initial-state, use first non-history substate
                 foreach (State s in HostState.Substates)
                 {
                     if (s.StateMode != StateModeEnum.History)
@@ -84,6 +93,37 @@ namespace LGWCP.GodotPlugin.StatechartSharp
                     }
                 }
             }
+
+            // Set current-state
+            HostState.CurrentState = HostState.InitialState;
+        }
+
+        public override bool IsConflictToEnterRegion(State newSubstate, SortedSet<State> enterRegion)
+        {
+            bool isConflict = false;
+            /*
+            Conflicts if:
+                (0. It is a compond state)
+                1. State exists in enter-region.
+                2. Another substate is already exist in enter-region.
+            */
+            if (enterRegion.Contains(HostState))
+            {
+                foreach (State s in HostState.Substates)
+                {
+                    if (s == newSubstate)
+                    {
+                        continue;
+                    }
+                    
+                    if (enterRegion.Contains(s))
+                    {
+                        isConflict = true;
+                        break;
+                    }
+                }
+            }
+            return isConflict;
         }
 
         public override bool SelectTransitions(StringName eventName)
@@ -125,7 +165,7 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             }
         }
 
-        public override void RefineEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion)
+        public override void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion)
         {
             if (HostState.Substates.Count == 0)
             {

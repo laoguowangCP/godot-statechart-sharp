@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace LGWCP.GodotPlugin.StatechartSharp
+namespace LGWCP.StatechartSharp
 {
     public enum StateModeEnum : int
     {
@@ -65,6 +65,11 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             StateComponent.Init(hostStateChart, ref ancestorId);
         }
 
+        public bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
+        {
+            return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
+        }
+
         public bool SelectTransitions(StringName eventName)
         {
             return StateComponent.SelectTransitions(eventName);
@@ -75,9 +80,9 @@ namespace LGWCP.GodotPlugin.StatechartSharp
             StateComponent.DeduceDescendants(deducedSet, isHistory);
         }
 
-        public void RefineEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion = null)
+        public void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion = null)
         {
-            StateComponent.RefineEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion);
+            StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion);
         }
     }
 }
