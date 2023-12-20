@@ -70,6 +70,38 @@ namespace LGWCP.StatechartSharp
             // Else state is atomic, lower and upper are null
         }
 
+        public override void ExtendEnterRegion(
+            SortedSet<State> enterRegion,
+            SortedSet<State> enterRegionEdge,
+            SortedSet<State> extraEnterRegion,
+            bool needCheckContain)
+        {
+            if (HostState.Substates.Count == 0)
+            {
+                return;
+            }
+
+            /*
+            Check if substates in enter-region (if need check contain):
+                1. If so, extend this substate (still need check)
+                2. Else, add and extend this substate (no need for check)
+            */
+            
+            foreach (State s in HostState.Substates)
+            {
+                bool stillNeedCheck = false;
+                if (needCheckContain)
+                {
+                    stillNeedCheck = enterRegion.Contains(s);
+                }
+                if (!stillNeedCheck)
+                {
+                    extraEnterRegion.Add(s);
+                }
+                s.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
+            }
+        }
+
         public override bool SelectTransitions(StringName eventName)
         {
             bool isHandled = false;

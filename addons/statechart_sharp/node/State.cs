@@ -70,6 +70,11 @@ namespace LGWCP.StatechartSharp
             return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
         }
 
+        public void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
+        {
+            StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
+        }
+
         public bool SelectTransitions(StringName eventName)
         {
             return StateComponent.SelectTransitions(eventName);
@@ -78,11 +83,6 @@ namespace LGWCP.StatechartSharp
         public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false)
         {
             StateComponent.DeduceDescendants(deducedSet, isHistory);
-        }
-
-        public void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion = null)
-        {
-            StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion);
         }
     }
 }

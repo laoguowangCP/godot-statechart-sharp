@@ -136,6 +136,7 @@ public partial class Transition : StatechartComposition
                 tgtToRoot.Add(iter);
                 iter = iterParent;
             }
+
             // Transition t conflicts, not available
             if (isConflict)
             {
@@ -145,9 +146,11 @@ public partial class Transition : StatechartComposition
                 continue;
             }
 
-            // LCA between src and 1 tgt
+            // local-LCA between src and 1 tgt
             int maxIdx = 1; // Reversed
-            for (int i = 1; i <= srcToRoot.Count && i <= tgtToRoot.Count; i++)
+            int maxCountToRoot = srcToRoot.Count < tgtToRoot.Count
+                ? srcToRoot.Count : tgtToRoot.Count;
+            for (int i = 1; i <= maxCountToRoot; ++i)
             {
                 if (srcToRoot[^i] == tgtToRoot[^i])
                 {
@@ -159,13 +162,19 @@ public partial class Transition : StatechartComposition
                     break;
                 }
             }
+
+            // If local-LCA is ancestor of current LCA, update LCA
             if (maxIdx < reversedLcaIdx)
             {
                 reversedLcaIdx = maxIdx;
             }
 
-            // Update enter-region
-            for (int i = maxIdx; i <= tgtToRoot.Count; i++)
+            /*
+            Update enter-region, with entire tgtToRoot, for that:
+                1. Following targets may check conflict in local-LCA's ancestor
+                2. When extending, states need check substate in enter-region
+            */
+            for (int i = 0; i <= tgtToRoot.Count; i++)
             {
                 EnterRegion.Add(tgtToRoot[^i]);
             }
@@ -177,15 +186,21 @@ public partial class Transition : StatechartComposition
         GD.Print("First element in EnterStates is LCA: ", EnterRegion.First() == LcaState);
         #endif
 
+        // Exclude states from root to LCA (include LCA)
+        for (int i = 1; i <= reversedLcaIdx; ++i)
+        {
+            EnterRegion.Remove(srcToRoot[^i]);
+        }
+
         /*
         Extend enter-region:
             1. For compond, add initial substate to region (recursively)
             2. For parallel, add substate not in region (recursively)
             3. For history, add to region-edge
-            4. Exclude LCA
         */
-        // Store substates of parallel
         SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
+        LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
+        /*
         foreach (State s in EnterRegion)
         {
             if (s.StateMode == StateModeEnum.Compond)
@@ -207,9 +222,8 @@ public partial class Transition : StatechartComposition
                 EnterRegion.Remove(s);
                 EnterRegionEdge.Add(s);
             }
-        }
+        }*/
         EnterRegion.UnionWith(extraEnterRegion);
-        EnterRegion.Remove(LcaState);
     }
 
     public void Check()

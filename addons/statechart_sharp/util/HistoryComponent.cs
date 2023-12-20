@@ -29,9 +29,13 @@ namespace LGWCP.StatechartSharp
             return false;
         }
 
-        public virtual void DeduceDescendants(SortedSet<State> deducedSet)
+        public override void ExtendEnterRegion(
+            SortedSet<State> enterRegion,
+            SortedSet<State> enterRegionEdge,
+            SortedSet<State> extraEnterRegion,
+            bool needCheckContain)
         {
-            
+            enterRegionEdge.Add(HostState);
         }
     }
 }

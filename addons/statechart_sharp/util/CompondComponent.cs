@@ -126,6 +126,38 @@ namespace LGWCP.StatechartSharp
             return isConflict;
         }
 
+        public override void ExtendEnterRegion(
+            SortedSet<State> enterRegion,
+            SortedSet<State> enterRegionEdge,
+            SortedSet<State> extraEnterRegion,
+            bool needCheckContain)
+        {
+            if (HostState.Substates.Count == 0)
+            {
+                return;
+            }
+
+            /*
+            Check if any substate in enter-region (if need check contain):
+                1. If so, extend this substate (still need check contain)
+                2. Else, add and extend initial-state (descendants need no check)
+            */
+            if (needCheckContain)
+            {
+                foreach (State s in HostState.Substates)
+                {
+                    if (enterRegion.Contains(s))
+                    {
+                        s.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, true);
+                        return;
+                    }
+                }
+            }
+
+            extraEnterRegion.Add(HostState.InitialState);
+            HostState.InitialState.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, false);
+        }
+
         public override bool SelectTransitions(StringName eventName)
         {
             bool isHandled = false;
@@ -163,17 +195,6 @@ namespace LGWCP.StatechartSharp
                 deducedSet.Add(initialState);
                 initialState.DeduceDescendants(deducedSet, isDeepHistory);
             }
-        }
-
-        public override void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion)
-        {
-            if (HostState.Substates.Count == 0)
-            {
-                return;
-            }
-
-            // TODO: get lower descendant and upper descendants
-            // SortedSet<State> descendantInRegion = enterRegion.GetViewBetween(HostState, );
         }
     }
 }

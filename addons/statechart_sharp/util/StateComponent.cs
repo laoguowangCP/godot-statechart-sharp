@@ -51,8 +51,9 @@ namespace LGWCP.StatechartSharp
             }
             return false;
         }
+        
+        public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
         public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory) {}
-        public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion) {}
     }
 }
