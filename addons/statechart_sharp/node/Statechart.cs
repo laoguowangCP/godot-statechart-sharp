@@ -18,11 +18,11 @@ namespace LGWCP.StatechartSharp
         protected State RootState { get; set; }
         protected SortedSet<State> ActiveStates { get; set; }
         protected Queue<StringName> QueuedEvents { get; set; }
-        protected Queue<Transition> QueuedTransitions { get; set; }
-        protected Queue<Transition> QueuedEventless { get; set; }
+        protected List<Transition> EnabledTransitions { get; set; }
+        protected List<Transition> EnabledAutoTransitions { get; set; }
+        protected List<Transition> EnabledFilteredTransitions { get; set; }
         protected SortedSet<State> ExitSet { get; set; }
         protected SortedSet<State> EnterSet { get; set; }
-        protected Stack<State> IterStack { get; set; }
         
 
         public override void _Ready()
@@ -32,12 +32,11 @@ namespace LGWCP.StatechartSharp
 
             States = new List<State>();
             ActiveStates = new SortedSet<State>(new StateComparer());
-            QueuedTransitions = new Queue<Transition>();
-            QueuedEventless = new Queue<Transition>();
+            EnabledTransitions = new List<Transition>();
+            EnabledAutoTransitions = new List<Transition>();
+            EnabledFilteredTransitions = new List<Transition>();
             ExitSet = new SortedSet<State>(new ReversedStateComparer());
             EnterSet = new SortedSet<State>(new StateComparer());
-
-            IterStack = new Stack<State>();
             
             // Collect states, activate initial-states
             Init();
@@ -68,6 +67,13 @@ namespace LGWCP.StatechartSharp
 
         public override void PostInit()
         {
+            // Get activeStates
+            RootState.RegisterActiveState(ActiveStates);
+
+            if (RootState != null)
+            {
+                RootState.PostInit();
+            }
             return;
         }
 
@@ -97,81 +103,72 @@ namespace LGWCP.StatechartSharp
         /// <param name="eventName"></param>
         protected void HandleEvent(StringName eventName)
         {
-            // Backup ActiveStates
-            SortedSet<State> prevActiveStates = new(ActiveStates);
-            ExitSet.Clear();
-            EnterSet.Clear();
-            IterStack.Clear();
-
             /*
-                1. Do transition
-                    1.1 Find transitions: matched event-name && is enabled
-                    1.2 Foreach transition:
-                        - Check confliction: LCA in exit-set
-                        - Deduce enter-region to full-enter-set
-                        - Union exit-set and enter-set
-                    1.3 Update active-states
-                2. Do eventless transition
-                    1.1 Find transitions: eventless && is enabled
-                    1.2 Foreach transition:
-                        - Check confliction: LCA in exit-set
-                        - Deduce enter-region to full-enter-set
-                        - Union exit-set and enter-set
-                    1.3 Update active-states
+                1. Select transitions
+                2. Do transitions
+                3. While iter < MAX_AUTO_ITER:
+                    - Select auto-transition
+                    - Do auto-transition
+                    - Break if no queued auto-transition
+                4. Do action of active-states
+
             */
-            // 1. Iter active-states, queue transitions (recursively)
-            RootState.SelectTransitions(eventName);
+            // 1. Select transitions
+            RootState.SelectTransitions(EnabledTransitions, eventName);
 
-            // 2.
-            foreach(State s in ActiveStates)
-            {
-                foreach (Transition t in s.Transitions)
-                {
-                    // filter eventless and not-this-event
-                    if (t.IsAuto || t.EventName != eventName)
-                    {
-                        continue;
-                    }
-
-                    // Check guard
-                    t.Check();
-
-                    // Targetless transition checks only
-                    if (!t.IsTargetless && t.IsEnabled)
-                    {
-                        QueuedTransitions.Enqueue(t);
-                        break;
-                    }
-                }
-            }
-
-            if (QueuedTransitions.Count == 0)
-            {
-                return;
-            }
-
-            // 2. Iter queued transitions
-            for (Transition t=QueuedTransitions.Dequeue();
-                QueuedTransitions.Count>0;
-                t=QueuedTransitions.Dequeue())
-            {
-                // Do queued transitions
-                
-
-                if (QueuedEventless.Count == 0)
-                {
-                    return;
-                }
-
-                // Do queued eventless transitions
-                
-            }
+            // 2. Do transitions
+            DoTransitions(EnabledTransitions);
         }
 
-        public void RegisterTransition(Transition transition)
+        protected void DoTransitions(List<Transition> enabledTransitions)
         {
-            // TODO: Generate exit_set/enter_set here
-            QueuedTransitions.Enqueue(transition);
+            /*
+            Batch:
+                1. Process exit-set (with filter)
+                2. Invoke transitions
+                3. Process enter-set
+            */
+
+            // 1. Exit-set
+            foreach (Transition t in enabledTransitions)
+            {
+                if (ExitSet.Contains(t.LcaState))
+                {
+                    continue;
+                }
+                EnabledFilteredTransitions.Add(t);
+                SortedSet<State> exitStates = ActiveStates.GetViewBetween(
+                    t.LcaState.LowerState, t.LcaState.UpperState);
+                ExitSet.UnionWith(exitStates);
+            }
+            ActiveStates.ExceptWith(ExitSet);
+            foreach (State s in ExitSet)
+            {
+                s.Exit();
+            }
+
+            // 2. Invoke transition
+            foreach (Transition t in EnabledFilteredTransitions)
+            {
+                t.Invoke();
+            }
+
+            // 3. Enter-set
+            foreach (Transition t in EnabledFilteredTransitions)
+            {
+                SortedSet<State> enterRegion = t.EnterRegion;
+                SortedSet<State> deducedEnterStates = t.GetDeducedEnterStates();
+            }
+            ActiveStates.ExceptWith(ExitSet);
+            foreach (State s in ExitSet)
+            {
+                s.Exit();
+            }
+
+            // 4. Clear
+            ExitSet.Clear();
+            EnterSet.Clear();
+            enabledTransitions.Clear();
         }
 
         public override void _Process(double delta)

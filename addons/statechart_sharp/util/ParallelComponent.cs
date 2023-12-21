@@ -87,9 +87,9 @@ namespace LGWCP.StatechartSharp
                 2. Else, add and extend this substate (no need for check)
             */
             
+            bool stillNeedCheck = false;
             foreach (State s in HostState.Substates)
             {
-                bool stillNeedCheck = false;
                 if (needCheckContain)
                 {
                     stillNeedCheck = enterRegion.Contains(s);
@@ -102,7 +102,34 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override bool SelectTransitions(StringName eventName)
+        public override void PostInit()
+        {
+            foreach (State s in HostState.Substates)
+            {
+                s.PostInit();
+            }
+
+            foreach (Transition t in HostState.Transitions)
+            {
+                t.PostInit();
+            }
+
+            foreach (Action a in HostState.Actions)
+            {
+                a.PostInit();
+            }
+        }
+
+        public override void RegisterActiveState(SortedSet<State> activeStates)
+        {
+            activeStates.Add(HostState);
+            foreach (State substate in HostState.Substates)
+            {
+                substate.RegisterActiveState(activeStates);
+            }
+        }
+
+        public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             bool isHandled = false;
             if (HostState.Substates.Count > 0)
@@ -110,7 +137,7 @@ namespace LGWCP.StatechartSharp
                 isHandled = true;
                 foreach (State s in HostState.Substates)
                 {
-                    isHandled = isHandled && s.SelectTransitions(eventName);
+                    isHandled = isHandled && s.SelectTransitions(enabledTransitions, eventName);
                 }
             }
 
@@ -122,7 +149,7 @@ namespace LGWCP.StatechartSharp
             else
             {
                 // Atomic state, or no transition enabled in descendants
-                return base.SelectTransitions(eventName);
+                return base.SelectTransitions(enabledTransitions, eventName);
             }
         }
 

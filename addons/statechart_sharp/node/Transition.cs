@@ -20,7 +20,7 @@ public partial class Transition : StatechartComposition
     #region define properties
 
     // If transitEvent is null, transition is auto (checked on state enter)
-    [Export] protected EventNameEnum TransitionEvent { get; set; } = EventNameEnum.PROCESS;
+    [Export] protected TransitionEventNameEnum TransitionEvent { get; set; } = TransitionEventNameEnum.PROCESS;
     [Export] protected StringName CustomEventName { get; set; }
     [Export] protected Array<State> TargetStatesArray;
     public StringName EventName { get; protected set; }
@@ -29,7 +29,7 @@ public partial class Transition : StatechartComposition
     public State LcaState { get; protected set; }
     public SortedSet<State> EnterRegion  { get; protected set; }
     public SortedSet<State> EnterRegionEdge { get; protected set; }
-    public SortedSet<State> DeducedEnterSet { get; protected set; }
+    public SortedSet<State> DeducedEnterStates { get; protected set; }
     public bool IsEnabled { get; set; }
     public bool IsTargetless { get; protected set; }
     public bool IsAuto { get; protected set; }
@@ -52,7 +52,7 @@ public partial class Transition : StatechartComposition
         // Init Sets
         EnterRegion = new SortedSet<State>(new StateComparer());
         EnterRegionEdge = new SortedSet<State>(new StateComparer());
-        DeducedEnterSet = new SortedSet<State>(new StateComparer());
+        DeducedEnterStates = new SortedSet<State>(new StateComparer());
     }
 
     public override void Init(Statechart hostStatechart, ref int ancestorId)
@@ -67,14 +67,14 @@ public partial class Transition : StatechartComposition
         }
 
         // Handle event-name
-        EventName = StatechartConfig.GetEventName(TransitionEvent, CustomEventName);
-        IsAuto = EventName == null;
-        if (TransitionEvent == EventNameEnum.CUSTOM && EventName == null)
+        if (TransitionEvent == TransitionEventNameEnum.CUSTOM && CustomEventName == null)
         {
             #if DEBUG
             GD.PushError(Name, ": no event name for custom-event. For eventless, switch to Auto.");
             #endif
         }
+        EventName = StatechartConfig.GetTransitionEventName(TransitionEvent, CustomEventName);
+        IsAuto = TransitionEvent == TransitionEventNameEnum.AUTO;
 
         // Set targetless
         IsTargetless = TargetStates.Count == 0;
@@ -192,37 +192,9 @@ public partial class Transition : StatechartComposition
             EnterRegion.Remove(srcToRoot[^i]);
         }
 
-        /*
-        Extend enter-region:
-            1. For compond, add initial substate to region (recursively)
-            2. For parallel, add substate not in region (recursively)
-            3. For history, add to region-edge
-        */
+        // Extend enter-region
         SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
         LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
-        /*
-        foreach (State s in EnterRegion)
-        {
-            if (s.StateMode == StateModeEnum.Compond)
-            {
-                if (s.Substates.Count == 0) continue;
-                EnterRegionEdge.Add(s);
-            }
-            else if (s.StateMode == StateModeEnum.Parallel)
-            {
-                foreach (State substate in s.Substates)
-                {
-                    if (EnterRegion.Contains(substate)) continue;
-                    extraEnterRegion.Add(substate);
-                    EnterRegionEdge.Add(substate);
-                }
-            }
-            else if (s.StateMode == StateModeEnum.History)
-            {
-                EnterRegion.Remove(s);
-                EnterRegionEdge.Add(s);
-            }
-        }*/
         EnterRegion.UnionWith(extraEnterRegion);
     }
 
@@ -233,14 +205,19 @@ public partial class Transition : StatechartComposition
         EmitSignal(SignalName.Guard, this);
     }
 
-    public SortedSet<State> GetDeducedEnterSet()
+    public void Invoke()
     {
-        DeducedEnterSet.Clear();
+        EmitSignal(SignalName.Invoke);
+    }
+
+    public SortedSet<State> GetDeducedEnterStates()
+    {
+        DeducedEnterStates.Clear();
         foreach (State s in EnterRegionEdge)
         {
-            s.DeduceDescendants(DeducedEnterSet);
+            s.DeduceDescendants(DeducedEnterStates);
         }
-        return DeducedEnterSet;
+        return DeducedEnterStates;
     }
 }
 

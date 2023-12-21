@@ -21,7 +21,25 @@ namespace LGWCP.StatechartSharp
             #endif
         }
 
-        public override bool SelectTransitions(StringName eventName)
+        public override void ExtendEnterRegion(
+            SortedSet<State> enterRegion,
+            SortedSet<State> enterRegionEdge,
+            SortedSet<State> extraEnterRegion,
+            bool needCheckContain)
+        {
+            enterRegion.Remove(HostState);
+            enterRegionEdge.Add(HostState);
+        }
+
+        public override void RegisterActiveState(SortedSet<State> activeStates)
+        {
+            // History should not register active
+            #if DEBUG
+            GD.PushError(HostState.GetPath(), ": history state should not be touched when stable.");
+            #endif
+        }
+        
+        public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             #if DEBUG
             GD.PushError("Should not select transition in history state.");
@@ -29,13 +47,9 @@ namespace LGWCP.StatechartSharp
             return false;
         }
 
-        public override void ExtendEnterRegion(
-            SortedSet<State> enterRegion,
-            SortedSet<State> enterRegionEdge,
-            SortedSet<State> extraEnterRegion,
-            bool needCheckContain)
+        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
         {
-            enterRegionEdge.Add(HostState);
+            // TODO:impl
         }
     }
 }

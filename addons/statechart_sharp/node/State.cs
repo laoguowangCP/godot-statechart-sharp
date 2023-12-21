@@ -65,6 +65,21 @@ namespace LGWCP.StatechartSharp
             StateComponent.Init(hostStateChart, ref ancestorId);
         }
 
+        public override void PostInit()
+        {
+            StateComponent.PostInit();
+        }
+
+        public void Exit()
+        {
+            EmitSignal(SignalName.Exit);
+        }
+
+        public void RegisterActiveState(SortedSet<State> activeStates)
+        {
+            StateComponent.RegisterActiveState(activeStates);
+        }
+
         public bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
         {
             return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
@@ -75,9 +90,9 @@ namespace LGWCP.StatechartSharp
             StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
         }
 
-        public bool SelectTransitions(StringName eventName)
+        public bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName = null)
         {
-            return StateComponent.SelectTransitions(eventName);
+            return StateComponent.SelectTransitions(enabledTransitions, eventName);
         }
 
         public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false)

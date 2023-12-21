@@ -30,21 +30,26 @@ namespace LGWCP.StatechartSharp
             HostStatechart.States.Add(HostState);
         }
 
+        public virtual void PostInit() {}
+
+        public virtual void RegisterActiveState(SortedSet<State> activeStates) {}
+
         public virtual bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
         {
             return false;
         }
 
-        public virtual bool SelectTransitions(StringName eventName)
+        public virtual bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             foreach (Transition t in HostState.Transitions)
             {
+                // t.EventName == null && eventName == null
                 if (t.EventName == eventName)
                 {
                     t.Check();
                     if (t.IsEnabled)
                     {
-                        HostStatechart.RegisterTransition(t);
+                        enabledTransitions.Add(t);
                         return true;
                     }
                 }

@@ -69,14 +69,19 @@ namespace LGWCP.StatechartSharp
                 // Check selected initial-state is substate
                 if (HostState.InitialState.ParentState != HostState)
                 {
+                    #if DEBUG
                     GD.PushWarning(HostState.GetPath(), ": initial-state should be a substate.");
+                    #endif
                     HostState.InitialState = null;
                 }
 
                 // Check selected initial-state is not history
                 if (HostState.InitialState.StateMode == StateModeEnum.History)
                 {
-                    GD.PushWarning(HostState.GetPath(), ": initial-state should not be history.");
+                    #if DEBUG
+                    GD.PushWarning(HostState.GetPath(), @": initial-state should not be history. 
+                        If initial-state not modified, make sure first substate is not history.");
+                    #endif
                     HostState.InitialState = null;
                 }
             }
@@ -96,6 +101,24 @@ namespace LGWCP.StatechartSharp
 
             // Set current-state
             HostState.CurrentState = HostState.InitialState;
+        }
+
+        public override void PostInit()
+        {
+            foreach (State s in HostState.Substates)
+            {
+                s.PostInit();
+            }
+
+            foreach (Transition t in HostState.Transitions)
+            {
+                t.PostInit();
+            }
+
+            foreach (Action a in HostState.Actions)
+            {
+                a.PostInit();
+            }
         }
 
         public override bool IsConflictToEnterRegion(State newSubstate, SortedSet<State> enterRegion)
@@ -157,13 +180,19 @@ namespace LGWCP.StatechartSharp
             extraEnterRegion.Add(HostState.InitialState);
             HostState.InitialState.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, false);
         }
+        
+        public override void RegisterActiveState(SortedSet<State> activeStates)
+        {
+            activeStates.Add(HostState);
+            HostState.CurrentState.RegisterActiveState(activeStates);
+        }
 
-        public override bool SelectTransitions(StringName eventName)
+        public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             bool isHandled = false;
             if (HostState.CurrentState != null)
             {
-                isHandled = HostState.CurrentState.SelectTransitions(eventName);
+                isHandled = HostState.CurrentState.SelectTransitions(enabledTransitions, eventName);
             }
 
             if (isHandled)
@@ -174,7 +203,7 @@ namespace LGWCP.StatechartSharp
             else
             {
                 // No transition enabled in descendants, or atomic state
-                return base.SelectTransitions(eventName);
+                return base.SelectTransitions(enabledTransitions, eventName);
             }
         }
 
