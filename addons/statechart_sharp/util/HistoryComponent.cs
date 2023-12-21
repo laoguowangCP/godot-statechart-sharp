@@ -49,7 +49,21 @@ namespace LGWCP.StatechartSharp
 
         public override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
         {
-            // TODO:impl
+            /*
+            History-state start the deduction:
+                1. Promises that parent-state is compond.
+                2. Handle the sibling.
+                3. Will not be called recursively by other states.
+            */
+            #if DEBUG
+            if (HostState.ParentState.StateMode != StateModeEnum.Compond)
+            {
+                GD.PushError(HostState.GetPath(), ": unexpected behavior, history-state has non-compond parent.");
+            }
+            #endif
+            State deducedSubstate = HostState.ParentState.CurrentState;
+            deducedSet.Add(deducedSubstate);
+            deducedSubstate.DeduceDescendants(deducedSet, HostState.IsDeepHistory);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace LGWCP.StatechartSharp
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
     public partial class Statechart : StatechartComposition
     {
+        [Export] protected int MaxAutoTransitionRound = 8;
         protected bool IsRunning { get; set; }
         public double Delta { get; protected set; }
         public double PhysicsDelta { get; protected set; }
@@ -106,7 +107,7 @@ namespace LGWCP.StatechartSharp
             /*
                 1. Select transitions
                 2. Do transitions
-                3. While iter < MAX_AUTO_ITER:
+                3. While iter < MAX_AUTO_ROUND:
                     - Select auto-transition
                     - Do auto-transition
                     - Break if no queued auto-transition
@@ -118,6 +119,25 @@ namespace LGWCP.StatechartSharp
 
             // 2. Do transitions
             DoTransitions(EnabledTransitions);
+
+            // 3. Auto transition
+            for (int i = 0; i <= MaxAutoTransitionRound; ++i)
+            {
+                RootState.SelectTransitions(EnabledTransitions);
+
+                // Active-states are stable
+                if (EnabledTransitions.Count == 0)
+                {
+                    break;
+                }
+                DoTransitions(EnabledTransitions); 
+            }
+
+            // 4. Invoke action of active-states
+            foreach (State s in ActiveStates)
+            {
+                s.StateInvoke(eventName);
+            }
         }
 
         protected void DoTransitions(List<Transition> enabledTransitions)
@@ -126,7 +146,7 @@ namespace LGWCP.StatechartSharp
             Batch:
                 1. Process exit-set (with filter)
                 2. Invoke transitions
-                3. Process enter-set
+                3. Process enter-set (update current)
             */
 
             // 1. Exit-set
@@ -144,13 +164,13 @@ namespace LGWCP.StatechartSharp
             ActiveStates.ExceptWith(ExitSet);
             foreach (State s in ExitSet)
             {
-                s.Exit();
+                s.StateExit();
             }
 
             // 2. Invoke transition
             foreach (Transition t in EnabledFilteredTransitions)
             {
-                t.Invoke();
+                t.TransitionInvoke();
             }
 
             // 3. Enter-set
@@ -158,17 +178,20 @@ namespace LGWCP.StatechartSharp
             {
                 SortedSet<State> enterRegion = t.EnterRegion;
                 SortedSet<State> deducedEnterStates = t.GetDeducedEnterStates();
+                EnterSet.UnionWith(enterRegion);
+                EnterSet.UnionWith(deducedEnterStates);
             }
-            ActiveStates.ExceptWith(ExitSet);
-            foreach (State s in ExitSet)
+            ActiveStates.UnionWith(EnterSet);
+            foreach (State s in EnterSet)
             {
-                s.Exit();
+                s.StateEnter();
             }
 
             // 4. Clear
+            enabledTransitions.Clear();
             ExitSet.Clear();
             EnterSet.Clear();
-            enabledTransitions.Clear();
+            EnabledFilteredTransitions.Clear();
         }
 
         public override void _Process(double delta)

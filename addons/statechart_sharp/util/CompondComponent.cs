@@ -207,23 +207,28 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isDeepHistory)
+        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
         {
-            State initialState;
-            if (isDeepHistory)
+            State deducedSubstate;
+            if (isHistory)
             {
-                initialState = HostState.CurrentState;
+                deducedSubstate = HostState.CurrentState;
             }
             else
             {
-                initialState = HostState.InitialState;
+                deducedSubstate = HostState.InitialState;
             }
 
-            if (initialState != null)
+            if (deducedSubstate != null)
             {
-                deducedSet.Add(initialState);
-                initialState.DeduceDescendants(deducedSet, isDeepHistory);
+                deducedSet.Add(deducedSubstate);
+                deducedSubstate.DeduceDescendants(deducedSet, isHistory);
             }
+        }
+
+        public override void HandleSubstateEnter(State substate)
+        {
+            HostState.CurrentState = substate;
         }
     }
 }

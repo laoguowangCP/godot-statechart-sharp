@@ -153,12 +153,12 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isDeepHistory)
+        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
         {
             foreach (State s in HostState.Substates)
             {
                 deducedSet.Add(s);
-                s.DeduceDescendants(deducedSet, isDeepHistory);
+                s.DeduceDescendants(deducedSet, isHistory);
             }
         }
     }

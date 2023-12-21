@@ -70,9 +70,23 @@ namespace LGWCP.StatechartSharp
             StateComponent.PostInit();
         }
 
-        public void Exit()
+        public void StateEnter()
+        {
+            ParentState.HandleSubstateEnter(this);
+            EmitSignal(SignalName.Enter);
+        }
+
+        public void StateExit()
         {
             EmitSignal(SignalName.Exit);
+        }
+
+        public void StateInvoke(StringName eventName)
+        {
+            foreach (Action a in Actions)
+            {
+                a.ActionInvoke(eventName);
+            }
         }
 
         public void RegisterActiveState(SortedSet<State> activeStates)
@@ -98,6 +112,11 @@ namespace LGWCP.StatechartSharp
         public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false)
         {
             StateComponent.DeduceDescendants(deducedSet, isHistory);
+        }
+
+        public void HandleSubstateEnter(State substate)
+        {
+            StateComponent.HandleSubstateEnter(substate);
         }
     }
 }

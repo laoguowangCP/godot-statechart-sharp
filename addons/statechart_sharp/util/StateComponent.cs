@@ -44,14 +44,11 @@ namespace LGWCP.StatechartSharp
             foreach (Transition t in HostState.Transitions)
             {
                 // t.EventName == null && eventName == null
-                if (t.EventName == eventName)
+                bool isEnabled = t.Check(eventName);
+                if (isEnabled)
                 {
-                    t.Check();
-                    if (t.IsEnabled)
-                    {
-                        enabledTransitions.Add(t);
-                        return true;
-                    }
+                    enabledTransitions.Add(t);
+                    return true;
                 }
             }
             return false;
@@ -60,5 +57,7 @@ namespace LGWCP.StatechartSharp
         public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
         public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory) {}
+
+        public virtual void HandleSubstateEnter(State substate) {}
     }
 }

@@ -12,7 +12,7 @@ namespace LGWCP.StatechartSharp
     {
         #region define signals
 
-        [Signal] public delegate void ActionEventHandler(Transition t);
+        [Signal] public delegate void InvokeEventHandler(Transition t);
         
         #endregion
 
@@ -36,5 +36,14 @@ namespace LGWCP.StatechartSharp
             }
             EventName = StatechartConfig.GetTransitionEventName(ActionEvent, CustomEventName);
         }
+
+        internal void ActionInvoke(StringName eventName)
+        {
+            if (EventName == eventName)
+            {
+                EmitSignal(SignalName.Invoke);
+            }
+        }
+
     }
 }

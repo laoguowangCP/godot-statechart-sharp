@@ -30,9 +30,10 @@ public partial class Transition : StatechartComposition
     public SortedSet<State> EnterRegion  { get; protected set; }
     public SortedSet<State> EnterRegionEdge { get; protected set; }
     public SortedSet<State> DeducedEnterStates { get; protected set; }
-    public bool IsEnabled { get; set; }
+    public bool IsEnabled { protected get; set; }
     public bool IsTargetless { get; protected set; }
     public bool IsAuto { get; protected set; }
+
     public double Delta
     {
         get { return SourceState.HostStatechart.Delta; }
@@ -198,14 +199,22 @@ public partial class Transition : StatechartComposition
         EnterRegion.UnionWith(extraEnterRegion);
     }
 
-    public void Check()
+    internal bool Check(StringName eventName)
     {
         // Transition is enabled on default.
-        IsEnabled = true;
-        EmitSignal(SignalName.Guard, this);
+        if (EventName == eventName)
+        {
+            IsEnabled = true;
+            EmitSignal(SignalName.Guard, this);
+        }
+        else
+        {
+            IsEnabled = false;
+        }
+        return IsEnabled;
     }
 
-    public void Invoke()
+    public void TransitionInvoke()
     {
         EmitSignal(SignalName.Invoke);
     }
