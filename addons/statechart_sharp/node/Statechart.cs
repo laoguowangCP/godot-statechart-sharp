@@ -10,7 +10,7 @@ namespace LGWCP.StatechartSharp
     [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
     public partial class Statechart : StatechartComposition
     {
-        [Export] protected int MaxAutoTransitionRound = 8;
+        [Export(PropertyHint.Range, "0,32,")] protected int MaxAutoTransitionRound = 8;
         protected bool IsRunning { get; set; }
         public double Delta { get; protected set; }
         public double PhysicsDelta { get; protected set; }
