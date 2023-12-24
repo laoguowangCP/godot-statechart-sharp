@@ -7,6 +7,10 @@ namespace LGWCP.StatechartSharp
 {
     public class CompondComponent : StateComponent
     {
+        protected State CurrentState
+        {
+            get => HostState.CurrentState;
+        }
         public CompondComponent(State state) : base(state) {}
 
         public override void Init(Statechart hostStateChart, ref int ancestorId)
@@ -184,7 +188,10 @@ namespace LGWCP.StatechartSharp
         public override void RegisterActiveState(SortedSet<State> activeStates)
         {
             activeStates.Add(HostState);
-            HostState.CurrentState.RegisterActiveState(activeStates);
+            if (CurrentState != null)
+            {
+                CurrentState.RegisterActiveState(activeStates);
+            }
         }
 
         public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)

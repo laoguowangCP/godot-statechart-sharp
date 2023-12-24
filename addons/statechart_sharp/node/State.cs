@@ -14,7 +14,7 @@ namespace LGWCP.StatechartSharp
         History
     }
 
-    [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
+    [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg"), Tool]
     public partial class State : StatechartComposition
     {
         #region define signals
@@ -25,8 +25,8 @@ namespace LGWCP.StatechartSharp
         #endregion
 
         [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
-        [Export] public State InitialState { get; set; }
         [Export] public bool IsDeepHistory { get; protected set; }
+        [Export] public State InitialState { get; set; }
         
         // public Statechart HostStatechart { get; protected set; }
         public State ParentState { get; set; }
@@ -34,8 +34,6 @@ namespace LGWCP.StatechartSharp
         public List<State> Substates { get; set; }
         public List<Transition> Transitions { get; set; }
         public List<Action> Actions { get; set; }
-        // public bool IsActive { get; set; }
-        // public int DescendantCount { get; protected set; }
         protected StateComponent StateComponent { get; set; }
         public State LowerState { get; set; }
         public State UpperState { get; set; }
@@ -44,6 +42,7 @@ namespace LGWCP.StatechartSharp
         {
             Substates = new List<State>();
             Transitions = new List<Transition>();
+            Actions = new List<Action>();
             ProcessMode = ProcessModeEnum.Disabled;
             switch (StateMode)
             {

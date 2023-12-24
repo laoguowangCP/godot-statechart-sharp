@@ -20,72 +20,14 @@ public partial class Test : Node2D
 		}
 	}
 
-	public void OnRootEnter()
+	public void CheckCtoF(Transition t)
 	{
-		GD.Print("Root_p Enter...");
-	}
-	
-	public void OnTopEnter()
-	{
-		GD.Print("Top_c Enter...");
-	}
-
-	public void OnStateAEnter()
-	{
-		GD.Print("StateA Enter...");
-	}
-
-	public void OnStateBEnter()
-	{
-		GD.Print("StateB Enter...");
-	}
-
-	public void OnStateCEnter()
-	{
-		GD.Print("StateC Enter...");
-	}
-
-	public void OnStateDEnter()
-	{
-		GD.Print("StateD Enter...");
-	}
-
-	public void OnStateEEnter()
-	{
-		GD.Print("StateE Enter...");
-	}
-
-	public void OnStateFEnter()
-	{
-		GD.Print("StateF Enter...");
-	}
-
-	public void OnStateGEnter()
-	{
-		GD.Print("StateG Enter...");
-	}
-
-	public void CheckAtoB(Transition t)
-	{
-		GD.Print("Check AtoB");
-		// t.SetChecked(false);
-	}
-
-	public void CheckCtoD(Transition t)
-	{
-		GD.Print("Check CtoD");
-		// t.SetChecked(true);
-	}
-
-	public void CheckDtoE(Transition t)
-	{
-		GD.Print("Check DtoE");
-		// t.SetChecked(true);
-	}
-
-	public void CheckEtoA(Transition t)
-	{
-		GD.Print("Check EtoA");
-		// t.SetChecked(true);
+		// Beware transition is enabled at default
+		bool isEnabled = Input.IsActionJustPressed("Jump");
+		if (isEnabled)
+		{
+			GD.Print("- CtoF is enabled");
+		}
+		t.IsEnabled = isEnabled;
 	}
 }

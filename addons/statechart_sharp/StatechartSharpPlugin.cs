@@ -10,13 +10,13 @@ public partial class StatechartSharpPlugin : EditorPlugin
 	
 	public override void _EnterTree()
 	{
-		StateInspectorPlugin = new StatechartInspectorPlugin();
-		AddInspectorPlugin(StateInspectorPlugin);
+		// StateInspectorPlugin = new StatechartInspectorPlugin();
+		// AddInspectorPlugin(StateInspectorPlugin);
 	}
 
 	public override void _ExitTree()
 	{
-		RemoveInspectorPlugin(StateInspectorPlugin);
+		// RemoveInspectorPlugin(StateInspectorPlugin);
 	}
 }
 #endif

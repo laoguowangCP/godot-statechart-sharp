@@ -175,7 +175,7 @@ public partial class Transition : StatechartComposition
                 1. Following targets may check conflict in local-LCA's ancestor
                 2. When extending, states need check substate in enter-region
             */
-            for (int i = 0; i <= tgtToRoot.Count; i++)
+            for (int i = 1; i <= tgtToRoot.Count; ++i)
             {
                 EnterRegion.Add(tgtToRoot[^i]);
             }
@@ -183,9 +183,6 @@ public partial class Transition : StatechartComposition
 
         // LCA
         LcaState = srcToRoot[^reversedLcaIdx];
-        #if DEBUG
-        GD.Print("First element in EnterStates is LCA: ", EnterRegion.First() == LcaState);
-        #endif
 
         // Exclude states from root to LCA (include LCA)
         for (int i = 1; i <= reversedLcaIdx; ++i)

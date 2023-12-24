@@ -8,7 +8,8 @@ namespace LGWCP.StatechartSharp
     {
         public override bool _CanHandle(GodotObject @object)
         {
-            return @object is State;
+            // return @object is State;
+            return false;
         }
 
         public override bool _ParseProperty(
@@ -22,7 +23,11 @@ namespace LGWCP.StatechartSharp
         {
             if (@object is State)
             {
-                
+                if (name == "StateMode")
+                {
+                    AddPropertyEditor(name, new StateModeEditor());
+                    return true;
+                }
             }
 
             return false;

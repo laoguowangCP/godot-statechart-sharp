@@ -33,6 +33,7 @@ namespace LGWCP.StatechartSharp
 
             States = new List<State>();
             ActiveStates = new SortedSet<State>(new StateComparer());
+            QueuedEvents = new Queue<StringName>();
             EnabledTransitions = new List<Transition>();
             EnabledAutoTransitions = new List<Transition>();
             EnabledFilteredTransitions = new List<Transition>();
