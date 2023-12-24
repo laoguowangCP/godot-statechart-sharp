@@ -15,6 +15,7 @@ namespace LGWCP.StatechartSharp
         public double Delta { get; protected set; }
         public double PhysicsDelta { get; protected set; }
         public InputEvent GameInput { get; protected set; }
+        public InputEvent GameUnhandledInput { get; protected set; }
         public List<State> States { get; protected set; }
         protected State RootState { get; set; }
         protected SortedSet<State> ActiveStates { get; set; }

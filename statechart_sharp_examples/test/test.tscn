@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://dfbo3gwcydo12"]
+[gd_scene load_steps=7 format=3 uid="uid://dfbo3gwcydo12"]
 
 [ext_resource type="Script" path="res://statechart_sharp_examples/test/Test.cs" id="1_41un4"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_q1613"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_p5p63"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_o48pw"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Action.cs" id="5_jkb0n"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kopcr"]
 font_size = 32
@@ -15,42 +16,55 @@ script = ExtResource("1_41un4")
 script = ExtResource("2_q1613")
 
 [node name="Root" type="Node" parent="Statechart"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 
 [node name="A" type="Node" parent="Statechart/Root"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 
 [node name="B" type="Node" parent="Statechart/Root/A"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 StateMode = 1
 
 [node name="C" type="Node" parent="Statechart/Root/A/B"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 
 [node name="C2F" type="Node" parent="Statechart/Root/A/B/C" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_o48pw")
 TargetStatesArray = [NodePath("../../../F")]
 
+[node name="Action" type="Node" parent="Statechart/Root/A/B/C"]
+script = ExtResource("5_jkb0n")
+
 [node name="D" type="Node" parent="Statechart/Root/A/B"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 StateMode = 1
 
 [node name="E" type="Node" parent="Statechart/Root/A/B"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 
 [node name="F" type="Node" parent="Statechart/Root/A"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 
 [node name="A history" type="Node" parent="Statechart/Root/A"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 StateMode = 2
 
 [node name="A history deep" type="Node" parent="Statechart/Root/A"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 StateMode = 2
 IsDeepHistory = true
 
 [node name="G" type="Node" parent="Statechart/Root"]
+process_mode = 4
 script = ExtResource("3_p5p63")
 
 [node name="Camera2D" type="Camera2D" parent="."]
