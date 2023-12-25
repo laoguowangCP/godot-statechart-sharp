@@ -51,7 +51,7 @@ namespace LGWCP.StatechartSharp
         {
             /*
             History-state start the deduction:
-                1. Promises that parent-state is compond.
+                1. Promises that parent-state is compond (or not?)
                 2. Handle the sibling.
                 3. Will not be called recursively by other states.
             */

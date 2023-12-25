@@ -204,7 +204,7 @@ namespace LGWCP.StatechartSharp
 
         public override void _PhysicsProcess(double delta)
         {
-            Delta = delta;
+            PhysicsDelta = delta;
             Step(StatechartConfig.EVENT_PHYSICS_PROCESS);
         }
 
@@ -216,7 +216,7 @@ namespace LGWCP.StatechartSharp
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            GameInput = @event;
+            GameUnhandledInput = @event;
             Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
         }
     }

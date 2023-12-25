@@ -1,36 +1,24 @@
-# statechart-sharp
+<p align="center">
+  <img src="./addons/statechart_sharp/icon/Statechart.svg" height="200px" />
+</p>
 
- A simple statechart for Godot, implemented in C#.
+# Statechart Sharp
 
----
+ > A simple statechart for Godot, implemented in C#.
 
-## TODO
+## Table of Content
 
-- Overall:
-  
-  - change to event driven
-  - all stack no recursion
-  - follow SCXML standard
-  - add Save/Load feature
+- [Intro](#intro)
+- [Start](#start)
+- [Spec](#spec)
+- [Todo](#todo)
 
-- Statechart:
-  
-  - queue event when running
-  - parse event, rather than process/input etc.
-  - replace state recursion with stack
-  - add Save/Load method
+## Intro
 
-- State:
-  
-  - remove "isInstant" flag
-  - remove `SubstateTransit`
-  - eliminate loop function (StateProcess/StateInput etc.)
-  - enter/transition use document order, exit use reversed document order
-  - add Save/Load method
+## Start
 
-- Transition:
-  
-  - The exit set of a set of transitions is the union of the exit sets of the individual transitions.
-  - The entry set of a set of transitions is the union of the entry sets of the individual transitions.
+## Spec
 
-- Component: shorten class name (parallelComponent/compondComponent)
+## Todo
+
+- Statechart: add save/load method.
