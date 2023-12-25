@@ -7,13 +7,13 @@ using Godot.Collections;
 namespace LGWCP.StatechartSharp
 {
 
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
+[GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg"), Tool]
 public partial class Transition : StatechartComposition
 {
     #region define signals
 
-    [Signal] public delegate void GuardEventHandler(Transition t);
-    [Signal] public delegate void InvokeEventHandler(Transition t);
+    [Signal] public delegate void GuardEventHandler(Transition transition);
+    [Signal] public delegate void InvokeEventHandler(Transition transition);
     
     #endregion
 
@@ -36,11 +36,19 @@ public partial class Transition : StatechartComposition
 
     public double Delta
     {
-        get { return SourceState.HostStatechart.Delta; }
+        get { return HostStatechart.Delta; }
+    }
+    public double PhysicsDelta
+    {
+        get { return HostStatechart.PhysicsDelta; }
     }
     public InputEvent GameInput
     {
-        get { return SourceState.HostStatechart.GameInput; }
+        get { return HostStatechart.GameInput; }
+    }
+    public InputEvent GameUnhandledInput
+    {
+        get { return HostStatechart.GameUnhandledInput; }
     }
 
     #endregion

@@ -7,12 +7,12 @@ using System.Linq;
 
 namespace LGWCP.StatechartSharp
 {
-    [GlobalClass, Icon("res://addons/statechart_sharp/icon/Action.svg")]
+    [GlobalClass, Icon("res://addons/statechart_sharp/icon/Action.svg"), Tool]
     public partial class Action : StatechartComposition
     {
         #region define signals
 
-        [Signal] public delegate void InvokeEventHandler(Transition t);
+        [Signal] public delegate void InvokeEventHandler(Action action);
         
         #endregion
 
@@ -22,6 +22,23 @@ namespace LGWCP.StatechartSharp
         [Export] protected StringName CustomEventName { get; set; }
         
         public StringName EventName { get; protected set; }
+
+        public double Delta
+        {
+            get { return HostStatechart.Delta; }
+        }
+        public double PhysicsDelta
+        {
+            get { return HostStatechart.PhysicsDelta; }
+        }
+        public InputEvent GameInput
+        {
+            get { return HostStatechart.GameInput; }
+        }
+        public InputEvent GameUnhandledInput
+        {
+            get { return HostStatechart.GameUnhandledInput; }
+        }
 
         #endregion
 
@@ -41,7 +58,7 @@ namespace LGWCP.StatechartSharp
         {
             if (EventName == eventName)
             {
-                EmitSignal(SignalName.Invoke);
+                EmitSignal(SignalName.Invoke, this);
             }
         }
 
