@@ -150,7 +150,7 @@ namespace LGWCP.StatechartSharp
             return isConflict;
         }
 
-        public override void ExtendEnterRegion(
+        internal override void ExtendEnterRegion(
             SortedSet<State> enterRegion,
             SortedSet<State> enterRegionEdge,
             SortedSet<State> extraEnterRegion,
@@ -211,26 +211,23 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
+        internal override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
         {
-            State deducedSubstate;
-            if (isHistory)
-            {
-                deducedSubstate = HostState.CurrentState;
-            }
-            else
-            {
-                deducedSubstate = HostState.InitialState;
-            }
+            deducedSet.Add(HostState);
+            State deducedSubstate = isHistory ? CurrentState : InitialState;
 
             if (deducedSubstate != null)
             {
-                deducedSet.Add(deducedSubstate);
                 deducedSubstate.DeduceDescendants(deducedSet, isHistory);
             }
         }
 
-        public override void HandleSubstateEnter(State substate)
+        internal override void DeduceDescendantsFromHistory(SortedSet<State> deducedSet, bool isDeepHistory)
+        {
+            CurrentState.DeduceDescendants(deducedSet, HostState.IsDeepHistory);
+        }
+
+        internal override void HandleSubstateEnter(State substate)
         {
             HostState.CurrentState = substate;
         }

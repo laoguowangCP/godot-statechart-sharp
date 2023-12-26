@@ -20,57 +20,50 @@ namespace LGWCP.StatechartSharp
             {
                 if (child is State s)
                 {
-                    // Parallel-state should not have history as substate
-                    if (s.StateMode == StateModeEnum.History)
-                    {
-                        GD.PushWarning(HostState.GetPath(), ": parallel-state should not have history as substate.");
-                        continue;
-                    }
                     s.Init(hostStateChart, ref ancestorId);
-                    HostState.Substates.Add(s);
+                    Substates.Add(s);
 
                     // First substate is lower-state
-                    if (HostState.LowerState == null)
+                    if (LowerState == null)
                     {
-                        HostState.LowerState = s;
+                        LowerState = s;
                     }
                     lastSubstate = s;
                 }
                 else if (child is Transition t)
                 {
                     // Root state should not have transition
-                    if (HostState.ParentState == null)
+                    if (ParentState == null)
                     {
                         continue;
                     }
                     t.Init(hostStateChart, ref ancestorId);
-                    HostState.Transitions.Add(t);
+                    Transitions.Add(t);
                 }
                 else if (child is Action a)
                 {
                     a.Init(hostStateChart, ref ancestorId);
-                    HostState.Actions.Add(a);
+                    Actions.Add(a);
                 }
             }
 
             if (lastSubstate != null)
             {
-                State upper = lastSubstate.UpperState;
-                if (upper != null)
+                if (lastSubstate.UpperState != null)
                 {
                     // Last substate's upper is upper-state
-                    HostState.UpperState = upper;
+                    UpperState = lastSubstate.UpperState;
                 }
                 else
                 {
                     // Last substate is upper-state
-                    HostState.UpperState = lastSubstate;
+                    UpperState = lastSubstate;
                 }
             }
             // Else state is atomic, lower and upper are null
         }
 
-        public override void ExtendEnterRegion(
+        internal override void ExtendEnterRegion(
             SortedSet<State> enterRegion,
             SortedSet<State> enterRegionEdge,
             SortedSet<State> extraEnterRegion,
@@ -88,23 +81,23 @@ namespace LGWCP.StatechartSharp
             */
             
             bool stillNeedCheck = false;
-            foreach (State s in HostState.Substates)
+            foreach (State substate in Substates)
             {
                 if (needCheckContain)
                 {
-                    stillNeedCheck = enterRegion.Contains(s);
+                    stillNeedCheck = enterRegion.Contains(substate);
                 }
                 if (!stillNeedCheck)
                 {
-                    extraEnterRegion.Add(s);
+                    extraEnterRegion.Add(substate);
                 }
-                s.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
+                substate.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
             }
         }
 
         internal override void PostInit()
         {
-            foreach (State s in HostState.Substates)
+            foreach (State s in Substates)
             {
                 s.PostInit();
             }
@@ -132,10 +125,10 @@ namespace LGWCP.StatechartSharp
         public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             bool isHandled = false;
-            if (HostState.Substates.Count > 0)
+            if (Substates.Count > 0)
             {
                 isHandled = true;
-                foreach (State s in HostState.Substates)
+                foreach (State s in Substates)
                 {
                     isHandled = isHandled && s.SelectTransitions(enabledTransitions, eventName);
                 }
@@ -153,13 +146,32 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
+        internal override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
         {
-            foreach (State s in HostState.Substates)
+            deducedSet.Add(HostState);
+            foreach (State s in Substates)
             {
-                deducedSet.Add(s);
+                // Pass history-states
+                if (s.StateMode == StateModeEnum.History)
+                {
+                    continue;
+                }
                 s.DeduceDescendants(deducedSet, isHistory);
             }
+        }
+
+        internal override void DeduceDescendantsFromHistory(SortedSet<State> deducedSet, bool isDeepHistory)
+        {
+            foreach (State substate in Substates)
+            {
+                // Pass history-states
+                if (substate.StateMode == StateModeEnum.History)
+                {
+                    continue;
+                }
+                substate.DeduceDescendants(deducedSet, HostState.IsDeepHistory);
+            }
+            
         }
     }
 }

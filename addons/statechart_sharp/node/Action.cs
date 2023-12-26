@@ -42,15 +42,15 @@ namespace LGWCP.StatechartSharp
 
         #endregion
 
-        public override void Init(Statechart hostStatechart, ref int ancestorId)
+        internal override void Init(Statechart hostStatechart, ref int ancestorId)
         {
             base.Init(hostStatechart, ref ancestorId);
+            #if DEBUG
             if (ActionEvent == TransitionEventNameEnum.CUSTOM && CustomEventName == null)
             {
-                #if DEBUG
                 GD.PushError(Name, ": no event name for custom-event.");
-                #endif
             }
+            #endif
             EventName = StatechartConfig.GetTransitionEventName(ActionEvent, CustomEventName);
         }
 

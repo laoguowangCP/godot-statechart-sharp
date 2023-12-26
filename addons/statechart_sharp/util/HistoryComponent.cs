@@ -5,6 +5,8 @@ namespace LGWCP.StatechartSharp
 {
     public class HistoryComponent : StateComponent
     {
+        protected bool IsDeepHistory { get => HostState.IsDeepHistory; }
+
         public HistoryComponent(State state) : base(state) {}
 
         internal override void Init(Statechart hostStateChart, ref int ancestorId)
@@ -21,7 +23,7 @@ namespace LGWCP.StatechartSharp
             #endif
         }
 
-        public override void ExtendEnterRegion(
+        internal override void ExtendEnterRegion(
             SortedSet<State> enterRegion,
             SortedSet<State> enterRegionEdge,
             SortedSet<State> extraEnterRegion,
@@ -30,40 +32,28 @@ namespace LGWCP.StatechartSharp
             enterRegion.Remove(HostState);
             enterRegionEdge.Add(HostState);
         }
-
-        public override void RegisterActiveState(SortedSet<State> activeStates)
-        {
-            // History should not register active
-            #if DEBUG
-            GD.PushError(HostState.GetPath(), ": history state should not be touched when stable.");
-            #endif
-        }
         
         public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
-            #if DEBUG
-            GD.PushError("Should not select transition in history state.");
-            #endif
+            // Do nothing
             return false;
         }
 
-        public override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
+        internal override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
         {
             /*
             History-state start the deduction:
-                1. Promises that parent-state is compond (or not?)
+                1. Do not promises that parent is compond.
                 2. Handle the sibling.
-                3. Will not be called recursively by other states.
+                3. Do not be called recursively by other states.
             */
             #if DEBUG
-            if (HostState.ParentState.StateMode != StateModeEnum.Compond)
+            if (ParentState.StateMode != StateModeEnum.Compond)
             {
                 GD.PushError(HostState.GetPath(), ": unexpected behavior, history-state has non-compond parent.");
             }
             #endif
-            State deducedSubstate = HostState.ParentState.CurrentState;
-            deducedSet.Add(deducedSubstate);
-            deducedSubstate.DeduceDescendants(deducedSet, HostState.IsDeepHistory);
+            ParentState.DeduceDescendantsFromHistory(deducedSet, IsDeepHistory);
         }
     }
 }

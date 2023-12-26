@@ -17,7 +17,7 @@ namespace LGWCP.StatechartSharp
         public InputEvent GameInput { get; protected set; }
         public InputEvent GameUnhandledInput { get; protected set; }
         public List<State> States { get; protected set; }
-        protected State RootState { get; set; }
+        public State RootState { get; protected set; }
         protected SortedSet<State> ActiveStates { get; set; }
         protected Queue<StringName> QueuedEvents { get; set; }
         protected List<Transition> EnabledTransitions { get; set; }

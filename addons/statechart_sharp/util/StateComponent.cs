@@ -30,6 +30,13 @@ namespace LGWCP.StatechartSharp
                 ParentState = parent as State;
             }
 
+            #if DEBUG
+            if (ParentState == null && HostState != HostStatechart.RootState)
+            {
+                GD.PushWarning(HostState.GetPath(), ": non-root state should have parent-state.");
+            }
+            #endif
+
             // Register in host-statechart
             HostStatechart.RegisterState(HostState);
         }
@@ -58,10 +65,12 @@ namespace LGWCP.StatechartSharp
             return false;
         }
         
-        public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
+        internal virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
-        public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory) {}
+        internal virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory) {}
 
-        public virtual void HandleSubstateEnter(State substate) {}
+        internal virtual void DeduceDescendantsFromHistory(SortedSet<State> deducedSet, bool isDeepHistory) {}
+
+        internal virtual void HandleSubstateEnter(State substate) {}
     }
 }

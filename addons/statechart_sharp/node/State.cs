@@ -112,6 +112,10 @@ namespace LGWCP.StatechartSharp
         {
             StateComponent.DeduceDescendants(deducedSet, isHistory);
         }
+        public void DeduceDescendantsFromHistory(SortedSet<State> deducedSet, bool isDeepHistory = false)
+        {
+            StateComponent.DeduceDescendantsFromHistory(deducedSet, isDeepHistory);
+        }
 
         public void HandleSubstateEnter(State substate)
         {
