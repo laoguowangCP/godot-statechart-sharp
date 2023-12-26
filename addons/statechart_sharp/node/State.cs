@@ -58,13 +58,13 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void Init(Statechart hostStateChart, ref int ancestorId)
+        internal override void Init(Statechart hostStateChart, ref int ancestorId)
         {
             base.Init(hostStateChart, ref ancestorId);
             StateComponent.Init(hostStateChart, ref ancestorId);
         }
 
-        public override void PostInit()
+        internal override void PostInit()
         {
             StateComponent.PostInit();
         }

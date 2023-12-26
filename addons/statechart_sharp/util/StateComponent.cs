@@ -8,29 +8,33 @@ namespace LGWCP.StatechartSharp
     public class StateComponent
     {
         protected State HostState;
-        protected Statechart HostStatechart
-        {
-            get => HostState.HostStatechart;
-        }
+        protected Statechart HostStatechart { get => HostState.HostStatechart; }
+        protected State ParentState { get => HostState.ParentState; set { HostState.ParentState = value; } }
+        protected List<State> Substates { get => HostState.Substates; }
+        protected State LowerState { get => HostState.LowerState; set { HostState.LowerState = value; } }
+        protected State UpperState { get => HostState.UpperState; set { HostState.UpperState = value; } }
+        protected List<Transition> Transitions { get => HostState.Transitions; }
+        protected List<Action> Actions { get => HostState.Actions; }
+
         public StateComponent(State state)
         {
             HostState = state;
         }
 
-        public virtual void Init(Statechart hostStateChart, ref int ancestorId)
+        internal virtual void Init(Statechart hostStateChart, ref int ancestorId)
         {
             // Get parent state
             Node parent = HostState.GetParent<Node>();
             if (parent != null && parent is State)
             {
-                HostState.ParentState = parent as State;
+                ParentState = parent as State;
             }
 
             // Register in host-statechart
-            HostStatechart.States.Add(HostState);
+            HostStatechart.RegisterState(HostState);
         }
 
-        public virtual void PostInit() {}
+        internal virtual void PostInit() {}
 
         public virtual void RegisterActiveState(SortedSet<State> activeStates) {}
 

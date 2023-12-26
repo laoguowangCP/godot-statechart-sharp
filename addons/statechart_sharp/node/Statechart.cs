@@ -49,7 +49,7 @@ namespace LGWCP.StatechartSharp
             PostInit();
         }
 
-        public override void Init()
+        internal override void Init()
         {
             OrderId = 0;
             HostStatechart = this;
@@ -68,7 +68,7 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void PostInit()
+        internal override void PostInit()
         {
             // Get activeStates
             RootState.RegisterActiveState(ActiveStates);
@@ -78,6 +78,11 @@ namespace LGWCP.StatechartSharp
                 RootState.PostInit();
             }
             return;
+        }
+
+        internal void RegisterState(State state)
+        {
+            States.Add(state);
         }
 
         public void Step(StringName eventName)

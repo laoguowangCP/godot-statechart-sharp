@@ -9,7 +9,7 @@ namespace LGWCP.StatechartSharp
     {
         public ParallelComponent(State state) : base(state) {}
 
-        public override void Init(Statechart hostStateChart, ref int ancestorId)
+        internal override void Init(Statechart hostStateChart, ref int ancestorId)
         {
             base.Init(hostStateChart, ref ancestorId);
 
@@ -102,7 +102,7 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void PostInit()
+        internal override void PostInit()
         {
             foreach (State s in HostState.Substates)
             {

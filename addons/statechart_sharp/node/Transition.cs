@@ -64,7 +64,7 @@ public partial class Transition : StatechartComposition
         DeducedEnterStates = new SortedSet<State>(new StateComparer());
     }
 
-    public override void Init(Statechart hostStatechart, ref int ancestorId)
+    internal override void Init(Statechart hostStatechart, ref int ancestorId)
     {
         base.Init(hostStatechart, ref ancestorId);
 
@@ -89,7 +89,7 @@ public partial class Transition : StatechartComposition
         IsTargetless = TargetStates.Count == 0;
     }
 
-    public override void PostInit()
+    internal override void PostInit()
     {
         if (IsTargetless)
         {

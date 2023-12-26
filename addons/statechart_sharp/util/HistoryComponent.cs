@@ -7,7 +7,7 @@ namespace LGWCP.StatechartSharp
     {
         public HistoryComponent(State state) : base(state) {}
 
-        public override void Init(Statechart hostStateChart, ref int ancestorId)
+        internal override void Init(Statechart hostStateChart, ref int ancestorId)
         {
             base.Init(hostStateChart, ref ancestorId);
             

@@ -7,13 +7,12 @@ namespace LGWCP.StatechartSharp
 {
     public class CompondComponent : StateComponent
     {
-        protected State CurrentState
-        {
-            get => HostState.CurrentState;
-        }
+        protected State CurrentState { get => HostState.CurrentState; }
+        protected State InitialState { get => HostState.InitialState; set { HostState.InitialState = value; } }
+        
         public CompondComponent(State state) : base(state) {}
 
-        public override void Init(Statechart hostStateChart, ref int ancestorId)
+        internal override void Init(Statechart hostStateChart, ref int ancestorId)
         {
             base.Init(hostStateChart, ref ancestorId);
 
@@ -25,53 +24,52 @@ namespace LGWCP.StatechartSharp
                 if (child is State s)
                 {
                     s.Init(hostStateChart, ref ancestorId);
-                    HostState.Substates.Add(s);
+                    Substates.Add(s);
 
                     // First substate is lower-state
-                    if (HostState.LowerState == null)
+                    if (LowerState == null)
                     {
-                        HostState.LowerState = s;
+                        LowerState = s;
                     }
                     lastSubstate = s;
                 }
                 else if (child is Transition t)
                 {
                     // Root state should not have transition
-                    if (HostState.ParentState == null)
+                    if (ParentState == null)
                     {
                         continue;
                     }
                     t.Init(hostStateChart, ref ancestorId);
-                    HostState.Transitions.Add(t);
+                    Transitions.Add(t);
                 }
                 else if (child is Action a)
                 {
                     a.Init(hostStateChart, ref ancestorId);
-                    HostState.Actions.Add(a);
+                    Actions.Add(a);
                 }
             }
 
             if (lastSubstate != null)
             {
-                State upper = lastSubstate.UpperState;
-                if (upper != null)
+                if (lastSubstate.UpperState != null)
                 {
                     // Last substate's upper is upper-state
-                    HostState.UpperState = upper;
+                    UpperState = lastSubstate.UpperState;
                 }
                 else
                 {
                     // Last substate is upper-state
-                    HostState.UpperState = lastSubstate;
+                    UpperState = lastSubstate;
                 }
             }
             // Else state is atomic, lower and upper are null
 
             // Set initial-state
-            if (HostState.InitialState != null)
+            if (InitialState != null)
             {
                 // Check selected initial-state is substate
-                if (HostState.InitialState.ParentState != HostState)
+                if (InitialState.ParentState != HostState)
                 {
                     #if DEBUG
                     GD.PushWarning(HostState.GetPath(), ": initial-state should be a substate.");
@@ -80,17 +78,16 @@ namespace LGWCP.StatechartSharp
                 }
 
                 // Check selected initial-state is not history
-                if (HostState.InitialState.StateMode == StateModeEnum.History)
+                if (InitialState.StateMode == StateModeEnum.History)
                 {
                     #if DEBUG
-                    GD.PushWarning(HostState.GetPath(), @": initial-state should not be history. 
-                        If initial-state not modified, make sure first substate is not history.");
+                    GD.PushWarning(HostState.GetPath(), @": initial-state should not be history.");
                     #endif
                     HostState.InitialState = null;
                 }
             }
 
-            // No selected initial-state, use first non-history substate
+            // No assigned initial-state, use first non-history substate
             if (HostState.InitialState == null)
             {
                 foreach (State s in HostState.Substates)
@@ -107,7 +104,7 @@ namespace LGWCP.StatechartSharp
             HostState.CurrentState = HostState.InitialState;
         }
 
-        public override void PostInit()
+        internal override void PostInit()
         {
             foreach (State s in HostState.Substates)
             {
