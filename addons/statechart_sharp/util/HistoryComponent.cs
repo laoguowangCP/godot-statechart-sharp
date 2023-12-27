@@ -5,7 +5,7 @@ namespace LGWCP.StatechartSharp
 {
     public class HistoryComponent : StateComponent
     {
-        protected bool IsDeepHistory { get => HostState.IsDeepHistory; }
+        private bool IsDeepHistory { get => HostState.IsDeepHistory; }
 
         public HistoryComponent(State state) : base(state) {}
 
@@ -17,8 +17,20 @@ namespace LGWCP.StatechartSharp
             #if DEBUG
             foreach (Node child in HostState.GetChildren())
             {
-                GD.PushWarning(HostState.GetPath(), ": History state should not have child.");
+                GD.PushWarning(
+                    HostState.GetPath(),
+                    ": History state should not have child.");
                 break;
+            }
+            #endif
+
+            #if DEBUG
+            if (ParentState.StateMode == StateModeEnum.Parallel && !IsDeepHistory)
+            {
+                GD.PushWarning(
+                    HostState.GetPath(),
+                    @": shallow history state under parallel has no function
+                        , you may remove history or switch to deep history.");
             }
             #endif
         }

@@ -7,8 +7,16 @@ namespace LGWCP.StatechartSharp
 {
     public class CompondComponent : StateComponent
     {
-        protected State CurrentState { get => HostState.CurrentState; }
-        protected State InitialState { get => HostState.InitialState; set { HostState.InitialState = value; } }
+        private State CurrentState
+        {
+            get => HostState.CurrentState;
+            set { HostState.CurrentState = value; }
+        }
+        private State InitialState
+        {
+            get => HostState.InitialState;
+            set { HostState.InitialState = value; }
+        }
         
         public CompondComponent(State state) : base(state) {}
 
@@ -72,57 +80,62 @@ namespace LGWCP.StatechartSharp
                 if (InitialState.ParentState != HostState)
                 {
                     #if DEBUG
-                    GD.PushWarning(HostState.GetPath(), ": initial-state should be a substate.");
+                    GD.PushWarning(
+                        HostState.GetPath(),
+                        ": initial-state should be a substate.");
                     #endif
-                    HostState.InitialState = null;
+                    InitialState = null;
                 }
 
                 // Check selected initial-state is not history
                 if (InitialState.StateMode == StateModeEnum.History)
                 {
                     #if DEBUG
-                    GD.PushWarning(HostState.GetPath(), @": initial-state should not be history.");
+                    GD.PushWarning(
+                        HostState.GetPath(),
+                        @": initial-state should not be history.");
                     #endif
-                    HostState.InitialState = null;
+                    InitialState = null;
                 }
             }
 
             // No assigned initial-state, use first non-history substate
-            if (HostState.InitialState == null)
+            if (InitialState == null)
             {
-                foreach (State s in HostState.Substates)
+                foreach (State substate in Substates)
                 {
-                    if (s.StateMode != StateModeEnum.History)
+                    if (substate.StateMode != StateModeEnum.History)
                     {
-                        HostState.InitialState = s;
+                        InitialState = substate;
                         break;
                     }
                 }
             }
 
             // Set current-state
-            HostState.CurrentState = HostState.InitialState;
+            CurrentState = InitialState;
         }
 
         internal override void PostInit()
         {
-            foreach (State s in HostState.Substates)
+            foreach (State s in Substates)
             {
                 s.PostInit();
             }
 
-            foreach (Transition t in HostState.Transitions)
+            foreach (Transition t in Transitions)
             {
                 t.PostInit();
             }
 
-            foreach (Action a in HostState.Actions)
+            foreach (Action a in Actions)
             {
                 a.PostInit();
             }
         }
 
-        public override bool IsConflictToEnterRegion(State newSubstate, SortedSet<State> enterRegion)
+        public override bool IsConflictToEnterRegion(
+            State newSubstate, SortedSet<State> enterRegion)
         {
             bool isConflict = false;
             /*
@@ -156,30 +169,43 @@ namespace LGWCP.StatechartSharp
             SortedSet<State> extraEnterRegion,
             bool needCheckContain)
         {
-            if (HostState.Substates.Count == 0)
+            /*
+            if need check (state is in region, checked by parent):
+                if any substate in region:
+                    extend this very substate, still need check
+                else (no substate in region)
+                    extend initial state, need no check
+            else (need no check)
+                add state to extra-region
+                extend initial state, need no check
+            */
+
+            // Need no check, add to extra
+            if (!needCheckContain)
             {
-                return;
+                extraEnterRegion.Add(HostState);
             }
 
-            /*
-            Check if any substate in enter-region (if need check contain):
-                1. If so, extend this substate (still need check contain)
-                2. Else, add and extend initial-state (descendants need no check)
-            */
+            // Need check
             if (needCheckContain)
             {
-                foreach (State s in HostState.Substates)
+                foreach (State substate in Substates)
                 {
-                    if (enterRegion.Contains(s))
+                    if (enterRegion.Contains(substate))
                     {
-                        s.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, true);
+                        substate.ExtendEnterRegion(
+                            enterRegion, enterRegionEdge, extraEnterRegion);
                         return;
                     }
                 }
             }
 
-            extraEnterRegion.Add(HostState.InitialState);
-            HostState.InitialState.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, false);
+            // Need no check, or need check but no substate in region
+            if (InitialState != null)
+            {
+                InitialState.ExtendEnterRegion(
+                    enterRegion, enterRegionEdge, extraEnterRegion, false);
+            }
         }
         
         public override void RegisterActiveState(SortedSet<State> activeStates)
@@ -191,12 +217,14 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
+        public override bool SelectTransitions(
+            List<Transition> enabledTransitions, StringName eventName)
         {
             bool isHandled = false;
             if (HostState.CurrentState != null)
             {
-                isHandled = HostState.CurrentState.SelectTransitions(enabledTransitions, eventName);
+                isHandled = CurrentState.SelectTransitions(
+                    enabledTransitions, eventName);
             }
 
             if (isHandled)
@@ -211,7 +239,8 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        internal override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
+        internal override void DeduceDescendants(
+            SortedSet<State> deducedSet, bool isHistory)
         {
             deducedSet.Add(HostState);
             State deducedSubstate = isHistory ? CurrentState : InitialState;
@@ -222,7 +251,8 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        internal override void DeduceDescendantsFromHistory(SortedSet<State> deducedSet, bool isDeepHistory)
+        internal override void DeduceDescendantsFromHistory(
+            SortedSet<State> deducedSet, bool isDeepHistory)
         {
             CurrentState.DeduceDescendants(deducedSet, HostState.IsDeepHistory);
         }

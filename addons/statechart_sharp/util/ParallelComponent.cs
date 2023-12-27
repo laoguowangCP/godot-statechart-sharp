@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlTypes;
 using Godot;
 
@@ -69,30 +70,53 @@ namespace LGWCP.StatechartSharp
             SortedSet<State> extraEnterRegion,
             bool needCheckContain)
         {
-            if (HostState.Substates.Count == 0)
+            /*
+            if need check (state in region, checked by parent):
+                if any history substate in region:
+                    extend this very history
+                    return
+                else (no history substate in region)
+                    foreach substate:
+                        if substate in region:
+                            extend, still need check
+                        else (substate not in region)
+                            extend, need no check
+            else (state not in region)
+                add state to extra-region
+                foreach substate:
+                    extend, need no check
+            */
+
+            // Need no check, add to extra
+            if (!needCheckContain)
             {
-                return;
+                extraEnterRegion.Add(HostState);
             }
 
-            /*
-            Check if substates in enter-region (if need check contain):
-                1. If so, extend this substate (still need check)
-                2. Else, add and extend this substate (no need for check)
-            */
-            
-            bool stillNeedCheck = false;
+            // Need check
+            if (needCheckContain)
+            {
+                foreach (State substate in Substates)
+                {
+                    if (substate.IsHistory && enterRegion.Contains(substate))
+                    {
+                        substate.ExtendEnterRegion(
+                            enterRegion, enterRegionEdge, extraEnterRegion);
+                        return;
+                    }
+                }
+            }
+
+            // No history substate in region
             foreach (State substate in Substates)
             {
-                if (needCheckContain)
-                {
-                    stillNeedCheck = enterRegion.Contains(substate);
-                }
-                if (!stillNeedCheck)
-                {
-                    extraEnterRegion.Add(substate);
-                }
-                substate.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
+                // Need check && substate in region  => still need check
+                bool stillNeedCheck =
+                    needCheckContain && enterRegion.Contains(substate);
+                substate.ExtendEnterRegion(
+                    enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
             }
+
         }
 
         internal override void PostInit()
@@ -102,12 +126,12 @@ namespace LGWCP.StatechartSharp
                 s.PostInit();
             }
 
-            foreach (Transition t in HostState.Transitions)
+            foreach (Transition t in Transitions)
             {
                 t.PostInit();
             }
 
-            foreach (Action a in HostState.Actions)
+            foreach (Action a in Actions)
             {
                 a.PostInit();
             }

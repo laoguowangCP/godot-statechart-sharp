@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -19,37 +18,24 @@ public partial class Transition : StatechartComposition
 
     #region define properties
 
-    // If transitEvent is null, transition is auto (checked on state enter)
-    [Export] protected TransitionEventNameEnum TransitionEvent { get; set; } = TransitionEventNameEnum.PROCESS;
-    [Export] protected StringName CustomEventName { get; set; }
-    [Export] protected Array<State> TargetStatesArray;
-    public StringName EventName { get; protected set; }
-    protected List<State> TargetStates { get; set; }
-    public State SourceState { get; protected set; }
-    public State LcaState { get; protected set; }
-    public SortedSet<State> EnterRegion  { get; protected set; }
-    public SortedSet<State> EnterRegionEdge { get; protected set; }
-    public SortedSet<State> DeducedEnterStates { get; protected set; }
-    public bool IsEnabled { protected get; set; }
-    public bool IsTargetless { get; protected set; }
-    public bool IsAuto { get; protected set; }
+    [Export] private TransitionEventNameEnum TransitionEvent { get; set; } = TransitionEventNameEnum.PROCESS;
+    [Export] private StringName CustomEventName { get; set; }
+    [Export] private Array<State> TargetStatesArray;
+    private StringName EventName { get; set; }
+    private List<State> TargetStates { get; set; }
+    private State SourceState { get; set; }
+    internal State LcaState { get; private set; }
+    internal SortedSet<State> EnterRegion  { get; private set; }
+    private SortedSet<State> EnterRegionEdge { get; set; }
+    private SortedSet<State> DeducedEnterStates { get; set; }
+    internal bool IsTargetless { get; private set; }
+    internal bool IsAuto { get; private set; }
+    public bool IsEnabled { private get; set; }
 
-    public double Delta
-    {
-        get { return HostStatechart.Delta; }
-    }
-    public double PhysicsDelta
-    {
-        get { return HostStatechart.PhysicsDelta; }
-    }
-    public InputEvent GameInput
-    {
-        get { return HostStatechart.GameInput; }
-    }
-    public InputEvent GameUnhandledInput
-    {
-        get { return HostStatechart.GameUnhandledInput; }
-    }
+    public double Delta { get => HostStatechart.Delta; }
+    public double PhysicsDelta { get=>HostStatechart.PhysicsDelta; }
+    public InputEvent GameInput { get => HostStatechart.GameInput; }
+    public InputEvent GameUnhandledInput { get => HostStatechart.GameUnhandledInput; }
 
     #endregion
 
@@ -104,12 +90,12 @@ public partial class Transition : StatechartComposition
         */
 
         // Record source-to-root
-        State iter = SourceState;
+        State iterState = SourceState;
         List<State> srcToRoot = new List<State>();
-        while (iter != null)
+        while (iterState != null)
         {
-            srcToRoot.Add(iter);
-            iter = iter.ParentState;
+            srcToRoot.Add(iterState);
+            iterState = iterState.ParentState;
         }
 
         // Init LCA as SourceState, the first state in srcToRoot
@@ -121,29 +107,31 @@ public partial class Transition : StatechartComposition
             if (!IsCommonHost(target, SourceState))
             {
                 #if DEBUG
-                GD.PushWarning(Name, ": target states should under same statechart.");
+                GD.PushWarning(
+                    GetPath(),
+                    ": target states should under same statechart.");
                 #endif
                 continue;
             }
 
             // Record target-to-root
             tgtToRoot.Clear();
-            iter = target;
+            iterState = target;
             bool isConflict = false;
-            while (iter != null)
+            while (iterState != null)
             {
                 // Check transition conflicts
-                State iterParent = iter.ParentState;
+                State iterParent = iterState.ParentState;
                 if (iterParent != null)
                 {
-                    if (iterParent.IsConflictToEnterRegion(iter, EnterRegion))
+                    if (iterParent.IsConflictToEnterRegion(iterState, EnterRegion))
                     {
                         isConflict = true;
                         break;
                     }
                 }
-                tgtToRoot.Add(iter);
-                iter = iterParent;
+                tgtToRoot.Add(iterState);
+                iterState = iterParent;
             }
 
             // Transition t conflicts, not available
@@ -192,16 +180,16 @@ public partial class Transition : StatechartComposition
         // LCA
         LcaState = srcToRoot[^reversedLcaIdx];
 
-        // Exclude states from root to LCA (include LCA)
+        // Extend enter-region under LCA
+        SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
+        LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
+        EnterRegion.UnionWith(extraEnterRegion);
+
+        // Remove states from root to LCA (include LCA)
         for (int i = 1; i <= reversedLcaIdx; ++i)
         {
             EnterRegion.Remove(srcToRoot[^i]);
         }
-
-        // Extend enter-region
-        SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
-        LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
-        EnterRegion.UnionWith(extraEnterRegion);
     }
 
     internal bool Check(StringName eventName)
@@ -219,12 +207,12 @@ public partial class Transition : StatechartComposition
         return IsEnabled;
     }
 
-    public void TransitionInvoke()
+    internal void TransitionInvoke()
     {
         EmitSignal(SignalName.Invoke);
     }
 
-    public SortedSet<State> GetDeducedEnterStates()
+    internal SortedSet<State> GetDeducedEnterStates()
     {
         DeducedEnterStates.Clear();
         foreach (State s in EnterRegionEdge)

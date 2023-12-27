@@ -1,6 +1,5 @@
 #if TOOLS
 using Godot;
-using System;
 using LGWCP.StatechartSharp;
 
 [Tool]

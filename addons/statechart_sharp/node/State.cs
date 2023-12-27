@@ -1,9 +1,5 @@
 using Godot;
-using Godot.Collections;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 
 namespace LGWCP.StatechartSharp
 {
@@ -37,6 +33,7 @@ namespace LGWCP.StatechartSharp
         protected StateComponent StateComponent { get; set; }
         public State LowerState { get; set; }
         public State UpperState { get; set; }
+        public bool IsHistory { get => StateMode == StateModeEnum.History; }
 
         public override void _Ready()
         {

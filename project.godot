@@ -10,22 +10,14 @@ config_version=5
 
 [application]
 
-config/name="statechart-sharp"
+config/name="godot-statechart-sharp"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [dotnet]
 
-project/assembly_name="state-chart-sharp"
+project/assembly_name="godot-statechart-sharp"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/statechart_sharp/plugin.cfg")
-
-[input]
-
-Jump={
-"deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"echo":false,"script":null)
-]
-}

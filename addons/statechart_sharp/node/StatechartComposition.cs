@@ -1,14 +1,10 @@
 using Godot;
-using Godot.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LGWCP.StatechartSharp
 {
     public partial class StatechartComposition : Node
     {
-        public int OrderId;
+        internal int OrderId;
         public Statechart HostStatechart { get; protected set; }
 
         internal virtual void Init() {}
