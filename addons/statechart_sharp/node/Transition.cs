@@ -20,7 +20,7 @@ public partial class Transition : StatechartComposition
 
     [Export] private TransitionEventNameEnum TransitionEvent { get; set; } = TransitionEventNameEnum.PROCESS;
     [Export] private StringName CustomEventName { get; set; }
-    [Export] private Array<State> TargetStatesArray;
+    [Export] private Array<State> TargetStatesArray = new Array<State>();
     private StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
     private State SourceState { get; set; }
@@ -43,6 +43,7 @@ public partial class Transition : StatechartComposition
     {
         // Convert GD collection to CS collection
         TargetStates = new List<State>(TargetStatesArray);
+        
 
         // Init Sets
         EnterRegion = new SortedSet<State>(new StateComparer());

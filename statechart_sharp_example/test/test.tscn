@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://o0e66x5whaq4"]
+
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_xqbg4"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="2_7b5e1"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="3_wyf2g"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Action.cs" id="4_na1lv"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Statechart" type="Node" parent="."]
+script = ExtResource("1_xqbg4")
+
+[node name="Root" type="Node" parent="Statechart"]
+process_mode = 4
+script = ExtResource("2_7b5e1")
+StateMode = 1
+
+[node name="State" type="Node" parent="Statechart/Root"]
+process_mode = 4
+script = ExtResource("2_7b5e1")
+
+[node name="Action" type="Node" parent="Statechart/Root/State"]
+script = ExtResource("4_na1lv")
+CustomEventName = &""
+
+[node name="Transition" type="Node" parent="Statechart/Root/State"]
+script = ExtResource("3_wyf2g")
