@@ -40,7 +40,6 @@ namespace LGWCP.StatechartSharp
             Substates = new List<State>();
             Transitions = new List<Transition>();
             Actions = new List<Action>();
-            ProcessMode = ProcessModeEnum.Disabled;
             switch (StateMode)
             {
                 case StateModeEnum.Compond:

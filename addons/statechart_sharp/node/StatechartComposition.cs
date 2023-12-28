@@ -13,6 +13,11 @@ namespace LGWCP.StatechartSharp
             HostStatechart = hostStatechart;
             ++ancestorId;
             OrderId = ancestorId;
+            
+            if (HostStatechart != this)
+            {
+                ProcessMode = ProcessModeEnum.Disabled;
+            }
         }
         internal virtual void PostInit() {}
         public static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
