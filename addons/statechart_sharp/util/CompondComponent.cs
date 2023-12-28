@@ -240,8 +240,24 @@ namespace LGWCP.StatechartSharp
         }
 
         internal override void DeduceDescendants(
-            SortedSet<State> deducedSet, bool isHistory)
+            SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
         {
+            /* 
+            If is edge-state:
+                - It is called from history substate.
+                - "IsHistory" argument represents "IsDeepHistory"
+            */
+            if (isEdgeState)
+            {
+                if (CurrentState != null)
+                {
+                    bool isDeepHistory = isHistory;
+                    CurrentState.DeduceDescendants(deducedSet, isDeepHistory);
+                }
+                return;
+            }
+
+            // Not edge-state
             deducedSet.Add(HostState);
             State deducedSubstate = isHistory ? CurrentState : InitialState;
 
@@ -249,12 +265,6 @@ namespace LGWCP.StatechartSharp
             {
                 deducedSubstate.DeduceDescendants(deducedSet, isHistory);
             }
-        }
-
-        internal override void DeduceDescendantsFromHistory(
-            SortedSet<State> deducedSet, bool isDeepHistory)
-        {
-            CurrentState.DeduceDescendants(deducedSet, HostState.IsDeepHistory);
         }
 
         internal override void HandleSubstateEnter(State substate)

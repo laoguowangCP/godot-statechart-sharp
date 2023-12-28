@@ -51,21 +51,32 @@ namespace LGWCP.StatechartSharp
             return false;
         }
 
-        internal override void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory)
+        internal override void DeduceDescendants(
+            SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
         {
             /*
             History-state start the deduction:
-                1. Do not promises that parent is compond.
+                1. Parent can be compond or parallel.
                 2. Handle the sibling.
-                3. Do not be called recursively by other states.
+                3. Should not be called recursively by other states.
             */
-            #if DEBUG
-            if (ParentState.StateMode != StateModeEnum.Compond)
+            if (isEdgeState)
             {
-                GD.PushError(HostState.GetPath(), ": unexpected behavior, history-state has non-compond parent.");
+                ParentState.DeduceDescendants(deducedSet, IsDeepHistory, isEdgeState: true);
+            }
+            
+            // ParentState.DeduceDescendantsFromHistory(deducedSet, IsDeepHistory);
+
+            #if DEBUG
+            if (!isEdgeState)
+            {
+                GD.PushError(
+                    HostState.GetPath(),
+                    @"history's DeduceDescendants should only be called
+                        from transition when deducing enter-region-edge."
+                );
             }
             #endif
-            ParentState.DeduceDescendantsFromHistory(deducedSet, IsDeepHistory);
         }
     }
 }

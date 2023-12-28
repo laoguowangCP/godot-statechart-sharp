@@ -216,9 +216,9 @@ public partial class Transition : StatechartComposition
     internal SortedSet<State> GetDeducedEnterStates()
     {
         DeducedEnterStates.Clear();
-        foreach (State s in EnterRegionEdge)
+        foreach (State edgeState in EnterRegionEdge)
         {
-            s.DeduceDescendants(DeducedEnterStates);
+            edgeState.DeduceDescendants(DeducedEnterStates, isEdgeState: true);
         }
         return DeducedEnterStates;
     }

@@ -105,13 +105,9 @@ namespace LGWCP.StatechartSharp
             return StateComponent.SelectTransitions(enabledTransitions, eventName);
         }
 
-        public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false)
+        public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
         {
-            StateComponent.DeduceDescendants(deducedSet, isHistory);
-        }
-        public void DeduceDescendantsFromHistory(SortedSet<State> deducedSet, bool isDeepHistory = false)
-        {
-            StateComponent.DeduceDescendantsFromHistory(deducedSet, isDeepHistory);
+            StateComponent.DeduceDescendants(deducedSet, isHistory, isEdgeState);
         }
 
         public void HandleSubstateEnter(State substate)

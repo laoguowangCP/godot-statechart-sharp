@@ -67,9 +67,7 @@ namespace LGWCP.StatechartSharp
         
         internal virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
-        internal virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory) {}
-
-        internal virtual void DeduceDescendantsFromHistory(SortedSet<State> deducedSet, bool isDeepHistory) {}
+        internal virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
 
         internal virtual void HandleSubstateEnter(State substate) {}
     }
