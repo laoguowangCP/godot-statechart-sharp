@@ -65,18 +65,18 @@ namespace LGWCP.StatechartSharp
             StateComponent.PostInit();
         }
 
-        public void StateEnter()
+        internal void StateEnter()
         {
             ParentState.HandleSubstateEnter(this);
             EmitSignal(SignalName.Enter);
         }
 
-        public void StateExit()
+        internal void StateExit()
         {
             EmitSignal(SignalName.Exit);
         }
 
-        public void StateInvoke(StringName eventName)
+        internal void StateInvoke(StringName eventName)
         {
             foreach (Action a in Actions)
             {
@@ -84,32 +84,32 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public void RegisterActiveState(SortedSet<State> activeStates)
+        internal void RegisterActiveState(SortedSet<State> activeStates)
         {
             StateComponent.RegisterActiveState(activeStates);
         }
 
-        public bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
+        internal bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
         {
             return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
         }
 
-        public void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
+        internal void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
         {
             StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
         }
 
-        public bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName = null)
+        internal bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName = null)
         {
             return StateComponent.SelectTransitions(enabledTransitions, eventName);
         }
 
-        public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
+        internal void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
         {
             StateComponent.DeduceDescendants(deducedSet, isHistory, isEdgeState);
         }
 
-        public void HandleSubstateEnter(State substate)
+        internal void HandleSubstateEnter(State substate)
         {
             StateComponent.HandleSubstateEnter(substate);
         }

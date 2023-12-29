@@ -20,7 +20,7 @@ namespace LGWCP.StatechartSharp
             }
         }
         internal virtual void PostInit() {}
-        public static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
+        internal static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
         {
             return x.HostStatechart == y.HostStatechart;
         } 

@@ -9,10 +9,22 @@ namespace LGWCP.StatechartSharp
     {
         protected State HostState;
         protected Statechart HostStatechart { get => HostState.HostStatechart; }
-        protected State ParentState { get => HostState.ParentState; set { HostState.ParentState = value; } }
+        protected State ParentState
+        {
+            get => HostState.ParentState;
+            set { HostState.ParentState = value; }
+        }
         protected List<State> Substates { get => HostState.Substates; }
-        protected State LowerState { get => HostState.LowerState; set { HostState.LowerState = value; } }
-        protected State UpperState { get => HostState.UpperState; set { HostState.UpperState = value; } }
+        protected State LowerState
+        {
+            get => HostState.LowerState;
+            set { HostState.LowerState = value; }
+        }
+        protected State UpperState
+        {
+            get => HostState.UpperState;
+            set { HostState.UpperState = value; }
+        }
         protected List<Transition> Transitions { get => HostState.Transitions; }
         protected List<Action> Actions { get => HostState.Actions; }
 
@@ -33,7 +45,9 @@ namespace LGWCP.StatechartSharp
             #if DEBUG
             if (ParentState == null && HostState != HostStatechart.RootState)
             {
-                GD.PushWarning(HostState.GetPath(), ": non-root state should have parent-state.");
+                GD.PushWarning(
+                    HostState.GetPath(),
+                    ": non-root state should have parent-state.");
             }
             #endif
 
@@ -43,14 +57,14 @@ namespace LGWCP.StatechartSharp
 
         internal virtual void PostInit() {}
 
-        public virtual void RegisterActiveState(SortedSet<State> activeStates) {}
+        internal virtual void RegisterActiveState(SortedSet<State> activeStates) {}
 
-        public virtual bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
+        internal virtual bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
         {
             return false;
         }
 
-        public virtual bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
+        internal virtual bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             foreach (Transition t in HostState.Transitions)
             {

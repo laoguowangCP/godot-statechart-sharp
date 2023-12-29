@@ -137,7 +137,7 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override void RegisterActiveState(SortedSet<State> activeStates)
+        internal override void RegisterActiveState(SortedSet<State> activeStates)
         {
             activeStates.Add(HostState);
             foreach (State substate in HostState.Substates)
@@ -146,7 +146,7 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
+        internal override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             bool isHandled = false;
             if (Substates.Count > 0)

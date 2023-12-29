@@ -45,7 +45,7 @@ namespace LGWCP.StatechartSharp
             enterRegionEdge.Add(HostState);
         }
         
-        public override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
+        internal override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
             // Do nothing
             return false;

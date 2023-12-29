@@ -134,7 +134,7 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override bool IsConflictToEnterRegion(
+        internal override bool IsConflictToEnterRegion(
             State newSubstate, SortedSet<State> enterRegion)
         {
             bool isConflict = false;
@@ -208,7 +208,7 @@ namespace LGWCP.StatechartSharp
             }
         }
         
-        public override void RegisterActiveState(SortedSet<State> activeStates)
+        internal override void RegisterActiveState(SortedSet<State> activeStates)
         {
             activeStates.Add(HostState);
             if (CurrentState != null)
@@ -217,7 +217,7 @@ namespace LGWCP.StatechartSharp
             }
         }
 
-        public override bool SelectTransitions(
+        internal override bool SelectTransitions(
             List<Transition> enabledTransitions, StringName eventName)
         {
             bool isHandled = false;
