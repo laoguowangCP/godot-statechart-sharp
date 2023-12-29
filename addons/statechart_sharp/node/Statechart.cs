@@ -10,8 +10,8 @@ namespace LGWCP.StatechartSharp
         protected bool IsRunning { get; set; }
         public double Delta { get; protected set; }
         public double PhysicsDelta { get; protected set; }
-        public InputEvent GameInput { get; protected set; }
-        public InputEvent GameUnhandledInput { get; protected set; }
+        public InputEvent Input { get; protected set; }
+        public InputEvent UnhandledInput { get; protected set; }
         public List<State> States { get; protected set; }
         public State RootState { get; protected set; }
         protected SortedSet<State> ActiveStates { get; set; }
@@ -211,13 +211,13 @@ namespace LGWCP.StatechartSharp
 
         public override void _Input(InputEvent @event)
         {
-            GameInput = @event;
+            Input = @event;
             Step(StatechartConfig.EVENT_INPUT);
         }
 
         public override void _UnhandledInput(InputEvent @event)
         {
-            GameUnhandledInput = @event;
+            UnhandledInput = @event;
             Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
         }
     }

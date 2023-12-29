@@ -33,11 +33,11 @@ namespace LGWCP.StatechartSharp
         }
         public InputEvent GameInput
         {
-            get { return HostStatechart.GameInput; }
+            get { return HostStatechart.Input; }
         }
         public InputEvent GameUnhandledInput
         {
-            get { return HostStatechart.GameUnhandledInput; }
+            get { return HostStatechart.UnhandledInput; }
         }
 
         #endregion

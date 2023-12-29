@@ -34,8 +34,8 @@ public partial class Transition : StatechartComposition
 
     public double Delta { get => HostStatechart.Delta; }
     public double PhysicsDelta { get=>HostStatechart.PhysicsDelta; }
-    public InputEvent GameInput { get => HostStatechart.GameInput; }
-    public InputEvent GameUnhandledInput { get => HostStatechart.GameUnhandledInput; }
+    public InputEvent GameInput { get => HostStatechart.Input; }
+    public InputEvent GameUnhandledInput { get => HostStatechart.UnhandledInput; }
 
     #endregion
 
