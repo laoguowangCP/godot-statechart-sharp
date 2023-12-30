@@ -155,7 +155,14 @@ namespace LGWCP.StatechartSharp
             // 1. Exit-set
             foreach (Transition t in enabledTransitions)
             {
-                if (ExitSet.Contains(t.LcaState))
+                // If transition is targetless, LCA state is null.
+                if (t.IsTargetless)
+                {
+                    continue;
+                }
+
+                State lcaState = t.LcaState;
+                if (ExitSet.Contains(lcaState))
                 {
                     continue;
                 }
@@ -179,6 +186,12 @@ namespace LGWCP.StatechartSharp
             // 3. Enter-set
             foreach (Transition t in EnabledFilteredTransitions)
             {
+                // If transition is targetless, enter-region is null.
+                if (t.IsTargetless)
+                {
+                    continue;
+                }
+
                 SortedSet<State> enterRegion = t.EnterRegion;
                 SortedSet<State> deducedEnterStates = t.GetDeducedEnterStates();
                 EnterSet.UnionWith(enterRegion);

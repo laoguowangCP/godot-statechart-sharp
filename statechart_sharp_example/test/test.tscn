@@ -12,12 +12,15 @@ script = ExtResource("1_xqbg4")
 
 [node name="Root" type="Node" parent="Statechart"]
 script = ExtResource("2_7b5e1")
+StateMode = 1
 
 [node name="State" type="Node" parent="Statechart/Root"]
 script = ExtResource("2_7b5e1")
 
 [node name="Transition" type="Node" parent="Statechart/Root/State"]
 script = ExtResource("3_wyf2g")
+CustomEventName = &""
 
 [node name="Action" type="Node" parent="Statechart/Root/State"]
 script = ExtResource("4_na1lv")
+CustomEventName = &""
