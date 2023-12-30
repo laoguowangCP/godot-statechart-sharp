@@ -1,11 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://o0e66x5whaq4"]
+[gd_scene load_steps=6 format=3 uid="uid://lv62my5r8bs2"]
 
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_l1i53"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_xqbg4"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="2_7b5e1"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="3_wyf2g"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Action.cs" id="4_na1lv"]
 
-[node name="Node2D" type="Node2D"]
+[node name="Test" type="Node2D"]
+script = ExtResource("1_l1i53")
 
 [node name="Statechart" type="Node" parent="."]
 script = ExtResource("1_xqbg4")
@@ -14,13 +16,32 @@ script = ExtResource("1_xqbg4")
 script = ExtResource("2_7b5e1")
 StateMode = 1
 
-[node name="State" type="Node" parent="Statechart/Root"]
+[node name="A" type="Node" parent="Statechart/Root"]
 script = ExtResource("2_7b5e1")
 
-[node name="Transition" type="Node" parent="Statechart/Root/State"]
+[node name="AtoB" type="Node" parent="Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("3_wyf2g")
-CustomEventName = &""
+TargetStatesArray = [NodePath("../../B")]
 
-[node name="Action" type="Node" parent="Statechart/Root/State"]
+[node name="Action" type="Node" parent="Statechart/Root/A"]
 script = ExtResource("4_na1lv")
-CustomEventName = &""
+
+[node name="B" type="Node" parent="Statechart/Root"]
+script = ExtResource("2_7b5e1")
+
+[node name="BtoA" type="Node" parent="Statechart/Root/B" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("3_wyf2g")
+TransitionEvent = 5
+TargetStatesArray = [NodePath("../../A")]
+
+[connection signal="Enter" from="Statechart/Root" to="." method="OnStateEnter"]
+[connection signal="Exit" from="Statechart/Root" to="." method="OnStateEixt"]
+[connection signal="Enter" from="Statechart/Root/A" to="." method="OnStateEnter"]
+[connection signal="Exit" from="Statechart/Root/A" to="." method="OnStateEixt"]
+[connection signal="Guard" from="Statechart/Root/A/AtoB" to="." method="OnTransitionGuard"]
+[connection signal="Invoke" from="Statechart/Root/A/AtoB" to="." method="OnTransitionInvoke"]
+[connection signal="Invoke" from="Statechart/Root/A/Action" to="." method="OnActionInvoke"]
+[connection signal="Enter" from="Statechart/Root/B" to="." method="OnStateEnter"]
+[connection signal="Exit" from="Statechart/Root/B" to="." method="OnStateEixt"]
+[connection signal="Guard" from="Statechart/Root/B/BtoA" to="." method="OnTransitionGuard"]
+[connection signal="Invoke" from="Statechart/Root/B/BtoA" to="." method="OnTransitionInvoke"]

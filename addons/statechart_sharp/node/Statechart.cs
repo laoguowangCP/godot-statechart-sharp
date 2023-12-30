@@ -8,12 +8,12 @@ namespace LGWCP.StatechartSharp
     {
         [Export(PropertyHint.Range, "0,32,")] protected int MaxAutoTransitionRound = 8;
         protected bool IsRunning { get; set; }
-        public double Delta { get; protected set; }
-        public double PhysicsDelta { get; protected set; }
-        public InputEvent Input { get; protected set; }
-        public InputEvent UnhandledInput { get; protected set; }
-        public List<State> States { get; protected set; }
-        public State RootState { get; protected set; }
+        internal new double Delta { get; set; }
+        internal new double PhysicsDelta { get; set; }
+        internal new InputEvent Input { get; set; }
+        internal new InputEvent UnhandledInput { get; set; }
+        protected List<State> States { get; set; }
+        internal State RootState { get; set; }
         protected SortedSet<State> ActiveStates { get; set; }
         protected Queue<StringName> QueuedEvents { get; set; }
         protected List<Transition> EnabledTransitions { get; set; }

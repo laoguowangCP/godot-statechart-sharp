@@ -10,13 +10,13 @@ namespace LGWCP.StatechartSharp
         History
     }
 
-    [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg"), Tool]
+    [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
     public partial class State : StatechartComposition
     {
         #region define signals
 
-        [Signal] public delegate void EnterEventHandler();
-        [Signal] public delegate void ExitEventHandler();
+        [Signal] public delegate void EnterEventHandler(State state);
+        [Signal] public delegate void ExitEventHandler(State state);
         
         #endregion
 
@@ -68,12 +68,12 @@ namespace LGWCP.StatechartSharp
         internal void StateEnter()
         {
             ParentState.HandleSubstateEnter(this);
-            EmitSignal(SignalName.Enter);
+            EmitSignal(SignalName.Enter, this);
         }
 
         internal void StateExit()
         {
-            EmitSignal(SignalName.Exit);
+            EmitSignal(SignalName.Exit, this);
         }
 
         internal void StateInvoke(StringName eventName)

@@ -6,7 +6,7 @@ using Godot.Collections;
 namespace LGWCP.StatechartSharp
 {
 
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg"), Tool]
+[GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
 public partial class Transition : StatechartComposition
 {
     #region define signals
@@ -31,11 +31,6 @@ public partial class Transition : StatechartComposition
     internal bool IsTargetless { get; private set; }
     internal bool IsAuto { get; private set; }
     public bool IsEnabled { private get; set; }
-
-    public double Delta { get => HostStatechart.Delta; }
-    public double PhysicsDelta { get=>HostStatechart.PhysicsDelta; }
-    public InputEvent GameInput { get => HostStatechart.Input; }
-    public InputEvent GameUnhandledInput { get => HostStatechart.UnhandledInput; }
 
     #endregion
 
@@ -210,7 +205,7 @@ public partial class Transition : StatechartComposition
 
     internal void TransitionInvoke()
     {
-        EmitSignal(SignalName.Invoke);
+        EmitSignal(SignalName.Invoke, this);
     }
 
     internal SortedSet<State> GetDeducedEnterStates()
