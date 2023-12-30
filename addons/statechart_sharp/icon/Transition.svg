@@ -39,23 +39,20 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:none;fill-opacity:1;stroke:#7dba7c;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-       id="rect2"
-       width="2.9104199"
-       height="0.52916992"
-       x="-7.9375014"
-       y="-4.4979181"
-       ry="0.026458334"
-       rx="0.026458329"
-       transform="scale(-1)" />
-    <rect
-       style="fill:#535353;fill-opacity:0;stroke:#7dba7c;stroke-width:1.19062;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#535353;fill-opacity:0;stroke:#7dba7c;stroke-width:1.5875;stroke-dasharray:none;stroke-opacity:1"
        id="rect2-5"
-       width="4.1010466"
-       height="3.0427134"
-       x="0.59530997"
-       y="2.7119792"
-       ry="1.3229165"
-       rx="1.3229167" />
+       width="4.2333336"
+       height="3.175"
+       x="0.79375005"
+       y="2.6458333"
+       ry="1.3229164"
+       rx="1.3229169" />
+    <rect
+       style="fill:#cf65ff;stroke:#7dba7c;stroke-width:1.5875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1"
+       width="2.3812499"
+       height="0.5291667"
+       x="5.2916665"
+       y="3.96875" />
   </g>
 </svg>
