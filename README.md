@@ -88,5 +88,17 @@ This plugin provides basic nodes to build statechart in Godot editor.
 
 ## Todo
 
-- Statechart: add save/load.
-- 
+Statechart:
+
+- add save/load
+- loop event bitmask
+
+Example:
+
+- test scene
+- practical usage
+
+Helper:
+
+- readme specification
+- editor annotation
