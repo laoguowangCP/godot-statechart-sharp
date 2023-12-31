@@ -1,0 +1,91 @@
+[gd_scene load_steps=6 format=3 uid="uid://6j3b8ckrc4ct"]
+
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_js2a2"]
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="2_xctb1"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_6f76o"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Action.cs" id="4_hqqs6"]
+
+[sub_resource type="Theme" id="Theme_hk6jv"]
+
+[node name="TestControl" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_hk6jv")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Empty statechart" type="BoxContainer" parent="PanelContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/MarginContainer/GridContainer/Empty statechart"]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/GridContainer/Empty statechart"]
+layout_mode = 2
+text = "Empty statechart"
+
+[node name="Tester" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Empty statechart" node_paths=PackedStringArray("TestStatechart")]
+script = ExtResource("2_xctb1")
+StepName = &"test"
+TestStatechart = NodePath("../Statechart")
+
+[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Empty statechart"]
+script = ExtResource("1_js2a2")
+
+[node name="Multiple root-state" type="BoxContainer" parent="PanelContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state"]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state"]
+layout_mode = 2
+text = "Multiple root-state"
+
+[node name="Tester" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state" node_paths=PackedStringArray("TestStatechart")]
+script = ExtResource("2_xctb1")
+StepName = &"test"
+TestStatechart = NodePath("../Statechart")
+
+[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state"]
+script = ExtResource("1_js2a2")
+
+[node name="Root1" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart"]
+script = ExtResource("3_6f76o")
+
+[node name="Action" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart/Root1"]
+script = ExtResource("4_hqqs6")
+ActionEvent = 4
+CustomEventName = &"test"
+
+[node name="Root2" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart"]
+script = ExtResource("3_6f76o")
+
+[node name="Action" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart/Root2"]
+script = ExtResource("4_hqqs6")
+ActionEvent = 4
+CustomEventName = &"test"
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/Empty statechart/Button" to="PanelContainer/MarginContainer/GridContainer/Empty statechart/Tester" method="OnTestButtonPressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Button" to="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Tester" method="OnTestButtonPressed"]

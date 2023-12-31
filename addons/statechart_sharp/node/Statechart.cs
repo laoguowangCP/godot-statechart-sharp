@@ -54,6 +54,7 @@ namespace LGWCP.StatechartSharp
                 if (child is State rootState)
                 {
                     RootState = rootState;
+                    break;
                 }
             }
             
@@ -66,13 +67,19 @@ namespace LGWCP.StatechartSharp
 
         internal override void PostInit()
         {
-            // Get activeStates
-            RootState.RegisterActiveState(ActiveStates);
-
             if (RootState != null)
             {
+                // Get activeStates
+                RootState.RegisterActiveState(ActiveStates);
                 RootState.PostInit();
             }
+
+            // Enter active-state
+            foreach (State s in ActiveStates)
+            {
+                s.StateEnter();
+            }
+
             return;
         }
 
@@ -107,6 +114,10 @@ namespace LGWCP.StatechartSharp
         /// <param name="eventName"></param>
         protected void HandleEvent(StringName eventName)
         {
+            if (RootState == null)
+            {
+                return;
+            }
             /*
                 1. Select transitions
                 2. Do transitions

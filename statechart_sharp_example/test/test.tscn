@@ -1,47 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://lv62my5r8bs2"]
+[gd_scene load_steps=3 format=3 uid="uid://lv62my5r8bs2"]
 
 [ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_l1i53"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_xqbg4"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="2_7b5e1"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="3_wyf2g"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Action.cs" id="4_na1lv"]
+[ext_resource type="PackedScene" uid="uid://6j3b8ckrc4ct" path="res://statechart_sharp_example/test/test_control.tscn" id="2_kroug"]
 
-[node name="Test" type="Node2D"]
+[node name="Test" type="Node"]
 script = ExtResource("1_l1i53")
 
-[node name="Statechart" type="Node" parent="."]
-script = ExtResource("1_xqbg4")
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="Root" type="Node" parent="Statechart"]
-script = ExtResource("2_7b5e1")
-StateMode = 1
-
-[node name="A" type="Node" parent="Statechart/Root"]
-script = ExtResource("2_7b5e1")
-
-[node name="AtoB" type="Node" parent="Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("3_wyf2g")
-TargetStatesArray = [NodePath("../../B")]
-
-[node name="Action" type="Node" parent="Statechart/Root/A"]
-script = ExtResource("4_na1lv")
-
-[node name="B" type="Node" parent="Statechart/Root"]
-script = ExtResource("2_7b5e1")
-
-[node name="BtoA" type="Node" parent="Statechart/Root/B" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("3_wyf2g")
-TransitionEvent = 5
-TargetStatesArray = [NodePath("../../A")]
-
-[connection signal="Enter" from="Statechart/Root" to="." method="OnStateEnter"]
-[connection signal="Exit" from="Statechart/Root" to="." method="OnStateEixt"]
-[connection signal="Enter" from="Statechart/Root/A" to="." method="OnStateEnter"]
-[connection signal="Exit" from="Statechart/Root/A" to="." method="OnStateEixt"]
-[connection signal="Guard" from="Statechart/Root/A/AtoB" to="." method="OnTransitionGuard"]
-[connection signal="Invoke" from="Statechart/Root/A/AtoB" to="." method="OnTransitionInvoke"]
-[connection signal="Invoke" from="Statechart/Root/A/Action" to="." method="OnActionInvoke"]
-[connection signal="Enter" from="Statechart/Root/B" to="." method="OnStateEnter"]
-[connection signal="Exit" from="Statechart/Root/B" to="." method="OnStateEixt"]
-[connection signal="Guard" from="Statechart/Root/B/BtoA" to="." method="OnTransitionGuard"]
-[connection signal="Invoke" from="Statechart/Root/B/BtoA" to="." method="OnTransitionInvoke"]
+[node name="TestControl" parent="CanvasLayer" instance=ExtResource("2_kroug")]

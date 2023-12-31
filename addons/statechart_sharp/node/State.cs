@@ -67,7 +67,11 @@ namespace LGWCP.StatechartSharp
 
         internal void StateEnter()
         {
-            ParentState.HandleSubstateEnter(this);
+            if (ParentState != null)
+            {
+                ParentState.HandleSubstateEnter(this);
+            }
+            
             EmitSignal(SignalName.Enter, this);
         }
 

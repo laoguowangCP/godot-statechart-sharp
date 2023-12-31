@@ -14,7 +14,7 @@ public partial class Action : StatechartComposition
 
     #region define properties
 
-    [Export] protected TransitionEventNameEnum ActionEvent { get; set; } = TransitionEventNameEnum.PROCESS;
+    [Export] protected ActionEventNameEnum ActionEvent { get; set; } = ActionEventNameEnum.PROCESS;
     [Export] protected StringName CustomEventName { get; set; }
     
     public StringName EventName { get; protected set; }
@@ -25,12 +25,12 @@ public partial class Action : StatechartComposition
     {
         base.Init(hostStatechart, ref ancestorId);
         #if DEBUG
-        if (ActionEvent == TransitionEventNameEnum.CUSTOM && CustomEventName == null)
+        if (ActionEvent == ActionEventNameEnum.CUSTOM && CustomEventName == null)
         {
             GD.PushError(Name, ": no event name for custom-event.");
         }
         #endif
-        EventName = StatechartConfig.GetTransitionEventName(ActionEvent, CustomEventName);
+        EventName = StatechartConfig.GetActionEventName(ActionEvent, CustomEventName);
     }
 
     internal void ActionInvoke(StringName eventName)
