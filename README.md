@@ -67,17 +67,17 @@ This plugin provides basic nodes to build statechart in Godot editor.
   - Guard: called to check if transition is available.
   - Invoke: called when transition happens.
 
-### Step 4 : Add <img src="./addons/statechart_sharp/icon/Action.svg" style="width:16px;" alt="Action" align="bottom"/> Action node
+### Step 4 : Add <img src="./addons/statechart_sharp/icon/Reaction.svg" style="width:16px;" alt="Action" align="bottom"/> Reaction node
 
 - As child of a state.
-- Switch event: choose when action will be made.
+- Switch event: choose when reaction will be made.
 
   - Node loop event: process, input, etc.
   - Custom event: assign a name for it.
 
 - Connect signals:
 
-  - Invoke: called when action is made.
+  - Invoke: called when reaction is made.
 
 ### Step 5 : Build and run
 

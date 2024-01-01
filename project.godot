@@ -14,11 +14,6 @@ config/name="godot-statechart-sharp"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://Statechart.svg"
 
-[display]
-
-window/size/viewport_width=1920
-window/size/viewport_height=1080
-
 [dotnet]
 
 project/assembly_name="godot-statechart-sharp"

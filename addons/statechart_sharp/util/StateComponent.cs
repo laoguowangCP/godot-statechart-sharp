@@ -26,7 +26,7 @@ namespace LGWCP.StatechartSharp
             set { HostState.UpperState = value; }
         }
         protected List<Transition> Transitions { get => HostState.Transitions; }
-        protected List<Action> Actions { get => HostState.Actions; }
+        protected List<Reaction> Actions { get => HostState.Actions; }
 
         public StateComponent(State state)
         {

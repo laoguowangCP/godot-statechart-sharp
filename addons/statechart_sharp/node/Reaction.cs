@@ -3,18 +3,18 @@ using Godot;
 namespace LGWCP.StatechartSharp
 {
 
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/Action.svg")]
-public partial class Action : StatechartComposition
+[GlobalClass, Icon("res://addons/statechart_sharp/icon/Reaction.svg")]
+public partial class Reaction : StatechartComposition
 {
     #region define signals
 
-    [Signal] public delegate void InvokeEventHandler(Action action);
+    [Signal] public delegate void InvokeEventHandler(Reaction reaction);
     
     #endregion
 
     #region define properties
 
-    [Export] protected ActionEventNameEnum ActionEvent { get; set; } = ActionEventNameEnum.PROCESS;
+    [Export] protected ReactionEventNameEnum ReactionEvent { get; set; } = ReactionEventNameEnum.PROCESS;
     [Export] protected StringName CustomEventName { get; set; }
     
     public StringName EventName { get; protected set; }
@@ -25,15 +25,15 @@ public partial class Action : StatechartComposition
     {
         base.Init(hostStatechart, ref ancestorId);
         #if DEBUG
-        if (ActionEvent == ActionEventNameEnum.CUSTOM && CustomEventName == null)
+        if (ReactionEvent == ReactionEventNameEnum.CUSTOM && CustomEventName == null)
         {
             GD.PushError(Name, ": no event name for custom-event.");
         }
         #endif
-        EventName = StatechartConfig.GetActionEventName(ActionEvent, CustomEventName);
+        EventName = StatechartConfig.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 
-    internal void ActionInvoke(StringName eventName)
+    internal void ReactionInvoke(StringName eventName)
     {
         if (EventName == eventName)
         {

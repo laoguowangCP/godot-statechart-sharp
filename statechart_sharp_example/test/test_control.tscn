@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://6j3b8ckrc4ct"]
+[gd_scene load_steps=7 format=3 uid="uid://6j3b8ckrc4ct"]
 
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_js2a2"]
 [ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="2_xctb1"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_6f76o"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Action.cs" id="4_hqqs6"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_hqqs6"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="5_0xmp7"]
 
 [sub_resource type="Theme" id="Theme_hk6jv"]
 
@@ -46,9 +47,9 @@ text = "Empty statechart"
 [node name="Tester" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Empty statechart" node_paths=PackedStringArray("TestStatechart")]
 script = ExtResource("2_xctb1")
 StepName = &"test"
-TestStatechart = NodePath("../Statechart")
+TestStatechart = NodePath("Statechart")
 
-[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Empty statechart"]
+[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Empty statechart/Tester"]
 script = ExtResource("1_js2a2")
 
 [node name="Multiple root-state" type="BoxContainer" parent="PanelContainer/MarginContainer/GridContainer"]
@@ -66,26 +67,174 @@ text = "Multiple root-state"
 [node name="Tester" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state" node_paths=PackedStringArray("TestStatechart")]
 script = ExtResource("2_xctb1")
 StepName = &"test"
-TestStatechart = NodePath("../Statechart")
+TestStatechart = NodePath("Statechart")
 
-[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state"]
+[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Tester"]
 script = ExtResource("1_js2a2")
 
-[node name="Root1" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart"]
+[node name="Root1" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Tester/Statechart"]
 script = ExtResource("3_6f76o")
 
-[node name="Action" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart/Root1"]
+[node name="Reaction" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Tester/Statechart/Root1"]
 script = ExtResource("4_hqqs6")
-ActionEvent = 4
+ReactionEvent = 4
 CustomEventName = &"test"
 
-[node name="Root2" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart"]
+[node name="Root2" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Tester/Statechart"]
 script = ExtResource("3_6f76o")
 
-[node name="Action" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Statechart/Root2"]
+[node name="Reaction" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Tester/Statechart/Root2"]
 script = ExtResource("4_hqqs6")
-ActionEvent = 4
+ReactionEvent = 4
 CustomEventName = &"test"
+
+[node name="Compound transition" type="BoxContainer" parent="PanelContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/MarginContainer/GridContainer/Compound transition"]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/GridContainer/Compound transition"]
+layout_mode = 2
+text = "Compound transition"
+
+[node name="Tester" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition" node_paths=PackedStringArray("TestStatechart")]
+script = ExtResource("2_xctb1")
+StepName = &"test"
+TestStatechart = NodePath("Statechart")
+
+[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester"]
+script = ExtResource("1_js2a2")
+
+[node name="Root" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart"]
+script = ExtResource("3_6f76o")
+
+[node name="A" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root"]
+script = ExtResource("3_6f76o")
+
+[node name="a" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/A" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_6f76o")
+InitialState = NodePath("2")
+
+[node name="1" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/A/a"]
+script = ExtResource("3_6f76o")
+
+[node name="2" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/A/a"]
+script = ExtResource("3_6f76o")
+
+[node name="Aa2->Bb1x" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/A/a/2" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("5_0xmp7")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../../../B/b/1/x")]
+
+[node name="b" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/A"]
+script = ExtResource("3_6f76o")
+
+[node name="B" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root"]
+script = ExtResource("3_6f76o")
+
+[node name="a" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/B"]
+script = ExtResource("3_6f76o")
+
+[node name="1" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/B/a"]
+script = ExtResource("3_6f76o")
+
+[node name="b" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/B"]
+script = ExtResource("3_6f76o")
+
+[node name="1" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/B/b"]
+script = ExtResource("3_6f76o")
+
+[node name="x" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/B/b/1"]
+script = ExtResource("3_6f76o")
+
+[node name="Reaction" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester/Statechart/Root/B/b/1/x"]
+script = ExtResource("4_hqqs6")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="Parallel transition" type="BoxContainer" parent="PanelContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition"]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition"]
+layout_mode = 2
+text = "Parallel transition"
+
+[node name="Tester" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition" node_paths=PackedStringArray("TestStatechart")]
+script = ExtResource("2_xctb1")
+StepName = &"test"
+TestStatechart = NodePath("Statechart")
+
+[node name="Statechart" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester"]
+script = ExtResource("1_js2a2")
+
+[node name="Root" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="A" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="a" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/A"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="b" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/A"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="c" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/A"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="Ac->Cb" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/A/c" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("5_0xmp7")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../../C/b")]
+
+[node name="B" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="a" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/B"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="b" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/B"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="c" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/B"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="C" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="a" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/C"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="b" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/C"]
+script = ExtResource("3_6f76o")
+StateMode = 1
+
+[node name="c" type="Node" parent="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester/Statechart/Root/C"]
+script = ExtResource("3_6f76o")
+StateMode = 1
 
 [connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/Empty statechart/Button" to="PanelContainer/MarginContainer/GridContainer/Empty statechart/Tester" method="OnTestButtonPressed"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Button" to="PanelContainer/MarginContainer/GridContainer/Multiple root-state/Tester" method="OnTestButtonPressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/Compound transition/Button" to="PanelContainer/MarginContainer/GridContainer/Compound transition/Tester" method="OnTestButtonPressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/GridContainer/Parallel transition/Button" to="PanelContainer/MarginContainer/GridContainer/Parallel transition/Tester" method="OnTestButtonPressed"]

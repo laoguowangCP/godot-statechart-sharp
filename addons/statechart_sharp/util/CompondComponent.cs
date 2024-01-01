@@ -51,7 +51,7 @@ namespace LGWCP.StatechartSharp
                     t.Init(hostStateChart, ref ancestorId);
                     Transitions.Add(t);
                 }
-                else if (child is Action a)
+                else if (child is Reaction a)
                 {
                     a.Init(hostStateChart, ref ancestorId);
                     Actions.Add(a);
@@ -128,7 +128,7 @@ namespace LGWCP.StatechartSharp
                 t.PostInit();
             }
 
-            foreach (Action a in Actions)
+            foreach (Reaction a in Actions)
             {
                 a.PostInit();
             }

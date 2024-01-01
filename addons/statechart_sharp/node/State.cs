@@ -29,7 +29,7 @@ namespace LGWCP.StatechartSharp
         public State CurrentState { get; set; }
         public List<State> Substates { get; set; }
         public List<Transition> Transitions { get; set; }
-        public List<Action> Actions { get; set; }
+        public List<Reaction> Actions { get; set; }
         protected StateComponent StateComponent { get; set; }
         public State LowerState { get; set; }
         public State UpperState { get; set; }
@@ -39,7 +39,7 @@ namespace LGWCP.StatechartSharp
         {
             Substates = new List<State>();
             Transitions = new List<Transition>();
-            Actions = new List<Action>();
+            Actions = new List<Reaction>();
             switch (StateMode)
             {
                 case StateModeEnum.Compond:
@@ -82,9 +82,9 @@ namespace LGWCP.StatechartSharp
 
         internal void StateInvoke(StringName eventName)
         {
-            foreach (Action a in Actions)
+            foreach (Reaction a in Actions)
             {
-                a.ActionInvoke(eventName);
+                a.ReactionInvoke(eventName);
             }
         }
 

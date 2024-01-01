@@ -22,7 +22,7 @@ namespace LGWCP.StatechartSharp
         AUTO
     }
 
-    public enum ActionEventNameEnum : int
+    public enum ReactionEventNameEnum : int
     {
         PROCESS,
         PHYSICS_PROCESS,
@@ -70,19 +70,19 @@ namespace LGWCP.StatechartSharp
             _ => null
         };
 
-        public static StringName GetActionEventName(ActionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
+        public static StringName GetReactionEventName(ReactionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
         {
-            ActionEventNameEnum.PROCESS => "_process",
-            ActionEventNameEnum.PHYSICS_PROCESS => "_physics_process",
-            ActionEventNameEnum.INPUT => "_input",
-            ActionEventNameEnum.UNHANDLED_INPUT => "_unhandled_input",
+            ReactionEventNameEnum.PROCESS => "_process",
+            ReactionEventNameEnum.PHYSICS_PROCESS => "_physics_process",
+            ReactionEventNameEnum.INPUT => "_input",
+            ReactionEventNameEnum.UNHANDLED_INPUT => "_unhandled_input",
 
             // Extend action event-set here:
             /*
                 EventNameEnum.MY_EVENT => "my_event",
             */
             
-            ActionEventNameEnum.CUSTOM => customEventName,
+            ReactionEventNameEnum.CUSTOM => customEventName,
             _ => null
         };
     }

@@ -3,12 +3,21 @@ using LGWCP.StatechartSharp;
 
 public partial class StatechartTest : Node
 {
-	[Export] StringName StepName;
-	[Export] Statechart TestStatechart;
+	[Export] protected StringName StepName;
+	[Export] protected Statechart TestStatechart;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		if (TestStatechart == null)
+		{
+			TestStatechart = GetChild<Statechart>(0);
+		}
+		
+		if (TestStatechart == null)
+		{
+			GD.PrintErr(GetPath(), "Test statechart not set.");
+		}
 		ConnectToTest(TestStatechart);
 	}
 
@@ -26,7 +35,7 @@ public partial class StatechartTest : Node
 				transition.Guard += OnTransitionGuard;
 				transition.Invoke += OnTransitionInvoke;
 			}
-			else if (child is Action action)
+			else if (child is Reaction action)
 			{
 				action.Invoke += OnActionInvoke;
 			}
@@ -41,63 +50,46 @@ public partial class StatechartTest : Node
 
 	public void OnTestButtonPressed()
 	{
+		GD.Print("[", GetParent<Node>().Name, "]");
 		GD.Print("-------- Test started --------");
 		TestStatechart?.Step(StepName);
 		GD.Print("-------- Test finished --------");
+		GD.Print();
 	}
 
 	public void OnTransitionGuard(Transition transition)
 	{
-		NodePath path = TestStatechart.GetPathTo(transition);
-        string indentStr = "";
-		for (int i=0; i<path.GetNameCount(); ++i)
-		{
-			indentStr += ">";
-		}
-		GD.Print(indentStr, " Guard: ", path);
+		PrintDelegateInfo(transition, "Guard");
 	}
 
 	public void OnTransitionInvoke(Transition transition)
 	{
-		NodePath path = TestStatechart.GetPathTo(transition);
-        string indentStr = "";
-		for (int i=0; i<path.GetNameCount(); ++i)
-		{
-			indentStr += ">";
-		}
-		GD.Print(indentStr, " Invoke: ", path);
+		PrintDelegateInfo(transition, "Invoke");
 	}
 
-	public void OnActionInvoke(Action action)
+	public void OnActionInvoke(Reaction reaction)
 	{
-		NodePath path = TestStatechart.GetPathTo(action);
-        string indentStr = "";
-		for (int i=0; i<path.GetNameCount(); ++i)
-		{
-			indentStr += ">";
-		}
-		GD.Print(indentStr, " Invoke: ", path);
+		PrintDelegateInfo(reaction, "Invoke");
 	}
 
 	public void OnStateEnter(State state)
 	{
-		NodePath path = TestStatechart.GetPathTo(state);
-        string indentStr = "";
-		for (int i=0; i<path.GetNameCount(); ++i)
-		{
-			indentStr += ">";
-		}
-		GD.Print(indentStr, " Enter: ", path);
+		PrintDelegateInfo(state, "Enter");
 	}
 
 	public void OnStateExit(State state)
 	{
-		NodePath path = TestStatechart.GetPathTo(state);
+		PrintDelegateInfo(state, "Exit");
+	}
+
+	protected void PrintDelegateInfo(Node callee, string delegateName)
+	{
+		NodePath path = TestStatechart.GetPathTo(callee);
         string indentStr = "";
-		for (int i=0; i<path.GetNameCount(); ++i)
+		for (int i=1; i<path.GetNameCount(); ++i)
 		{
-			indentStr += ">";
+			indentStr += "> "; // "└─"
 		}
-		GD.Print(indentStr, " Exit: ", path);
+		GD.Print(indentStr, delegateName, ": ", path);
 	}
 }
