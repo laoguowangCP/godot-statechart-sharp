@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://bh3sb6b3t6nay"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_qo8on"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_v6bct"]
+
+[node name="Empty statechart" type="BoxContainer"]
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Empty statechart"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_qo8on")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_v6bct")
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

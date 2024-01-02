@@ -1,0 +1,94 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcapow8hws5li"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_ebdlk"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_kqoiw"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_we30e"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_cebhc"]
+
+[node name="Auto transition" type="BoxContainer"]
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Auto transition"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_ebdlk")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_kqoiw")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_we30e")
+StateMode = 1
+
+[node name="Compound" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_we30e")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root/Compound"]
+script = ExtResource("3_we30e")
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/Compound/A"]
+script = ExtResource("3_we30e")
+
+[node name="Aa->Ba" type="Node" parent="Tester/Statechart/Root/Compound/A/a" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_cebhc")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../../B/a")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root/Compound"]
+script = ExtResource("3_we30e")
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/Compound/B"]
+script = ExtResource("3_we30e")
+
+[node name="auto-a->b" type="Node" parent="Tester/Statechart/Root/Compound/B/a" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_cebhc")
+TransitionEvent = 5
+TargetStatesArray = [NodePath("../../b")]
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/Compound/B"]
+script = ExtResource("3_we30e")
+
+[node name="Parallel" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_we30e")
+StateMode = 1
+
+[node name="A" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("3_we30e")
+StateMode = 1
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/Parallel/A"]
+script = ExtResource("3_we30e")
+StateMode = 1
+
+[node name="Aa->Ba" type="Node" parent="Tester/Statechart/Root/Parallel/A/a" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_cebhc")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../../B/a")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("3_we30e")
+StateMode = 1
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
+script = ExtResource("3_we30e")
+StateMode = 1
+
+[node name="auto-a->b" type="Node" parent="Tester/Statechart/Root/Parallel/B/a" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_cebhc")
+TransitionEvent = 5
+TargetStatesArray = [NodePath("../../b")]
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
+script = ExtResource("3_we30e")
+StateMode = 1
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

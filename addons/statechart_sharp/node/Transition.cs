@@ -31,6 +31,7 @@ public partial class Transition : StatechartComposition
     internal bool IsTargetless { get; private set; }
     internal bool IsAuto { get; private set; }
     public bool IsEnabled { private get; set; }
+    private bool IsValid { get; set; }
 
     #endregion
 
@@ -38,12 +39,13 @@ public partial class Transition : StatechartComposition
     {
         // Convert GD collection to CS collection
         TargetStates = new List<State>(TargetStatesArray);
-        
 
         // Init Sets
         EnterRegion = new SortedSet<State>(new StateComparer());
         EnterRegionEdge = new SortedSet<State>(new StateComparer());
         DeducedEnterStates = new SortedSet<State>(new StateComparer());
+
+        IsValid = true;
     }
 
     internal override void Init(Statechart hostStatechart, ref int ancestorId)
@@ -63,6 +65,7 @@ public partial class Transition : StatechartComposition
             #if DEBUG
             GD.PushError(Name, ": no event name for custom-event. For eventless, switch to Auto.");
             #endif
+            IsValid = false;
         }
         EventName = StatechartConfig.GetTransitionEventName(TransitionEvent, CustomEventName);
         IsAuto = TransitionEvent == TransitionEventNameEnum.AUTO;
@@ -134,7 +137,7 @@ public partial class Transition : StatechartComposition
             if (isConflict)
             {
                 #if DEBUG
-                GD.PushWarning(SourceState.GetPath(), ": target-state conflict, name: ", target.Name);
+                GD.PushWarning(SourceState.GetPath(), ": target state conflict, name: ", target.Name);
                 #endif
                 continue;
             }
@@ -186,20 +189,44 @@ public partial class Transition : StatechartComposition
         {
             EnterRegion.Remove(srcToRoot[^i]);
         }
+
+        // Check auto-transition loop case
+        if (IsAuto && EnterRegion.Contains(SourceState))
+        {
+            #if DEBUG
+            GD.PushWarning(
+                GetPath(),
+                ": auto transition's enter-region contains source state, target states invalid.");
+            #endif
+            IsValid = false;
+        }
     }
 
     internal bool Check(StringName eventName)
     {
+        if (!IsValid)
+        {
+            return false;
+        }
+
+        if (EventName != eventName)
+        {
+            return false;
+        }
+
+        // Targetless transition should not be selected as eventless
+        if (eventName == null && IsTargetless)
+        {
+            return false;
+        }
+
         // Transition is enabled on default.
         if (EventName == eventName)
         {
             IsEnabled = true;
             EmitSignal(SignalName.Guard, this);
         }
-        else
-        {
-            IsEnabled = false;
-        }
+
         return IsEnabled;
     }
 

@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://cqxh17y4vfuvs"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_ka6qi"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_6p8ue"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_44fpc"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_1fqri"]
+
+[node name="Multiple root-state" type="BoxContainer"]
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Multiple root state"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_ka6qi")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_6p8ue")
+
+[node name="Root1" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_44fpc")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root1"]
+script = ExtResource("4_1fqri")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="Root2" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_44fpc")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root2"]
+script = ExtResource("4_1fqri")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

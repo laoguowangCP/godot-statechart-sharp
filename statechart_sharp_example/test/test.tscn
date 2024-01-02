@@ -1,11 +1,48 @@
-[gd_scene load_steps=3 format=3 uid="uid://lv62my5r8bs2"]
+[gd_scene load_steps=7 format=3 uid="uid://6j3b8ckrc4ct"]
 
-[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_l1i53"]
-[ext_resource type="PackedScene" uid="uid://6j3b8ckrc4ct" path="res://statechart_sharp_example/test/test_control.tscn" id="2_kroug"]
+[ext_resource type="PackedScene" uid="uid://bh3sb6b3t6nay" path="res://statechart_sharp_example/test/test set/empty_statechart.tscn" id="1_mdmhv"]
+[ext_resource type="PackedScene" uid="uid://cqxh17y4vfuvs" path="res://statechart_sharp_example/test/test set/multiple_root_state.tscn" id="2_q2tko"]
+[ext_resource type="PackedScene" uid="uid://bpufpmo7rxiho" path="res://statechart_sharp_example/test/test set/compound_transition.tscn" id="3_5amwx"]
+[ext_resource type="PackedScene" uid="uid://bme6haclt2i80" path="res://statechart_sharp_example/test/test set/parallel_transition.tscn" id="4_0oeox"]
+[ext_resource type="PackedScene" uid="uid://dcapow8hws5li" path="res://statechart_sharp_example/test/test set/auto_transition.tscn" id="5_x3fm8"]
 
-[node name="Test" type="Node"]
-script = ExtResource("1_l1i53")
+[sub_resource type="Theme" id="Theme_hk6jv"]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="Test" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_hk6jv")
 
-[node name="TestControl" parent="CanvasLayer" instance=ExtResource("2_kroug")]
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Empty statechart" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("1_mdmhv")]
+layout_mode = 2
+
+[node name="Multiple root state" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("2_q2tko")]
+layout_mode = 2
+
+[node name="Compound transition" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("3_5amwx")]
+layout_mode = 2
+
+[node name="Parallel transition" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("4_0oeox")]
+layout_mode = 2
+
+[node name="Auto transition" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("5_x3fm8")]
+layout_mode = 2

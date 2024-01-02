@@ -66,7 +66,7 @@ namespace LGWCP.StatechartSharp
 
         internal virtual bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
         {
-            foreach (Transition t in HostState.Transitions)
+            foreach (Transition t in Transitions)
             {
                 // t.EventName == null && eventName == null
                 bool isEnabled = t.Check(eventName);
