@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using LGWCP.StatechartSharp;
 
 public partial class StatechartTest : Node

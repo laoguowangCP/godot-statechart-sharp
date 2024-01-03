@@ -1,0 +1,69 @@
+[gd_scene load_steps=5 format=3 uid="uid://bh3sb6b3t6nay"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_qo8on"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_v6bct"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_72bbv"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_78b8d"]
+
+[node name="History transition compond" type="BoxContainer"]
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "History transition compond"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_qo8on")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_v6bct")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_72bbv")
+StateMode = 1
+
+[node name="A" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_72bbv")
+InitialState = NodePath("b")
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_72bbv")
+
+[node name="x" type="Node" parent="Tester/Statechart/Root/A/a"]
+script = ExtResource("3_72bbv")
+
+[node name="auto-ax->bhistory" type="Node" parent="Tester/Statechart/Root/A/a/x" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_78b8d")
+TransitionEvent = 5
+TargetStatesArray = [NodePath("../../../b/history")]
+
+[node name="history" type="Node" parent="Tester/Statechart/Root/A/a"]
+script = ExtResource("3_72bbv")
+StateMode = 2
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_72bbv")
+InitialState = NodePath("y")
+
+[node name="x" type="Node" parent="Tester/Statechart/Root/A/b"]
+script = ExtResource("3_72bbv")
+
+[node name="y" type="Node" parent="Tester/Statechart/Root/A/b"]
+script = ExtResource("3_72bbv")
+
+[node name="by->ahistory" type="Node" parent="Tester/Statechart/Root/A/b/y" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_78b8d")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../../a/history")]
+
+[node name="history" type="Node" parent="Tester/Statechart/Root/A/b"]
+script = ExtResource("3_72bbv")
+StateMode = 2
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

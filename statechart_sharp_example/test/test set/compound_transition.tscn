@@ -30,8 +30,9 @@ script = ExtResource("3_qymd6")
 [node name="A" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_qymd6")
 
-[node name="a" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="a" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_qymd6")
+InitialState = NodePath("2")
 
 [node name="1" type="Node" parent="Tester/Statechart/Root/A/a"]
 script = ExtResource("3_qymd6")
