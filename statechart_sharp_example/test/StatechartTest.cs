@@ -52,9 +52,9 @@ public partial class StatechartTest : Node
 	public void OnTestButtonPressed()
 	{
 		GD.Print("[", GetParent<Node>().Name, "]");
-		GD.Print("-------- Test started --------");
+		GD.Print("-------- Test step start --------");
 		TestStatechart?.Step(StepName);
-		GD.Print("-------- Test finished --------");
+		GD.Print("-------- Test step finish --------");
 		GD.Print();
 	}
 
