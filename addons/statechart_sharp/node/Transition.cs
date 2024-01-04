@@ -97,6 +97,49 @@ public partial class Transition : StatechartComposition
             iterState = iterState.ParentState;
         }
 
+        // Check auto transition target is descendant
+        if (IsAuto)
+        {
+            foreach (State targetState in TargetStates)
+            {
+                bool isDescToParent = false;
+                bool isDescToSource = false;
+                State targetAscendant = targetState.ParentState;
+                while (targetAscendant != null)
+                {
+                    if (targetAscendant == SourceState)
+                    {
+                        isDescToSource = true;
+                    }
+                    if (targetAscendant == SourceState.ParentState)
+                    {
+                        isDescToParent = true;
+                        break;
+                    }
+                    targetAscendant = targetAscendant.ParentState;
+                }
+
+                #if DEBUG
+                if (!isDescToParent)
+                {
+                    GD.PushWarning(
+                        GetPath(),
+                        @": auto transition's target would better be descendant to source's parent, this may cause unintended loop transition");
+                }
+                #endif
+
+                if (isDescToSource || targetAscendant == SourceState)
+                {
+                    #if DEBUG
+                    GD.PushWarning(
+                        GetPath(),
+                        @": auto transition's target should not be source state or its descendant, this will most likely lead to loop transition");
+                    #endif
+                    IsValid = false;
+                }
+            }
+        }
+
         // Init LCA as SourceState, the first state in srcToRoot
         int reversedLcaIdx = srcToRoot.Count;
         List<State> tgtToRoot = new List<State>();
