@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_72bbv"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_78b8d"]
 
-[node name="History transition compond" type="BoxContainer"]
+[node name="History transition compound" type="BoxContainer"]
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 2
@@ -14,7 +14,7 @@ text = "Test
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
-text = "History transition compond"
+text = "History transition compound"
 
 [node name="Tester" type="Node" parent="."]
 script = ExtResource("1_qo8on")

@@ -43,7 +43,7 @@ This plugin provides basic nodes to build statechart in Godot editor.
 - Add substates under root state.
 - Switch state mode:
 
-  - Compond: active 1 substate.
+  - Compound: active 1 substate.
   - Parallel: active all substate.
   - Hisotry: history of parent state, used in transition.
 

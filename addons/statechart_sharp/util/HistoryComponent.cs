@@ -56,7 +56,7 @@ namespace LGWCP.StatechartSharp
         {
             /*
             History-state start the deduction:
-                1. Parent can be compond or parallel.
+                1. Parent can be compound or parallel.
                 2. Handle the sibling.
                 3. Should not be called recursively by other states.
             */

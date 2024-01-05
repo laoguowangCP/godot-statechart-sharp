@@ -63,7 +63,9 @@ public partial class Transition : StatechartComposition
         if (TransitionEvent == TransitionEventNameEnum.CUSTOM && CustomEventName == null)
         {
             #if DEBUG
-            GD.PushError(Name, ": no event name for custom-event. For eventless, switch to Auto.");
+            GD.PushError(
+                GetPath(),
+                ": no event name for custom-event. For eventless, switch to Auto.");
             #endif
             IsValid = false;
         }
@@ -97,9 +99,10 @@ public partial class Transition : StatechartComposition
             iterState = iterState.ParentState;
         }
 
-        // Check auto transition target is descendant
+        // Check auto transition target
         if (IsAuto)
         {
+            State sourceParent = SourceState.ParentState;
             foreach (State targetState in TargetStates)
             {
                 bool isDescToParent = false;
@@ -111,7 +114,7 @@ public partial class Transition : StatechartComposition
                     {
                         isDescToSource = true;
                     }
-                    if (targetAscendant == SourceState.ParentState)
+                    if (targetAscendant == sourceParent)
                     {
                         isDescToParent = true;
                         break;
@@ -124,18 +127,33 @@ public partial class Transition : StatechartComposition
                 {
                     GD.PushWarning(
                         GetPath(),
-                        @": auto transition's target would better be descendant to source's parent, this may cause unintended loop transition");
+                        ": auto transition's target is not descendant to source's parent, this may cause unintended loop transition.");
                 }
                 #endif
 
-                if (isDescToSource || targetAscendant == SourceState)
+                if (sourceParent.StateMode == StateModeEnum.Compound)
                 {
-                    #if DEBUG
-                    GD.PushWarning(
-                        GetPath(),
-                        @": auto transition's target should not be source state or its descendant, this will most likely lead to loop transition");
-                    #endif
-                    IsValid = false;
+                    if (isDescToSource || targetState == SourceState)
+                    {
+                        #if DEBUG
+                        GD.PushWarning(
+                            GetPath(),
+                            ": when source's parent is compound, auto transition's target should not be source state or its descendant, this will most likely lead to loop transition.");
+                        #endif
+                        IsValid = false;
+                    }
+                }
+                else if (sourceParent.StateMode == StateModeEnum.Parallel)
+                {
+                    if (isDescToParent || targetState == sourceParent)
+                    {
+                        #if DEBUG
+                        GD.PushWarning(
+                            GetPath(),
+                            ": when source's parent is parallel, auto transition's target should not be source's parent or its descendant, this will most likely lead to loop transition.");
+                        #endif
+                        IsValid = false;
+                    }
                 }
             }
         }

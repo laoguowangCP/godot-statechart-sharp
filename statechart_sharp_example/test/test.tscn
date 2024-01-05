@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bpufpmo7rxiho" path="res://statechart_sharp_example/test/test set/compound_transition.tscn" id="3_5amwx"]
 [ext_resource type="PackedScene" uid="uid://bme6haclt2i80" path="res://statechart_sharp_example/test/test set/parallel_transition.tscn" id="4_0oeox"]
 [ext_resource type="PackedScene" uid="uid://dcapow8hws5li" path="res://statechart_sharp_example/test/test set/auto_transition.tscn" id="5_x3fm8"]
-[ext_resource type="PackedScene" uid="uid://bh3sb6b3t6nay" path="res://statechart_sharp_example/test/test set/history_transition_compond.tscn" id="6_eyhdg"]
+[ext_resource type="PackedScene" uid="uid://bh3sb6b3t6nay" path="res://statechart_sharp_example/test/test set/history_transition_compound.tscn" id="6_eyhdg"]
 [ext_resource type="PackedScene" uid="uid://dr7eada8duibp" path="res://statechart_sharp_example/test/test set/history_transition_parallel.tscn" id="7_ayd8l"]
 [ext_resource type="PackedScene" uid="uid://n0lmrilkf5nk" path="res://statechart_sharp_example/test/test set/deep_history.tscn" id="8_fyxix"]
 
@@ -50,10 +50,10 @@ layout_mode = 2
 [node name="Auto transition" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("5_x3fm8")]
 layout_mode = 2
 
-[node name="History transition compond" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("6_eyhdg")]
+[node name="History transition compound" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("6_eyhdg")]
 layout_mode = 2
 
-[node name="History transition compond2" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("7_ayd8l")]
+[node name="History transition parallel" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("7_ayd8l")]
 layout_mode = 2
 
 [node name="Deep history" parent="PanelContainer/MarginContainer/GridContainer" instance=ExtResource("8_fyxix")]

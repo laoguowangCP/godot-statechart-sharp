@@ -5,7 +5,7 @@ namespace LGWCP.StatechartSharp
 {
     public enum StateModeEnum : int
     {
-        Compond,
+        Compound,
         Parallel,
         History
     }
@@ -20,7 +20,7 @@ namespace LGWCP.StatechartSharp
         
         #endregion
 
-        [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compond;
+        [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compound;
         [Export] public bool IsDeepHistory { get; protected set; }
         [Export] public State InitialState { get; set; }
         
@@ -42,8 +42,8 @@ namespace LGWCP.StatechartSharp
             Actions = new List<Reaction>();
             switch (StateMode)
             {
-                case StateModeEnum.Compond:
-                    StateComponent = new CompondComponent(this);
+                case StateModeEnum.Compound:
+                    StateComponent = new CompoundComponent(this);
                     break;
                 case StateModeEnum.Parallel:
                     StateComponent = new ParallelComponent(this);

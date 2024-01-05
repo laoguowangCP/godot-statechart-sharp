@@ -5,7 +5,7 @@ using Godot;
 
 namespace LGWCP.StatechartSharp
 {
-    public class CompondComponent : StateComponent
+    public class CompoundComponent : StateComponent
     {
         private State CurrentState
         {
@@ -18,7 +18,7 @@ namespace LGWCP.StatechartSharp
             set { HostState.InitialState = value; }
         }
         
-        public CompondComponent(State state) : base(state) {}
+        public CompoundComponent(State state) : base(state) {}
 
         internal override void Init(Statechart hostStateChart, ref int ancestorId)
         {
@@ -140,7 +140,7 @@ namespace LGWCP.StatechartSharp
             bool isConflict = false;
             /*
             Conflicts if:
-                (0. It is a compond state)
+                (0. It is a compound state)
                 1. State exists in enter-region.
                 2. Another substate is already exist in enter-region.
             */
