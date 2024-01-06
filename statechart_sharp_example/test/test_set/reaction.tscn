@@ -1,0 +1,74 @@
+[gd_scene load_steps=5 format=3 uid="uid://bvn1ttw3mand1"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_tw0s7"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_1yerx"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="3_5ls8d"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="4_b8y14"]
+
+[node name="Reaction" type="BoxContainer"]
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "reaction"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_tw0s7")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_1yerx")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("4_b8y14")
+StateMode = 1
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("4_b8y14")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_5ls8d")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("4_b8y14")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/A/a"]
+script = ExtResource("3_5ls8d")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("4_b8y14")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/A/b"]
+script = ExtResource("3_5ls8d")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("4_b8y14")
+StateMode = 1
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("4_b8y14")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/B/a"]
+script = ExtResource("3_5ls8d")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("4_b8y14")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/B/b"]
+script = ExtResource("3_5ls8d")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

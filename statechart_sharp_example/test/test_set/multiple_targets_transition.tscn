@@ -1,0 +1,78 @@
+[gd_scene load_steps=5 format=3 uid="uid://brsub5o00bh4n"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_61lfq"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_3d0l7"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_iku17"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_mdohw"]
+
+[node name="Multiple targets transition" type="BoxContainer"]
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Multiple targets transition"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_61lfq")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_3d0l7")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_iku17")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_iku17")
+
+[node name="A->Ba1+Bb2+Bc3" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_mdohw")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B/a/1"), NodePath("../../B/b/2"), NodePath("../../B/c/3")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_iku17")
+StateMode = 1
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_iku17")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/B/a"]
+script = ExtResource("3_iku17")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/B/a"]
+script = ExtResource("3_iku17")
+
+[node name="3" type="Node" parent="Tester/Statechart/Root/B/a"]
+script = ExtResource("3_iku17")
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_iku17")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/B/b"]
+script = ExtResource("3_iku17")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/B/b"]
+script = ExtResource("3_iku17")
+
+[node name="3" type="Node" parent="Tester/Statechart/Root/B/b"]
+script = ExtResource("3_iku17")
+
+[node name="c" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_iku17")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/B/c"]
+script = ExtResource("3_iku17")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/B/c"]
+script = ExtResource("3_iku17")
+
+[node name="3" type="Node" parent="Tester/Statechart/Root/B/c"]
+script = ExtResource("3_iku17")
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

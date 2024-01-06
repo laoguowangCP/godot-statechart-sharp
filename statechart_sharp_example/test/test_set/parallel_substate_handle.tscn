@@ -1,0 +1,57 @@
+[gd_scene load_steps=5 format=3 uid="uid://8ti55xwppjd5"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_bejsk"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_ghfx3"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_xdbbc"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_i4rjk"]
+
+[node name="Parallel substate handle" type="BoxContainer"]
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Test
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Parallel substate handle"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_bejsk")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_ghfx3")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_xdbbc")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_xdbbc")
+StateMode = 1
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_xdbbc")
+
+[node name="a->" type="Node" parent="Tester/Statechart/Root/A/a"]
+script = ExtResource("4_i4rjk")
+TransitionEvent = 4
+CustomEventName = &"test"
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_xdbbc")
+
+[node name="b->" type="Node" parent="Tester/Statechart/Root/A/b"]
+script = ExtResource("4_i4rjk")
+TransitionEvent = 4
+CustomEventName = &"test"
+
+[node name="c" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_xdbbc")
+
+[node name="A->" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("4_i4rjk")
+TransitionEvent = 4
+CustomEventName = &"test"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

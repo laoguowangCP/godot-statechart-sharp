@@ -90,6 +90,11 @@ namespace LGWCP.StatechartSharp
 
         public void Step(StringName eventName)
         {
+            if (eventName == null)
+            {
+                return;
+            }
+
             // Queue transition event
             QueuedEvents.Enqueue(eventName);
             if (IsRunning)

@@ -14,26 +14,24 @@ namespace LGWCP.StatechartSharp
     public partial class State : StatechartComposition
     {
         #region define signals
-
         [Signal] public delegate void EnterEventHandler(State state);
         [Signal] public delegate void ExitEventHandler(State state);
         
         #endregion
 
-        [Export] public StateModeEnum StateMode { get; protected set; } = StateModeEnum.Compound;
-        [Export] public bool IsDeepHistory { get; protected set; }
-        [Export] public State InitialState { get; set; }
-        
-        // public Statechart HostStatechart { get; protected set; }
-        public State ParentState { get; set; }
-        public State CurrentState { get; set; }
-        public List<State> Substates { get; set; }
-        public List<Transition> Transitions { get; set; }
-        public List<Reaction> Actions { get; set; }
+        [Export] internal StateModeEnum StateMode { get; private set; } = StateModeEnum.Compound;
+        [Export] internal bool IsDeepHistory { get; private set; }
+        [Export] internal State InitialState { get; set; }
+
+        internal State ParentState { get; set; }
+        internal State CurrentState { get; set; }
+        internal List<State> Substates { get; set; }
+        internal List<Transition> Transitions { get; set; }
+        internal List<Reaction> Actions { get; set; }
         protected StateComponent StateComponent { get; set; }
-        public State LowerState { get; set; }
-        public State UpperState { get; set; }
-        public bool IsHistory { get => StateMode == StateModeEnum.History; }
+        internal State LowerState { get; set; }
+        internal State UpperState { get; set; }
+        internal bool IsHistory { get => StateMode == StateModeEnum.History; }
 
         public override void _Ready()
         {
