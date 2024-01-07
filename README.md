@@ -93,7 +93,7 @@ During the `Step` method, statechart will do following things:
 Here's several specification you shall follow:
 
 - Do not manually call `Step` with node loop event, especially when a step is running.
-- Do not call same event as a step is running, this may cause unintended endless loop.
+- Do not call same event from a running step, this may cause unintended endless loop.
 
 | Property | Description |
 | ---- | ---- |
@@ -101,20 +101,36 @@ Here's several specification you shall follow:
 
 | Method | Description |
 | ---- | ---- |
-| `void Step(StringName eventName)` | Step statechart with event. |
+| `void Step(StringName)` | Make statechart run a step with given event. |
 
 
-### State <img src="./addons/statechart_sharp/icon/State.svg" alt="Statechart" style="width:16px;" align="bottom"/>
+### State
 
+This node works as "state" as in common state machine system, but can be arranged in a tree structure, as hierarchical state machine do.
+
+Beware, only a collection of states in the tree are active. Root state is no doubt always active. For the rest, they have 3 mode to choose from: `Compound`, `Parallel`, `History`. State mode determines how state deal with child state (which called substate), and other behaviors when traversing state tree.
+
+`Compound` is the default mode of a state:
+
+- If it is active, then exactly 1 substate will be active (if there's any), which is called current substate.
+- Initial state is the substate a compound will choose as current state by default. You can assign it in inspector, or the first substate will be initial state (if there's any).
+
+`Parallel` is kinda opposite to compund:
+
+- If it is active, then all substate will be active.
+
+`History` is a special mode, it represents the "history" of parent state, the status since last transition happened.
 
 | Property | Description |
 | ---- | ---- |
-|  |
+| `enum StateModeEnum StateMode` | Enumeration of state mode. |
+| `bool IsDeepHistory` | Used in history mode only. |
+| `State InitialState` | The substate choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only. |
 
 
-### Transition <img src="./addons/statechart_sharp/icon/Transition.svg" alt="Statechart" style="width:16px;" align="bottom"/>
+### Transition
 
-### Reaction <img src="./addons/statechart_sharp/icon/Reaction.svg" alt="Statechart" style="width:16px;" align="bottom"/>
+### Reaction
 
 ## Todo
 
