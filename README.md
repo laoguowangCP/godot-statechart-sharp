@@ -79,7 +79,7 @@ To get full perspective on statechart, you may refer to:
 
 The control node of whole statechart. You can simply take it as "state machine node" as in common state machine system. To make it work properly, add exactly 1 child `State` node as `RootState` , which is always active.
 
-At the very beginning, statechart initializes itself, then root state, and all the state, transition, and reaction nodes appended to it. All the composition will be indexed with "document order", which is the order they showed in an expanded node tree: the higher node excceeds the lower.
+At the very beginning, statechart initializes itself, then root state, and all the state, transition, and reaction nodes appended to it. All the composition will be indexed with "document order" — the order they showed in an expanded node tree, which is followed by most iteration process.
 
 Statechart provides `Step` method, which is the sole way we interact with statechart. To be specific, node loop event also calls `Step` method, the only difference is that they use built-in event string, defined in `util/StatechartConfig.cs` .
 
@@ -110,7 +110,7 @@ Here's several specification you shall follow:
 
 This node works as "state" as in common state machine system, but can be arranged in a tree structure, as hierarchical state machine do.
 
-Beware, only a collection of states in the tree are active. Root state is no doubt always active. For the rest, they largely depend on parent state's mode: `Compound`, `Parallel`, `History`. State mode determines how state deal with child state (also called substate), and other behaviors when traversing state tree.
+Beware, only a collection of states in the tree are active. Root state is no doubt always active. For the rest, they largely depend on their parent's "state mode": `Compound`, `Parallel`, or `History`. State mode determines how state deal with child state (also called substate), and other behaviors when traversing state tree.
 
 `Compound` is the default mode of a state:
 
@@ -128,6 +128,8 @@ Beware, only a collection of states in the tree are active. Root state is no dou
 
   - A shallow history only recovers parent's status, leaves default entry to descendants.
   - A deep history recovers parent's status as well as descendants', leaves no default entry.
+
+- For the state never been active before, history equals to default entry, no matter deep or not.
 
 Here's several specification you shall follow:
 
