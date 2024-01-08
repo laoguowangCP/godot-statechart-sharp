@@ -79,6 +79,8 @@ To get full perspective on statechart, you may refer to:
 
 The control node of whole statechart. You can simply take it as "state machine node" as in common state machine system. To make it work properly, add exactly 1 child `State` node as `RootState` , which is always active.
 
+At the very beginning, statechart initializes itself, then root state, and all the state, transition, and reaction nodes appended to it. All the composition will be indexed with "document order", which is the order they showed in an expanded node tree: the higher node excceeds the lower.
+
 Statechart provides `Step` method, which is the sole way we interact with statechart. To be specific, node loop event also calls `Step` method, the only difference is that they use built-in event string, defined in `util/StatechartConfig.cs` .
 
 During the `Step` method, statechart will do following things:
@@ -108,25 +110,35 @@ Here's several specification you shall follow:
 
 This node works as "state" as in common state machine system, but can be arranged in a tree structure, as hierarchical state machine do.
 
-Beware, only a collection of states in the tree are active. Root state is no doubt always active. For the rest, they have 3 mode to choose from: `Compound`, `Parallel`, `History`. State mode determines how state deal with child state (which called substate), and other behaviors when traversing state tree.
+Beware, only a collection of states in the tree are active. Root state is no doubt always active. For the rest, they largely depend on parent state's mode: `Compound`, `Parallel`, `History`. State mode determines how state deal with child state (also called substate), and other behaviors when traversing state tree.
 
 `Compound` is the default mode of a state:
 
-- If it is active, then exactly 1 substate will be active (if there's any), which is called current substate.
-- Initial state is the substate a compound will choose as current state by default. You can assign it in inspector, or the first substate will be initial state (if there's any).
+- If it is active, then exactly 1 substate will be active (if there's any, except history state), which is called current state.
+- Initial state is the substate a compound will choose as current state by default. You can assign it in inspector, or the first substate will be initial state (if there's any, except history state).
 
 `Parallel` is kinda opposite to compund:
 
-- If it is active, then all substate will be active.
+- If it is active, then all substate will be active (except history state).
 
-`History` is a special mode, it represents the "history" of parent state, the status since last transition happened.
+`History` is a special mode only used as transition target. It will redirect to the sibling(s) once active till last exit of parent state.
+
+- Never active.
+- You can switch whether a history state is deep or not.
+
+  - A shallow history only recovers parent's status, leaves default entry to descendants.
+  - A deep history recovers parent's status as well as descendants', leaves no default entry.
+
+Here's several specification you shall follow:
+
+- Do not append substate to history: state, transition, reaction won't function as history's child. However, you may occasionally assign a history's substate as transition target, which may cause unexpected behavior.
+- Better not use shallow history to a parallel state. It equals to set the parallel as target.
 
 | Property | Description |
 | ---- | ---- |
 | `enum StateModeEnum StateMode` | Enumeration of state mode. |
 | `bool IsDeepHistory` | Used in history mode only. |
-| `State InitialState` | The substate choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only. |
-
+| `State InitialState` | The substate that will be choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only. |
 
 ### Transition
 

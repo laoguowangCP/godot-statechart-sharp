@@ -3,117 +3,119 @@ using System.Collections.Generic;
 
 namespace LGWCP.StatechartSharp
 {
-    public enum StateModeEnum : int
+
+public enum StateModeEnum : int
+{
+    Compound,
+    Parallel,
+    History
+}
+
+[GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
+public partial class State : StatechartComposition
+{
+    #region define signals
+    [Signal] public delegate void EnterEventHandler(State state);
+    [Signal] public delegate void ExitEventHandler(State state);
+    
+    #endregion
+
+    [Export] internal StateModeEnum StateMode { get; private set; } = StateModeEnum.Compound;
+    [Export] internal bool IsDeepHistory { get; private set; }
+    [Export] internal State InitialState { get; set; }
+
+    internal State ParentState { get; set; }
+    internal State CurrentState { get; set; }
+    internal List<State> Substates { get; set; }
+    internal List<Transition> Transitions { get; set; }
+    internal List<Reaction> Actions { get; set; }
+    protected StateComponent StateComponent { get; set; }
+    internal State LowerState { get; set; }
+    internal State UpperState { get; set; }
+    internal bool IsHistory { get => StateMode == StateModeEnum.History; }
+
+    public override void _Ready()
     {
-        Compound,
-        Parallel,
-        History
+        Substates = new List<State>();
+        Transitions = new List<Transition>();
+        Actions = new List<Reaction>();
+        switch (StateMode)
+        {
+            case StateModeEnum.Compound:
+                StateComponent = new CompoundComponent(this);
+                break;
+            case StateModeEnum.Parallel:
+                StateComponent = new ParallelComponent(this);
+                break;
+            case StateModeEnum.History:
+                StateComponent = new HistoryComponent(this);
+                break;
+        }
     }
 
-    [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
-    public partial class State : StatechartComposition
+    internal override void Init(Statechart hostStateChart, ref int ancestorId)
     {
-        #region define signals
-        [Signal] public delegate void EnterEventHandler(State state);
-        [Signal] public delegate void ExitEventHandler(State state);
+        base.Init(hostStateChart, ref ancestorId);
+        StateComponent.Init(hostStateChart, ref ancestorId);
+    }
+
+    internal override void PostInit()
+    {
+        StateComponent.PostInit();
+    }
+
+    internal void StateEnter()
+    {
+        if (ParentState != null)
+        {
+            ParentState.HandleSubstateEnter(this);
+        }
         
-        #endregion
+        EmitSignal(SignalName.Enter, this);
+    }
 
-        [Export] internal StateModeEnum StateMode { get; private set; } = StateModeEnum.Compound;
-        [Export] internal bool IsDeepHistory { get; private set; }
-        [Export] internal State InitialState { get; set; }
+    internal void StateExit()
+    {
+        EmitSignal(SignalName.Exit, this);
+    }
 
-        internal State ParentState { get; set; }
-        internal State CurrentState { get; set; }
-        internal List<State> Substates { get; set; }
-        internal List<Transition> Transitions { get; set; }
-        internal List<Reaction> Actions { get; set; }
-        protected StateComponent StateComponent { get; set; }
-        internal State LowerState { get; set; }
-        internal State UpperState { get; set; }
-        internal bool IsHistory { get => StateMode == StateModeEnum.History; }
-
-        public override void _Ready()
+    internal void StateInvoke(StringName eventName)
+    {
+        foreach (Reaction a in Actions)
         {
-            Substates = new List<State>();
-            Transitions = new List<Transition>();
-            Actions = new List<Reaction>();
-            switch (StateMode)
-            {
-                case StateModeEnum.Compound:
-                    StateComponent = new CompoundComponent(this);
-                    break;
-                case StateModeEnum.Parallel:
-                    StateComponent = new ParallelComponent(this);
-                    break;
-                case StateModeEnum.History:
-                    StateComponent = new HistoryComponent(this);
-                    break;
-            }
+            a.ReactionInvoke(eventName);
         }
+    }
 
-        internal override void Init(Statechart hostStateChart, ref int ancestorId)
-        {
-            base.Init(hostStateChart, ref ancestorId);
-            StateComponent.Init(hostStateChart, ref ancestorId);
-        }
+    internal void RegisterActiveState(SortedSet<State> activeStates)
+    {
+        StateComponent.RegisterActiveState(activeStates);
+    }
 
-        internal override void PostInit()
-        {
-            StateComponent.PostInit();
-        }
+    internal bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
+    {
+        return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
+    }
 
-        internal void StateEnter()
-        {
-            if (ParentState != null)
-            {
-                ParentState.HandleSubstateEnter(this);
-            }
-            
-            EmitSignal(SignalName.Enter, this);
-        }
+    internal void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
+    {
+        StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
+    }
 
-        internal void StateExit()
-        {
-            EmitSignal(SignalName.Exit, this);
-        }
+    internal bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName = null)
+    {
+        return StateComponent.SelectTransitions(enabledTransitions, eventName);
+    }
 
-        internal void StateInvoke(StringName eventName)
-        {
-            foreach (Reaction a in Actions)
-            {
-                a.ReactionInvoke(eventName);
-            }
-        }
+    internal void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
+    {
+        StateComponent.DeduceDescendants(deducedSet, isHistory, isEdgeState);
+    }
 
-        internal void RegisterActiveState(SortedSet<State> activeStates)
-        {
-            StateComponent.RegisterActiveState(activeStates);
-        }
-
-        internal bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
-        {
-            return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
-        }
-
-        internal void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
-        {
-            StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
-        }
-
-        internal bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName = null)
-        {
-            return StateComponent.SelectTransitions(enabledTransitions, eventName);
-        }
-
-        internal void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
-        {
-            StateComponent.DeduceDescendants(deducedSet, isHistory, isEdgeState);
-        }
-
-        internal void HandleSubstateEnter(State substate)
-        {
-            StateComponent.HandleSubstateEnter(substate);
-        }
+    internal void HandleSubstateEnter(State substate)
+    {
+        StateComponent.HandleSubstateEnter(substate);
     }
 }
+
+} // end of namespace

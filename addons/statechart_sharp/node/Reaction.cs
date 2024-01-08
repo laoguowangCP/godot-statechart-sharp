@@ -43,4 +43,4 @@ public partial class Reaction : StatechartComposition
 
 }
 
-} // Namespace
+} // end of namespace

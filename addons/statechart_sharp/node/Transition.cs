@@ -307,4 +307,4 @@ public partial class Transition : StatechartComposition
     }
 }
 
-} // namespace
+} // end of namespace
