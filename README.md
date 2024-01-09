@@ -77,7 +77,7 @@ To get full perspective on statechart, you may refer to:
 
 ### Statechart <img src="./addons/statechart_sharp/icon/Statechart.svg" alt="Statechart" style="width:16px;" align="bottom"/>
 
-The control node of whole statechart. You can simply take it as "state machine node" as in common state machine system. To make it work properly, add exactly 1 child `State` node as `RootState` , which is always active.
+The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work properly, add exactly 1 child `State` node as "root state" (non-history state), which is always active.
 
 At the very beginning, statechart initializes itself, then root state, and all the state, transition, and reaction nodes appended to it. All the composition will be indexed with "document order" — the order they showed in an expanded node tree, which is followed by most iteration process.
 
@@ -85,7 +85,7 @@ Statechart provides `Step` method, which is the sole way we interact with statec
 
 During the `Step` method, statechart will do following things:
 
-1. Queue event, if statechart is already running a step. If not the case, statechart will fetch event from queue, and continues following tasks.
+1. Queue event, if statechart is already running a step. Otherwise, statechart will fetch event from queue, and continues following tasks.
 2. With fetched event, statechart select transitions from active states.
 3. Execute selected transitions.
 4. Select and execute auto transitions from active states, do several rounds.
@@ -105,12 +105,11 @@ Here's several specification you shall follow:
 | ---- | ---- |
 | `void Step(StringName)` | Make statechart run a step with given event. |
 
-
 ### State
 
-This node works as "state" as in common state machine system, but can be arranged in a tree structure, as hierarchical state machine do.
+This node works as "state" in common state machine system, but can be arranged in a tree structure, as hierarchical state machine do.
 
-Beware, only a collection of states in the tree are active. Root state is no doubt always active. For the rest, they largely depend on their parent's "state mode": `Compound`, `Parallel`, or `History`. State mode determines how state deal with child state (also called substate), and other behaviors when traversing state tree.
+Beware, only a collection of states in the tree are active. Root state is no doubt always active. For the rest, they largely depend on their parent's "state mode": `Compound`, `Parallel`, or `History`. State mode determines how state deal with child state (substate), and other behaviors when traversing state tree.
 
 `Compound` is the default mode of a state:
 
@@ -121,20 +120,21 @@ Beware, only a collection of states in the tree are active. Root state is no dou
 
 - If it is active, then all substate will be active (except history state).
 
-`History` is a special mode only used as transition target. It will redirect to the sibling(s) once active till last exit of parent state.
+`History` is a special mode only used in transition.
 
 - Never active.
 - You can switch whether a history state is deep or not.
 
-  - A shallow history only recovers parent's status, leaves default entry to descendants.
-  - A deep history recovers parent's status as well as descendants', leaves no default entry.
+  - Shallow history only recovers parent's status. For compound parent, it will redirect transition target to the sibling once active till last exit of parent state. For parallel parent, it will redirect transition target to all the non-hisotry siblings.
 
-- For the state never been active before, history equals to default entry, no matter deep or not.
+  - A deep history recovers parent's status as well as descendants'. Redirecting process will be done recursively on redirected targets' substate.
+
+- State may never been active before as a history state's parent. For compound parent, history will be redirected to parent's initial state. For parallel parent, history will be redirected to all non-history siblings.
 
 Here's several specification you shall follow:
 
 - Do not append substate to history: state, transition, reaction won't function as history's child. However, you may occasionally assign a history's substate as transition target, which may cause unexpected behavior.
-- Better not use shallow history to a parallel state. It equals to set the parallel as target.
+- Parallel's shallow history is all the non-history substate.
 
 | Property | Description |
 | ---- | ---- |

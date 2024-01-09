@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LGWCP.StatechartSharp
 {
@@ -53,13 +54,13 @@ public partial class State : StatechartComposition
         }
     }
 
-    internal override void Init(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
-        base.Init(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref ancestorId);
         StateComponent.Init(hostStateChart, ref ancestorId);
     }
 
-    internal override void PostInit()
+    internal override void PostSetup()
     {
         StateComponent.PostInit();
     }

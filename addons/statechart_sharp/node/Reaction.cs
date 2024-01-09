@@ -21,9 +21,9 @@ public partial class Reaction : StatechartComposition
 
     #endregion
 
-    internal override void Init(Statechart hostStatechart, ref int ancestorId)
+    internal override void Setup(Statechart hostStatechart, ref int ancestorId)
     {
-        base.Init(hostStatechart, ref ancestorId);
+        base.Setup(hostStatechart, ref ancestorId);
         #if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.CUSTOM && CustomEventName == null)
         {

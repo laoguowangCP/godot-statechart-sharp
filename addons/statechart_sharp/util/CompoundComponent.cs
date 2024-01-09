@@ -32,7 +32,7 @@ public class CompoundComponent : StateComponent
         {
             if (child is State s)
             {
-                s.Init(hostStateChart, ref ancestorId);
+                s.Setup(hostStateChart, ref ancestorId);
                 Substates.Add(s);
 
                 // First substate is lower-state
@@ -49,12 +49,12 @@ public class CompoundComponent : StateComponent
                 {
                     continue;
                 }
-                t.Init(hostStateChart, ref ancestorId);
+                t.Setup(hostStateChart, ref ancestorId);
                 Transitions.Add(t);
             }
             else if (child is Reaction a)
             {
-                a.Init(hostStateChart, ref ancestorId);
+                a.Setup(hostStateChart, ref ancestorId);
                 Actions.Add(a);
             }
         }
@@ -121,17 +121,17 @@ public class CompoundComponent : StateComponent
     {
         foreach (State s in Substates)
         {
-            s.PostInit();
+            s.PostSetup();
         }
 
         foreach (Transition t in Transitions)
         {
-            t.PostInit();
+            t.PostSetup();
         }
 
         foreach (Reaction a in Actions)
         {
-            a.PostInit();
+            a.PostSetup();
         }
     }
 

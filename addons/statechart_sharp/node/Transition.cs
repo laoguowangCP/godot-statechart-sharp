@@ -48,9 +48,9 @@ public partial class Transition : StatechartComposition
         IsValid = true;
     }
 
-    internal override void Init(Statechart hostStatechart, ref int ancestorId)
+    internal override void Setup(Statechart hostStatechart, ref int ancestorId)
     {
-        base.Init(hostStatechart, ref ancestorId);
+        base.Setup(hostStatechart, ref ancestorId);
 
         // Get source-state
         Node parent = GetParent<Node>();
@@ -76,7 +76,7 @@ public partial class Transition : StatechartComposition
         IsTargetless = TargetStates.Count == 0;
     }
 
-    internal override void PostInit()
+    internal override void PostSetup()
     {
         if (IsTargetless)
         {

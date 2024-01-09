@@ -14,8 +14,8 @@ public partial class StatechartComposition : Node
     public InputEvent Input { get => HostStatechart.Input; }
     public InputEvent UnhandledInput { get => HostStatechart.UnhandledInput; }
 
-    internal virtual void Init() {}
-    internal virtual void Init(Statechart hostStatechart, ref int ancestorId)
+    internal virtual void Setup() {}
+    internal virtual void Setup(Statechart hostStatechart, ref int ancestorId)
     {
         HostStatechart = hostStatechart;
         ++ancestorId;
@@ -26,7 +26,7 @@ public partial class StatechartComposition : Node
             ProcessMode = ProcessModeEnum.Disabled;
         }
     }
-    internal virtual void PostInit() {}
+    internal virtual void PostSetup() {}
     internal static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
     {
         if (x == null || y == null)

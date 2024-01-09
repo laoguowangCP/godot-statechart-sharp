@@ -39,14 +39,14 @@ public partial class Statechart : StatechartComposition
         EnterSet = new SortedSet<State>(new StateComparer());
         
         // Collect states, activate initial-states
-        Init();
+        Setup();
 
         // Init Transitions
         // Enter active states, document order
-        PostInit();
+        PostSetup();
     }
 
-    internal override void Init()
+    internal override void Setup()
     {
         OrderId = 0;
         HostStatechart = this;
@@ -62,17 +62,17 @@ public partial class Statechart : StatechartComposition
         if (RootState != null)
         {
             int ancestorId = 0;
-            RootState.Init(this, ref ancestorId);
+            RootState.Setup(this, ref ancestorId);
         }
     }
 
-    internal override void PostInit()
+    internal override void PostSetup()
     {
         if (RootState != null)
         {
             // Get activeStates
             RootState.RegisterActiveState(ActiveStates);
-            RootState.PostInit();
+            RootState.PostSetup();
         }
 
         // Enter active-state
