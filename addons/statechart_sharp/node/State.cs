@@ -12,6 +12,7 @@ public enum StateModeEnum : int
     History
 }
 
+[Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
 public partial class State : StatechartComposition
 {
@@ -23,7 +24,19 @@ public partial class State : StatechartComposition
 
     [Export] internal StateModeEnum StateMode { get; private set; } = StateModeEnum.Compound;
     [Export] internal bool IsDeepHistory { get; private set; }
-    [Export] internal State InitialState { get; set; }
+    [Export] internal State InitialState
+    {
+        get { return _initialState; }
+        set
+        {
+            _initialState = value;
+            #if TOOLS
+            UpdateConfigurationWarnings();
+            #endif
+        }
+    }
+
+    private State _initialState;
 
     internal State ParentState { get; set; }
     internal State CurrentState { get; set; }
@@ -116,6 +129,19 @@ public partial class State : StatechartComposition
     internal void HandleSubstateEnter(State substate)
     {
         StateComponent.HandleSubstateEnter(substate);
+    }
+
+    public override string[] _GetConfigurationWarnings()
+    {
+        var warnings = new List<string>();
+
+        if (InitialState != null
+            && (InitialState.GetParent() != this || InitialState.IsHistory))
+        {
+            warnings.Add("Initial state should be a non-history substate.");
+        }
+
+        return warnings.ToArray();
     }
 }
 

@@ -77,24 +77,13 @@ public class CompoundComponent : StateComponent
         // Set initial-state
         if (InitialState != null)
         {
-            // Check selected initial-state is substate
-            if (InitialState.ParentState != HostState)
+            // Check selected initial-state is non-history substate
+            if (InitialState.ParentState != HostState || InitialState.IsHistory)
             {
                 #if DEBUG
                 GD.PushWarning(
                     HostState.GetPath(),
-                    ": initial-state should be a substate.");
-                #endif
-                InitialState = null;
-            }
-
-            // Check selected initial-state is not history
-            if (InitialState.StateMode == StateModeEnum.History)
-            {
-                #if DEBUG
-                GD.PushWarning(
-                    HostState.GetPath(),
-                    @": initial-state should not be history.");
+                    ": initial-state should be a non-history substate.");
                 #endif
                 InitialState = null;
             }
