@@ -3,6 +3,7 @@ using Godot;
 namespace LGWCP.StatechartSharp
 {
 
+[Tool]
 public partial class StatechartComposition : Node
 {
     internal int OrderId;
@@ -21,8 +22,7 @@ public partial class StatechartComposition : Node
         ++ancestorId;
         OrderId = ancestorId;
         
-        #if TOOLS
-        #else
+        #if !TOOLS
         if (HostStatechart != this)
         {
             ProcessMode = ProcessModeEnum.Disabled;
