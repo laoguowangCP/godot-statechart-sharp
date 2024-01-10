@@ -21,10 +21,13 @@ public partial class StatechartComposition : Node
         ++ancestorId;
         OrderId = ancestorId;
         
+        #if TOOLS
+        #else
         if (HostStatechart != this)
         {
             ProcessMode = ProcessModeEnum.Disabled;
         }
+        #endif
     }
     internal virtual void PostSetup() {}
     internal static bool IsCommonHost(StatechartComposition x, StatechartComposition y)

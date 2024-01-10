@@ -6,6 +6,7 @@ using Godot.Collections;
 namespace LGWCP.StatechartSharp
 {
 
+[Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
 public partial class Transition : StatechartComposition
 {
@@ -18,8 +19,30 @@ public partial class Transition : StatechartComposition
 
     #region define properties
 
-    [Export] private TransitionEventNameEnum TransitionEvent { get; set; } = TransitionEventNameEnum.PROCESS;
-    [Export] private StringName CustomEventName { get; set; }
+    [Export] private TransitionEventNameEnum TransitionEvent
+    {
+        get => _transitionEvent;
+        set
+        {
+            _transitionEvent = value;
+            #if TOOLS
+            UpdateConfigurationWarnings();
+            #endif
+        }
+    }
+    private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.PROCESS;
+    [Export] private StringName CustomEventName
+    {
+        get => _customEventName;
+        set
+        {
+            _customEventName = value;
+            #if TOOLS
+            UpdateConfigurationWarnings();
+            #endif
+        }
+    }
+    private StringName _customEventName;
     [Export] private Array<State> TargetStatesArray = new Array<State>();
     private StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
@@ -60,12 +83,13 @@ public partial class Transition : StatechartComposition
         }
 
         // Handle event-name
-        if (TransitionEvent == TransitionEventNameEnum.CUSTOM && CustomEventName == null)
+        if (TransitionEvent == TransitionEventNameEnum.CUSTOM
+            &&  (CustomEventName == null || CustomEventName == ""))
         {
             #if DEBUG
             GD.PushError(
                 GetPath(),
-                ": no event name for custom-event. For eventless, switch to Auto.");
+                ": no event name for custom event. For eventless, switch to Auto.");
             #endif
             IsValid = false;
         }
@@ -74,6 +98,16 @@ public partial class Transition : StatechartComposition
 
         // Set targetless
         IsTargetless = TargetStates.Count == 0;
+
+        if (IsTargetless && IsAuto)
+        {
+            #if DEBUG
+            GD.PushError(
+                GetPath(),
+                ": targetless auto transition is invalid. This will most likely causes loop transition.");
+            #endif
+            IsValid = false;
+        }
     }
 
     internal override void PostSetup()
@@ -127,7 +161,9 @@ public partial class Transition : StatechartComposition
                 {
                     GD.PushWarning(
                         GetPath(),
-                        ": auto transition's target is not descendant to source's parent, this may cause unintended loop transition.");
+                        ": target ",
+                        targetState.GetPath(),
+                        " is not descendant to source's parent, this may cause unintended loop transition.");
                 }
                 #endif
 
@@ -138,9 +174,13 @@ public partial class Transition : StatechartComposition
                         #if DEBUG
                         GD.PushWarning(
                             GetPath(),
-                            ": when source's parent is compound, auto transition's target should not be source state or its descendant, this will most likely lead to loop transition.");
+                            ": target ",
+                            targetState.GetPath(),
+                            " causes transition invalid. ",
+                            "When source's parent is compound, auto transition's target should not be source state or its descendant, this will most likely lead to loop transition.");
                         #endif
                         IsValid = false;
+                        break;
                     }
                 }
                 else if (sourceParent.StateMode == StateModeEnum.Parallel)
@@ -150,9 +190,13 @@ public partial class Transition : StatechartComposition
                         #if DEBUG
                         GD.PushWarning(
                             GetPath(),
-                            ": when source's parent is parallel, auto transition's target should not be source's parent or its descendant, this will most likely lead to loop transition.");
+                            ": target ",
+                            targetState.GetPath(),
+                            " causes transition invalid. ",
+                            "When source's parent is parallel, auto transition's target should not be source's parent or its descendant, this will most likely lead to loop transition.");
                         #endif
                         IsValid = false;
+                        break;
                     }
                 }
             }
@@ -169,7 +213,9 @@ public partial class Transition : StatechartComposition
                 #if DEBUG
                 GD.PushWarning(
                     GetPath(),
-                    ": target states should under same statechart.");
+                    ": target ",
+                    target.GetPath(),
+                    " should under same statechart as source state.");
                 #endif
                 continue;
             }
@@ -198,7 +244,11 @@ public partial class Transition : StatechartComposition
             if (isConflict)
             {
                 #if DEBUG
-                GD.PushWarning(SourceState.GetPath(), ": target state conflict, name: ", target.Name);
+                GD.PushWarning(
+                    SourceState.GetPath(),
+                    ": target ",
+                    target.GetPath(),
+                    " conflicts with previous target(s).");
                 #endif
                 continue;
             }
@@ -257,7 +307,7 @@ public partial class Transition : StatechartComposition
             #if DEBUG
             GD.PushWarning(
                 GetPath(),
-                ": auto transition's enter-region contains source state, target states invalid.");
+                ": auto transition's enter region contains source state, target states invalid.");
             #endif
             IsValid = false;
         }
@@ -305,6 +355,27 @@ public partial class Transition : StatechartComposition
         }
         return DeducedEnterStates;
     }
+
+    #if TOOLS
+    public override string[] _GetConfigurationWarnings()
+    {
+        var warnings = new List<string>();
+
+        if (TransitionEvent == TransitionEventNameEnum.CUSTOM
+            && (CustomEventName == null || CustomEventName == ""))
+        {
+            warnings.Add("No event name for custom event. For eventless, switch to Auto.");
+        }
+
+        if (TransitionEvent == TransitionEventNameEnum.AUTO
+            && (TargetStatesArray == null || TargetStatesArray.Count == 0))
+        {
+            warnings.Add("Targetless auto transition is invalid.");
+        }
+
+        return warnings.ToArray();
+    }
+    #endif
 }
 
 } // end of namespace

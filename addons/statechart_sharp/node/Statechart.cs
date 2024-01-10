@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace LGWCP.StatechartSharp
 {
 
+// [Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
@@ -188,6 +189,7 @@ public partial class Statechart : StatechartComposition
                 t.LcaState.LowerState, t.LcaState.UpperState);
             ExitSet.UnionWith(exitStates);
         }
+
         ActiveStates.ExceptWith(ExitSet);
         foreach (State s in ExitSet)
         {

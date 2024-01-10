@@ -30,8 +30,9 @@ StateMode = 1
 [node name="A" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_xiklw")
 
-[node name="a" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="a" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_xiklw")
+InitialState = NodePath("x")
 
 [node name="x" type="Node" parent="Tester/Statechart/Root/A/a"]
 script = ExtResource("3_xiklw")

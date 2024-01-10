@@ -1,6 +1,5 @@
 #if TOOLS
 using Godot;
-using LGWCP.StatechartSharp;
 
 [Tool]
 public partial class StatechartSharpPlugin : EditorPlugin

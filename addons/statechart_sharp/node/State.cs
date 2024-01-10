@@ -35,9 +35,7 @@ public partial class State : StatechartComposition
             #endif
         }
     }
-
     private State _initialState;
-
     internal State ParentState { get; set; }
     internal State CurrentState { get; set; }
     internal List<State> Substates { get; set; }
@@ -131,6 +129,7 @@ public partial class State : StatechartComposition
         StateComponent.HandleSubstateEnter(substate);
     }
 
+    #if TOOLS
     public override string[] _GetConfigurationWarnings()
     {
         var warnings = new List<string>();
@@ -143,6 +142,7 @@ public partial class State : StatechartComposition
 
         return warnings.ToArray();
     }
+    #endif
 }
 
 } // end of namespace

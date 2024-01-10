@@ -23,55 +23,75 @@ StepName = &"test"
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_kqoiw")
 
-[node name="Root" type="Node" parent="Tester/Statechart"]
+[node name="Root" type="Node" parent="Tester/Statechart" node_paths=PackedStringArray("InitialState")]
+process_mode = 4
 script = ExtResource("3_we30e")
+InitialState = NodePath("Compound")
 
-[node name="Compound" type="Node" parent="Tester/Statechart/Root"]
+[node name="Compound" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("InitialState")]
+process_mode = 4
 script = ExtResource("3_we30e")
+InitialState = NodePath("A")
 
-[node name="A" type="Node" parent="Tester/Statechart/Root/Compound"]
+[node name="A" type="Node" parent="Tester/Statechart/Root/Compound" node_paths=PackedStringArray("InitialState")]
+process_mode = 4
 script = ExtResource("3_we30e")
+InitialState = NodePath("a")
 
 [node name="a" type="Node" parent="Tester/Statechart/Root/Compound/A"]
+process_mode = 4
 script = ExtResource("3_we30e")
 
 [node name="Aa->Ba" type="Node" parent="Tester/Statechart/Root/Compound/A/a"]
 script = ExtResource("4_cebhc")
 
-[node name="B" type="Node" parent="Tester/Statechart/Root/Compound"]
+[node name="B" type="Node" parent="Tester/Statechart/Root/Compound" node_paths=PackedStringArray("InitialState")]
+process_mode = 4
 script = ExtResource("3_we30e")
+InitialState = NodePath("a")
 
 [node name="a" type="Node" parent="Tester/Statechart/Root/Compound/B"]
+process_mode = 4
 script = ExtResource("3_we30e")
 
 [node name="auto-a->b" type="Node" parent="Tester/Statechart/Root/Compound/B/a"]
 script = ExtResource("4_cebhc")
 
 [node name="b" type="Node" parent="Tester/Statechart/Root/Compound/B"]
+process_mode = 4
 script = ExtResource("3_we30e")
 
-[node name="Parallel" type="Node" parent="Tester/Statechart/Root"]
+[node name="Parallel" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("InitialState")]
+process_mode = 4
 script = ExtResource("3_we30e")
+InitialState = NodePath("A")
 
-[node name="A" type="Node" parent="Tester/Statechart/Root/Parallel"]
+[node name="A" type="Node" parent="Tester/Statechart/Root/Parallel" node_paths=PackedStringArray("InitialState")]
+process_mode = 4
 script = ExtResource("3_we30e")
+InitialState = NodePath("a")
 
 [node name="a" type="Node" parent="Tester/Statechart/Root/Parallel/A"]
+process_mode = 4
 script = ExtResource("3_we30e")
 
 [node name="Aa->Ba" type="Node" parent="Tester/Statechart/Root/Parallel/A/a"]
 script = ExtResource("4_cebhc")
 
-[node name="B" type="Node" parent="Tester/Statechart/Root/Parallel"]
+[node name="B" type="Node" parent="Tester/Statechart/Root/Parallel" node_paths=PackedStringArray("InitialState")]
+process_mode = 4
 script = ExtResource("3_we30e")
+InitialState = NodePath("a")
 
 [node name="a" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
+process_mode = 4
 script = ExtResource("3_we30e")
 
 [node name="auto-a->b" type="Node" parent="Tester/Statechart/Root/Parallel/B/a"]
 script = ExtResource("4_cebhc")
 
 [node name="b" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
+process_mode = 4
 script = ExtResource("3_we30e")
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]
