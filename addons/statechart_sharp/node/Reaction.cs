@@ -50,7 +50,7 @@ public partial class Reaction : StatechartComposition
     {
         base.Setup(hostStatechart, ref ancestorId);
         #if DEBUG
-        if (ReactionEvent == ReactionEventNameEnum.CUSTOM && CustomEventName == null)
+        if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)
         {
             GD.PushError(Name, ": no event name for custom-event.");
         }
@@ -71,7 +71,7 @@ public partial class Reaction : StatechartComposition
     {
         var warnings = new List<string>();
 
-        if (ReactionEvent == ReactionEventNameEnum.CUSTOM
+        if (ReactionEvent == ReactionEventNameEnum.Custom
             && (CustomEventName == null || CustomEventName == ""))
         {
             warnings.Add("No event name for custom event.");

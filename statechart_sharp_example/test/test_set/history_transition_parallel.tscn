@@ -6,6 +6,17 @@
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_e42wy"]
 
 [node name="History transition parallel" type="BoxContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -121.5
+offset_top = -15.5
+offset_right = 121.5
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 2

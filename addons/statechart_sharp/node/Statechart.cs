@@ -4,14 +4,13 @@ using System.Collections.Generic;
 namespace LGWCP.StatechartSharp
 {
 
-[Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxAutoTransitionRound = 8;
     [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
-    protected int EventMask { get; set; } = 0;
+    protected EventMaskEnum EventMask { get; set; } = 0;
     protected bool IsRunning { get; set; }
     internal new double Delta { get; set; }
     internal new double PhysicsDelta { get; set; }
@@ -225,24 +224,40 @@ public partial class Statechart : StatechartComposition
 
     public override void _Process(double delta)
     {
+        if (!EventMask.HasFlag(EventMaskEnum.Process))
+        {
+            return;
+        }
         Delta = delta;
         Step(StatechartConfig.EVENT_PROCESS);
     }
 
     public override void _PhysicsProcess(double delta)
     {
+        if (!EventMask.HasFlag(EventMaskEnum.PhysicsProcess))
+        {
+            return;
+        }
         PhysicsDelta = delta;
         Step(StatechartConfig.EVENT_PHYSICS_PROCESS);
     }
 
     public override void _Input(InputEvent @event)
     {
+        if (!EventMask.HasFlag(EventMaskEnum.Input))
+        {
+            return;
+        }
         Input = @event;
         Step(StatechartConfig.EVENT_INPUT);
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        if (!EventMask.HasFlag(EventMaskEnum.UnhandledInput))
+        {
+            return;
+        }
         UnhandledInput = @event;
         Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
     }

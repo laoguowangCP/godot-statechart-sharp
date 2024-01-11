@@ -9,17 +9,17 @@ namespace LGWCP.StatechartSharp
 public enum EventMaskEnum
 {
     Process = 1,
-    Physics_Process = 2,
+    PhysicsProcess = 2,
     Input = 4,
-    Unhandled_Input = 8,
+    UnhandledInput = 8,
 }
 
 public enum TransitionEventNameEnum : int
 {
     Process,
-    Physics_Process,
+    PhysicsProcess,
     Input,
-    Unhandled_Input,
+    UnhandledInput,
 
     // Extend transition event-set here:
     /*
@@ -33,16 +33,16 @@ public enum TransitionEventNameEnum : int
 public enum ReactionEventNameEnum : int
 {
     Process,
-    Physics_Process,
+    PhysicsProcess,
     Input,
-    Unhandled_Input,
+    UnhandledInput,
 
     // Extend action event-set here:
     /*
         MY_EVENT,
     */
 
-    CUSTOM
+    Custom
 }
 
 public partial class StatechartConfig : Node
@@ -65,9 +65,9 @@ public partial class StatechartConfig : Node
     public static StringName GetTransitionEventName(TransitionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
         TransitionEventNameEnum.Process => "_process",
-        TransitionEventNameEnum.Physics_Process => "_physics_process",
+        TransitionEventNameEnum.PhysicsProcess => "_physics_process",
         TransitionEventNameEnum.Input => "_input",
-        TransitionEventNameEnum.Unhandled_Input => "_unhandled_input",
+        TransitionEventNameEnum.UnhandledInput => "_unhandled_input",
 
         // Extend transition event-set here:
         /*
@@ -81,16 +81,16 @@ public partial class StatechartConfig : Node
     public static StringName GetReactionEventName(ReactionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
         ReactionEventNameEnum.Process => "_process",
-        ReactionEventNameEnum.Physics_Process => "_physics_process",
+        ReactionEventNameEnum.PhysicsProcess => "_physics_process",
         ReactionEventNameEnum.Input => "_input",
-        ReactionEventNameEnum.Unhandled_Input => "_unhandled_input",
+        ReactionEventNameEnum.UnhandledInput => "_unhandled_input",
 
         // Extend action event-set here:
         /*
             EventNameEnum.MY_EVENT => "my_event",
         */
         
-        ReactionEventNameEnum.CUSTOM => customEventName,
+        ReactionEventNameEnum.Custom => customEventName,
         _ => null
     };
 }
