@@ -4,17 +4,19 @@ using System.Collections.Generic;
 namespace LGWCP.StatechartSharp
 {
 
-// [Tool]
+[Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
-    [Export(PropertyHint.Range, "0,32,")] protected int MaxAutoTransitionRound = 8;
+    [Export(PropertyHint.Range, "0,32,")]
+    protected int MaxAutoTransitionRound = 8;
+    [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
+    protected int EventMask { get; set; } = 0;
     protected bool IsRunning { get; set; }
     internal new double Delta { get; set; }
     internal new double PhysicsDelta { get; set; }
     internal new InputEvent Input { get; set; }
     internal new InputEvent UnhandledInput { get; set; }
-    protected List<State> States { get; set; }
     internal State RootState { get; set; }
     protected SortedSet<State> ActiveStates { get; set; }
     protected Queue<StringName> QueuedEvents { get; set; }
@@ -24,13 +26,10 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<State> ExitSet { get; set; }
     protected SortedSet<State> EnterSet { get; set; }
     
-
     public override void _Ready()
     {
-        // Initiate statechart
         IsRunning = false;
 
-        States = new List<State>();
         ActiveStates = new SortedSet<State>(new StateComparer());
         QueuedEvents = new Queue<StringName>();
         EnabledTransitions = new List<Transition>();
@@ -38,7 +37,7 @@ public partial class Statechart : StatechartComposition
         EnabledFilteredTransitions = new List<Transition>();
         ExitSet = new SortedSet<State>(new ReversedStateComparer());
         EnterSet = new SortedSet<State>(new StateComparer());
-        
+
         // Collect states, activate initial-states
         Setup();
 
@@ -85,14 +84,9 @@ public partial class Statechart : StatechartComposition
         return;
     }
 
-    internal void RegisterState(State state)
-    {
-        States.Add(state);
-    }
-
     public void Step(StringName eventName)
     {
-        if (eventName == null)
+        if (eventName == null || eventName == "")
         {
             return;
         }

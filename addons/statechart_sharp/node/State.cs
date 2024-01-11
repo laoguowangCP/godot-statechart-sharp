@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
+
 
 namespace LGWCP.StatechartSharp
 {
@@ -45,12 +45,13 @@ public partial class State : StatechartComposition
     internal State LowerState { get; set; }
     internal State UpperState { get; set; }
     internal bool IsHistory { get => StateMode == StateModeEnum.History; }
-
+    
     public override void _Ready()
     {
         Substates = new List<State>();
         Transitions = new List<Transition>();
         Actions = new List<Reaction>();
+
         switch (StateMode)
         {
             case StateModeEnum.Compound:

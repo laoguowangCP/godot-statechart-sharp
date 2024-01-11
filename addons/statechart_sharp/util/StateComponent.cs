@@ -1,7 +1,6 @@
 using Godot;
-using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
+
 
 namespace LGWCP.StatechartSharp
 {
@@ -51,9 +50,6 @@ public class StateComponent
                 ": non-root state should have parent-state.");
         }
         #endif
-
-        // Register in host-statechart
-        HostStatechart.RegisterState(HostState);
     }
 
     internal virtual void PostInit() {}

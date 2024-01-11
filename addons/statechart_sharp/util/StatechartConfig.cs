@@ -1,34 +1,41 @@
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using Godot;
-using Godot.Collections;
 
 
 namespace LGWCP.StatechartSharp
 {
 
+[Flags]
+public enum EventMaskEnum
+{
+    Process = 1,
+    Physics_Process = 2,
+    Input = 4,
+    Unhandled_Input = 8,
+}
+
 public enum TransitionEventNameEnum : int
 {
-    PROCESS,
-    PHYSICS_PROCESS,
-    INPUT,
-    UNHANDLED_INPUT,
+    Process,
+    Physics_Process,
+    Input,
+    Unhandled_Input,
 
     // Extend transition event-set here:
     /*
         MY_EVENT,
     */
 
-    CUSTOM,
-    AUTO
+    Custom,
+    Auto
 }
 
 public enum ReactionEventNameEnum : int
 {
-    PROCESS,
-    PHYSICS_PROCESS,
-    INPUT,
-    UNHANDLED_INPUT,
+    Process,
+    Physics_Process,
+    Input,
+    Unhandled_Input,
 
     // Extend action event-set here:
     /*
@@ -57,26 +64,26 @@ public partial class StatechartConfig : Node
     
     public static StringName GetTransitionEventName(TransitionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
-        TransitionEventNameEnum.PROCESS => "_process",
-        TransitionEventNameEnum.PHYSICS_PROCESS => "_physics_process",
-        TransitionEventNameEnum.INPUT => "_input",
-        TransitionEventNameEnum.UNHANDLED_INPUT => "_unhandled_input",
+        TransitionEventNameEnum.Process => "_process",
+        TransitionEventNameEnum.Physics_Process => "_physics_process",
+        TransitionEventNameEnum.Input => "_input",
+        TransitionEventNameEnum.Unhandled_Input => "_unhandled_input",
 
         // Extend transition event-set here:
         /*
             EventNameEnum.MY_EVENT => "my_event",
         */
         
-        TransitionEventNameEnum.CUSTOM => customEventName,
+        TransitionEventNameEnum.Custom => customEventName,
         _ => null
     };
 
     public static StringName GetReactionEventName(ReactionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
-        ReactionEventNameEnum.PROCESS => "_process",
-        ReactionEventNameEnum.PHYSICS_PROCESS => "_physics_process",
-        ReactionEventNameEnum.INPUT => "_input",
-        ReactionEventNameEnum.UNHANDLED_INPUT => "_unhandled_input",
+        ReactionEventNameEnum.Process => "_process",
+        ReactionEventNameEnum.Physics_Process => "_physics_process",
+        ReactionEventNameEnum.Input => "_input",
+        ReactionEventNameEnum.Unhandled_Input => "_unhandled_input",
 
         // Extend action event-set here:
         /*

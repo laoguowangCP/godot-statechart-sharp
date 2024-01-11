@@ -30,7 +30,7 @@ public partial class Transition : StatechartComposition
             #endif
         }
     }
-    private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.PROCESS;
+    private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.Process;
     [Export] private StringName CustomEventName
     {
         get => _customEventName;
@@ -83,7 +83,7 @@ public partial class Transition : StatechartComposition
         }
 
         // Handle event-name
-        if (TransitionEvent == TransitionEventNameEnum.CUSTOM
+        if (TransitionEvent == TransitionEventNameEnum.Custom
             &&  (CustomEventName == null || CustomEventName == ""))
         {
             #if DEBUG
@@ -94,7 +94,7 @@ public partial class Transition : StatechartComposition
             IsValid = false;
         }
         EventName = StatechartConfig.GetTransitionEventName(TransitionEvent, CustomEventName);
-        IsAuto = TransitionEvent == TransitionEventNameEnum.AUTO;
+        IsAuto = TransitionEvent == TransitionEventNameEnum.Auto;
 
         // Set targetless
         IsTargetless = TargetStates.Count == 0;
@@ -361,13 +361,13 @@ public partial class Transition : StatechartComposition
     {
         var warnings = new List<string>();
 
-        if (TransitionEvent == TransitionEventNameEnum.CUSTOM
+        if (TransitionEvent == TransitionEventNameEnum.Custom
             && (CustomEventName == null || CustomEventName == ""))
         {
             warnings.Add("No event name for custom event. For eventless, switch to Auto.");
         }
 
-        if (TransitionEvent == TransitionEventNameEnum.AUTO
+        if (TransitionEvent == TransitionEventNameEnum.Auto
             && (TargetStatesArray == null || TargetStatesArray.Count == 0))
         {
             warnings.Add("Targetless auto transition is invalid.");

@@ -40,6 +40,7 @@ script = ExtResource("3_we30e")
 
 [node name="Aa->Ba" type="Node" parent="Tester/Statechart/Root/Compound/A/a"]
 script = ExtResource("4_cebhc")
+CustomEventName = &""
 
 [node name="B" type="Node" parent="Tester/Statechart/Root/Compound" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_we30e")
@@ -50,6 +51,7 @@ script = ExtResource("3_we30e")
 
 [node name="auto-a->b" type="Node" parent="Tester/Statechart/Root/Compound/B/a"]
 script = ExtResource("4_cebhc")
+CustomEventName = &""
 
 [node name="b" type="Node" parent="Tester/Statechart/Root/Compound/B"]
 script = ExtResource("3_we30e")
@@ -67,6 +69,7 @@ script = ExtResource("3_we30e")
 
 [node name="Aa->Ba" type="Node" parent="Tester/Statechart/Root/Parallel/A/a"]
 script = ExtResource("4_cebhc")
+CustomEventName = &""
 
 [node name="B" type="Node" parent="Tester/Statechart/Root/Parallel" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_we30e")
@@ -77,6 +80,7 @@ script = ExtResource("3_we30e")
 
 [node name="auto-a->b" type="Node" parent="Tester/Statechart/Root/Parallel/B/a"]
 script = ExtResource("4_cebhc")
+CustomEventName = &""
 
 [node name="b" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
 script = ExtResource("3_we30e")
