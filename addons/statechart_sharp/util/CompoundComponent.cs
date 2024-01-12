@@ -206,7 +206,7 @@ public class CompoundComponent : StateComponent
     }
 
     internal override bool SelectTransitions(
-        List<Transition> enabledTransitions, StringName eventName)
+        SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         bool isHandled = false;
         if (HostState.CurrentState != null)

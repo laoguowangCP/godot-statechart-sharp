@@ -144,7 +144,7 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
+    internal override bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         bool isHandled = false;
         if (Substates.Count > 0)

@@ -46,7 +46,7 @@ public partial class Transition : StatechartComposition
     [Export] private Array<State> TargetStatesArray = new Array<State>();
     private StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
-    private State SourceState { get; set; }
+    internal State SourceState { get; set; }
     internal State LcaState { get; private set; }
     internal SortedSet<State> EnterRegion  { get; private set; }
     private SortedSet<State> EnterRegionEdge { get; set; }
@@ -112,17 +112,19 @@ public partial class Transition : StatechartComposition
 
     internal override void PostSetup()
     {
-        if (IsTargetless)
-        {
-            return;
-        }
-        
         /*
         Process target states:
             1. Find LCA(Least Common Ancestor) of source and targets.
             2. Record path from LCA to targets.
             3. Update enter-region
         */
+
+        // Though targetless has no exit set or enter set, still have LCA = source.parent as defined
+        if (IsTargetless)
+        {
+            LcaState = SourceState.ParentState;
+            return;
+        }
 
         // Record source-to-root
         State iterState = SourceState;

@@ -46,7 +46,7 @@ public class HistoryComponent : StateComponent
         enterRegionEdge.Add(HostState);
     }
     
-    internal override bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
+    internal override bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         // Do nothing
         return false;

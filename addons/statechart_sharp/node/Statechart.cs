@@ -20,9 +20,8 @@ public partial class Statechart : StatechartComposition
     internal State RootState { get; set; }
     protected SortedSet<State> ActiveStates { get; set; }
     protected Queue<StringName> QueuedEvents { get; set; }
-    protected List<Transition> EnabledTransitions { get; set; }
-    protected List<Transition> EnabledAutoTransitions { get; set; }
-    protected List<Transition> EnabledFilteredTransitions { get; set; }
+    protected SortedSet<Transition> EnabledTransitions { get; set; }
+    protected SortedSet<Transition> EnabledFilteredTransitions { get; set; }
     protected SortedSet<State> ExitSet { get; set; }
     protected SortedSet<State> EnterSet { get; set; }
     
@@ -32,9 +31,8 @@ public partial class Statechart : StatechartComposition
 
         ActiveStates = new SortedSet<State>(new StateComparer());
         QueuedEvents = new Queue<StringName>();
-        EnabledTransitions = new List<Transition>();
-        EnabledAutoTransitions = new List<Transition>();
-        EnabledFilteredTransitions = new List<Transition>();
+        EnabledTransitions = new SortedSet<Transition>(new TransitionComparer());
+        EnabledFilteredTransitions = new SortedSet<Transition>(new TransitionComparer());
         ExitSet = new SortedSet<State>(new ReversedStateComparer());
         EnterSet = new SortedSet<State>(new StateComparer());
 
@@ -162,7 +160,7 @@ public partial class Statechart : StatechartComposition
         }
     }
 
-    protected void DoTransitions(List<Transition> enabledTransitions)
+    protected void DoTransitions(SortedSet<Transition> enabledTransitions)
     {
         /*
         Batch:
@@ -174,18 +172,19 @@ public partial class Statechart : StatechartComposition
         // 1. Exit-set
         foreach (Transition t in enabledTransitions)
         {
-            // If transition is targetless, LCA state is null.
+            if (ExitSet.Contains(t.SourceState))
+            {
+                continue;
+            }
+
+            EnabledFilteredTransitions.Add(t);
+
+            // Targetless is filtered by LCA as well, but do no set operation.
             if (t.IsTargetless)
             {
                 continue;
             }
 
-            State lcaState = t.LcaState;
-            if (ExitSet.Contains(lcaState))
-            {
-                continue;
-            }
-            EnabledFilteredTransitions.Add(t);
             SortedSet<State> exitStates = ActiveStates.GetViewBetween(
                 t.LcaState.LowerState, t.LcaState.UpperState);
             ExitSet.UnionWith(exitStates);

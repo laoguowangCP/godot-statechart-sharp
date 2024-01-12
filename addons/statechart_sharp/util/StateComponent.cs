@@ -61,7 +61,7 @@ public class StateComponent
         return false;
     }
 
-    internal virtual bool SelectTransitions(List<Transition> enabledTransitions, StringName eventName)
+    internal virtual bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         foreach (Transition t in Transitions)
         {

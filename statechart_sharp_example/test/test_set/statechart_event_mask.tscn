@@ -33,7 +33,7 @@ StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_1lgp1")
-EventMask = 15
+EventFlag = 13
 
 [node name="Root" type="Node" parent="Tester/Statechart" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_jghgl")
@@ -44,6 +44,7 @@ script = ExtResource("3_jghgl")
 
 [node name="ProcessReaction" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("4_njfwh")
+CustomEventName = &""
 
 [node name="PhysicsProcessReaction" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("4_njfwh")
