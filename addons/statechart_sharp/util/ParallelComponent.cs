@@ -152,6 +152,10 @@ public class ParallelComponent : StateComponent
             isHandled = true;
             foreach (State substate in Substates)
             {
+                if (substate.IsHistory)
+                {
+                    continue;
+                }
                 bool substateIsHandled = substate.SelectTransitions(enabledTransitions, eventName);
                 isHandled = isHandled && substateIsHandled;
             }

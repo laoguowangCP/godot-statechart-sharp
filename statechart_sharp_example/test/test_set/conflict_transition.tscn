@@ -42,6 +42,12 @@ StateMode = 1
 script = ExtResource("3_mnk84")
 StateMode = 1
 
+[node name="A->B" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o4y2b")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B")]
+
 [node name="a" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("3_mnk84")
 
@@ -50,12 +56,6 @@ script = ExtResource("4_o4y2b")
 TransitionEvent = 4
 CustomEventName = &"test"
 TargetStatesArray = [NodePath("../../../B")]
-
-[node name="A->B" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("4_o4y2b")
-TransitionEvent = 4
-CustomEventName = &"test"
-TargetStatesArray = [NodePath("../../B")]
 
 [node name="b" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("3_mnk84")
@@ -66,7 +66,7 @@ TransitionEvent = 4
 CustomEventName = &"test"
 TargetStatesArray = [NodePath("../../../B")]
 
-[node name="c" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="c(to active transition from A)" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("3_mnk84")
 
 [node name="B" type="Node" parent="Tester/Statechart/Root"]

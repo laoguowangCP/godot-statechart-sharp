@@ -49,7 +49,7 @@ public class HistoryComponent : StateComponent
     internal override bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         // Do nothing
-        return false;
+        return true;
     }
 
     internal override void DeduceDescendants(
