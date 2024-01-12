@@ -4,13 +4,14 @@ using System.Collections.Generic;
 namespace LGWCP.StatechartSharp
 {
 
+[Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxAutoTransitionRound = 8;
     [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
-    protected EventMaskEnum EventMask { get; set; } = 0;
+    protected EventFlagEnum EventFlag { get; set; } = 0;
     protected bool IsRunning { get; set; }
     internal new double Delta { get; set; }
     internal new double PhysicsDelta { get; set; }
@@ -85,6 +86,13 @@ public partial class Statechart : StatechartComposition
 
     public void Step(StringName eventName)
     {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        #endif
+
         if (eventName == null || eventName == "")
         {
             return;
@@ -224,7 +232,7 @@ public partial class Statechart : StatechartComposition
 
     public override void _Process(double delta)
     {
-        if (!EventMask.HasFlag(EventMaskEnum.Process))
+        if (!EventFlag.HasFlag(EventFlagEnum.Process))
         {
             return;
         }
@@ -234,7 +242,7 @@ public partial class Statechart : StatechartComposition
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!EventMask.HasFlag(EventMaskEnum.PhysicsProcess))
+        if (!EventFlag.HasFlag(EventFlagEnum.PhysicsProcess))
         {
             return;
         }
@@ -244,7 +252,7 @@ public partial class Statechart : StatechartComposition
 
     public override void _Input(InputEvent @event)
     {
-        if (!EventMask.HasFlag(EventMaskEnum.Input))
+        if (!EventFlag.HasFlag(EventFlagEnum.Input))
         {
             return;
         }
@@ -254,7 +262,7 @@ public partial class Statechart : StatechartComposition
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (!EventMask.HasFlag(EventMaskEnum.UnhandledInput))
+        if (!EventFlag.HasFlag(EventFlagEnum.UnhandledInput))
         {
             return;
         }

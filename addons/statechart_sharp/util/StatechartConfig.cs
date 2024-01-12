@@ -6,7 +6,7 @@ namespace LGWCP.StatechartSharp
 {
 
 [Flags]
-public enum EventMaskEnum
+public enum EventFlagEnum
 {
     Process = 1,
     PhysicsProcess = 2,
