@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b7y2e144a3o23"]
+[gd_scene load_steps=5 format=3 uid="uid://bpc2uadke0qh2"]
 
 [ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_shg6f"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_q248b"]
@@ -38,38 +38,61 @@ script = ExtResource("2_q248b")
 script = ExtResource("3_mnk84")
 StateMode = 1
 
-[node name="A" type="Node" parent="Tester/Statechart/Root"]
+[node name="Compound conflict" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_mnk84")
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/Compound conflict"]
+script = ExtResource("3_mnk84")
+
+[node name="a->b1+2" type="Node" parent="Tester/Statechart/Root/Compound conflict/a" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o4y2b")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../b/1"), NodePath("../../b/2")]
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/Compound conflict"]
+script = ExtResource("3_mnk84")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/Compound conflict/b"]
+script = ExtResource("3_mnk84")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/Compound conflict/b"]
+script = ExtResource("3_mnk84")
+
+[node name="Parallel conflict" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_mnk84")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root/Parallel conflict"]
+script = ExtResource("3_mnk84")
+
+[node name="A->Bb1+bh+c1+ch" type="Node" parent="Tester/Statechart/Root/Parallel conflict/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o4y2b")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B/b/1"), NodePath("../../B/b/history"), NodePath("../../B/c/history"), NodePath("../../B/c/1")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root/Parallel conflict"]
 script = ExtResource("3_mnk84")
 StateMode = 1
 
-[node name="A->B" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("4_o4y2b")
-TransitionEvent = 4
-CustomEventName = &"test"
-TargetStatesArray = [NodePath("../../B")]
-
-[node name="a" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="b" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B"]
 script = ExtResource("3_mnk84")
 
-[node name="Aa->B" type="Node" parent="Tester/Statechart/Root/A/a" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("4_o4y2b")
-TransitionEvent = 4
-CustomEventName = &"test"
-TargetStatesArray = [NodePath("../../../B")]
-
-[node name="b" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="1" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/b"]
 script = ExtResource("3_mnk84")
 
-[node name="Ab->B" type="Node" parent="Tester/Statechart/Root/A/b" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("4_o4y2b")
-TransitionEvent = 4
-CustomEventName = &"test"
-TargetStatesArray = [NodePath("../../../B")]
+[node name="history" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/b"]
+script = ExtResource("3_mnk84")
+StateMode = 2
 
-[node name="c(to active transition from A)" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="c" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B"]
 script = ExtResource("3_mnk84")
 
-[node name="B" type="Node" parent="Tester/Statechart/Root"]
+[node name="history" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/c"]
+script = ExtResource("3_mnk84")
+StateMode = 2
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/c"]
 script = ExtResource("3_mnk84")
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

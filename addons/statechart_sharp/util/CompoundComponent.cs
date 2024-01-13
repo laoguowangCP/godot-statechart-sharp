@@ -123,32 +123,13 @@ public class CompoundComponent : StateComponent
     }
 
     internal override bool IsConflictToEnterRegion(
-        State newSubstate, SortedSet<State> enterRegion)
+        State tgtSubstate, SortedSet<State> enterRegion)
     {
-        bool isConflict = false;
-        /*
-        Conflicts if:
-            (0. It is a compound state)
-            1. State exists in enter-region.
-            2. Another substate is already exist in enter-region.
-        */
-        if (enterRegion.Contains(HostState))
-        {
-            foreach (State s in HostState.Substates)
-            {
-                if (s == newSubstate)
-                {
-                    continue;
-                }
-                
-                if (enterRegion.Contains(s))
-                {
-                    isConflict = true;
-                    break;
-                }
-            }
-        }
-        return isConflict;
+        // Conflicts if any substate is already exist in enter-region.
+        SortedSet<State> descInRegion = enterRegion.GetViewBetween(
+            LowerState, UpperState);
+        return descInRegion.Count > 0;
+        // Covers history cases.
     }
 
     internal override void ExtendEnterRegion(

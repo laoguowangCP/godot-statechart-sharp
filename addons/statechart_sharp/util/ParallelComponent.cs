@@ -135,6 +135,35 @@ public class ParallelComponent : StateComponent
         }
     }
 
+    internal override bool IsConflictToEnterRegion(
+        State tgtSubstate, SortedSet<State> enterRegion)
+    {
+        /*
+        Deals history cases:
+            1. Target substate is history, conflicts if any descendant in region.
+            2. Already a history substate in region, always conflicts.
+        */
+        foreach (State substate in Substates)
+        {
+            // A history substate in region, conflicts.
+            if (substate.IsHistory && enterRegion.Contains(substate))
+            {
+                return true;
+            }
+        }
+
+        // Target substate is history
+        if (tgtSubstate.IsHistory)
+        {
+            SortedSet<State> descInRegion = enterRegion.GetViewBetween(
+                LowerState, UpperState);
+            return descInRegion.Count > 0;
+        }
+
+        // If nothing involves history, no conflicts.
+        return false;
+    }
+
     internal override void RegisterActiveState(SortedSet<State> activeStates)
     {
         activeStates.Add(HostState);

@@ -168,9 +168,8 @@ This node represents a transition between state(s). Append it as child node of a
 
 Source state and target states, as well as active states, together they determines the states to exit (exit set) and the states to enter (enter set) when the transition happens. We have mentioned how statechart runs a `Step` , here we take a further look at step 2 and 3 .
 
-To select transitions, statchart need query on state tree recursively. 
+To select transitions, by definition, each leaf state in the state tree will check along their path to root untill they find an available transition. Here the recursion is propagated from root to leaf. 
 
-- By definition, each leaf state in the state tree will check along their path to root untill they find an available transition.
 - When a compound state is queried, first it passes recursion onto its current state (if there's any). If current state returns with a selected transition, then this state will return and inform the caller with same message. Otherwise, this state will iterate the transitions appended to itself with document order. If the event matches, transition's `Guard` signal will be emitted. This signal also parses transition itself, so you can set whether it is enabled or not (beware a transition is enabled by default). If a transition is enabled, state will submit it to statechart for later process, then stop iteration and inform the caller that a selected transition.
 - When a parallel state is queried, it needs to pass recursion onto each non-history substate. If **all** the substates returns with a selected transition, then this state will return and inform the caller with same message. Otherwise, this state needs to iterate its own transitions and check if there's any enabled.
 
