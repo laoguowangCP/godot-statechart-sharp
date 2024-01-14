@@ -36,12 +36,21 @@ public partial class Statechart : StatechartComposition
         ExitSet = new SortedSet<State>(new ReversedStateComparer());
         EnterSet = new SortedSet<State>(new StateComparer());
 
+        #if TOOLS
+        if (!Engine.IsEditorHint())
+        {
+        #endif
+
         // Collect states, activate initial-states
         Setup();
 
         // Init Transitions
         // Enter active states, document order
         PostSetup();
+
+        #if TOOLS
+        }
+        #endif
     }
 
     internal override void Setup()

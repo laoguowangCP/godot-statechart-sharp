@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://dsv3lvs73i61x"]
+
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_vlj4q"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="2_gkmpx"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="3_tfli0"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_yuvf4"]
+
+[node name="Node" type="Node"]
+
+[node name="Statechart" type="Node" parent="."]
+script = ExtResource("1_vlj4q")
+
+[node name="Root" type="Node" parent="Statechart"]
+script = ExtResource("2_gkmpx")
+
+[node name="State1" type="Node" parent="Statechart/Root"]
+script = ExtResource("2_gkmpx")
+
+[node name="Substate" type="Node" parent="Statechart/Root/State1"]
+script = ExtResource("2_gkmpx")
+
+[node name="Subsubstate" type="Node" parent="Statechart/Root/State1/Substate"]
+script = ExtResource("2_gkmpx")
+
+[node name="Transition1" type="Node" parent="Statechart/Root/State1/Substate/Subsubstate"]
+script = ExtResource("3_tfli0")
+
+[node name="Transition2" type="Node" parent="Statechart/Root/State1/Substate/Subsubstate"]
+script = ExtResource("3_tfli0")
+CustomEventName = &""
+
+[node name="Reaction" type="Node" parent="Statechart/Root/State1/Substate/Subsubstate"]
+script = ExtResource("4_yuvf4")
+
+[node name="Reaction" type="Node" parent="Statechart/Root/State1/Substate"]
+script = ExtResource("4_yuvf4")
+
+[node name="Transition" type="Node" parent="Statechart/Root/State1"]
+script = ExtResource("3_tfli0")
+
+[node name="State2" type="Node" parent="Statechart/Root"]
+script = ExtResource("2_gkmpx")
+
+[node name="Reaction" type="Node" parent="Statechart/Root/State2"]
+script = ExtResource("4_yuvf4")

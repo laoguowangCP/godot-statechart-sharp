@@ -23,9 +23,8 @@
 
 What is statechart? Simple put:
 
-- It's a statemachine.
-- Supports hierarchy.
-- With various state mode.
+- It's a state machine.
+- Supports hierarchy state, with various state mode.
 
 This plugin provides basic nodes to build statechart in Godot editor.
 
@@ -33,40 +32,35 @@ This plugin provides basic nodes to build statechart in Godot editor.
 
 > [!IMPORTANT]
 >
-> Before you start:
->
-> 1. You need .NET-enabled version of Godot.
-> 2. Download repository.
-> 3. Copy `addons/statechart_sharp` to your project folder.
-> 4. Build project once.
-> 5. Enable plugin in project setting.
+> Before you start, You need .NET-enabled version of Godot.
 
-**Step 1** : Add <img src="./addons/statechart_sharp/icon/Statechart.svg" alt="Statechart" style="width:16px;" align="bottom"/> Statechart node
+Download repository, copy `addons/statechart_sharp` to your project folder. Build project once, then enable plugin in project setting. It's good if you see new nodes added to "Create new node" interface:
 
-**Step 2** : Add <img src="./addons/statechart_sharp/icon/State.svg" style="width:16px;" alt="State" align="bottom"/> State node
+<img src="./pics/ss_imported_nodes.png" alt="ss_imported_nodes" style="width:300px;"/>
 
-- A root state, as child of a statechart.
-- Add substates under root state.
-- Switch state mode: compound, parallel, or history.
-- Connect signals.
+**Step 1** : Build with nodes:
 
-**Step 3** : Add <img src="./addons/statechart_sharp/icon/Transition.svg" style="width:16px;" alt="Transition" align="bottom"/> Transition node
+- Add <img src="./addons/statechart_sharp/icon/Statechart.svg" alt="Statechart" style="width:16px;"/> Statechart node
 
-- As child of a state: where we exit from.
-- Assign target states: where we enter to.
-- Switch transition event: node loop event, custom event, or auto.
-- Connect signals.
+  <img src="./pics/ss_add_statechart.png" alt="ss_add_statechart" style="width:180px;"/>
 
-**Step 4** : Add <img src="./addons/statechart_sharp/icon/Reaction.svg" style="width:16px;" alt="Action" align="bottom"/> Reaction node
+- Add <img src="./addons/statechart_sharp/icon/State.svg" alt="State" style="width:16px;"/> State nodes. 1 root state as child of statechart.
 
-- As child of a state.
-- Switch reaction event: node loop event, or custom event.
-- Connect signals.
+  <img src="./pics/ss_add_state.png" alt="ss_add_state" style="width:180px;"/>
 
-**Step 5** : Build and run
+- Add <img src="./addons/statechart_sharp/icon/Transition.svg" alt="Transition" style="width:16px;"/> Transition nodes as child of state. 
 
-- Statechart will step node loop events through states, as long as it is not disabled or paused.
-- To step a custom event, call `Statechart.Step(StringName)` .
+  <img src="./pics/ss_add_transition.png" alt="ss_add_transition" style="width:180px;"/>
+
+- Add <img src="./addons/statechart_sharp/icon/Reaction.svg" alt="Reaction" style="width:16px;"/> Reaction nodes as child of state.
+
+  <img src="./pics/ss_add_reaction.png" alt="ss_add_reaction" style="width:180px;"/>
+
+**Step 2** : Wire up. Set properties and connect signals.
+
+**Step 3** : Build and run.
+
+You can find example scenes in `./statechart_sharp_example` folder. Continue to next section to see what these nodes are and how they work together.
 
 ## Specification
 
@@ -74,6 +68,10 @@ To get full perspective on statechart, you may refer to:
 
 - https://statecharts.dev/ for conceptual introduction.
 - https://www.w3.org/TR/scxml/ for detailed specification.
+
+> [!Caution]
+>
+> This plugin is a stylized implementation of statechart. Not all definition in SCXML is provided, and details may vary.
 
 ### Statechart
 
@@ -92,11 +90,13 @@ During the `Step` method, statechart will do following things:
 5. With fetched event, statechart invoke reactions from active states.
 6. If event queue is not cleared, fetch another event from queue, back to 2.
 
-Here's several specification you shall follow:
-
-- Do not manually call `Step` with node loop event, especially when a step is running.
-- Do not call same event from a running step, this may cause unintended endless loop.
-- Better not use `null` event or event with empty string, `Step` won't process. `null` event is used as auto transition internally.
+> [!TIP]
+>
+> Here's several specification you shall follow:
+>
+> - Do not manually call `Step` with node loop event, especially when a step is running.
+> - Do not call same event from a running step, this may cause unintended endless loop.
+> - Better not use `null` event or event with empty string, `Step` won't process. `null` event is used as auto transition internally.
 
 | Property | Description |
 | ---- | ---- |
@@ -118,14 +118,14 @@ Beware, only a collection of states in the tree are active. Root state is no dou
 - If it is active, then exactly 1 substate (non-history) will be active (if there's any), which is called current state.
 - Initial state is the substate a compound will choose as current state by default. You can assign it in inspector, or the first substate (non-history) will be initial state (if there's any).
 
-`Parallel` is kinda opposite to compund:
+`Parallel` is to some extent opposite to compund:
 
 - If it is active, then all substate (non-history) will be active.
 
-`History` is a special mode only used as transition's target.
+`History` is a special mode for the state only used as transition's target.
 
 - Never active.
-- You can switch whether a history state is deep or not.
+- You can switch whether a history state is deep or shallow.
 
   - Shallow history only recovers parent's status. For compound parent, it will redirect transition target to the sibling once active till last exit of parent state. For parallel parent, it will redirect transition target to all the non-hisotry siblings.
 
@@ -133,19 +133,17 @@ Beware, only a collection of states in the tree are active. Root state is no dou
 
 - State may never been active before as a history state's parent. For compound parent, history will be redirected to parent's initial state. For parallel parent, history will be redirected to all non-history siblings.
 
-To utilize full feature of a state, you can:
-
-- Connect signals:
-
-  - `Enter` emited when state is entered. This usually happens when state is set active by transitions or statechart initialization.
-  - `Exit` emited when state is exit. This usually happens when state is set unactive by transitions.
-
-- Add state, transition, reaction as child node.
-
-Here's several specification you shall follow:
-
-- Better not append substate to history: state, transition, reaction won't function as history's child. However, you may occasionally assign a history's substate as a transition target, which will cause unexpected behavior.
-- Better not append shallow history to parallel. Targeting such history works, but targeting the parallel parent will do the same.
+> [!TIP]
+>
+> Here's several specification you shall follow:
+>
+> - Better not append substate to history: state, transition, reaction won't function as history's child. However, you may occasionally assign a history's substate as a transition target, which will cause unexpected behavior.
+> - Better not append shallow history to a parallel state. Targeting such history works, but targeting the parallel parent will do the same.
+> - Express state with signals and other nodes, not inheritance:
+>
+>   - State provides `Enter`/`Exit` signals, which will be emitted when state is set active/unactive during a transition.
+>   - Transition node is used as a state's child, to represent how this state transits to the other.
+>   - Reaction node is used as a state's child, to express what an active state will do.
 
 | Property | Description |
 | ---- | ---- |
@@ -164,14 +162,29 @@ Here's several specification you shall follow:
 
 ### Transition
 
-This node represents a transition between state(s). Append it as child node of a non-history state, then this state will be treated as "source state" — the state we'll transit from. As for the target state(s) — the state(s) we'll transit to, assignment in inspector is required.
+This node represents a transition from 1 state to other(s). Append it as child node of a non-history state, then this state will be treated as "source state" — the state we'll transit from. As for the target state(s) — the state(s) we'll transit to, assignment in inspector is required.
 
-Source state and target states, as well as active states, together they determines the states to exit (exit set) and the states to enter (enter set) when the transition happens. We have mentioned how statechart runs a `Step` , here we take a further look at step 2 and 3 .
+First we'll look into how transitions are selected and executed. We have mentioned how statechart runs a `Step` , here we take a further look at step 2 and 3 . To select transitions in step 2, we query active states recursively from root to leaf (with a given event):
 
-To select transitions, by definition, each leaf state in the state tree will check along their path to root untill they find an available transition. Here the recursion is propagated from root to leaf. 
+- If has no substate, state simply iterate the transitions appended to itself (with document order). If transition's event matches the given event, transition's `Guard` signal will be emitted, which would be connected to external sripts to judge whether this transition is enabled or not. If a transition is enabled, state will submit it to statechart, stop iteration, and inform parent state that a transition has been selected.
+- If substate is the case, then state's mode is considered:
 
-- When a compound state is queried, first it passes recursion onto its current state (if there's any). If current state returns with a selected transition, then this state will return and inform the caller with same message. Otherwise, this state will iterate the transitions appended to itself with document order. If the event matches, transition's `Guard` signal will be emitted. This signal also parses transition itself, so you can set whether it is enabled or not (beware a transition is enabled by default). If a transition is enabled, state will submit it to statechart for later process, then stop iteration and inform the caller that a selected transition.
-- When a parallel state is queried, it needs to pass recursion onto each non-history substate. If **all** the substates returns with a selected transition, then this state will return and inform the caller with same message. Otherwise, this state needs to iterate its own transitions and check if there's any enabled.
+  - For a compound state, first it passes recursion onto its current state (if there's any). If no transition selected in decendants, compound state will look into its own transitions.
+  - For a parallel state, it needs to pass recursion onto each non-history substate. If **any** of the substates has not returned with a selected transition, then this state will look into its own transitions
+
+In step 3, with all the states queried, statechart will execute selected transitions with following procedure:
+
+1. Deduce and merge exit set from selected transitions. During the iteration, transition will be disposed if its source state is already in the merging exit set.
+2. Exit set excepts from active states. States in exit set emits `Exit` signal in **reversed** document order
+3. For selected transitions, emit `invoke` signal in document order.
+4. Deduce and merge enter set from selected transitions.
+5. Enter set unions with active states. States in enter set emits `Enter` signal in document order.
+
+> [!TIP]
+>
+> Here's several specification you shall follow:
+> 
+> - Beware that a transition is enabled by default. If not set disabled during guard, or guard signal is not connected, transitions will be enabled anyway. 
 
 | Signal | Description |
 | ---- | ---- |

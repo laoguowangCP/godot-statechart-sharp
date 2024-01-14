@@ -38,8 +38,9 @@ script = ExtResource("2_q248b")
 script = ExtResource("3_mnk84")
 StateMode = 1
 
-[node name="Compound conflict" type="Node" parent="Tester/Statechart/Root"]
+[node name="Compound conflict" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_mnk84")
+InitialState = NodePath("a")
 
 [node name="a" type="Node" parent="Tester/Statechart/Root/Compound conflict"]
 script = ExtResource("3_mnk84")
@@ -50,8 +51,9 @@ TransitionEvent = 4
 CustomEventName = &"test"
 TargetStatesArray = [NodePath("../../b/1"), NodePath("../../b/2")]
 
-[node name="b" type="Node" parent="Tester/Statechart/Root/Compound conflict"]
+[node name="b" type="Node" parent="Tester/Statechart/Root/Compound conflict" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_mnk84")
+InitialState = NodePath("1")
 
 [node name="1" type="Node" parent="Tester/Statechart/Root/Compound conflict/b"]
 script = ExtResource("3_mnk84")
@@ -59,40 +61,67 @@ script = ExtResource("3_mnk84")
 [node name="2" type="Node" parent="Tester/Statechart/Root/Compound conflict/b"]
 script = ExtResource("3_mnk84")
 
-[node name="Parallel conflict" type="Node" parent="Tester/Statechart/Root"]
+[node name="Parallel conflict" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_mnk84")
+InitialState = NodePath("A")
 
 [node name="A" type="Node" parent="Tester/Statechart/Root/Parallel conflict"]
 script = ExtResource("3_mnk84")
 
-[node name="A->Bb1+bh+c1+ch" type="Node" parent="Tester/Statechart/Root/Parallel conflict/A" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="A->Bb1x+bh+ch+c1x" type="Node" parent="Tester/Statechart/Root/Parallel conflict/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_o4y2b")
 TransitionEvent = 4
 CustomEventName = &"test"
-TargetStatesArray = [NodePath("../../B/b/1"), NodePath("../../B/b/history"), NodePath("../../B/c/history"), NodePath("../../B/c/1")]
+TargetStatesArray = [NodePath("../../B/b/1/x"), NodePath("../../B/b/history"), NodePath("../../B/c/history"), NodePath("../../B/c/1/x")]
 
 [node name="B" type="Node" parent="Tester/Statechart/Root/Parallel conflict"]
 script = ExtResource("3_mnk84")
 StateMode = 1
 
-[node name="b" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B"]
+[node name="b" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_mnk84")
+InitialState = NodePath("1")
 
 [node name="1" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/b"]
+script = ExtResource("3_mnk84")
+
+[node name="x" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/b/1"]
 script = ExtResource("3_mnk84")
 
 [node name="history" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/b"]
 script = ExtResource("3_mnk84")
 StateMode = 2
 
-[node name="c" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B"]
+[node name="c" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B" node_paths=PackedStringArray("InitialState")]
 script = ExtResource("3_mnk84")
+InitialState = NodePath("1")
 
 [node name="history" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/c"]
 script = ExtResource("3_mnk84")
 StateMode = 2
 
 [node name="1" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/c"]
+script = ExtResource("3_mnk84")
+
+[node name="x" type="Node" parent="Tester/Statechart/Root/Parallel conflict/B/c/1"]
+script = ExtResource("3_mnk84")
+
+[node name="Already in region conflict" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_mnk84")
+
+[node name="a" type="Node" parent="Tester/Statechart/Root/Already in region conflict"]
+script = ExtResource("3_mnk84")
+
+[node name="a->b1+b" type="Node" parent="Tester/Statechart/Root/Already in region conflict/a" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_o4y2b")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../b/1"), NodePath("../../b")]
+
+[node name="b" type="Node" parent="Tester/Statechart/Root/Already in region conflict"]
+script = ExtResource("3_mnk84")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/Already in region conflict/b"]
 script = ExtResource("3_mnk84")
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

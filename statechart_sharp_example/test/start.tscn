@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bocxc6ashb2p1"]
-
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_ba20q"]
-
-[node name="Start" type="Node"]
-
-[node name="Statechart" type="Node" parent="."]
-script = ExtResource("1_ba20q")
