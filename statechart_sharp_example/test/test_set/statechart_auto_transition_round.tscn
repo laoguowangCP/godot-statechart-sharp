@@ -1,0 +1,90 @@
+[gd_scene load_steps=5 format=3 uid="uid://b2a6uny05obqd"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_ily03"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_lyjs6"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_ogeke"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_amvms"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[b]Statechart max auto transition round[/b]
+
+[ul]In each step, statechart will do several rounds of handling auto transition.[/ul]
+[ul]Change value of MaxAutoTransitionRound property to see the difference.[/ul]
+[ul]Beware, it does not equal to the \"max count\" of auto transitions will be taken.[/ul]"
+threaded = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_ily03")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_lyjs6")
+MaxAutoTransitionRound = 0
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_ogeke")
+
+[node name="Initial" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ogeke")
+
+[node name="->State1" type="Node" parent="Tester/Statechart/Root/Initial" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_amvms")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../State1")]
+
+[node name="State1" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ogeke")
+
+[node name="->State2(Auto)" type="Node" parent="Tester/Statechart/Root/State1" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_amvms")
+TransitionEvent = 5
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../State2")]
+
+[node name="State2" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ogeke")
+
+[node name="->State1(Auto)" type="Node" parent="Tester/Statechart/Root/State2" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_amvms")
+TransitionEvent = 5
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../State1")]
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

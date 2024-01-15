@@ -43,7 +43,18 @@ public partial class Transition : StatechartComposition
         }
     }
     private StringName _customEventName;
-    [Export] private Array<State> TargetStatesArray = new Array<State>();
+    [Export] private Array<State> TargetStatesArray
+    {
+        get => _targetStatesArray;
+        set
+        {
+            _targetStatesArray = value;
+            #if TOOLS
+            UpdateConfigurationWarnings();
+            #endif
+        }
+    }
+    private Array<State>  _targetStatesArray;
     private StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
     internal State SourceState { get; set; }
@@ -82,14 +93,14 @@ public partial class Transition : StatechartComposition
             SourceState = parent as State;
         }
 
-        // Handle event-name
+        // Handle event name
         if (TransitionEvent == TransitionEventNameEnum.Custom
             &&  (CustomEventName == null || CustomEventName == ""))
         {
             #if DEBUG
             GD.PushError(
                 GetPath(),
-                ": no event name for custom event. For eventless, switch to Auto.");
+                ": no event name for custom event.");
             #endif
             IsValid = false;
         }
@@ -136,6 +147,7 @@ public partial class Transition : StatechartComposition
         }
 
         // Check auto transition target
+        /*
         if (IsAuto)
         {
             State sourceParent = SourceState.ParentState;
@@ -203,6 +215,7 @@ public partial class Transition : StatechartComposition
                 }
             }
         }
+        */
 
         // Init LCA as SourceState, the first state in srcToRoot
         int reversedLcaIdx = srcToRoot.Count;
@@ -303,7 +316,7 @@ public partial class Transition : StatechartComposition
         // LCA
         LcaState = srcToRoot[^reversedLcaIdx];
 
-        // Extend enter-region under LCA
+        // Extend enter region under LCA
         SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
         LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
         EnterRegion.UnionWith(extraEnterRegion);
@@ -325,6 +338,11 @@ public partial class Transition : StatechartComposition
             #endif
             IsValid = false;
         }
+    }
+
+    private void AutoTargetPreValidate()
+    {
+
     }
 
     internal bool Check(StringName eventName)
@@ -378,13 +396,13 @@ public partial class Transition : StatechartComposition
         if (TransitionEvent == TransitionEventNameEnum.Custom
             && (CustomEventName == null || CustomEventName == ""))
         {
-            warnings.Add("No event name for custom event. For eventless, switch to Auto.");
+            warnings.Add("No event name for custom event.");
         }
 
         if (TransitionEvent == TransitionEventNameEnum.Auto
             && (TargetStatesArray == null || TargetStatesArray.Count == 0))
         {
-            warnings.Add("Targetless auto transition is invalid.");
+            warnings.Add("Target is required for auto transition.");
         }
 
         return warnings.ToArray();

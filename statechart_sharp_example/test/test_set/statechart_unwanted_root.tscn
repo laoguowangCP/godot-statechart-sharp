@@ -1,0 +1,82 @@
+[gd_scene load_steps=6 format=3 uid="uid://bwqjg6uth05vc"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_npq21"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_a4rbe"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="3_hf5ap"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_1oedl"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="5_qxgoc"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[b]A statechart with unwanted child[/b]
+
+[ul]Statechart need 1 root state.[/ul]
+[ul]If there's multiple child state, first one will be root state.[/ul]"
+threaded = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_npq21")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_a4rbe")
+
+[node name="Transition" type="Node" parent="Tester/Statechart" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("3_hf5ap")
+TargetStatesArray = []
+
+[node name="Reaction" type="Node" parent="Tester/Statechart"]
+script = ExtResource("4_1oedl")
+
+[node name="Root1" type="Node" parent="Tester/Statechart"]
+script = ExtResource("5_qxgoc")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root1"]
+script = ExtResource("4_1oedl")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="Root2" type="Node" parent="Tester/Statechart"]
+script = ExtResource("5_qxgoc")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root2"]
+script = ExtResource("4_1oedl")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

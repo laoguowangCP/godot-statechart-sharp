@@ -50,6 +50,8 @@ public partial class Statechart : StatechartComposition
 
         #if TOOLS
         }
+
+        UpdateConfigurationWarnings();
         #endif
     }
 
@@ -150,7 +152,7 @@ public partial class Statechart : StatechartComposition
         DoTransitions(EnabledTransitions);
 
         // 3. Auto transition
-        for (int i = 0; i <= MaxAutoTransitionRound; ++i)
+        for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
             RootState.SelectTransitions(EnabledTransitions);
 
@@ -178,7 +180,7 @@ public partial class Statechart : StatechartComposition
             3. Process enter-set (update current)
         */
 
-        // 1. Exit-set
+        // 1. Deduce and merge exit set
         foreach (Transition t in enabledTransitions)
         {
             if (ExitSet.Contains(t.SourceState))
@@ -205,13 +207,13 @@ public partial class Statechart : StatechartComposition
             s.StateExit();
         }
 
-        // 2. Invoke transition
+        // 2. Invoke transitions
         foreach (Transition t in EnabledFilteredTransitions)
         {
             t.TransitionInvoke();
         }
 
-        // 3. Enter-set
+        // 3. Deduce and merge enter set
         foreach (Transition t in EnabledFilteredTransitions)
         {
             // If transition is targetless, enter-region is null.
@@ -225,6 +227,7 @@ public partial class Statechart : StatechartComposition
             EnterSet.UnionWith(enterRegion);
             EnterSet.UnionWith(deducedEnterStates);
         }
+
         ActiveStates.UnionWith(EnterSet);
         foreach (State s in EnterSet)
         {
@@ -277,6 +280,34 @@ public partial class Statechart : StatechartComposition
         UnhandledInput = @event;
         Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
     }
+
+    #if TOOLS
+    public override string[] _GetConfigurationWarnings()
+    {
+        var warnings = new List<string>();
+
+        bool hasRootState = false;
+        bool hasOtherChild = false;
+        foreach (Node child in GetChildren())
+        {
+            if (child is State)
+            {
+                hasRootState = true;
+            }
+            else
+            {
+                hasOtherChild = true;
+            }
+        }
+
+        if (!hasRootState || hasOtherChild)
+        {
+            warnings.Add("Statechart need 1 root state.");
+        }
+
+        return warnings.ToArray();
+    }
+    #endif
 }
 
 } // end of namespace
