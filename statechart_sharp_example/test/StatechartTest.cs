@@ -1,5 +1,4 @@
 using Godot;
-using Godot.Collections;
 using LGWCP.StatechartSharp;
 
 public partial class StatechartTest : Node
@@ -92,5 +91,10 @@ public partial class StatechartTest : Node
 			indentStr += "> "; // "└─"
 		}
 		GD.Print(indentStr, delegateName, ": ", path);
+	}
+
+	protected void TestStatechartQueueEvent(Reaction reaction)
+	{
+		TestStatechart.Step("test_queue_event");
 	}
 }

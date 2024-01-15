@@ -1,0 +1,90 @@
+[gd_scene load_steps=6 format=3 uid="uid://djw84jbia72jd"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_642ns"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_s1kps"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_garlq"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_tsvas"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="5_0vk0g"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[b]Statechart queue event[/b]
+
+[ul]Statechart can queue event if \"Step\" is called when already running one.[/ul]
+[ul]In this test, Reaction1 steps statechart with event \"test_queue_event\" during \"test\" step.[/ul]
+[ul]So when you push test button, \"test\" step is processed, then \"test_queue_event\" step.[/ul]
+"
+threaded = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_642ns")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_s1kps")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_garlq")
+
+[node name="State" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_garlq")
+
+[node name="Transition1" type="Node" parent="Tester/Statechart/Root/State" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("5_0vk0g")
+TransitionEvent = 4
+CustomEventName = &"test"
+TargetStatesArray = []
+
+[node name="Reaction1" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("4_tsvas")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="Transition2" type="Node" parent="Tester/Statechart/Root/State" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("5_0vk0g")
+TransitionEvent = 4
+CustomEventName = &"test_queue_event"
+TargetStatesArray = []
+
+[node name="Reaction2" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("4_tsvas")
+ReactionEvent = 4
+CustomEventName = &"test_queue_event"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]
+[connection signal="Invoke" from="Tester/Statechart/Root/State/Reaction1" to="Tester" method="TestStatechartQueueEvent"]

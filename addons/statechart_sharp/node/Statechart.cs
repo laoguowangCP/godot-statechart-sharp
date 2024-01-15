@@ -24,6 +24,7 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<Transition> EnabledFilteredTransitions { get; set; }
     protected SortedSet<State> ExitSet { get; set; }
     protected SortedSet<State> EnterSet { get; set; }
+    protected SortedSet<Reaction> EnabledReactions { get; set; }
     
     public override void _Ready()
     {
@@ -35,6 +36,7 @@ public partial class Statechart : StatechartComposition
         EnabledFilteredTransitions = new SortedSet<Transition>(new TransitionComparer());
         ExitSet = new SortedSet<State>(new ReversedStateComparer());
         EnterSet = new SortedSet<State>(new StateComparer());
+        EnabledReactions = new SortedSet<Reaction>(new ReactionComparer());
 
         #if TOOLS
         if (!Engine.IsEditorHint())
@@ -164,10 +166,15 @@ public partial class Statechart : StatechartComposition
             DoTransitions(EnabledTransitions); 
         }
 
-        // 4. Invoke action of active-states
+        // 4. Invoke reactions
         foreach (State s in ActiveStates)
         {
-            s.StateInvoke(eventName);
+            s.SelectReactions(EnabledReactions, eventName);
+        }
+
+        foreach (Reaction a in EnabledReactions)
+        {
+            a.ReactionInvoke();
         }
     }
 
@@ -292,6 +299,11 @@ public partial class Statechart : StatechartComposition
         {
             if (child is State)
             {
+                if (hasRootState)
+                {
+                    // We already have a root state
+                    hasOtherChild = true;
+                }
                 hasRootState = true;
             }
             else

@@ -53,7 +53,7 @@ public class CompoundComponent : StateComponent
             else if (child is Reaction a)
             {
                 a.Setup(hostStateChart, ref ancestorId);
-                Actions.Add(a);
+                Reactions.Add(a);
             }
         }
 
@@ -116,7 +116,7 @@ public class CompoundComponent : StateComponent
             t.PostSetup();
         }
 
-        foreach (Reaction a in Actions)
+        foreach (Reaction a in Reactions)
         {
             a.PostSetup();
         }

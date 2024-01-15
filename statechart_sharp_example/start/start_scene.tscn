@@ -16,30 +16,11 @@ script = ExtResource("2_gkmpx")
 [node name="State1" type="Node" parent="Statechart/Root"]
 script = ExtResource("2_gkmpx")
 
-[node name="Substate" type="Node" parent="Statechart/Root/State1"]
-script = ExtResource("2_gkmpx")
-
-[node name="Subsubstate" type="Node" parent="Statechart/Root/State1/Substate"]
-script = ExtResource("2_gkmpx")
-
-[node name="Transition1" type="Node" parent="Statechart/Root/State1/Substate/Subsubstate"]
-script = ExtResource("3_tfli0")
-
-[node name="Transition2" type="Node" parent="Statechart/Root/State1/Substate/Subsubstate"]
-script = ExtResource("3_tfli0")
-CustomEventName = &""
-
-[node name="Reaction" type="Node" parent="Statechart/Root/State1/Substate/Subsubstate"]
-script = ExtResource("4_yuvf4")
-
-[node name="Reaction" type="Node" parent="Statechart/Root/State1/Substate"]
-script = ExtResource("4_yuvf4")
-
 [node name="Transition" type="Node" parent="Statechart/Root/State1"]
 script = ExtResource("3_tfli0")
 
+[node name="Reaction" type="Node" parent="Statechart/Root/State1"]
+script = ExtResource("4_yuvf4")
+
 [node name="State2" type="Node" parent="Statechart/Root"]
 script = ExtResource("2_gkmpx")
-
-[node name="Reaction" type="Node" parent="Statechart/Root/State2"]
-script = ExtResource("4_yuvf4")

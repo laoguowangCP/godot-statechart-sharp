@@ -40,7 +40,7 @@ public partial class State : StatechartComposition
     internal State CurrentState { get; set; }
     internal List<State> Substates { get; set; }
     internal List<Transition> Transitions { get; set; }
-    internal List<Reaction> Actions { get; set; }
+    internal List<Reaction> Reactions { get; set; }
     protected StateComponent StateComponent { get; set; }
     internal State LowerState { get; set; }
     internal State UpperState { get; set; }
@@ -50,7 +50,7 @@ public partial class State : StatechartComposition
     {
         Substates = new List<State>();
         Transitions = new List<Transition>();
-        Actions = new List<Reaction>();
+        Reactions = new List<Reaction>();
 
         switch (StateMode)
         {
@@ -92,14 +92,6 @@ public partial class State : StatechartComposition
         EmitSignal(SignalName.Exit, this);
     }
 
-    internal void StateInvoke(StringName eventName)
-    {
-        foreach (Reaction a in Actions)
-        {
-            a.ReactionInvoke(eventName);
-        }
-    }
-
     internal void RegisterActiveState(SortedSet<State> activeStates)
     {
         StateComponent.RegisterActiveState(activeStates);
@@ -128,6 +120,17 @@ public partial class State : StatechartComposition
     internal void HandleSubstateEnter(State substate)
     {
         StateComponent.HandleSubstateEnter(substate);
+    }
+
+    internal void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
+    {
+        foreach (Reaction a in Reactions)
+        {
+            if (a.Check(eventName))
+            {
+                enabledReactions.Add(a);
+            }
+        }
     }
 
     #if TOOLS

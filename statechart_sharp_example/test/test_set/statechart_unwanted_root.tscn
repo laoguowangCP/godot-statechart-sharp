@@ -38,8 +38,10 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[b]A statechart with unwanted child[/b]
 
-[ul]Statechart need 1 root state.[/ul]
-[ul]If there's multiple child state, first one will be root state.[/ul]"
+[ul]Statechart needs exactly 1 root state.[/ul]
+[ul]If there's multiple child state, first one will be root state.[/ul]
+[ul]Other child states appended to  statechart will be neglected.[/ul]
+[ul]To append more states, you may add them descendant to root state.[/ul]"
 threaded = true
 
 [node name="Button" type="Button" parent="."]
@@ -58,10 +60,12 @@ script = ExtResource("2_a4rbe")
 
 [node name="Transition" type="Node" parent="Tester/Statechart" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("3_hf5ap")
+CustomEventName = &""
 TargetStatesArray = []
 
 [node name="Reaction" type="Node" parent="Tester/Statechart"]
 script = ExtResource("4_1oedl")
+CustomEventName = &""
 
 [node name="Root1" type="Node" parent="Tester/Statechart"]
 script = ExtResource("5_qxgoc")

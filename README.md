@@ -44,17 +44,13 @@ Download repository, copy `addons/statechart_sharp` to your project folder. Buil
 
   <img src="./pics/ss_add_statechart.png" alt="ss_add_statechart" style="width:180px;"/>
 
-- Add <img src="./addons/statechart_sharp/icon/State.svg" alt="State" style="width:16px;"/> State nodes. 1 root state as child of statechart.
+- Add <img src="./addons/statechart_sharp/icon/State.svg" alt="State" style="width:16px;"/> State nodes under statechart.
 
   <img src="./pics/ss_add_state.png" alt="ss_add_state" style="width:180px;"/>
 
-- Add <img src="./addons/statechart_sharp/icon/Transition.svg" alt="Transition" style="width:16px;"/> Transition nodes as child of state. 
+- Add <img src="./addons/statechart_sharp/icon/Transition.svg" alt="Transition" style="width:16px;"/> Transition node and <img src="./addons/statechart_sharp/icon/Reaction.svg" alt="Reaction" style="width:16px;"/> Reaction node under state.
 
-  <img src="./pics/ss_add_transition.png" alt="ss_add_transition" style="width:180px;"/>
-
-- Add <img src="./addons/statechart_sharp/icon/Reaction.svg" alt="Reaction" style="width:16px;"/> Reaction nodes as child of state.
-
-  <img src="./pics/ss_add_reaction.png" alt="ss_add_reaction" style="width:180px;"/>
+  <img src="./pics/ss_add_transition_&_reaction.png" alt="ss_add_transition" style="width:180px;"/>
 
 **Step 2** : Wire up. Set properties and connect signals.
 
@@ -96,7 +92,7 @@ During the `Step` method, statechart will do following things:
 >
 > - Do not manually call `Step` with node loop event, especially when a step is running.
 > - Do not call same event from a running step, this may cause unintended endless loop.
-> - Better not use `null` event or event with empty string, `Step` won't process. `null` event is used as auto transition internally.
+> - Better not use `null` event or event with empty string, `Step` won't process. `null` event is used as automatic transition internally.
 
 | Property | Description |
 | ---- | ---- |

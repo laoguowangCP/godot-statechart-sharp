@@ -58,12 +58,14 @@ public partial class Reaction : StatechartComposition
         EventName = StatechartConfig.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 
-    internal void ReactionInvoke(StringName eventName)
+    internal bool Check(StringName eventName)
     {
-        if (EventName == eventName)
-        {
-            EmitSignal(SignalName.Invoke, this);
-        }
+        return EventName == eventName;
+    }
+
+    internal void ReactionInvoke()
+    {
+        EmitSignal(SignalName.Invoke, this);
     }
 
     #if TOOLS

@@ -340,11 +340,6 @@ public partial class Transition : StatechartComposition
         }
     }
 
-    private void AutoTargetPreValidate()
-    {
-
-    }
-
     internal bool Check(StringName eventName)
     {
         if (!IsValid)

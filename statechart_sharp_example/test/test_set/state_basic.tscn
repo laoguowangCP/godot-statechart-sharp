@@ -1,0 +1,131 @@
+[gd_scene load_steps=5 format=3 uid="uid://c4xtt8c02ri2k"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_pedsa"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_efk2l"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_ae3pn"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_ks2lu"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[b]Basic state behaviors[/b]
+
+[ul]This test shows basis on how compound state and parallel state work.[/ul]
+[ul]Usually, root state is parallel. So it will be easier to extend statechart by adding subtree of states under root state.[/ul]
+[ul]Initially, compound will active its initial state, which is first substate by default.[/ul]
+[ul]Initially, parallel will active all the substate.[/ul]
+[ul]Press test, then you'll see reactions are invoked by \"document order\".[/ul]
+"
+threaded = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_pedsa")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_efk2l")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_ae3pn")
+StateMode = 1
+
+[node name="Compound" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ae3pn")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root/Compound"]
+script = ExtResource("3_ae3pn")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/A"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="B" type="Node" parent="Tester/Statechart/Root/Compound"]
+script = ExtResource("3_ae3pn")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/B"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="C" type="Node" parent="Tester/Statechart/Root/Compound"]
+script = ExtResource("3_ae3pn")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/C"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="Parallel" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ae3pn")
+StateMode = 1
+
+[node name="A" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("3_ae3pn")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/A"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="B" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("3_ae3pn")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="C" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("3_ae3pn")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/C"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 4
+CustomEventName = &"test"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

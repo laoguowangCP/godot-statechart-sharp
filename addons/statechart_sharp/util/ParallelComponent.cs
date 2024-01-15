@@ -42,7 +42,7 @@ public class ParallelComponent : StateComponent
             else if (child is Reaction a)
             {
                 a.Setup(hostStateChart, ref ancestorId);
-                Actions.Add(a);
+                Reactions.Add(a);
             }
         }
 
@@ -129,7 +129,7 @@ public class ParallelComponent : StateComponent
             t.PostSetup();
         }
 
-        foreach (Reaction a in Actions)
+        foreach (Reaction a in Reactions)
         {
             a.PostSetup();
         }

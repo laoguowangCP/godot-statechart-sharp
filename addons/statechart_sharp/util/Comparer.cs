@@ -43,11 +43,11 @@ class TransitionComparer : IComparer<Transition>
     }
 }
 
-class ReversedTransitionComparer : IComparer<Transition>
+class ReactionComparer : IComparer<Reaction>
 {
-    public int Compare(Transition x, Transition y)
+    public int Compare(Reaction x, Reaction y)
     {
-        return y.OrderId - x.OrderId;
+        return x.OrderId - y.OrderId;
     }
 }
 
