@@ -176,15 +176,17 @@ public partial class Statechart : StatechartComposition
         {
             a.ReactionInvoke();
         }
+
+        EnabledReactions.Clear();
     }
 
     protected void DoTransitions(SortedSet<Transition> enabledTransitions)
     {
         /*
-        Batch:
-            1. Process exit-set (with filter)
+        Execute transitions:
+            1. Process exit set (with filter)
             2. Invoke transitions
-            3. Process enter-set (update current)
+            3. Process enter set
         */
 
         // 1. Deduce and merge exit set
