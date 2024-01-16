@@ -55,11 +55,12 @@ StepName = &"test"
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_ulk17")
 
-[node name="State" type="Node" parent="Tester/Statechart"]
+[node name="HistoryState" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_te30t")
 StateMode = 2
 
-[node name="State" type="Node" parent="Tester/Statechart/State"]
+[node name="State" type="Node" parent="Tester/Statechart/HistoryState"]
 script = ExtResource("3_te30t")
+StateMode = 1
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

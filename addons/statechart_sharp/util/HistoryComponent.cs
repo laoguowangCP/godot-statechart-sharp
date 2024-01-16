@@ -13,28 +13,6 @@ public class HistoryComponent : StateComponent
     internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
         base.Setup(hostStateChart, ref ancestorId);
-        
-        // No substates, transitions, or actions
-        #if DEBUG
-        foreach (Node child in HostState.GetChildren())
-        {
-            GD.PushWarning(
-                HostState.GetPath(),
-                ": History state should not have child.");
-            break;
-        }
-        #endif
-
-        #if DEBUG
-        if (ParentState != null
-            && ParentState.StateMode == StateModeEnum.Parallel && !IsDeepHistory)
-        {
-            GD.PushWarning(
-                HostState.GetPath(),
-                @": shallow history state under parallel has no function
-                    , you may remove history or switch to deep history.");
-        }
-        #endif
     }
 
     internal override void ExtendEnterRegion(
@@ -66,19 +44,6 @@ public class HistoryComponent : StateComponent
         {
             ParentState.DeduceDescendants(deducedSet, IsDeepHistory, isEdgeState: true);
         }
-        
-        // ParentState.DeduceDescendantsFromHistory(deducedSet, IsDeepHistory);
-
-        #if DEBUG
-        if (!isEdgeState)
-        {
-            GD.PushError(
-                HostState.GetPath(),
-                @"history's DeduceDescendants should only be called
-                    from transition when deducing enter-region-edge."
-            );
-        }
-        #endif
     }
 
     #if TOOLS
@@ -86,18 +51,26 @@ public class HistoryComponent : StateComponent
     {
         // Check parent
         bool isParentWarning;
-        if (HostState.GetParent<Node>() is State state)
+        Node parent = HostState.GetParent<Node>();
+        if (parent == null)
         {
-            isParentWarning = state.IsHistory;
+            isParentWarning = true;
         }
         else
         {
-            isParentWarning = true;
+            if (parent is State state)
+            {
+                isParentWarning = state.IsHistory;
+            }
+            else
+            {
+                isParentWarning = true;
+            }
         }
 
         if (isParentWarning)
         {
-            warnings.Add("History state should be child to non-history state.");
+            warnings.Add("History state should be child to a non-history state.");
         }
 
         // Check child

@@ -43,17 +43,16 @@ public partial class Statechart : StatechartComposition
         {
         #endif
 
-        // Collect states, activate initial-states
+        // Statechart setup
         Setup();
-
-        // Init Transitions
-        // Enter active states, document order
         PostSetup();
 
         #if TOOLS
         }
-
-        UpdateConfigurationWarnings();
+        else
+        {
+            UpdateConfigurationWarnings();
+        }
         #endif
     }
 
@@ -321,7 +320,7 @@ public partial class Statechart : StatechartComposition
 
         if (!hasRootState || hasOtherChild)
         {
-            warnings.Add("Statechart needs 1 non-history root state.");
+            warnings.Add("Statechart needs exactly 1 non-history root state.");
         }
 
         return warnings.ToArray();

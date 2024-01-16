@@ -71,11 +71,6 @@ CustomEventName = &""
 script = ExtResource("5_qxgoc")
 StateMode = 2
 
-[node name="Reaction" type="Node" parent="Tester/Statechart/HistoryState"]
-script = ExtResource("4_1oedl")
-ReactionEvent = 4
-CustomEventName = &"test"
-
 [node name="Root1" type="Node" parent="Tester/Statechart"]
 script = ExtResource("5_qxgoc")
 

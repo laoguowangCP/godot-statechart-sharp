@@ -1,4 +1,5 @@
 using Godot;
+using Godot.NativeInterop;
 using System.Collections.Generic;
 
 
@@ -31,6 +32,7 @@ public partial class State : StatechartComposition
             #if TOOLS
             if (Engine.IsEditorHint())
             {
+                StateComponent = GetStateComponent(value);
                 UpdateConfigurationWarnings();
             }
             #endif
@@ -69,19 +71,23 @@ public partial class State : StatechartComposition
         Transitions = new List<Transition>();
         Reactions = new List<Reaction>();
 
-        switch (StateMode)
+        StateComponent = GetStateComponent(StateMode);
+
+        #if TOOLS
+        if (Engine.IsEditorHint())
         {
-            case StateModeEnum.Compound:
-                StateComponent = new CompoundComponent(this);
-                break;
-            case StateModeEnum.Parallel:
-                StateComponent = new ParallelComponent(this);
-                break;
-            case StateModeEnum.History:
-                StateComponent = new HistoryComponent(this);
-                break;
+            UpdateConfigurationWarnings();
         }
+        #endif
     }
+
+    public StateComponent GetStateComponent(StateModeEnum mode) => mode switch
+    {
+        StateModeEnum.Compound => new CompoundComponent(this),
+        StateModeEnum.Parallel => new ParallelComponent(this),
+        StateModeEnum.History => new HistoryComponent(this),
+        _ => null
+    };
 
     internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
@@ -157,7 +163,6 @@ public partial class State : StatechartComposition
 
         if (StateComponent != null)
         {
-            GD.Print("What");
             StateComponent.GetConfigurationWarnings(warnings);
         }
 
