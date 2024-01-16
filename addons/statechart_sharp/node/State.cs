@@ -22,7 +22,21 @@ public partial class State : StatechartComposition
     
     #endregion
 
-    [Export] internal StateModeEnum StateMode { get; private set; } = StateModeEnum.Compound;
+    [Export] internal StateModeEnum StateMode
+    {
+        get => _stateMode;
+        set
+        {
+            _stateMode = value;
+            #if TOOLS
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
+            #endif
+        }
+    }
+    private StateModeEnum _stateMode = StateModeEnum.Compound;
     [Export] internal bool IsDeepHistory { get; private set; }
     [Export] internal State InitialState
     {
@@ -31,7 +45,10 @@ public partial class State : StatechartComposition
         {
             _initialState = value;
             #if TOOLS
-            UpdateConfigurationWarnings();
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
             #endif
         }
     }
@@ -69,12 +86,12 @@ public partial class State : StatechartComposition
     internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
         base.Setup(hostStateChart, ref ancestorId);
-        StateComponent.Init(hostStateChart, ref ancestorId);
+        StateComponent.Setup(hostStateChart, ref ancestorId);
     }
 
     internal override void PostSetup()
     {
-        StateComponent.PostInit();
+        StateComponent.PostSetup();
     }
 
     internal void StateEnter()
@@ -136,12 +153,12 @@ public partial class State : StatechartComposition
     #if TOOLS
     public override string[] _GetConfigurationWarnings()
     {
-        var warnings = new List<string>();
+        List<string> warnings = new List<string>();
 
-        if (InitialState != null
-            && (InitialState.GetParent() != this || InitialState.IsHistory))
+        if (StateComponent != null)
         {
-            warnings.Add("Initial state should be a non-history substate.");
+            GD.Print("What");
+            StateComponent.GetConfigurationWarnings(warnings);
         }
 
         return warnings.ToArray();

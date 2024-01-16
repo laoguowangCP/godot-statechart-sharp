@@ -54,7 +54,7 @@ public partial class Transition : StatechartComposition
             #endif
         }
     }
-    private Array<State>  _targetStatesArray;
+    private Array<State> _targetStatesArray;
     private StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
     internal State SourceState { get; set; }

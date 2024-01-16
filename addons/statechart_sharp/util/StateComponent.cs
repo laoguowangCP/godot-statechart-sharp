@@ -33,7 +33,7 @@ public class StateComponent
         HostState = state;
     }
 
-    internal virtual void Init(Statechart hostStateChart, ref int ancestorId)
+    internal virtual void Setup(Statechart hostStateChart, ref int ancestorId)
     {
         // Get parent state
         Node parent = HostState.GetParent<Node>();
@@ -52,7 +52,7 @@ public class StateComponent
         #endif
     }
 
-    internal virtual void PostInit() {}
+    internal virtual void PostSetup() {}
 
     internal virtual void RegisterActiveState(SortedSet<State> activeStates) {}
 
@@ -81,6 +81,29 @@ public class StateComponent
     internal virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
 
     internal virtual void HandleSubstateEnter(State substate) {}
+
+    #if TOOLS
+    internal virtual void GetConfigurationWarnings(List<string> warnings)
+    {
+        // Check parent
+        bool isParentWarning = false;
+        Node parent = HostState.GetParent<Node>();
+        if (parent is not State && parent is not Statechart)
+        {
+            isParentWarning = true;
+        }
+
+        if (parent is State state)
+        {
+            isParentWarning = state.IsHistory;
+        }
+
+        if (isParentWarning)
+        {
+            warnings.Add("State should be child to statechart or non-history state.");
+        }
+    }
+    #endif
 }
 
 } // end of namespace

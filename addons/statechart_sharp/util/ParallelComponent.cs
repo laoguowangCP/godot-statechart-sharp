@@ -8,9 +8,9 @@ public class ParallelComponent : StateComponent
 {
     public ParallelComponent(State state) : base(state) {}
 
-    internal override void Init(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
-        base.Init(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref ancestorId);
 
         // Init & collect states, transitions, actions
         // Get lower-state and upper-state
@@ -117,7 +117,7 @@ public class ParallelComponent : StateComponent
 
     }
 
-    internal override void PostInit()
+    internal override void PostSetup()
     {
         foreach (State s in Substates)
         {

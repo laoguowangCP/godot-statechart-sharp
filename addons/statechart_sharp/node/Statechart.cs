@@ -151,9 +151,9 @@ public partial class Statechart : StatechartComposition
         RootState.SelectTransitions(EnabledTransitions, eventName);
 
         // 2. Do transitions
-        DoTransitions(EnabledTransitions);
+        DoTransitions();
 
-        // 3. Auto transition
+        // 3. Select and do auto transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
             RootState.SelectTransitions(EnabledTransitions);
@@ -163,10 +163,10 @@ public partial class Statechart : StatechartComposition
             {
                 break;
             }
-            DoTransitions(EnabledTransitions); 
+            DoTransitions(); 
         }
 
-        // 4. Invoke reactions
+        // 4. Select and do reactions
         foreach (State s in ActiveStates)
         {
             s.SelectReactions(EnabledReactions, eventName);
@@ -180,7 +180,7 @@ public partial class Statechart : StatechartComposition
         EnabledReactions.Clear();
     }
 
-    protected void DoTransitions(SortedSet<Transition> enabledTransitions)
+    protected void DoTransitions()
     {
         /*
         Execute transitions:
@@ -190,7 +190,7 @@ public partial class Statechart : StatechartComposition
         */
 
         // 1. Deduce and merge exit set
-        foreach (Transition t in enabledTransitions)
+        foreach (Transition t in EnabledTransitions)
         {
             if (ExitSet.Contains(t.SourceState))
             {
@@ -244,7 +244,7 @@ public partial class Statechart : StatechartComposition
         }
 
         // 4. Clear
-        enabledTransitions.Clear();
+        EnabledTransitions.Clear();
         ExitSet.Clear();
         EnterSet.Clear();
         EnabledFilteredTransitions.Clear();
@@ -299,8 +299,13 @@ public partial class Statechart : StatechartComposition
         bool hasOtherChild = false;
         foreach (Node child in GetChildren())
         {
-            if (child is State)
+            if (child is State state)
             {
+                if (state.IsHistory)
+                {
+                    hasOtherChild = true;
+                    continue;
+                }
                 if (hasRootState)
                 {
                     // We already have a root state
@@ -316,7 +321,7 @@ public partial class Statechart : StatechartComposition
 
         if (!hasRootState || hasOtherChild)
         {
-            warnings.Add("Statechart need 1 root state.");
+            warnings.Add("Statechart needs 1 non-history root state.");
         }
 
         return warnings.ToArray();

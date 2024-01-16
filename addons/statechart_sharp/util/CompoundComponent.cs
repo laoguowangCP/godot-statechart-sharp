@@ -19,9 +19,9 @@ public class CompoundComponent : StateComponent
     
     public CompoundComponent(State state) : base(state) {}
 
-    internal override void Init(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
-        base.Init(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref ancestorId);
 
         // Init & collect states, transitions, actions
         // Get lower-state and upper-state
@@ -104,7 +104,7 @@ public class CompoundComponent : StateComponent
         CurrentState = InitialState;
     }
 
-    internal override void PostInit()
+    internal override void PostSetup()
     {
         foreach (State s in Substates)
         {
@@ -240,6 +240,21 @@ public class CompoundComponent : StateComponent
     {
         HostState.CurrentState = substate;
     }
+
+    #if TOOLS
+    internal override void GetConfigurationWarnings(List<string> warnings)
+    {
+        // Check parent
+        base.GetConfigurationWarnings(warnings);
+
+        // Check child
+        if (InitialState != null
+            && (InitialState.GetParent<Node>() != HostState || InitialState.IsHistory))
+        {
+            warnings.Add("Initial state should be a non-history substate.");
+        }
+    }
+    #endif
 }
 
 } // end of namespace

@@ -10,9 +10,9 @@ public class HistoryComponent : StateComponent
 
     public HistoryComponent(State state) : base(state) {}
 
-    internal override void Init(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
-        base.Init(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref ancestorId);
         
         // No substates, transitions, or actions
         #if DEBUG
@@ -26,7 +26,8 @@ public class HistoryComponent : StateComponent
         #endif
 
         #if DEBUG
-        if (ParentState.StateMode == StateModeEnum.Parallel && !IsDeepHistory)
+        if (ParentState != null
+            && ParentState.StateMode == StateModeEnum.Parallel && !IsDeepHistory)
         {
             GD.PushWarning(
                 HostState.GetPath(),
@@ -79,6 +80,34 @@ public class HistoryComponent : StateComponent
         }
         #endif
     }
+
+    #if TOOLS
+    internal override void GetConfigurationWarnings(List<string> warnings)
+    {
+        // Check parent
+        bool isParentWarning;
+        if (HostState.GetParent<Node>() is State state)
+        {
+            isParentWarning = state.IsHistory;
+        }
+        else
+        {
+            isParentWarning = true;
+        }
+
+        if (isParentWarning)
+        {
+            warnings.Add("History state should be child to non-history state.");
+        }
+
+        // Check child
+        foreach (Node child in HostState.GetChildren())
+        {
+            warnings.Add("History state should not have child.");
+            break;
+        }
+    }
+    #endif
 }
 
 } // end of namespace
