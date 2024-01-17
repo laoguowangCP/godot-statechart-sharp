@@ -191,14 +191,31 @@ public partial class Statechart : StatechartComposition
         // 1. Deduce and merge exit set
         foreach (Transition t in EnabledTransitions)
         {
+            /*
+            Check confliction
+                1. If source is in exit set (descendant to other LCA) already.
+                2. Else, if any other source descendant to this LCA
+                    <=> Any other source's most anscetor state is also descendant to this LCA (or it is case 1)
+                    <=> Any state in exit set is descendant to this LCA
+            */
+
             if (ExitSet.Contains(t.SourceState))
             {
                 continue;
             }
+            else
+            {
+                SortedSet<State> DescendantInExit = ExitSet.GetViewBetween(
+                    t.LcaState.LowerState, t.LcaState.UpperState);
+                if (DescendantInExit.Count > 0)
+                {
+                    continue;
+                }
+            }
 
             EnabledFilteredTransitions.Add(t);
 
-            // Targetless is filtered by LCA as well, but do no set operation.
+            // Targetless is filtered as well, but do no set operation.
             if (t.IsTargetless)
             {
                 continue;

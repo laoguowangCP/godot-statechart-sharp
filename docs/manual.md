@@ -11,26 +11,25 @@ To get full perspective on statechart, you may refer to:
 
 ## Statechart
 
-The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work properly, add exactly 1 child state node  (non-history) as "root state".
+The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work properly, add exactly 1 child state node (non-history) as "root state".
 
-At the very beginning, statechart initializes itself, then root state, then all the statechart composition nodes descendant to root state. All the composition will be indexed with **"document order"** — the order they showed in an expanded node tree, which is used in most order-considering cases.
+At the very beginning, statechart initializes itself, then root state, then all the nodes descendant to root state. All the composition will be indexed with **"document order"** — the order they showed in an expanded node tree, which is used in most order-considering cases.
 
 Statechart node provides `Step` method, where following things will be done:
 
-1. Queue event, if statechart is already running a step. Otherwise, statechart will fetch event from queue, and do following tasks.
-2. With fetched event, statechart select transitions from active states.
+1. Queue event, if statechart is already running a step. Otherwise, statechart will do following tasks with given event.
+2. Select transitions from active states.
 3. Execute selected transitions.
-4. Select and execute auto transitions from active states, for several rounds.
-5. With fetched event, statechart select and execute reactions from active states.
+4. Select and execute auto transitions from active states for several rounds.
+5. Select and execute reactions from active states.
 6. If event queue is not cleared, fetch another event from queue, back to 2.
 
 `Step` is the main way we interact with statechart. Node loop events (process, input, etc.) also call `Step` method internally. The only difference is that they use built-in event, defined in `util/StatechartConfig.cs` .
 
 Here's several tips you may need when using statechart node:
 
-- Do not manually call `Step` with node loop event.
 - Do not call same event from a running step, this may cause unintended endless loop.
-- Better not use `null` event or event with empty string, `Step` won't process. `null` event is used as automatic transition internally.
+- Better not use null event or event with empty string, `Step` won't process. Null event is only used as automatic transition internally.
 
 | Property | Description |
 | ---- | ---- |
@@ -64,15 +63,11 @@ Beware, not all states in the tree are active. Root state is always active. For 
   - A shallow history points to parent's substate(s), once active till last exit of parent state. With compound parent, it points to the sibling once active (or parent's initial state, if parent has never been active before). With parallel parent, it points to all the non-history siblings.
   - A deep history points to leaf state(s) descendant to parent, once active till last exit of parent state. It makes parent state find shallow history recursively onto its descendants.
 
-Here's several tips you may need when using state node:
+With "bare" states given, they won't do anything themself even when active. State is expressed with signals, and composited nodes:
 
-- Better not append substate to history: state, transition, reaction won't function as history's child. However, you may occasionally assign a history's substate as a transition target, which will cause unexpected behavior.
-- Better not append shallow history to a parallel state. Targeting such history works, but targeting the parallel parent will do the same.
-- Express state with signals and other nodes, not inheritance:
-
-  - State provides `Enter`/`Exit` signals, which will be emitted when state is set active/unactive during a transition.
-  - Transition node is used as a state's child, to represent how this state transits to the other.
-  - Reaction node is used as a state's child, to express what an active state will do.
+- Reaction node is used as a state's child, to express what state will do.
+- Transition node is used as a state's child, to express how state transits.
+- State provides `Enter`/`Exit` signals, which will be emitted when state is set active/unactive during a transition.
 
 | Property | Description |
 | ---- | ---- |
