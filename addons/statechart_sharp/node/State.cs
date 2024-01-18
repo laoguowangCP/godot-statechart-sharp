@@ -130,7 +130,7 @@ public partial class State : StatechartComposition
         StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
     }
 
-    internal bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName = null)
+    internal int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName = null)
     {
         return StateComponent.SelectTransitions(enabledTransitions, eventName);
     }

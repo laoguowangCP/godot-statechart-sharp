@@ -143,7 +143,7 @@ public partial class Statechart : StatechartComposition
                 - Select auto-transition
                 - Do auto-transition
                 - Break if no queued auto-transition
-            4. Do action of active-states
+            4. Do reactions
 
         */
         // 1. Select transitions
@@ -191,6 +191,13 @@ public partial class Statechart : StatechartComposition
         // 1. Deduce and merge exit set
         foreach (Transition t in EnabledTransitions)
         {
+            // Targetless checks no conflicts, and do no set operations.
+            if (t.IsTargetless)
+            {
+                EnabledFilteredTransitions.Add(t);
+                continue;
+            }
+
             /*
             Check confliction
                 1. If source is in exit set (descendant to other LCA) already.
@@ -214,12 +221,6 @@ public partial class Statechart : StatechartComposition
             }
 
             EnabledFilteredTransitions.Add(t);
-
-            // Targetless is filtered as well, but do no set operation.
-            if (t.IsTargetless)
-            {
-                continue;
-            }
 
             SortedSet<State> exitStates = ActiveStates.GetViewBetween(
                 t.LcaState.LowerState, t.LcaState.UpperState);

@@ -7,7 +7,7 @@ To get full perspective on statechart, you may refer to:
 
 > [!Warning]
 >
-> This plugin is a stylized implementation of statechart. Not all definition in SCXML is provided, and details may differ.
+> This plugin is a stylized implementation of statechart pattern, details may differ from harel statecharts definition. XML extention defined in SCXML is not implemented.
 
 ## Statechart
 
@@ -63,11 +63,11 @@ Beware, not all states in the tree are active. Root state is always active. For 
   - A shallow history points to parent's substate(s), once active till last exit of parent state. With compound parent, it points to the sibling once active (or parent's initial state, if parent has never been active before). With parallel parent, it points to all the non-history siblings.
   - A deep history points to leaf state(s) descendant to parent, once active till last exit of parent state. It makes parent state find shallow history recursively onto its descendants.
 
-With "bare" states given, they won't do anything themself even when active. State is expressed with signals, and composited nodes:
+With given active states, we can further more express their behaviors. Use signals, or composite with other nodes:
 
-- Reaction node is used as a state's child, to express what state will do.
-- Transition node is used as a state's child, to express how state transits.
-- State provides `Enter`/`Exit` signals, which will be emitted when state is set active/unactive during a transition.
+- Reaction node is used as a state's child, to express how state react.
+- Transition node is used as a state's child, to express where state transit to.
+- `Enter`/`Exit` signal is emitted when state is set active/unactive during a transition, used to express what state do when entered/exited.
 
 | Property | Description |
 | ---- | ---- |
@@ -86,15 +86,17 @@ With "bare" states given, they won't do anything themself even when active. Stat
 
 ## Transition
 
-This node represents a transition from 1 state to other(s). Append it as child node of a non-history state, then this state will be treated as "source state" — the state we'll transit from. As for the target state(s) — the state(s) we'll transit to, assignment in inspector is required.
+Transition node is used as child node of a non-history state. Parented state is the state to leave, known as "source". As for the state(s) to go for — known as "target(s)". If no target(s) is assigned, it becomes a "targetless transition".
 
-First we'll look into how transitions are selected and executed. We have mentioned how statechart runs a `Step` , here we take a further look at step 2 and 3 . To select transitions in step 2, we query active states recursively from root to leaf (with a given event):
+As mentioned, when statechart runs a step, firt it needs to select transitions from active states. To do this, active states are queried recursively. With a given event, a state first passes recursion onto its direct descendant (current state of a compound, or all non-history substate of a parallel), then deals with the returned case:
 
-- If has no substate, state iterate the transitions appended to itself (with document order). If transition's event matches the given event, transition's `Guard` signal will be emitted, which would be connected to external sripts to judge whether this transition is enabled or not. If a transition is enabled, state will submit it to statechart, stop iteration, and inform parent state that a transition has been selected.
-- If substate is the case, then state's mode is considered:
+- Case "-1" : no transition selected in descendants. Compound or parallel state checks its own transitions. Return case 1 if any transition is selected, else return case -1 .
+- Case "0" : transition selected in descendants, but not all branches are covered. Some of the branches still ask for an enabled transition from anscestors, but expecting no confliction to selected ones. In this case state check its own **targetless** transitions. Return case 1 if any transition is selected, else return case 0 .
+- Case "1" : transition selected in descendants, and all branches are covered. No need to check any more. Return case 1 .
 
-  - For a compound state, first it passes recursion onto its current state (if there's any). If no transition selected in decendants, compound state will look into its own transitions.
-  - For a parallel state, it needs to pass recursion onto each non-history substate. If **any** of the substates has not returned with a selected transition, then this state will look into its own transitions
+So you may have noticed that transition is also based on event. Default event is "Process", so transition can only be checked in a process step. You can switch it to other node loop event, or a custom event, or an "Auto" event.
+
+Transition with "Auto" event, known as "", will be automaticly selected and executed after a
 
 In step 3, with all the states queried, statechart will execute selected transitions with following procedure:
 
@@ -106,7 +108,7 @@ In step 3, with all the states queried, statechart will execute selected transit
 
 Here's several specification you shall follow:
 
-- Beware that a transition is enabled by default. If not set disabled during guard, or guard signal is not connected, transitions will be enabled anyway.
+- Beware that a transition is enabled by default.
 
 | Signal | Description |
 | ---- | ---- |

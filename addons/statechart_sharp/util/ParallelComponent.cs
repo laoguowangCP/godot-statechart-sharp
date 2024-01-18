@@ -173,33 +173,83 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+    internal override int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
-        bool isHandled = false;
+        int handleInfo = -1;
         if (Substates.Count > 0)
         {
-            isHandled = true;
+            int negCnt = 0;
+            int posCnt = 0;
+            int infoCnt = 0;
             foreach (State substate in Substates)
             {
                 if (substate.IsHistory)
                 {
                     continue;
                 }
-                bool substateIsHandled = substate.SelectTransitions(enabledTransitions, eventName);
-                isHandled = isHandled && substateIsHandled;
+
+                infoCnt += 1;
+                int substateHandleInfo = substate.SelectTransitions(
+                    enabledTransitions, eventName);
+                if (substateHandleInfo < 0)
+                {
+                    negCnt += 1;
+                }
+                else if (substateHandleInfo > 0)
+                {
+                    posCnt += 1;
+                }
+            }
+
+            if (infoCnt > 0)
+            {
+                if (negCnt == infoCnt) // No selected
+                {
+                    handleInfo = -1;
+                }
+                else if (posCnt == infoCnt) // All done
+                {
+                    handleInfo = 1;
+                }
+                else // Selected but not all done
+                {
+                    handleInfo = 0;
+                }
             }
         }
 
-        if (isHandled)
+        /*
+        Check source's transitions:
+            - < 0, check any
+            - == 0, only check targetless
+            - > 0, do nothing
+        */
+        if (handleInfo > 0)
         {
-            // Any descendant handled transition
-            return true;
+            return handleInfo;
         }
-        else
+
+        foreach (Transition t in Transitions)
         {
-            // Atomic state, or no transition enabled in descendants
-            return base.SelectTransitions(enabledTransitions, eventName);
+            // If == 0, only check targetless
+            if (handleInfo == 0)
+            {
+                if (!t.IsTargetless)
+                {
+                    continue;
+                }
+            }
+
+            bool isEnabled = t.Check(eventName);
+            if (isEnabled)
+            {
+                enabledTransitions.Add(t);
+                handleInfo = 1;
+                break;
+            }
         }
+
+        return handleInfo;
     }
 
     internal override void DeduceDescendants(

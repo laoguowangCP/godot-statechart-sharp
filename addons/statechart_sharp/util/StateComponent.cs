@@ -61,19 +61,10 @@ public class StateComponent
         return false;
     }
 
-    internal virtual bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+    // < 0 no selected yet, 0 => targetless only, > 0 selected, 
+    internal virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
-        foreach (Transition t in Transitions)
-        {
-            // t.EventName == null && eventName == null
-            bool isEnabled = t.Check(eventName);
-            if (isEnabled)
-            {
-                enabledTransitions.Add(t);
-                return true;
-            }
-        }
-        return false;
+        return -1;
     }
     
     internal virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}

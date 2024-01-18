@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using Godot;
 
 namespace LGWCP.StatechartSharp
@@ -186,26 +187,48 @@ public class CompoundComponent : StateComponent
         }
     }
 
-    internal override bool SelectTransitions(
+    internal override int SelectTransitions(
         SortedSet<Transition> enabledTransitions, StringName eventName)
     {
-        bool isHandled = false;
+        int handleInfo = -1;
         if (HostState.CurrentState != null)
         {
-            isHandled = CurrentState.SelectTransitions(
+            handleInfo = CurrentState.SelectTransitions(
                 enabledTransitions, eventName);
         }
 
-        if (isHandled)
+        /*
+        Check source's transitions:
+            - < 0, check any
+            - == 0, only check targetless
+            - > 0, do nothing
+        */
+        if (handleInfo > 0)
         {
-            // Descendants have registered an enabled transition
-            return true;
+            return handleInfo;
         }
-        else
+
+        foreach (Transition t in Transitions)
         {
-            // No transition enabled in descendants, or atomic state
-            return base.SelectTransitions(enabledTransitions, eventName);
+            // If == 0, only check targetless
+            if (handleInfo == 0)
+            {
+                if (!t.IsTargetless)
+                {
+                    continue;
+                }
+            }
+
+            bool isEnabled = t.Check(eventName);
+            if (isEnabled)
+            {
+                enabledTransitions.Add(t);
+                handleInfo = 1;
+                break;
+            }
         }
+
+        return handleInfo;
     }
 
     internal override void DeduceDescendants(
