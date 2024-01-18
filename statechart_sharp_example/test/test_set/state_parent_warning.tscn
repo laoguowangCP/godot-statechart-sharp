@@ -34,9 +34,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[b]State[/b]
+text = "[b]State warns about unexpected parent node[/b]
 
-[ul]Nothing really happens, but statechart node should update configuration warning in scene editor.[/ul]"
+Nothing really happens, but state node should update configuration warning in scene editor.
+
+[ul]State should be child to statechart or non-history state.[/ul]
+[ul]History state should be child to a non-history state.[/ul]
+[ul]History state should not have child.[/ul]"
 threaded = true
 
 [node name="Button" type="Button" parent="."]

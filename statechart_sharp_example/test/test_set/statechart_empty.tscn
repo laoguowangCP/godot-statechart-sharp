@@ -35,9 +35,9 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[b]An empty statechart[/b]
 
-[ul]Nothing really happens, but statechart node should update configuration warning in scene editor.[/ul]
+Nothing really happens, but statechart node should update configuration warning in scene editor.
 
-By the way, whether you start here or not, I would like to mention you that most of the test scene need you to press the \"Test\" button 1 or more times. You will see what have happened in the output panel."
+By the way, whether you start here or not, I would like to mention you that most of the test scene need you to press the \"Test\" button 1 or several times. You will see what happened in the output panel."
 threaded = true
 
 [node name="Button" type="Button" parent="."]

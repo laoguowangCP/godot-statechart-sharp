@@ -64,7 +64,7 @@ public class StateComponent
     // < 0 no selected yet, 0 => targetless only, > 0 selected, 
     internal virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
-        return -1;
+        return 1;
     }
     
     internal virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
@@ -77,16 +77,18 @@ public class StateComponent
     internal virtual void GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
-        bool isParentWarning = false;
+        bool isParentWarning = true;
         Node parent = HostState.GetParent<Node>();
-        if (parent is not State && parent is not Statechart)
+        if (parent != null)
         {
-            isParentWarning = true;
-        }
-
-        if (parent is State state)
-        {
-            isParentWarning = state.IsHistory;
+            if (parent is Statechart)
+            {
+                isParentWarning = false;
+            }
+            else if (parent is State state)
+            {
+                isParentWarning = state.IsHistory;
+            }
         }
 
         if (isParentWarning)

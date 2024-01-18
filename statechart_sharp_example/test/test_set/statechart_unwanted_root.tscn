@@ -58,10 +58,9 @@ StepName = &"test"
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_a4rbe")
 
-[node name="Transition" type="Node" parent="Tester/Statechart" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="Transition" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_hf5ap")
 CustomEventName = &""
-TargetStatesArray = []
 
 [node name="Reaction" type="Node" parent="Tester/Statechart"]
 script = ExtResource("4_1oedl")

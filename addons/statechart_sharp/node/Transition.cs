@@ -26,7 +26,10 @@ public partial class Transition : StatechartComposition
         {
             _transitionEvent = value;
             #if TOOLS
-            UpdateConfigurationWarnings();
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
             #endif
         }
     }
@@ -38,7 +41,10 @@ public partial class Transition : StatechartComposition
         {
             _customEventName = value;
             #if TOOLS
-            UpdateConfigurationWarnings();
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
             #endif
         }
     }
@@ -50,11 +56,14 @@ public partial class Transition : StatechartComposition
         {
             _targetStatesArray = value;
             #if TOOLS
-            UpdateConfigurationWarnings();
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
             #endif
         }
     }
-    private Array<State> _targetStatesArray;
+    private Array<State> _targetStatesArray = new Array<State>();
     private StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
     internal State SourceState { get; set; }
@@ -80,6 +89,13 @@ public partial class Transition : StatechartComposition
         DeducedEnterStates = new SortedSet<State>(new StateComparer());
 
         IsValid = true;
+
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            UpdateConfigurationWarnings();
+        }
+        #endif
     }
 
     internal override void Setup(Statechart hostStatechart, ref int ancestorId)
@@ -387,7 +403,28 @@ public partial class Transition : StatechartComposition
     public override string[] _GetConfigurationWarnings()
     {
         var warnings = new List<string>();
+        
+        // Check parent
+        bool isParentWarning = true;
+        Node parent = GetParent<Node>();
 
+        if (parent != null && parent is State state)
+        {
+            isParentWarning = state.IsHistory;
+        }
+
+        if (isParentWarning)
+        {
+            warnings.Add("Transition should be child to non-history state.");
+        }
+
+        // Check children
+        if (GetChildren().Count > 0)
+        {
+            warnings.Add("Transition should not have child.");
+        }
+
+        // Check event
         if (TransitionEvent == TransitionEventNameEnum.Custom
             && (CustomEventName == null || CustomEventName == ""))
         {

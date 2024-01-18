@@ -24,7 +24,10 @@ public partial class Reaction : StatechartComposition
         {
             _reactionEvent = value;
             #if TOOLS
-            UpdateConfigurationWarnings();
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
             #endif
         }
     }
@@ -37,7 +40,10 @@ public partial class Reaction : StatechartComposition
         {
             _customEventName = value;
             #if TOOLS
-            UpdateConfigurationWarnings();
+            if (Engine.IsEditorHint())
+            {
+                UpdateConfigurationWarnings();
+            }
             #endif
         }
     }
@@ -45,6 +51,16 @@ public partial class Reaction : StatechartComposition
     public StringName EventName { get; protected set; }
 
     #endregion
+
+    public override void _Ready()
+    {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            UpdateConfigurationWarnings();
+        }
+        #endif
+    }
 
     internal override void Setup(Statechart hostStatechart, ref int ancestorId)
     {
@@ -73,6 +89,27 @@ public partial class Reaction : StatechartComposition
     {
         var warnings = new List<string>();
 
+        // Check parent
+        bool isParentWarning = true;
+        Node parent = GetParent<Node>();
+
+        if (parent != null && parent is State state)
+        {
+            isParentWarning = state.IsHistory;
+        }
+
+        if (isParentWarning)
+        {
+            warnings.Add("Reaction should be child to non-history state.");
+        }
+
+        // Check children
+        if (GetChildren().Count > 0)
+        {
+            warnings.Add("Reaction should not have child.");
+        }
+
+        // Check event
         if (ReactionEvent == ReactionEventNameEnum.Custom
             && (CustomEventName == null || CustomEventName == ""))
         {

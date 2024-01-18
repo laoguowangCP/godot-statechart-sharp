@@ -24,12 +24,6 @@ public class HistoryComponent : StateComponent
         enterRegion.Remove(HostState);
         enterRegionEdge.Add(HostState);
     }
-    
-    internal override bool SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
-    {
-        // Do nothing
-        return true;
-    }
 
     internal override void DeduceDescendants(
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
@@ -50,21 +44,13 @@ public class HistoryComponent : StateComponent
     internal override void GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
-        bool isParentWarning;
+        bool isParentWarning = true;
         Node parent = HostState.GetParent<Node>();
-        if (parent == null)
-        {
-            isParentWarning = true;
-        }
-        else
+        if (parent != null)
         {
             if (parent is State state)
             {
                 isParentWarning = state.IsHistory;
-            }
-            else
-            {
-                isParentWarning = true;
             }
         }
 
@@ -73,11 +59,10 @@ public class HistoryComponent : StateComponent
             warnings.Add("History state should be child to a non-history state.");
         }
 
-        // Check child
-        foreach (Node child in HostState.GetChildren())
+        // Check children
+        if (HostState.GetChildren().Count > 0)
         {
             warnings.Add("History state should not have child.");
-            break;
         }
     }
     #endif
