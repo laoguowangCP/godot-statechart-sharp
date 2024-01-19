@@ -9,6 +9,15 @@ To get full perspective on statechart, you may refer to:
 >
 > This plugin is a stylized implementation of statechart pattern, details may differ from harel statecharts definition. XML extention defined in SCXML is not implemented.
 
+<style>
+table th:first-of-type {
+    width: 40%;
+}
+table th:nth-of-type(2) {
+    width: 60%;
+}
+</style>
+
 ## Statechart
 
 The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work properly, add exactly 1 child state node (non-history) as "root state".
@@ -38,7 +47,7 @@ Here's several tips you may need when using statechart node:
 
 | Method | Description |
 | ---- | ---- |
-| `void Step(StringName)` | Make statechart run a step with given event. |
+| `void Step(StringName)`  | Make statechart run a step with given event. |
 
 ## State
 
@@ -88,9 +97,9 @@ With given active states, we can further more express their behaviors. Use signa
 
 Transition node is used as child node of a non-history state. Parented state is the state to leave, known as "source". As for the state(s) to go for — known as "target(s)". If no target(s) is assigned, it becomes a "targetless transition".
 
-As mentioned, when statechart runs a step, firt it needs to select transitions from active states. To do this, active states are queried recursively. With a given event, a state first passes recursion onto its direct descendant (current state of a compound, or all non-history substate of a parallel), then deals with the returned case:
+As mentioned, when statechart runs a step, firt it needs to select transitions from active states. To do this, active states are queried recursively. With a given event, a state first passes recursion onto its direct child (current state of a compound, or all non-history substate of a parallel), then deals with the returned case:
 
-- Case "-1" : no transition selected in descendants. Compound or parallel state checks its own transitions. Return case 1 if any transition is selected, else return case -1 .
+- Case "-1" : no transition selected in descendants, or there's no descendant. Compound or parallel state checks its own transitions. Return case 1 if any transition is selected, else return case -1 .
 - Case "0" : transition selected in descendants, but not all branches are covered. Some of the branches still ask for an enabled transition from anscestors, but expecting no confliction to selected ones. In this case state check its own **targetless** transitions. Return case 1 if any transition is selected, else return case 0 .
 - Case "1" : transition selected in descendants, and all branches are covered. No need to check any more. Return case 1 .
 

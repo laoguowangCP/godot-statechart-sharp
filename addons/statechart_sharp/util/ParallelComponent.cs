@@ -6,6 +6,7 @@ namespace LGWCP.StatechartSharp
 
 public class ParallelComponent : StateComponent
 {
+    protected int NonHistorySubCnt = 0;
     public ParallelComponent(State state) : base(state) {}
 
     internal override void Setup(Statechart hostStateChart, ref int ancestorId)
@@ -28,6 +29,11 @@ public class ParallelComponent : StateComponent
                     LowerState = s;
                 }
                 lastSubstate = s;
+
+                if (!s.IsHistory)
+                {
+                    NonHistorySubCnt += 1;
+                }
             }
             else if (child is Transition t)
             {
@@ -176,11 +182,10 @@ public class ParallelComponent : StateComponent
     internal override int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         int handleInfo = -1;
-        if (Substates.Count > 0)
+        if (NonHistorySubCnt > 0)
         {
             int negCnt = 0;
             int posCnt = 0;
-            int infoCnt = 0;
             foreach (State substate in Substates)
             {
                 if (substate.IsHistory)
@@ -188,7 +193,6 @@ public class ParallelComponent : StateComponent
                     continue;
                 }
 
-                infoCnt += 1;
                 int substateHandleInfo = substate.SelectTransitions(
                     enabledTransitions, eventName);
                 if (substateHandleInfo < 0)
@@ -201,20 +205,17 @@ public class ParallelComponent : StateComponent
                 }
             }
 
-            if (infoCnt > 0)
+            if (negCnt == NonHistorySubCnt) // No selected
             {
-                if (negCnt == infoCnt) // No selected
-                {
-                    handleInfo = -1;
-                }
-                else if (posCnt == infoCnt) // All done
-                {
-                    handleInfo = 1;
-                }
-                else // Selected but not all done
-                {
-                    handleInfo = 0;
-                }
+                handleInfo = -1;
+            }
+            else if (posCnt == NonHistorySubCnt) // All done
+            {
+                handleInfo = 1;
+            }
+            else // Selected but not all done
+            {
+                handleInfo = 0;
             }
         }
 
