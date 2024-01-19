@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./addons/statechart_sharp/icon/Statechart.svg" height="200px" />
+  <img src="./Statechart.svg" height="200px" />
 </p>
 
 # Statechart Sharp

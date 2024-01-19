@@ -33,12 +33,12 @@ Here's several tips you may need when using statechart node:
 
 | Property | Description |
 | ---- | ---- |
-| <div style="width:256px">`int MaxAutoTransitionRound`</div> | Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition. |
+| <span style="display:inline-block;width:256px">`int MaxAutoTransitionRound`</span> | Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition. |
 | `enum EventFlagEnum EventFlag` | Event flags to control node loop events (process, input, etc.) , which are all disabled by default. |
 
 | Metohd | Description |
 | ---- | ---- |
-| <div style="width:256px">`void Step(StringName)`</div> | Make statechart run a step with given event. |
+| <span style="display:inline-block;width:256px">`void Step(StringName)`</span> | Make statechart run a step with given event. |
 
 ## State
 
@@ -71,7 +71,7 @@ With given active states, we can further more express their behaviors. Use signa
 
 | Property | Description |
 | ---- | ---- |
-| <div style="width:18em">`enum StateModeEnum StateMode`</div> | Enumeration of state mode. |
+| `enum StateModeEnum StateMode` | Enumeration of state mode. |
 | `bool IsDeepHistory` | Used in history mode only. |
 | `State InitialState` | The substate that will be choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only. |
 | `double Delta` | Recently updated delta time parsed from `_Process(double delta)` .  |
@@ -81,7 +81,7 @@ With given active states, we can further more express their behaviors. Use signa
 
 | Signal | Description |
 | ---- | ---- |
-| <div style="width:18em">`void Enter(State)`</div> | Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events. |
+| `void Enter(State)` | Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events. |
 | `void Exit(State)` | Emited when state is exit. Parsed state is used to access delta time and input event when handling node loop events. |
 
 ## Transition
@@ -112,12 +112,12 @@ Here's several specification you shall follow:
 
 | Signal | Description |
 | ---- | ---- |
-| <div style="width:18em">`void Guard(Transition)`</div> | Emited when transition is checked. Parsed transition is used to access delta time and input event when handling node loop events. |
+| `void Guard(Transition)` | Emited when transition is checked. Parsed transition is used to access delta time and input event when handling node loop events. |
 | `void Invoke(Transition)` | Emited when transition is invoked. Parsed transition is used to access delta time and input event when handling node loop events. |
 
 | Property | Description |
 | ---- | ---- |
-| <div style="width:18em">`double Delta`</div> | Recently updated delta time parsed from `_Process(double delta)` .  |
+| `double Delta` | Recently updated delta time parsed from `_Process(double delta)` .  |
 | `double PhysicsDelta` | Recently updated delta time parsed from `_PhysicsProcess(double delta)` .  |
 | `InputEvent Input` | Recently updated input event parsed from `_Input(InputEvent @event)` .  |
 | `InputEvent UnhandledInput` | Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .  |
@@ -126,11 +126,11 @@ Here's several specification you shall follow:
 
 | Signal | Description |
 | ---- | ---- |
-| <div style="width:18em">`void Invoke(Reaction)`</div> | Emited when reaction is invoked. Parsed reaction is used to access delta time and input event when handling node loop events. |
+| `void Invoke(Reaction)` | Emited when reaction is invoked. Parsed reaction is used to access delta time and input event when handling node loop events. |
 
 | Property | Description |
 | ---- | ---- |
-| <div style="width:18em">`double Delta`</div> | Recently updated delta time parsed from `_Process(double delta)` .  |
+| `double Delta` | Recently updated delta time parsed from `_Process(double delta)` .  |
 | `double PhysicsDelta` | Recently updated delta time parsed from `_PhysicsProcess(double delta)` .  |
 | `InputEvent Input` | Recently updated input event parsed from `_Input(InputEvent @event)` .  |
 | `InputEvent UnhandledInput` | Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .  |
