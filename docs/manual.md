@@ -33,12 +33,12 @@ Here's several tips you may need when using statechart node:
 
 | Property | Description |
 | ---- | ---- |
-| <div style="width:18em">`int MaxAutoTransitionRound`</div> | Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition. |
-| <div style="width:18em">`enum EventFlagEnum EventFlag`</div> | Event flags to control node loop events (process, input, etc.) , which are all disabled by default. |
+| <div style="width:256px">`int MaxAutoTransitionRound`</div> | Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition. |
+| `enum EventFlagEnum EventFlag` | Event flags to control node loop events (process, input, etc.) , which are all disabled by default. |
 
 | Metohd | Description |
 | ---- | ---- |
-| <div style="width:18em">`void Step(StringName)`</div> | Make statechart run a step with given event. |
+| <div style="width:256px">`void Step(StringName)`</div> | Make statechart run a step with given event. |
 
 ## State
 
