@@ -64,22 +64,20 @@ script = ExtResource("3_garlq")
 [node name="State" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_garlq")
 
-[node name="Transition1" type="Node" parent="Tester/Statechart/Root/State" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="Transition1" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("5_0vk0g")
 TransitionEvent = 4
 CustomEventName = &"test"
-TargetStatesArray = []
 
 [node name="Reaction1" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("4_tsvas")
 ReactionEvent = 4
 CustomEventName = &"test"
 
-[node name="Transition2" type="Node" parent="Tester/Statechart/Root/State" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="Transition2" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("5_0vk0g")
 TransitionEvent = 4
 CustomEventName = &"test_queue_event"
-TargetStatesArray = []
 
 [node name="Reaction2" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("4_tsvas")

@@ -10,6 +10,7 @@
 
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)
+- [Feature](#feature)
 - [Todo](#todo)
 
 ## Introduction
@@ -51,11 +52,16 @@ Download repository, copy `addons/statechart_sharp` to your project folder. Buil
 
 You can find example scenes in `./statechart_sharp_example` folder. Refer to [per-node manual](./docs/manual.md) to see what these nodes are and how they work together.
 
+## Feature
+
+- Few plugin node to learn about.
+- Designed for composition. No need to extend scripts.
+
 ## Todo
 
 Statechart:
 
-- add save/load
+- add save/load method
 
 Example:
 

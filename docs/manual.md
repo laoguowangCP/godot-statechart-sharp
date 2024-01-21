@@ -1,4 +1,4 @@
-# Statechart per-node manual
+# Statechart Sharp per-node manual
 
 To get full perspective on statechart, you may refer to:
 
@@ -8,6 +8,8 @@ To get full perspective on statechart, you may refer to:
 > [!Warning]
 >
 > This plugin is a stylized implementation of statechart pattern, details may differ from harel statecharts definition. XML extention defined in SCXML is not implemented.
+
+<br/>
 
 ## Statechart
 
@@ -31,14 +33,17 @@ Here's several tips you may need when using statechart node:
 - Do not call same event from a running step, this may cause unintended endless loop.
 - Better not use null event or event with empty string, `Step` won't process. Null event is only used as automatic transition internally.
 
-| Property | Description |
-| ---- | ---- |
-| <span style="display:inline-block;width:256px">`int MaxAutoTransitionRound`</span> | Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition. |
-| `enum EventFlagEnum EventFlag` | Event flags to control node loop events (process, input, etc.) , which are all disabled by default. |
+### Property
 
-| Metohd | Description |
-| ---- | ---- |
-| <span style="display:inline-block;width:256px">`void Step(StringName)`</span> | Make statechart run a step with given event. |
+`int MaxAutoTransitionRound` : Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition.
+
+`enum EventFlagEnum EventFlag` : Event flags to control node loop events (process, input, etc.) , which are all disabled by default.
+
+### Method
+
+`void Step(StringName)` : Make statechart run a step with given event.
+
+</br>
 
 ## State
 
@@ -65,24 +70,33 @@ Beware, not all states in the tree are active. Root state is always active. For 
 
 With given active states, we can further more express their behaviors. Use signals, or composite with other nodes:
 
-- Reaction node is used as a state's child, to express how state react.
-- Transition node is used as a state's child, to express where state transit to.
-- `Enter`/`Exit` signal is emitted when state is set active/unactive during a transition, used to express what state do when entered/exited.
+- Reaction node is used as a state's child, to express how state react during a step.
+- Transition node is used as a state's child, to how state transit during a step.
+- `Enter`/`Exit` signal is emitted when state is set active/unactive during a transition, used to express actions on state entry/exit.
 
-| Property | Description |
-| ---- | ---- |
-| `enum StateModeEnum StateMode` | Enumeration of state mode. |
-| `bool IsDeepHistory` | Used in history mode only. |
-| `State InitialState` | The substate that will be choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only. |
-| `double Delta` | Recently updated delta time parsed from `_Process(double delta)` .  |
-| `double PhysicsDelta` | Recently updated delta time parsed from `_PhysicsProcess(double delta)` .  |
-| `InputEvent Input` | Recently updated input event parsed from `_Input(InputEvent @event)` .  |
-| `InputEvent UnhandledInput` | Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .  |
+### Property
 
-| Signal | Description |
-| ---- | ---- |
-| `void Enter(State)` | Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events. |
-| `void Exit(State)` | Emited when state is exit. Parsed state is used to access delta time and input event when handling node loop events. |
+`enum StateModeEnum StateMode` : Enumeration of state mode.
+
+`bool IsDeepHistory` : Used in history mode only.
+
+`State InitialState` : The substate that will be choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only.
+
+`double Delta` : Recently updated delta time parsed from `_Process(double delta)` .
+
+`double PhysicsDelta` : Recently updated delta time parsed from `_PhysicsProcess(double delta)` .
+
+`InputEvent Input` : Recently updated input event parsed from `_Input(InputEvent @event)` .
+
+`InputEvent UnhandledInput` : Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .
+
+### Signal
+
+`void Enter(State)` : Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events.
+
+`void Exit(State)` : Emited when state is exit. Parsed state is used to access delta time and input event when handling node loop events.
+
+<br/>
 
 ## Transition
 
@@ -110,27 +124,35 @@ Here's several specification you shall follow:
 
 - Beware that a transition is enabled by default.
 
-| Signal | Description |
-| ---- | ---- |
-| `void Guard(Transition)` | Emited when transition is checked. Parsed transition is used to access delta time and input event when handling node loop events. |
-| `void Invoke(Transition)` | Emited when transition is invoked. Parsed transition is used to access delta time and input event when handling node loop events. |
+### Property
 
-| Property | Description |
-| ---- | ---- |
-| `double Delta` | Recently updated delta time parsed from `_Process(double delta)` .  |
-| `double PhysicsDelta` | Recently updated delta time parsed from `_PhysicsProcess(double delta)` .  |
-| `InputEvent Input` | Recently updated input event parsed from `_Input(InputEvent @event)` .  |
-| `InputEvent UnhandledInput` | Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .  |
+`double Delta` : Recently updated delta time parsed from `_Process(double delta)` .
+
+`double PhysicsDelta` : Recently updated delta time parsed from `_PhysicsProcess(double delta)` .
+
+`InputEvent Input` : Recently updated input event parsed from `_Input(InputEvent @event)` .
+
+`InputEvent UnhandledInput` : Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .
+
+### Signal
+
+`void Guard(Transition)` : Emited when transition is checked. Parsed transition is used to access delta time and input event when handling node loop events.
+`void Invoke(Transition)` : Emited when transition is invoked. Parsed transition is used to access delta time and input event when handling node loop events.
+
+<br/>
 
 ## Reaction
 
-| Signal | Description |
-| ---- | ---- |
-| `void Invoke(Reaction)` | Emited when reaction is invoked. Parsed reaction is used to access delta time and input event when handling node loop events. |
+### Property
 
-| Property | Description |
-| ---- | ---- |
-| `double Delta` | Recently updated delta time parsed from `_Process(double delta)` .  |
-| `double PhysicsDelta` | Recently updated delta time parsed from `_PhysicsProcess(double delta)` .  |
-| `InputEvent Input` | Recently updated input event parsed from `_Input(InputEvent @event)` .  |
-| `InputEvent UnhandledInput` | Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .  |
+`double Delta` : Recently updated delta time parsed from `_Process(double delta)` .
+
+`double PhysicsDelta` : Recently updated delta time parsed from `_PhysicsProcess(double delta)` .
+
+`InputEvent Input` : Recently updated input event parsed from `_Input(InputEvent @event)` .
+
+`InputEvent UnhandledInput` : Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .
+
+### Signal
+
+`void Invoke(Reaction)` : Emited when reaction is invoked. Parsed reaction is used to access delta time and input event when handling node loop events.
