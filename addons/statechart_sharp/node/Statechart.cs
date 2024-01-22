@@ -13,10 +13,6 @@ public partial class Statechart : StatechartComposition
     [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
     protected EventFlagEnum EventFlag { get; set; } = 0;
     protected bool IsRunning { get; set; }
-    internal new double Delta { get; set; }
-    internal new double PhysicsDelta { get; set; }
-    internal new InputEvent Input { get; set; }
-    internal new InputEvent UnhandledInput { get; set; }
     internal State RootState { get; set; }
     protected SortedSet<State> ActiveStates { get; set; }
     protected Queue<StringName> QueuedEvents { get; set; }
@@ -25,6 +21,7 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<State> ExitSet { get; set; }
     protected SortedSet<State> EnterSet { get; set; }
     protected SortedSet<Reaction> EnabledReactions { get; set; }
+    internal StatechartDuct Duct { get; private set; }
     
     public override void _Ready()
     {
@@ -37,6 +34,8 @@ public partial class Statechart : StatechartComposition
         ExitSet = new SortedSet<State>(new ReversedStateComparer());
         EnterSet = new SortedSet<State>(new StateComparer());
         EnabledReactions = new SortedSet<Reaction>(new ReactionComparer());
+
+        Duct = new StatechartDuct();
 
         #if TOOLS
         if (!Engine.IsEditorHint())
@@ -91,7 +90,13 @@ public partial class Statechart : StatechartComposition
             s.StateEnter();
         }
 
-        return;
+        // Set node process according to flags
+        SetProcess(EventFlag.HasFlag(EventFlagEnum.Process));
+        SetPhysicsProcess(EventFlag.HasFlag(EventFlagEnum.PhysicsProcess));
+        SetProcessInput(EventFlag.HasFlag(EventFlagEnum.Input));
+        SetProcessShortcutInput(EventFlag.HasFlag(EventFlagEnum.ShortcutInput));
+        SetProcessUnhandledKeyInput(EventFlag.HasFlag(EventFlagEnum.UnhandledKeyInput));
+        SetProcessUnhandledInput(EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
     }
 
     public void Step(StringName eventName)
@@ -212,8 +217,9 @@ public partial class Statechart : StatechartComposition
             }
             else
             {
+                // Exit set has reversed comparer, so reverse lower & upper
                 SortedSet<State> DescendantInExit = ExitSet.GetViewBetween(
-                    t.LcaState.LowerState, t.LcaState.UpperState);
+                     t.LcaState.UpperState, t.LcaState.LowerState);
                 if (DescendantInExit.Count > 0)
                 {
                     continue;
@@ -269,41 +275,37 @@ public partial class Statechart : StatechartComposition
 
     public override void _Process(double delta)
     {
-        if (!EventFlag.HasFlag(EventFlagEnum.Process))
-        {
-            return;
-        }
-        Delta = delta;
+        Duct.Delta = delta;
         Step(StatechartConfig.EVENT_PROCESS);
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!EventFlag.HasFlag(EventFlagEnum.PhysicsProcess))
-        {
-            return;
-        }
-        PhysicsDelta = delta;
+        Duct.PhysicsDelta = delta;
         Step(StatechartConfig.EVENT_PHYSICS_PROCESS);
     }
 
     public override void _Input(InputEvent @event)
     {
-        if (!EventFlag.HasFlag(EventFlagEnum.Input))
-        {
-            return;
-        }
-        Input = @event;
+        Duct.Input = @event;
         Step(StatechartConfig.EVENT_INPUT);
+    }
+
+    public override void _ShortcutInput(InputEvent @event)
+    {
+        Duct.ShortcutInput = @event;
+        Step(StatechartConfig.EVENT_SHORTCUT_INPUT);
+    }
+
+    public override void _UnhandledKeyInput(InputEvent @event)
+    {
+        Duct.UnhandledKeyInput = @event;
+        Step(StatechartConfig.EVENT_UNHANDLED_KEY_INPUT);
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (!EventFlag.HasFlag(EventFlagEnum.UnhandledInput))
-        {
-            return;
-        }
-        UnhandledInput = @event;
+        Duct.UnhandledInput = @event;
         Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
     }
 

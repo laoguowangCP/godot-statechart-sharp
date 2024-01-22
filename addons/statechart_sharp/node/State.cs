@@ -18,8 +18,8 @@ public enum StateModeEnum : int
 public partial class State : StatechartComposition
 {
     #region define signals
-    [Signal] public delegate void EnterEventHandler(State state);
-    [Signal] public delegate void ExitEventHandler(State state);
+    [Signal] public delegate void EnterEventHandler(StatechartDuct duct);
+    [Signal] public delegate void ExitEventHandler(StatechartDuct duct);
     
     #endregion
 
@@ -63,6 +63,7 @@ public partial class State : StatechartComposition
     protected StateComponent StateComponent { get; set; }
     internal State LowerState { get; set; }
     internal State UpperState { get; set; }
+    protected StatechartDuct Duct { get => HostStatechart.Duct; }
     internal bool IsHistory { get => StateMode == StateModeEnum.History; }
     
     public override void _Ready()
@@ -107,12 +108,14 @@ public partial class State : StatechartComposition
             ParentState.HandleSubstateEnter(this);
         }
         
-        EmitSignal(SignalName.Enter, this);
+        Duct.CompositionNode = this;
+        EmitSignal(SignalName.Enter, Duct);
     }
 
     internal void StateExit()
     {
-        EmitSignal(SignalName.Exit, this);
+        Duct.CompositionNode = this;
+        EmitSignal(SignalName.Exit, Duct);
     }
 
     internal void RegisterActiveState(SortedSet<State> activeStates)

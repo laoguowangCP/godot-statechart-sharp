@@ -71,7 +71,7 @@ public class CompoundComponent : StateComponent
                 UpperState = lastSubstate;
             }
         }
-        // Else state is atomic, lower and upper are null
+        // Else state is atomic, lower and upper are both null. GetViewBetween can handle it.
 
         // Set initial-state
         if (InitialState != null)

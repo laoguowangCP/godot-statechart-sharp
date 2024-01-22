@@ -57,43 +57,44 @@ public partial class StatechartTest : Node
 		GD.Print();
 	}
 
-	public void OnTransitionGuard(Transition transition)
+	public void OnTransitionGuard(StatechartDuct duct)
 	{
-		PrintDelegateInfo(transition, "Guard");
+		PrintDelegateInfo(duct, "Guard");
 	}
 
-	public void OnTransitionInvoke(Transition transition)
+	public void OnTransitionInvoke(StatechartDuct duct)
 	{
-		PrintDelegateInfo(transition, "Invoke");
+		PrintDelegateInfo(duct, "Invoke");
 	}
 
-	public void OnActionInvoke(Reaction reaction)
+	public void OnActionInvoke(StatechartDuct duct)
 	{
-		PrintDelegateInfo(reaction, "Invoke");
+		PrintDelegateInfo(duct, "Invoke");
 	}
 
-	public void OnStateEnter(State state)
+	public void OnStateEnter(StatechartDuct duct)
 	{
-		PrintDelegateInfo(state, "Enter");
+		PrintDelegateInfo(duct, "Enter");
 	}
 
-	public void OnStateExit(State state)
+	public void OnStateExit(StatechartDuct duct)
 	{
-		PrintDelegateInfo(state, "Exit");
+		PrintDelegateInfo(duct, "Exit");
 	}
 
-	protected void PrintDelegateInfo(Node callee, string delegateName)
+	protected void PrintDelegateInfo(StatechartDuct duct, string delegateName)
 	{
-		NodePath path = TestStatechart.GetPathTo(callee);
+		Node compositionNode = duct.CompositionNode;
+		NodePath path = TestStatechart.GetPathTo(compositionNode);
         string indentStr = "";
 		for (int i=1; i<path.GetNameCount(); ++i)
 		{
-			indentStr += "> "; // "└─"
+			indentStr += "— "; // "└─"
 		}
 		GD.Print(indentStr, delegateName, ": ", path);
 	}
 
-	protected void TestStatechartQueueEvent(Reaction reaction)
+	protected void TestStatechartQueueEvent(StatechartDuct duct)
 	{
 		TestStatechart.Step("test_queue_event");
 	}

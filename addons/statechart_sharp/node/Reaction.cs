@@ -11,7 +11,7 @@ public partial class Reaction : StatechartComposition
 {
     #region define signals
 
-    [Signal] public delegate void InvokeEventHandler(Reaction reaction);
+    [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
     
     #endregion
 
@@ -32,7 +32,6 @@ public partial class Reaction : StatechartComposition
         }
     }
     private ReactionEventNameEnum _reactionEvent = ReactionEventNameEnum.Process;
-
     [Export] protected StringName CustomEventName
     {
         get => _customEventName;
@@ -49,6 +48,7 @@ public partial class Reaction : StatechartComposition
     }
     private StringName _customEventName;
     public StringName EventName { get; protected set; }
+    protected StatechartDuct Duct { get => HostStatechart.Duct; }
 
     #endregion
 
@@ -81,7 +81,8 @@ public partial class Reaction : StatechartComposition
 
     internal void ReactionInvoke()
     {
-        EmitSignal(SignalName.Invoke, this);
+        Duct.CompositionNode = this;
+        EmitSignal(SignalName.Invoke, Duct);
     }
 
     #if TOOLS

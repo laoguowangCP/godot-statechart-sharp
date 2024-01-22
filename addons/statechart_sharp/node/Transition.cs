@@ -12,8 +12,8 @@ public partial class Transition : StatechartComposition
 {
     #region define signals
 
-    [Signal] public delegate void GuardEventHandler(Transition transition);
-    [Signal] public delegate void InvokeEventHandler(Transition transition);
+    [Signal] public delegate void GuardEventHandler(StatechartDuct duct);
+    [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
     
     #endregion
 
@@ -71,9 +71,10 @@ public partial class Transition : StatechartComposition
     internal SortedSet<State> EnterRegion  { get; private set; }
     private SortedSet<State> EnterRegionEdge { get; set; }
     private SortedSet<State> DeducedEnterStates { get; set; }
+    protected StatechartDuct Duct { get => HostStatechart.Duct; }
     internal bool IsTargetless { get; private set; }
     internal bool IsAuto { get; private set; }
-    public bool IsEnabled { private get; set; }
+    // private bool IsEnabled { get => Duct.IsEnabled; set => Duct.IsEnabled = value; }
     private bool IsValid { get; set; }
 
     #endregion
@@ -367,26 +368,20 @@ public partial class Transition : StatechartComposition
         {
             return false;
         }
-
-        // Targetless transition should not be selected as eventless
-        if (eventName == null && IsTargetless)
+        else // EventName == eventName
         {
-            return false;
+            // Transition is enabled on default.
+            Duct.IsEnabled = true;
+            Duct.CompositionNode = this;
+            EmitSignal(SignalName.Guard, Duct);
+            return Duct.IsEnabled;
         }
-
-        // Transition is enabled on default.
-        if (EventName == eventName)
-        {
-            IsEnabled = true;
-            EmitSignal(SignalName.Guard, this);
-        }
-
-        return IsEnabled;
     }
 
     internal void TransitionInvoke()
     {
-        EmitSignal(SignalName.Invoke, this);
+        Duct.CompositionNode = this;
+        EmitSignal(SignalName.Invoke, Duct);
     }
 
     internal SortedSet<State> GetDeducedEnterStates()

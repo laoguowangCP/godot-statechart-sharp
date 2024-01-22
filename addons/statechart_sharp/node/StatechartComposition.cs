@@ -7,11 +7,7 @@ namespace LGWCP.StatechartSharp
 public partial class StatechartComposition : Node
 {
     internal int OrderId;
-    public Statechart HostStatechart { get; protected set; }
-    public double Delta { get => HostStatechart.Delta; }
-    public double PhysicsDelta { get => HostStatechart.PhysicsDelta; }
-    public InputEvent Input { get => HostStatechart.Input; }
-    public InputEvent UnhandledInput { get => HostStatechart.UnhandledInput; }
+    internal Statechart HostStatechart { get; set; }
 
     internal virtual void Setup() {}
     internal virtual void Setup(Statechart hostStatechart, ref int ancestorId)

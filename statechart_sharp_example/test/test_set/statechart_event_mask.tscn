@@ -57,7 +57,7 @@ StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_1lgp1")
-EventFlag = 15
+EventFlag = 63
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_jghgl")
@@ -67,7 +67,7 @@ script = ExtResource("3_jghgl")
 
 [node name="->Test" type="Node" parent="Tester/Statechart/Root/Initial" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_jp3c4")
-TransitionEvent = 4
+TransitionEvent = 6
 CustomEventName = &"test"
 TargetStatesArray = [NodePath("../../Test")]
 
@@ -75,46 +75,62 @@ TargetStatesArray = [NodePath("../../Test")]
 script = ExtResource("3_jghgl")
 StateMode = 1
 
-[node name="ProcessTransition" type="Node" parent="Tester/Statechart/Root/Test" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="ProcessTransition" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_jp3c4")
-CustomEventName = &""
-TargetStatesArray = []
+CustomEventName = &"test"
 
-[node name="PhysicsProcessTransition" type="Node" parent="Tester/Statechart/Root/Test" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="PhysicsProcessTransition" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_jp3c4")
 TransitionEvent = 1
-CustomEventName = &""
-TargetStatesArray = []
+CustomEventName = &"test"
 
-[node name="InputTransition" type="Node" parent="Tester/Statechart/Root/Test" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="InputTransition" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_jp3c4")
 TransitionEvent = 2
-CustomEventName = &""
-TargetStatesArray = []
+CustomEventName = &"test"
 
-[node name="UnhandledInputTransition" type="Node" parent="Tester/Statechart/Root/Test" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="ShortcutInputTransition" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_jp3c4")
 TransitionEvent = 3
-CustomEventName = &""
-TargetStatesArray = []
+CustomEventName = &"test"
+
+[node name="UnhandledKeyInputTransition" type="Node" parent="Tester/Statechart/Root/Test"]
+script = ExtResource("4_jp3c4")
+TransitionEvent = 4
+CustomEventName = &"test"
+
+[node name="UnhandledInputTransition" type="Node" parent="Tester/Statechart/Root/Test"]
+script = ExtResource("4_jp3c4")
+TransitionEvent = 5
+CustomEventName = &"test"
 
 [node name="ProcessReaction" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_njfwh")
-CustomEventName = &""
+CustomEventName = &"test"
 
 [node name="PhysicsProcessReaction" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_njfwh")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"test"
 
 [node name="InputReaction" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_njfwh")
 ReactionEvent = 2
-CustomEventName = &""
+CustomEventName = &"test"
+
+[node name="ShortcutInputReaction" type="Node" parent="Tester/Statechart/Root/Test"]
+script = ExtResource("4_njfwh")
+ReactionEvent = 3
+CustomEventName = &"test"
+
+[node name="UnhandledKeyInputReaction" type="Node" parent="Tester/Statechart/Root/Test"]
+script = ExtResource("4_njfwh")
+ReactionEvent = 4
+CustomEventName = &"test"
 
 [node name="UnhandledInputReaction" type="Node" parent="Tester/Statechart/Root/Test"]
 script = ExtResource("4_njfwh")
-ReactionEvent = 3
-CustomEventName = &""
+ReactionEvent = 5
+CustomEventName = &"test"
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

@@ -12,18 +12,18 @@ public class StateComponent
     protected State ParentState
     {
         get => HostState.ParentState;
-        set { HostState.ParentState = value; }
+        set => HostState.ParentState = value;
     }
     protected List<State> Substates { get => HostState.Substates; }
     protected State LowerState
     {
         get => HostState.LowerState;
-        set { HostState.LowerState = value; }
+        set => HostState.LowerState = value;
     }
     protected State UpperState
     {
         get => HostState.UpperState;
-        set { HostState.UpperState = value; }
+        set => HostState.UpperState = value;
     }
     protected List<Transition> Transitions { get => HostState.Transitions; }
     protected List<Reaction> Reactions { get => HostState.Reactions; }

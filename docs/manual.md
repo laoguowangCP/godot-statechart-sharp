@@ -1,4 +1,4 @@
-# Statechart Sharp per-node manual
+# Statechart Sharp manual
 
 To get full perspective on statechart, you may refer to:
 
@@ -10,8 +10,12 @@ To get full perspective on statechart, you may refer to:
 > This plugin is a stylized implementation of statechart pattern, details may differ from harel statecharts definition. XML extention defined in SCXML is not implemented.
 
 <br/>
+- [Statechart](#statechart)
 
-## Statechart
+
+<br/>
+
+## <img src="./asset/Statechart.svg" height="25px" /> Statechart
 
 The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work properly, add exactly 1 child state node (non-history) as "root state".
 
@@ -37,7 +41,7 @@ Here's several tips you may need when using statechart node:
 
 `int MaxAutoTransitionRound` : Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition.
 
-`enum EventFlagEnum EventFlag` : Event flags to control node loop events (process, input, etc.) , which are all disabled by default.
+`enum EventFlagEnum EventFlag` : Event flags control activity of node loop events (process, input, etc.) . All disabled by default.
 
 ### Method
 
@@ -45,9 +49,9 @@ Here's several tips you may need when using statechart node:
 
 </br>
 
-## State
+## <img src="./asset/State.svg" height="25px" /> State
 
-This node works as "state" in common state machine system, while can be arranged in a tree structure as hierarchical state machine do.
+This node works as "state" in common state machine system. They can be arranged in a tree structure as hierarchical state machine do.
 
 Beware, not all states in the tree are active. Root state is always active. For the rest, their activity are decided by their parent state, according to parent's "state mode".
 
@@ -66,7 +70,7 @@ Beware, not all states in the tree are active. Root state is always active. For 
 - You can switch whether a history state is deep or shallow.
 
   - A shallow history points to parent's substate(s), once active till last exit of parent state. With compound parent, it points to the sibling once active (or parent's initial state, if parent has never been active before). With parallel parent, it points to all the non-history siblings.
-  - A deep history points to leaf state(s) descendant to parent, once active till last exit of parent state. It makes parent state find shallow history recursively onto its descendants.
+  - A deep history points to leaf state(s) descendant to parent, once active till last exit of parent state. It makes parent state looks for shallow history recursively onto its descendants.
 
 With given active states, we can further more express their behaviors. Use signals, or composite with other nodes:
 
@@ -92,9 +96,9 @@ With given active states, we can further more express their behaviors. Use signa
 
 ### Signal
 
-`void Enter(State)` : Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events.
+`void Enter(StatechartDuct)` : Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events.
 
-`void Exit(State)` : Emited when state is exit. Parsed state is used to access delta time and input event when handling node loop events.
+`void Exit(StatechartDuct)` : Emited when state is exit. Parsed state is used to access delta time and input event when handling node loop events.
 
 <br/>
 
