@@ -32,15 +32,15 @@ Download repository, copy `addons/statechart_sharp` to your project folder. Buil
 
 **Step 1** : Build with nodes:
 
-- Add statechart node
+- Add Statechart node.
 
   <img src="./docs/asset/ss_add_statechart.png" alt="ss_add_statechart" style="width:180px;"/>
 
-- Add state nodes under statechart.
+- Add State nodes under Statechart.
 
   <img src="./docs/asset/ss_add_state.png" alt="ss_add_state" style="width:180px;"/>
 
-- Add transition node and reaction node under state.
+- Add Transition node and Reaction node under State.
 
   <img src="./docs/asset/ss_add_transition_&_reaction.png" alt="ss_add_transition" style="width:180px;"/>
 

@@ -71,7 +71,7 @@ script = ExtResource("3_ae3pn")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/A"]
 script = ExtResource("4_ks2lu")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="B" type="Node" parent="Tester/Statechart/Root/Compound"]
@@ -79,20 +79,12 @@ script = ExtResource("3_ae3pn")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/B"]
 script = ExtResource("4_ks2lu")
-ReactionEvent = 4
-CustomEventName = &"test"
-
-[node name="C" type="Node" parent="Tester/Statechart/Root/Compound"]
-script = ExtResource("3_ae3pn")
-
-[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/C"]
-script = ExtResource("4_ks2lu")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound"]
 script = ExtResource("4_ks2lu")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="Parallel" type="Node" parent="Tester/Statechart/Root"]
@@ -104,7 +96,7 @@ script = ExtResource("3_ae3pn")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/A"]
 script = ExtResource("4_ks2lu")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="B" type="Node" parent="Tester/Statechart/Root/Parallel"]
@@ -112,7 +104,12 @@ script = ExtResource("3_ae3pn")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
 script = ExtResource("4_ks2lu")
-ReactionEvent = 4
+ReactionEvent = 6
+CustomEventName = &"test"
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("4_ks2lu")
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="C" type="Node" parent="Tester/Statechart/Root/Parallel"]
@@ -120,12 +117,7 @@ script = ExtResource("3_ae3pn")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/C"]
 script = ExtResource("4_ks2lu")
-ReactionEvent = 4
-CustomEventName = &"test"
-
-[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel"]
-script = ExtResource("4_ks2lu")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

@@ -55,7 +55,7 @@ StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_lyjs6")
-MaxAutoTransitionRound = 0
+MaxAutoTransitionRound = 2
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_ogeke")
@@ -65,7 +65,7 @@ script = ExtResource("3_ogeke")
 
 [node name="->State1" type="Node" parent="Tester/Statechart/Root/Initial" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_amvms")
-TransitionEvent = 4
+TransitionEvent = 6
 CustomEventName = &"test"
 TargetStatesArray = [NodePath("../../State1")]
 
@@ -74,7 +74,7 @@ script = ExtResource("3_ogeke")
 
 [node name="->State2(Auto)" type="Node" parent="Tester/Statechart/Root/State1" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_amvms")
-TransitionEvent = 5
+TransitionEvent = 7
 CustomEventName = &""
 TargetStatesArray = [NodePath("../../State2")]
 
@@ -83,7 +83,7 @@ script = ExtResource("3_ogeke")
 
 [node name="->State1(Auto)" type="Node" parent="Tester/Statechart/Root/State2" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_amvms")
-TransitionEvent = 5
+TransitionEvent = 7
 CustomEventName = &""
 TargetStatesArray = [NodePath("../../State1")]
 

@@ -12,9 +12,8 @@ public partial class StatechartDuct : GodotObject
     public InputEvent ShortcutInput { get; internal set; }
     public InputEvent UnhandledKeyInput { get; internal set; }
     public InputEvent UnhandledInput { get; internal set; }
-
-    public bool IsEnabled { set; internal get; }
-    public StatechartComposition CompositionNode;
+    public bool IsEnabled { internal get; set; }
+    public StatechartComposition CompositionNode { get; internal set; }
 }
 
 } // end of namespace

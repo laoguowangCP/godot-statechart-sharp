@@ -64,25 +64,25 @@ script = ExtResource("3_garlq")
 [node name="State" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_garlq")
 
-[node name="Transition1" type="Node" parent="Tester/Statechart/Root/State"]
+[node name="QueuedTransition" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("5_0vk0g")
-TransitionEvent = 4
-CustomEventName = &"test"
-
-[node name="Reaction1" type="Node" parent="Tester/Statechart/Root/State"]
-script = ExtResource("4_tsvas")
-ReactionEvent = 4
-CustomEventName = &"test"
-
-[node name="Transition2" type="Node" parent="Tester/Statechart/Root/State"]
-script = ExtResource("5_0vk0g")
-TransitionEvent = 4
+TransitionEvent = 6
 CustomEventName = &"test_queue_event"
 
-[node name="Reaction2" type="Node" parent="Tester/Statechart/Root/State"]
+[node name="QueuedReaction" type="Node" parent="Tester/Statechart/Root/State"]
 script = ExtResource("4_tsvas")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test_queue_event"
+
+[node name="Transition" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("5_0vk0g")
+TransitionEvent = 6
+CustomEventName = &"test"
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("4_tsvas")
+ReactionEvent = 6
+CustomEventName = &"test"
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]
-[connection signal="Invoke" from="Tester/Statechart/Root/State/Reaction1" to="Tester" method="TestStatechartQueueEvent"]
+[connection signal="Invoke" from="Tester/Statechart/Root/State/Reaction" to="Tester" method="TestStatechartQueueEvent"]

@@ -12,7 +12,12 @@ To get full perspective on statechart, you may refer to:
 <br/>
 
 - [Statechart](#statechart)
-
+- [State](#state)
+- [Transition](#transition)
+- [Reaction](#reaction)
+- [StatechartComposition](#statechartcomposition)
+- [StatechartDuct](#statechartduct)
+- [StatechartConfig](#statechartconfig)
 
 <br/>
 
@@ -38,15 +43,15 @@ Here's several tips you may need when using statechart node:
 - Do not call same event from a running step, this may cause unintended endless loop.
 - Better not use null event or event with empty string, `Step` won't process. Null event is only used as automatic transition internally.
 
-### Property
+### Properties of Statechart
 
-`int MaxAutoTransitionRound` : Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition.
+**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition.
 
-`enum EventFlagEnum EventFlag` : Event flags control activity of node loop events (process, input, etc.) . All disabled by default.
+**`enum EventFlagEnum EventFlag`** : Event flags control activity of node loop events (process, input, etc.) . All disabled by default.
 
-### Method
+### Methods of Statechart
 
-`void Step(StringName)` : Make statechart run a step with given event.
+**`void Step(StringName)`** : Make statechart run a step with given event.
 
 </br>
 
@@ -79,31 +84,23 @@ With given active states, we can further more express their behaviors. Use signa
 - Transition node is used as a state's child, to how state transit during a step.
 - `Enter`/`Exit` signal is emitted when state is set active/unactive during a transition, used to express actions on state entry/exit.
 
-### Property
+### Properties of State
 
-`enum StateModeEnum StateMode` : Enumeration of state mode.
+**`enum StateModeEnum StateMode`** : Enumeration of state mode.
 
-`bool IsDeepHistory` : Used in history mode only.
+**`bool IsDeepHistory`** : Used in history mode only.
 
-`State InitialState` : The substate that will be choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only.
+**`State InitialState`** : The substate that will be choosed as current state by default. If not assigned, first substate will be initial state (if there's any). Used in compound mode only.
 
-`double Delta` : Recently updated delta time parsed from `_Process(double delta)` .
+### Signals of State
 
-`double PhysicsDelta` : Recently updated delta time parsed from `_PhysicsProcess(double delta)` .
+**`void Enter(StatechartDuct)`** : Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events.
 
-`InputEvent Input` : Recently updated input event parsed from `_Input(InputEvent @event)` .
-
-`InputEvent UnhandledInput` : Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .
-
-### Signal
-
-`void Enter(StatechartDuct)` : Emited when state is entered. Parsed state is used to access delta time and input event when handling node loop events.
-
-`void Exit(StatechartDuct)` : Emited when state is exit. Parsed state is used to access delta time and input event when handling node loop events.
+**`void Exit(StatechartDuct)`** : Emited when state is exit. Parsed state is used to access delta time and input event when handling node loop events.
 
 <br/>
 
-## Transition
+## <img src="./asset/Transition.svg" height="25px" /> Transition
 
 Transition node is used as child node of a non-history state. Parented state is the state to leave, known as "source". As for the state(s) to go for — known as "target(s)". If no target(s) is assigned, it becomes a "targetless transition".
 
@@ -129,35 +126,62 @@ Here's several specification you shall follow:
 
 - Beware that a transition is enabled by default.
 
-### Property
+### Properties of Transition
 
-`double Delta` : Recently updated delta time parsed from `_Process(double delta)` .
+**`TransitionEventNameEnum TransitionEvent`** : 
 
-`double PhysicsDelta` : Recently updated delta time parsed from `_PhysicsProcess(double delta)` .
+**`StringName CustomEventName`** : 
 
-`InputEvent Input` : Recently updated input event parsed from `_Input(InputEvent @event)` .
+**`Array<State> TargetStatesArray`** : 
 
-`InputEvent UnhandledInput` : Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .
+### Signals of Transition
 
-### Signal
+**`void Guard(Transition)`** : Emited when transition is checked.
 
-`void Guard(Transition)` : Emited when transition is checked. Parsed transition is used to access delta time and input event when handling node loop events.
-`void Invoke(Transition)` : Emited when transition is invoked. Parsed transition is used to access delta time and input event when handling node loop events.
+**`void Invoke(Transition)`** : Emited when transition is invoked.
 
 <br/>
 
-## Reaction
+## <img src="./asset/Reaction.svg" height="25px" /> Reaction
 
-### Property
+### Properties of Reaction
 
-`double Delta` : Recently updated delta time parsed from `_Process(double delta)` .
 
-`double PhysicsDelta` : Recently updated delta time parsed from `_PhysicsProcess(double delta)` .
 
-`InputEvent Input` : Recently updated input event parsed from `_Input(InputEvent @event)` .
+### Signals of Reaction
 
-`InputEvent UnhandledInput` : Recently updated input event parsed from `_UnhandledInput(InputEvent @event)` .
+**`void Invoke(StatechartDuct)`** : Emit when reaction is invoked.
 
-### Signal
+<br/>
 
-`void Invoke(Reaction)` : Emited when reaction is invoked. Parsed reaction is used to access delta time and input event when handling node loop events.
+## StatechartComposition
+
+Base node of Statechart, State, Transition and Reaction.
+
+<br/>
+
+## StatechartDuct
+
+Conducting object parsed through signals. Used to access "context" from statechart, like delta time or input, when handling node loop events (process, input, etc.).
+
+Beware, the variants it packs changes insistently. Ideally, you may use them only in connected method scope.
+
+### Properties of StatechartDuct
+
+**`double Delta`** : Recently updated delta time statechart received from `_Process(double delta)` .
+
+**`double PhysicsDelta`** : Recently updated delta time statechart received from `_PhysicsProcess(double delta)` .
+
+**`InputEvent Input`** : Recently updated input event statechart received from `_Input(InputEvent @event)` .
+
+**`InputEvent ShortcutInput`** : Recently updated input event statechart received from `_ShortcutInput(InputEvent @event)` .
+
+**`InputEvent UnhandledKeyInput`** : Recently updated input event statechart received from `_UnhandledKeyInput(InputEvent @event)` .
+
+**`InputEvent UnhandledInput`** : Recently updated input event statechart received from `_UnhandledInput(InputEvent @event)` .
+
+**`bool IsEnabled`** : Whether the pending transition is enabled or not. Used for methods connected to transition's `Guard` signal.
+
+**`StatechartComposition CompositionNode`** : The statechart composition node who emit the signal. Useful when debugging.
+
+## StatechartConfig
