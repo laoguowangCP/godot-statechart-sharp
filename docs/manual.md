@@ -10,6 +10,7 @@ To get full perspective on statechart, you may refer to:
 > This plugin is a stylized implementation of statechart pattern, details may differ from harel statecharts definition. XML extention defined in SCXML is not implemented.
 
 <br/>
+
 - [Statechart](#statechart)
 
 
