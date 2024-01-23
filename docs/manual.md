@@ -21,29 +21,28 @@ To get full perspective on statechart, you may refer to:
 
 <br/>
 
-## <img src="./asset/Statechart.svg" height="25px" /> Statechart
+## Statechart
 
-The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work properly, add exactly 1 child state node (non-history) as "root state".
+The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work, add 1 child state node (non-history) as "root state".
 
-At the very beginning, statechart initializes itself, then root state, then all the nodes descendant to root state. All the composition will be indexed with **"document order"** — the order they showed in an expanded node tree, which is used in most order-considering cases.
+When statechart is ready, it initializes itself, then root state, then nodes descendant to root state. All the composition will be indexed with **"document order"** — the order they showed in an expanded node tree, which is used in most order-considering cases, like entering states or invoking reactions.
 
-Statechart node provides `Step` method, where following things will be done:
+After setup, statechart's main logic runs in `void Step(StringName)`. Statechart calls it on node loop events (process, input, etc.). Or you can call it manually with your custom event. Here following things will be done:
 
-1. Queue event, if statechart is already running a step. Otherwise, statechart will do following tasks with given event.
+1. Get event. If statechart is already running a step, queue event and return.
 2. Select transitions from active states.
 3. Execute selected transitions.
-4. Select and execute auto transitions from active states for several rounds.
+4. Select and execute automatic transitions from active states for several rounds.
 5. Select and execute reactions from active states.
-6. If event queue is not cleared, fetch another event from queue, back to 2.
+6. If event queue is not cleared, get next event, back to 2.
 
-`Step` is the main way we interact with statechart. Node loop events (process, input, etc.) also call `Step` method internally. The only difference is that they use built-in event, defined in `util/StatechartConfig.cs` .
+With a event queue, statechart can store parsed events for latter process. It happens when state/transition/reaction calls another step during a running step. Event like this is called "internal event".
 
-Here's several tips you may need when using statechart node:
-
-- Do not call same event from a running step, this may cause unintended endless loop.
-- Better not use null event or event with empty string, `Step` won't process. Null event is only used as automatic transition internally.
+Internal event and "automatic transitions" are both useful, but they may cause unintended endless loop. 
 
 ### Properties of Statechart
+
+**`int MaxInternalEventCount`** : Max internal event count handled in 1 step. If `<=0` , statechart will ignore any internal event.
 
 **`int MaxAutoTransitionRound`** : Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition.
 
@@ -55,18 +54,18 @@ Here's several tips you may need when using statechart node:
 
 </br>
 
-## <img src="./asset/State.svg" height="25px" /> State
+## State
 
 This node works as "state" in common state machine system. They can be arranged in a tree structure as hierarchical state machine do.
 
-Beware, not all states in the tree are active. Root state is always active. For the rest, their activity are decided by their parent state, according to parent's "state mode".
+Beware, not all states in the tree are active. Root state is always active. For the rest, their activity are decided by their parent state, according to parent's state mode.
 
-`Compound` is the default mode of a state:
+`Compound` is the default state mode:
 
-- If it is active, then exactly 1 substate (non-history) will be active (if there's any), which is called current state.
+- If a compound state is active, then exactly 1 substate (non-history) will be active (if there's any), which is called current state.
 - Initial state is the substate a compound will choose as current state by default. You can assign it in inspector, or the first substate (non-history) will be initial state (if there's any).
 
-`Parallel` is to some extent an opposite mode to compund:
+`Parallel` mode is opposite to compund:
 
 - If it is active, then all substate (non-history) will be active.
 
@@ -100,7 +99,7 @@ With given active states, we can further more express their behaviors. Use signa
 
 <br/>
 
-## <img src="./asset/Transition.svg" height="25px" /> Transition
+## Transition
 
 Transition node is used as child node of a non-history state. Parented state is the state to leave, known as "source". As for the state(s) to go for — known as "target(s)". If no target(s) is assigned, it becomes a "targetless transition".
 
@@ -142,7 +141,7 @@ Here's several specification you shall follow:
 
 <br/>
 
-## <img src="./asset/Reaction.svg" height="25px" /> Reaction
+## Reaction
 
 ### Properties of Reaction
 

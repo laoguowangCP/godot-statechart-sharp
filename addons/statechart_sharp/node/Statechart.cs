@@ -10,9 +10,12 @@ public partial class Statechart : StatechartComposition
 {
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxAutoTransitionRound = 8;
+    [Export(PropertyHint.Range, "0,32,")]
+    protected int MaxInternalEventCount = 8;
     [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
     protected EventFlagEnum EventFlag { get; set; } = 0;
     protected bool IsRunning { get; set; }
+    protected int InternalEventCount;
     internal State RootState { get; set; }
     protected SortedSet<State> ActiveStates { get; set; }
     protected Queue<StringName> QueuedEvents { get; set; }
@@ -26,6 +29,7 @@ public partial class Statechart : StatechartComposition
     public override void _Ready()
     {
         IsRunning = false;
+        InternalEventCount = 0;
 
         ActiveStates = new SortedSet<State>(new StateComparer());
         QueuedEvents = new Queue<StringName>();
@@ -113,13 +117,19 @@ public partial class Statechart : StatechartComposition
             return;
         }
 
-        // Queue transition event
-        QueuedEvents.Enqueue(eventName);
+        // Running, internal event
         if (IsRunning)
         {
+            // Queue transition event
+            if (InternalEventCount < MaxInternalEventCount)
+            {
+                ++InternalEventCount;
+                QueuedEvents.Enqueue(eventName);
+            }
             return;
         }
-        
+
+        // Else is not running
         IsRunning = true;
 
         while (QueuedEvents.Count > 0)
@@ -129,6 +139,7 @@ public partial class Statechart : StatechartComposition
         }
 
         IsRunning = false;
+        InternalEventCount = 0;
     }
 
     /// <summary>
