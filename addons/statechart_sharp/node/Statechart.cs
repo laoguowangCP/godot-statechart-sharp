@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LGWCP.StatechartSharp
 {
@@ -153,6 +154,7 @@ public partial class Statechart : StatechartComposition
             return;
         }
         /*
+        Handle event:
             1. Select transitions
             2. Do transitions
             3. While iter < MAX_AUTO_ROUND:
@@ -160,7 +162,6 @@ public partial class Statechart : StatechartComposition
                 - Do auto-transition
                 - Break if no queued auto-transition
             4. Do reactions
-
         */
         // 1. Select transitions
         RootState.SelectTransitions(EnabledTransitions, eventName);
@@ -182,14 +183,14 @@ public partial class Statechart : StatechartComposition
         }
 
         // 4. Select and do reactions
-        foreach (State s in ActiveStates)
+        foreach (State state in ActiveStates)
         {
-            s.SelectReactions(EnabledReactions, eventName);
+            state.SelectReactions(EnabledReactions, eventName);
         }
 
-        foreach (Reaction a in EnabledReactions)
+        foreach (Reaction react in EnabledReactions)
         {
-            a.ReactionInvoke();
+            react.ReactionInvoke();
         }
 
         EnabledReactions.Clear();
@@ -205,12 +206,12 @@ public partial class Statechart : StatechartComposition
         */
 
         // 1. Deduce and merge exit set
-        foreach (Transition t in EnabledTransitions)
+        foreach (Transition trans in EnabledTransitions)
         {
             // Targetless checks no conflicts, and do no set operations.
-            if (t.IsTargetless)
+            if (trans.IsTargetless)
             {
-                EnabledFilteredTransitions.Add(t);
+                EnabledFilteredTransitions.Add(trans);
                 continue;
             }
 
@@ -222,66 +223,65 @@ public partial class Statechart : StatechartComposition
                     <=> Any state in exit set is descendant to this LCA
             */
 
-            if (ExitSet.Contains(t.SourceState))
+            if (ExitSet.Contains(trans.SourceState))
             {
                 continue;
             }
             else
             {
-                // Exit set has reversed comparer, so reverse lower & upper
-                SortedSet<State> DescendantInExit = ExitSet.GetViewBetween(
-                     t.LcaState.UpperState, t.LcaState.LowerState);
-                if (DescendantInExit.Count > 0)
+                bool IsDescendantInExit = ExitSet.Any<State>(
+                    s => trans.LcaState.IsAncestorOf(s));
+                if (IsDescendantInExit)
                 {
                     continue;
                 }
             }
 
-            EnabledFilteredTransitions.Add(t);
+            EnabledFilteredTransitions.Add(trans);
 
             SortedSet<State> exitStates = ActiveStates.GetViewBetween(
-                t.LcaState.LowerState, t.LcaState.UpperState);
+                trans.LcaState.LowerState, trans.LcaState.UpperState);
             ExitSet.UnionWith(exitStates);
         }
 
         ActiveStates.ExceptWith(ExitSet);
-        foreach (State s in ExitSet)
+        foreach (State state in ExitSet)
         {
-            s.StateExit();
+            state.StateExit();
         }
 
         // 2. Invoke transitions
-        foreach (Transition t in EnabledFilteredTransitions)
+        foreach (Transition trans in EnabledFilteredTransitions)
         {
-            t.TransitionInvoke();
+            trans.TransitionInvoke();
         }
 
         // 3. Deduce and merge enter set
-        foreach (Transition t in EnabledFilteredTransitions)
+        foreach (Transition trans in EnabledFilteredTransitions)
         {
             // If transition is targetless, enter-region is null.
-            if (t.IsTargetless)
+            if (trans.IsTargetless)
             {
                 continue;
             }
 
-            SortedSet<State> enterRegion = t.EnterRegion;
-            SortedSet<State> deducedEnterStates = t.GetDeducedEnterStates();
+            SortedSet<State> enterRegion = trans.EnterRegion;
+            SortedSet<State> deducedEnterStates = trans.GetDeducedEnterStates();
             EnterSet.UnionWith(enterRegion);
             EnterSet.UnionWith(deducedEnterStates);
         }
 
         ActiveStates.UnionWith(EnterSet);
-        foreach (State s in EnterSet)
+        foreach (State state in EnterSet)
         {
-            s.StateEnter();
+            state.StateEnter();
         }
 
         // 4. Clear
         EnabledTransitions.Clear();
+        EnabledFilteredTransitions.Clear();
         ExitSet.Clear();
         EnterSet.Clear();
-        EnabledFilteredTransitions.Clear();
     }
 
     public override void _Process(double delta)

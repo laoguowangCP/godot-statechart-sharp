@@ -26,6 +26,7 @@ public class StateComponent
         set => HostState.UpperState = value;
     }
     protected List<Transition> Transitions { get => HostState.Transitions; }
+    protected List<Transition> TransitionsToRemove { get => HostState.TransitionsToRemove; }
     protected List<Reaction> Reactions { get => HostState.Reactions; }
 
     public StateComponent(State state)

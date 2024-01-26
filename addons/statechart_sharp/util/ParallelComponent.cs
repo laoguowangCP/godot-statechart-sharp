@@ -125,19 +125,19 @@ public class ParallelComponent : StateComponent
 
     internal override void PostSetup()
     {
-        foreach (State s in Substates)
+        foreach (State state in Substates)
         {
-            s.PostSetup();
+            state.PostSetup();
         }
 
-        foreach (Transition t in Transitions)
+        foreach (Transition trans in Transitions)
         {
-            t.PostSetup();
+            trans.PostSetup();
         }
 
-        foreach (Reaction a in Reactions)
+        foreach (Reaction react in Reactions)
         {
-            a.PostSetup();
+            react.PostSetup();
         }
     }
 

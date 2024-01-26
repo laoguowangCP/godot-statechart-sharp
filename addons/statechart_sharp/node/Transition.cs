@@ -164,75 +164,10 @@ public partial class Transition : StatechartComposition
         }
 
         // Check auto transition target
-        /*
         if (IsAuto)
         {
-            State sourceParent = SourceState.ParentState;
-            foreach (State targetState in TargetStates)
-            {
-                bool isDescToParent = false;
-                bool isDescToSource = false;
-                State targetAscendant = targetState.ParentState;
-                while (targetAscendant != null)
-                {
-                    if (targetAscendant == SourceState)
-                    {
-                        isDescToSource = true;
-                    }
-                    if (targetAscendant == sourceParent)
-                    {
-                        isDescToParent = true;
-                        break;
-                    }
-                    targetAscendant = targetAscendant.ParentState;
-                }
-
-                #if DEBUG
-                if (!isDescToParent)
-                {
-                    GD.PushWarning(
-                        GetPath(),
-                        ": target ",
-                        targetState.GetPath(),
-                        " is not descendant to source's parent, this may cause unintended loop transition.");
-                }
-                #endif
-
-                if (sourceParent.StateMode == StateModeEnum.Compound)
-                {
-                    if (isDescToSource || targetState == SourceState)
-                    {
-                        #if DEBUG
-                        GD.PushWarning(
-                            GetPath(),
-                            ": target ",
-                            targetState.GetPath(),
-                            " causes transition invalid. ",
-                            "When source's parent is compound, auto transition's target should not be source state or its descendant, this will most likely cause loop transition.");
-                        #endif
-                        IsValid = false;
-                        break;
-                    }
-                }
-                else if (sourceParent.StateMode == StateModeEnum.Parallel)
-                {
-                    if (isDescToParent || targetState == sourceParent)
-                    {
-                        #if DEBUG
-                        GD.PushWarning(
-                            GetPath(),
-                            ": target ",
-                            targetState.GetPath(),
-                            " causes transition invalid. ",
-                            "When source's parent is parallel, auto transition's target should not be source's parent or its descendant, this will most likely cause loop transition.");
-                        #endif
-                        IsValid = false;
-                        break;
-                    }
-                }
-            }
+            // TODO: set auto transition invalid for certain circumstance
         }
-        */
 
         // Init LCA as SourceState, the first state in srcToRoot
         int reversedLcaIdx = srcToRoot.Count;
@@ -368,14 +303,12 @@ public partial class Transition : StatechartComposition
         {
             return false;
         }
-        else // EventName == eventName
-        {
-            // Transition is enabled on default.
-            Duct.IsEnabled = true;
-            Duct.CompositionNode = this;
-            EmitSignal(SignalName.Guard, Duct);
-            return Duct.IsEnabled;
-        }
+
+        // else EventName == eventName, transition is enabled on default.
+        Duct.IsEnabled = true;
+        Duct.CompositionNode = this;
+        EmitSignal(SignalName.Guard, Duct);
+        return Duct.IsEnabled;
     }
 
     internal void TransitionInvoke()
@@ -426,10 +359,12 @@ public partial class Transition : StatechartComposition
             warnings.Add("No event name for custom event.");
         }
 
-        if (TransitionEvent == TransitionEventNameEnum.Auto
-            && (TargetStatesArray == null || TargetStatesArray.Count == 0))
+        if (TransitionEvent == TransitionEventNameEnum.Auto)
         {
-            warnings.Add("Target is required for auto transition.");
+            if (TargetStatesArray == null || TargetStatesArray.Count == 0)
+            {
+                warnings.Add("Target is required for auto transition.");
+            }
         }
 
         return warnings.ToArray();
