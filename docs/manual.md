@@ -38,13 +38,11 @@ After setup, statechart's main logic runs in `void Step(StringName)`. Statechart
 
 With a event queue, statechart can store parsed events for latter process. It happens when state/transition/reaction calls another step during a running step. Event like this is called "internal event".
 
-Internal event and "automatic transitions" are both useful, but they may cause unintended endless loop. 
-
 ### Properties of Statechart
 
 **`int MaxInternalEventCount`** : Max internal event count handled in 1 step. If `<=0` , statechart will ignore any internal event.
 
-**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting auto transitions in a single step. If `<=0` , statechart will ignore any auto transition.
+**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting automatic transitions in 1 step. If `<=0` , statechart will ignore any automatic transition.
 
 **`enum EventFlagEnum EventFlag`** : Event flags control activity of node loop events (process, input, etc.) . All disabled by default.
 

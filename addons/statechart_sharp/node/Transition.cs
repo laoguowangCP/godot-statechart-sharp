@@ -163,12 +163,6 @@ public partial class Transition : StatechartComposition
             iterState = iterState.ParentState;
         }
 
-        // Check auto transition target
-        if (IsAuto)
-        {
-            // TODO: set auto transition invalid for certain circumstance
-        }
-
         // Init LCA as SourceState, the first state in srcToRoot
         int reversedLcaIdx = srcToRoot.Count;
         List<State> tgtToRoot = new List<State>();

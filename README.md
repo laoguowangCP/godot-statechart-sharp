@@ -48,7 +48,7 @@ Download repository, copy `addons/statechart_sharp` to your project folder. Buil
 
 **Step 3** : Build and run.
 
-You can find example scenes in `./statechart_sharp_example` folder. Refer to [per-node manual](./docs/manual.md) to see what these nodes are and how they work together.
+You can find example scenes in `./statechart_sharp_example` folder. Refer to [manual](./docs/manual.md) to see what these nodes are and how they work together.
 
 ## Feature
 

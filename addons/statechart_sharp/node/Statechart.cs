@@ -10,13 +10,13 @@ namespace LGWCP.StatechartSharp
 public partial class Statechart : StatechartComposition
 {
     [Export(PropertyHint.Range, "0,32,")]
-    protected int MaxAutoTransitionRound = 8;
-    [Export(PropertyHint.Range, "0,32,")]
     protected int MaxInternalEventCount = 8;
+    [Export(PropertyHint.Range, "0,32,")]
+    protected int MaxAutoTransitionRound = 8;
     [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
     protected EventFlagEnum EventFlag { get; set; } = 0;
     protected bool IsRunning { get; set; }
-    protected int InternalEventCount;
+    protected int EventCount;
     internal State RootState { get; set; }
     protected SortedSet<State> ActiveStates { get; set; }
     protected Queue<StringName> QueuedEvents { get; set; }
@@ -30,7 +30,7 @@ public partial class Statechart : StatechartComposition
     public override void _Ready()
     {
         IsRunning = false;
-        InternalEventCount = 0;
+        EventCount = 0;
 
         ActiveStates = new SortedSet<State>(new StateComparer());
         QueuedEvents = new Queue<StringName>();
@@ -106,31 +106,32 @@ public partial class Statechart : StatechartComposition
 
     public void Step(StringName eventName)
     {
-        #if TOOLS
-        if (Engine.IsEditorHint())
-        {
-            return;
-        }
-        #endif
-
         if (eventName == null || eventName == "")
         {
             return;
         }
 
-        // Running, internal event
+        /*
+        If is running
+            if <= max round
+                queue event
+            return
+        Else not running:
+            queue event
+        */
         if (IsRunning)
         {
-            // Queue transition event
-            if (InternalEventCount < MaxInternalEventCount)
+            if (EventCount <= MaxInternalEventCount)
             {
-                ++InternalEventCount;
+                ++EventCount;
                 QueuedEvents.Enqueue(eventName);
             }
             return;
         }
 
         // Else is not running
+        ++EventCount;
+        QueuedEvents.Enqueue(eventName);
         IsRunning = true;
 
         while (QueuedEvents.Count > 0)
@@ -140,7 +141,7 @@ public partial class Statechart : StatechartComposition
         }
 
         IsRunning = false;
-        InternalEventCount = 0;
+        EventCount = 0;
     }
 
     /// <summary>
@@ -286,36 +287,78 @@ public partial class Statechart : StatechartComposition
 
     public override void _Process(double delta)
     {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        #endif
+
         Duct.Delta = delta;
         Step(StatechartConfig.EVENT_PROCESS);
     }
 
     public override void _PhysicsProcess(double delta)
     {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        #endif
+        
         Duct.PhysicsDelta = delta;
         Step(StatechartConfig.EVENT_PHYSICS_PROCESS);
     }
 
     public override void _Input(InputEvent @event)
     {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        #endif
+        
         Duct.Input = @event;
         Step(StatechartConfig.EVENT_INPUT);
     }
 
     public override void _ShortcutInput(InputEvent @event)
     {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        #endif
+        
         Duct.ShortcutInput = @event;
         Step(StatechartConfig.EVENT_SHORTCUT_INPUT);
     }
 
     public override void _UnhandledKeyInput(InputEvent @event)
     {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        #endif
+        
         Duct.UnhandledKeyInput = @event;
         Step(StatechartConfig.EVENT_UNHANDLED_KEY_INPUT);
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        #if TOOLS
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+        #endif
+        
         Duct.UnhandledInput = @event;
         Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
     }

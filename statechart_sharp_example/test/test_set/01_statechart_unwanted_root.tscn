@@ -36,15 +36,27 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[b]A statechart with unwanted child[/b]
+text = "[font_size=20][center][b]Statechart with unwanted child[/b][/center][/font_size]
 
-[ul]Statechart needs exactly 1 root state.[/ul]
-[ul]If there's multiple child state, first one will be root state.[/ul]
-[ul]Other child states appended to  statechart will be neglected.[/ul]
-[ul]To append more states, you may add them descendant to root state.[/ul]"
+Statechart needs exactly 1 root state (non-history) as child node.
+
+[ul]
+If there's multiple child state, first one (non-history) will be selected as root state.
+Other child states appended to  statechart will be neglected.
+To append more states, you may add them descendant to root state.
+[/ul]
+
+By the way, you can see other compositions pushes warning. They do not want a statechart as parent (precisely history state, transition and reaction want non-history state as parent)."
 threaded = true
 
-[node name="Button" type="Button" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Button" type="Button" parent="MarginContainer"]
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -86,4 +98,4 @@ script = ExtResource("4_1oedl")
 ReactionEvent = 4
 CustomEventName = &"test"
 
-[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]
+[connection signal="pressed" from="MarginContainer/Button" to="Tester" method="OnTestButtonPressed"]

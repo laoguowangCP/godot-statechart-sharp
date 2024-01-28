@@ -1,0 +1,96 @@
+[gd_scene load_steps=5 format=3 uid="uid://djw84jbia72jd"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_ahl8t"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_v53ua"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_hfku2"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="5_x0iqo"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Statechart max internal event[/b][/center][/font_size]
+
+Statechart can store parsed events for latter process. It happens when state/transition/reaction calls another step during a running step. Event like this is called \"internal event\".
+
+Normally statechart handles an internal event, then another. But it can be the case you called same event during a step, which makes an endless event loop. Or simply you just called to much internal event. Property \"MaxInternalEventCount\" makes sure that there won't be too much internal event during 1 step.
+
+Also, you can set this property <=0 . This makes statechart ignores any internal event.
+
+Press test to see what will happen:
+
+[ol]
+Statechart can queue event if \"Step\" is called when already running one.
+In this test, Reaction1 steps statechart with event \"test_queue_event\" during \"test\" step.
+Loop goes untill it reaches MaxInternalEventCount.
+[/ol]
+"
+threaded = true
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Button" type="Button" parent="MarginContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_ahl8t")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_v53ua")
+MaxInternalEventCount = 4
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_hfku2")
+
+[node name="State" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_hfku2")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("5_x0iqo")
+ReactionEvent = 6
+CustomEventName = &"test"
+
+[node name="QueuedReaction" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("5_x0iqo")
+ReactionEvent = 6
+CustomEventName = &"test_queue_event"
+
+[connection signal="pressed" from="MarginContainer/Button" to="Tester" method="OnTestButtonPressed"]
+[connection signal="Invoke" from="Tester/Statechart/Root/State/Reaction" to="Tester" method="TestStatechartQueueEvent"]
+[connection signal="Invoke" from="Tester/Statechart/Root/State/QueuedReaction" to="Tester" method="TestStatechartQueueEvent"]
