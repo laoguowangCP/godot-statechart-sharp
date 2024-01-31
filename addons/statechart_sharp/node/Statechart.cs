@@ -402,4 +402,4 @@ public partial class Statechart : StatechartComposition
     #endif
 }
 
-} // end of namespace
+} // End of namespace

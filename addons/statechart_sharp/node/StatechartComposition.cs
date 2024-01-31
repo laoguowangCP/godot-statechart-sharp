@@ -32,4 +32,4 @@ public partial class StatechartComposition : Node
     } 
 }
 
-} // end of namespace
+} // End of namespace

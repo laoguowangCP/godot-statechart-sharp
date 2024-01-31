@@ -122,4 +122,4 @@ public partial class Reaction : StatechartComposition
     #endif
 }
 
-} // end of namespace
+} // End of namespace

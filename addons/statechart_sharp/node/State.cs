@@ -173,4 +173,4 @@ public partial class State : StatechartComposition
     #endif
 }
 
-} // end of namespace
+} // End of namespace
