@@ -1,27 +1,35 @@
 using System;
 using Godot;
-
 namespace LGWCP.Util
 {
 
 public class MathUtil
 {
+    /// <summary>
+    /// Smooth value, using spring damper.
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="currentVel">Change rate of current</param>
+    /// <param name="target"></param>
+    /// <param name="targetVel">Change rate of target</param>
+    /// <param name="deltaTime"></param>
+    /// <param name="smoothTime">Timescale of smoothing</param>
+    /// <param name="dampRatio"></param>
+    /// <returns></returns>
     public static float SmoothDamp(
-        float current,
+        ref float current,
+        ref float currentVel,
         float target,
-        ref float velocity,
+        float targetVel,
+        float deltaTime,
         float smoothTime,
-        float maxSpeed,
-        float deltaTime
+        float dampRatio
     )
     {
+        /*
         float omega = 2.0f / smoothTime;
         float x = omega * deltaTime;
-        float exp = 1.0f / (
-            1.0f
-            + x
-            + 0.48f * x * x
-            + 0.235f * x * x * x);
+        float exp = InvExp3(x);
         
         float change = current - target;
         float maxChange = maxSpeed * smoothTime;
@@ -39,6 +47,20 @@ public class MathUtil
         }
 
         return result;
+        */
+    }
+
+    /// <summary>
+    /// Fast approximation of e^(-X) calculation.
+    /// </summary>
+    public static float InvExp3(float X)
+    {
+        float X2 = X * X;
+        return 1 / (
+            1.0f
+            + 1.00746054f * X
+            + 0.45053901f * X2
+            + 0.25724632f * X2 * X);
     }
 }
 
