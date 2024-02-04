@@ -68,8 +68,11 @@ public partial class Statechart : StatechartComposition
         {
             if (child is State rootState)
             {
-                RootState = rootState;
-                break;
+                if (!rootState.IsHistory)
+                {
+                    RootState = rootState;
+                    break;
+                }
             }
         }
         
