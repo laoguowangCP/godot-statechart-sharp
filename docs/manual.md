@@ -27,16 +27,24 @@ The control node of whole statechart. You can simply take it as "state machine" 
 
 When statechart is ready, it initializes itself, then root state, then nodes descendant to root state. All the composition will be indexed with **"document order"** — the order they showed in an expanded node tree, which is used in most order-considering cases, like entering states or invoking reactions.
 
-After setup, statechart's main logic runs in `void Step(StringName)`. Statechart calls it on node loop events (process, input, etc.). Or you can call it manually with your custom event. Here following things will be done:
+After setup, statechart's main logic runs in `void Step(StringName)`, where parameter is the given "event". Here following things will be done:
 
-1. Get event. If statechart is already running a step, queue event and return.
-2. Select transitions from active states.
+1. Queue event, if statechart is already running a step. Otherwise, do following tasks with the given event.
+2. Select transitions (with given event) from active states.
 3. Execute selected transitions.
-4. Select and execute automatic transitions from active states for several rounds.
-5. Select and execute reactions from active states.
-6. If event queue is not cleared, get next event, back to 2.
+4. Select and execute automatic transitions from active states, for several rounds.
+5. Select reactions (with given event) from active states.
+6. Execute selected reactions.
+7. If event queue is not cleared, get next event, back to 2.
 
-With a event queue, statechart can store parsed events for latter process. It happens when state/transition/reaction calls another step during a running step. Event like this is called "internal event".
+So as you can see, statechart is based on events. It involves 2 situation:
+
+- Statechart steps builtin events, triggered by node loop events (process, input, etc.).
+- Name your custom event. Step it manually.
+
+With an event queue, statechart can store parsed events for latter process. It happens when state/transition/reaction steps another event during a running step. Event like this is called "internal event".
+
+Normally, transition are selected if event matches, but there's an exception. "Automatic transitions", also known as eventless transitions, are handled whenever a step is called. This will go for several rounds, until there's no more automatic transition to be executed.
 
 ### Properties of Statechart
 
@@ -54,22 +62,22 @@ With a event queue, statechart can store parsed events for latter process. It ha
 
 ## State
 
-This node works as "state" in common state machine system. They can be arranged in a tree structure as hierarchical state machine do.
+This node works as "state" in common state machine system.
 
-Beware, not all states in the tree are active. Root state is always active. For the rest, their activity are decided by their parent state, according to parent's state mode.
+States can be arranged in a tree structure as hierarchical state machine do. Likely, not all states in the tree are active. Root state is always active. But for the rest, their activity are decided by their parent state, according to parent's state mode.
 
-`Compound` is the default state mode:
+`Compound`: the default mode.
 
 - If a compound state is active, then exactly 1 substate (non-history) will be active (if there's any), which is called current state.
 - Initial state is the substate a compound will choose as current state by default. You can assign it in inspector, or the first substate (non-history) will be initial state (if there's any).
 
-`Parallel` mode is opposite to compund:
+`Parallel`:
 
 - If it is active, then all substate (non-history) will be active.
 
-`History` is a special mode. Usually history state is treated as "pseudo state" — a reference or a pointer to other state(s), only used as a transition's target.
+`History`: with this mode, state represents the history "active status" of parent's descendant states.
 
-- Never active.
+- Never active. History state is only used as a transition's target.
 - You can switch whether a history state is deep or shallow.
 
   - A shallow history points to parent's substate(s), once active till last exit of parent state. With compound parent, it points to the sibling once active (or parent's initial state, if parent has never been active before). With parallel parent, it points to all the non-history siblings.

@@ -24,14 +24,13 @@ public enum TransitionEventNameEnum : int
     ShortcutInput,
     UnhandledKeyInput,
     UnhandledInput,
+    Custom,
+    Auto
 
     // Extend transition event-set here:
     /*
         MY_EVENT,
     */
-
-    Custom,
-    Auto
 }
 
 public enum ReactionEventNameEnum : int
@@ -42,13 +41,13 @@ public enum ReactionEventNameEnum : int
     ShortcutInput,
     UnhandledKeyInput,
     UnhandledInput,
+    Custom
 
     // Extend action event-set here:
     /*
         MY_EVENT,
     */
 
-    Custom
 }
 
 public partial class StatechartConfig : Node
@@ -78,13 +77,13 @@ public partial class StatechartConfig : Node
         TransitionEventNameEnum.ShortcutInput => "_shortcut_input",
         TransitionEventNameEnum.UnhandledKeyInput => "_unhandled_key_input",
         TransitionEventNameEnum.UnhandledInput => "_unhandled_input",
+        TransitionEventNameEnum.Custom => customEventName,
 
         // Extend transition event-set here:
         /*
             EventNameEnum.MY_EVENT => "my_event",
         */
         
-        TransitionEventNameEnum.Custom => customEventName,
         _ => null
     };
 
@@ -96,13 +95,13 @@ public partial class StatechartConfig : Node
         ReactionEventNameEnum.ShortcutInput => "_shortcut_input",
         ReactionEventNameEnum.UnhandledKeyInput => "_unhandled_key_input",
         ReactionEventNameEnum.UnhandledInput => "_unhandled_input",
+        ReactionEventNameEnum.Custom => customEventName,
 
         // Extend action event-set here:
         /*
             EventNameEnum.MY_EVENT => "my_event",
         */
         
-        ReactionEventNameEnum.Custom => customEventName,
         _ => null
     };
 }
