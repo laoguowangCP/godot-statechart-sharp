@@ -114,6 +114,10 @@ public class ParallelComponent : StateComponent
         // No history substate in region
         foreach (State substate in Substates)
         {
+            if (substate.IsHistory)
+            {
+                continue;
+            }
             // Need check && substate in region  => still need check
             bool stillNeedCheck =
                 needCheckContain && enterRegion.Contains(substate);
