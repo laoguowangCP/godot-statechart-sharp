@@ -185,7 +185,7 @@ Beware, the variants it packs changes insistently. Ideally, you may use them onl
 
 **`InputEvent UnhandledInput`** : Recently updated input event statechart received from `_UnhandledInput(InputEvent @event)` .
 
-**`bool IsEnabled`** : Whether the pending transition is enabled or not. Used for methods connected to transition's `Guard` signal.
+**`bool IsEnabled`** : Status of the pending transition. Used in transition's `Guard` signal.
 
 **`StatechartComposition CompositionNode`** : The statechart composition node who emit the signal. Useful when debugging.
 
