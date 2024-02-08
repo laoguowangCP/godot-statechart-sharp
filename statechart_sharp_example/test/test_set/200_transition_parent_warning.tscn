@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://d3e2jbi1gfvnf"]
+[gd_scene load_steps=4 format=3 uid="uid://clh8xd7t3ukya"]
 
-[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_wmpic"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_ulk17"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_te30t"]
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_t17in"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_2pkpw"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_eoftm"]
 
 [node name="BoxContainer" type="VBoxContainer"]
 custom_minimum_size = Vector2(600, 500)
@@ -34,14 +34,15 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[b]State warns about unexpected parent node[/b]
+text = "[font_size=20][center][b]Transition parent warning[/b][/center][/font_size]
 
-Nothing really happens, but state node should update configuration warning in scene editor.
+Nothing really happens in this test, but transition node should update configuration warning in scene editor.
 
-[ul]State should be child to statechart or non-history state.[/ul]
-[ul]History state should be child to a non-history state.[/ul]
-[ul]History state should not have child.[/ul]"
-threaded = true
+[ul]
+Transition should be child to non-history state.
+Transition should not have a child.
+[/ul]
+"
 
 [node name="Button" type="Button" parent="."]
 custom_minimum_size = Vector2(150, 50)
@@ -51,18 +52,18 @@ text = "Test
 "
 
 [node name="Tester" type="Node" parent="."]
-script = ExtResource("1_wmpic")
+script = ExtResource("1_t17in")
 StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
-script = ExtResource("2_ulk17")
+script = ExtResource("2_2pkpw")
 
-[node name="HistoryState" type="Node" parent="Tester/Statechart"]
-script = ExtResource("3_te30t")
-StateMode = 2
+[node name="Transition" type="Node" parent="Tester/Statechart"]
+script = ExtResource("4_eoftm")
+CustomEventName = &""
 
-[node name="State" type="Node" parent="Tester/Statechart/HistoryState"]
-script = ExtResource("3_te30t")
-StateMode = 1
+[node name="Transition" type="Node" parent="Tester/Statechart/Transition"]
+script = ExtResource("4_eoftm")
+CustomEventName = &""
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

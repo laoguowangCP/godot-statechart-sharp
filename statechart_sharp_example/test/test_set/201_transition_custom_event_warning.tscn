@@ -1,0 +1,74 @@
+[gd_scene load_steps=5 format=3 uid="uid://cxvh6e6cd4ey7"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_lv8x5"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_4uj6l"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_ddmv8"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="3_wd7at"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Custom event warning[/b][/center][/font_size]
+
+Nothing really happens in this test, but transition node should update configuration warning in scene editor.
+
+[ul]
+If \"Custom\" is selected as transition event, non-null custom event name should be assigned.
+[/ul]
+
+By the way, it is not recommended to assign an event name like \"  \" (just blanks), it can be confusing.
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_lv8x5")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_4uj6l")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_ddmv8")
+
+[node name="State" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ddmv8")
+
+[node name="Transition" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("3_wd7at")
+TransitionEvent = 6
+CustomEventName = &""
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

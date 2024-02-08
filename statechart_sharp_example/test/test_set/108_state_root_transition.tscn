@@ -1,0 +1,70 @@
+[gd_scene load_steps=5 format=3 uid="uid://baejea5e30pra"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_c3ga0"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_ncaye"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_jep7v"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_0jm7g"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Root state should not have a transition[/b][/center][/font_size]
+
+Nothing really happens in this test, but state node should update configuration warning in scene editor.
+
+Root state should not have transition. Transitions that child to root state will be ignored.
+
+Actually, it is the rules of transition make it impossible to handle root's transition. When deducing enter/exit states, \"least common anscestor\" (LCA) of target(s) and source need to be found. It should be at least the parent of the source state, as for the root state, null. This will confuse the transition filter progress. Also, \"making a root state transit\" doesn't stand semantically.
+
+"
+threaded = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_c3ga0")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_ncaye")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_jep7v")
+
+[node name="Transition" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("4_0jm7g")
+CustomEventName = &""
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

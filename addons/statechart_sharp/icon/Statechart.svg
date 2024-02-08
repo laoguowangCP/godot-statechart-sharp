@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="true"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="21.447795"
-     inkscape:cx="14.943261"
-     inkscape:cy="15.875758"
+     inkscape:zoom="21.664981"
+     inkscape:cx="18.509132"
+     inkscape:cy="17.424432"
      inkscape:window-width="2560"
      inkscape:window-height="1334"
      inkscape:window-x="-11"
@@ -39,25 +39,38 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:none;fill-opacity:1;stroke:#7dba7c;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
-       id="rect7"
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.58749998;stroke-dasharray:none;stroke-opacity:0.33000001"
+       id="rect5"
+       width="3.1749966"
+       height="1.1906216"
+       x="-6.4822965"
+       y="6.4822931"
+       ry="0.26458329"
+       rx="0.26458332"
+       transform="rotate(-90)"
+       inkscape:label="outline3" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.58749998;stroke-dasharray:none;stroke-opacity:0.33000001"
+       id="rect4"
        width="3.70417"
        height="1.1906216"
        x="-6.482295"
        y="3.7041681"
        ry="0.26458329"
        rx="0.26458332"
-       transform="rotate(-90)" />
+       transform="rotate(-90)"
+       inkscape:label="outline2" />
     <rect
-       style="fill:none;fill-opacity:1;stroke:#decdad;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
-       id="rect2"
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.58749998;stroke-dasharray:none;stroke-opacity:0.33000001"
+       id="rect1"
        width="4.2333364"
        height="1.0583301"
        x="-6.482295"
        y="1.0583349"
        ry="0.26458329"
        rx="0.26458329"
-       transform="rotate(-90)" />
+       transform="rotate(-90)"
+       inkscape:label="outline1" />
     <rect
        style="fill:none;fill-opacity:1;stroke:#d287ac;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
        id="rect3"
@@ -67,6 +80,29 @@
        y="6.4822931"
        ry="0.26458329"
        rx="0.26458332"
-       transform="rotate(-90)" />
+       transform="rotate(-90)"
+       inkscape:label="rect3" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#7dba7c;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
+       id="rect7"
+       width="3.70417"
+       height="1.1906216"
+       x="-6.482295"
+       y="3.7041681"
+       ry="0.26458329"
+       rx="0.26458332"
+       transform="rotate(-90)"
+       inkscape:label="rect2" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#decdad;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2"
+       width="4.2333364"
+       height="1.0583301"
+       x="-6.482295"
+       y="1.0583349"
+       ry="0.26458329"
+       rx="0.26458329"
+       transform="rotate(-90)"
+       inkscape:label="rect1" />
   </g>
 </svg>

@@ -41,15 +41,6 @@ public class StateComponent
         {
             ParentState = parent as State;
         }
-
-        #if DEBUG
-        if (ParentState == null && HostState != HostStatechart.RootState)
-        {
-            GD.PushWarning(
-                HostState.GetPath(),
-                ": non-root state should have parent-state.");
-        }
-        #endif
     }
 
     internal virtual void PostSetup() {}
@@ -78,16 +69,31 @@ public class StateComponent
     {
         // Check parent
         bool isParentWarning = true;
+        bool isRootState = false;
         Node parent = HostState.GetParent<Node>();
         if (parent != null)
         {
             if (parent is Statechart)
             {
                 isParentWarning = false;
+                isRootState = true;
             }
             else if (parent is State state)
             {
                 isParentWarning = state.IsHistory;
+            }
+        }
+
+        // Root state should not have transition
+        if (isRootState)
+        {
+            foreach (Node child in HostState.GetChildren())
+            {
+                if (child is Transition trans)
+                {
+                    warnings.Add("Root state should not have transition");
+                    break;
+                }
             }
         }
 

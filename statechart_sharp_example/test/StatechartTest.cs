@@ -6,6 +6,8 @@ public partial class StatechartTest : Node
 	[Export] protected StringName StepName;
 	[Export] protected Statechart TestStatechart;
 
+	protected int TestCnt = 1;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -51,35 +53,35 @@ public partial class StatechartTest : Node
 	public void OnTestButtonPressed()
 	{
 		// GD.Print("[", GetParent<Node>().Name, "]");
-		GD.Print("-------- Test step start --------");
+		GD.Print(">> Test Start: step ", TestCnt);
 		TestStatechart?.Step(StepName);
-		GD.Print("-------- Test step finish --------");
-		GD.Print();
+		GD.Print(">> Finish\n");
+		++TestCnt;
 	}
 
 	public void OnTransitionGuard(StatechartDuct duct)
 	{
-		PrintDelegateInfo(duct, "Guard");
+		PrintDelegateInfo(duct, "(Guard)");
 	}
 
 	public void OnTransitionInvoke(StatechartDuct duct)
 	{
-		PrintDelegateInfo(duct, "Invoke");
+		PrintDelegateInfo(duct, "(Invoke)");
 	}
 
 	public void OnActionInvoke(StatechartDuct duct)
 	{
-		PrintDelegateInfo(duct, "Invoke");
+		PrintDelegateInfo(duct, "(Invoke)");
 	}
 
 	public void OnStateEnter(StatechartDuct duct)
 	{
-		PrintDelegateInfo(duct, "Enter");
+		PrintDelegateInfo(duct, "(Enter)");
 	}
 
 	public void OnStateExit(StatechartDuct duct)
 	{
-		PrintDelegateInfo(duct, "Exit");
+		PrintDelegateInfo(duct, "(Exit)");
 	}
 
 	protected void PrintDelegateInfo(StatechartDuct duct, string delegateName)
@@ -91,7 +93,7 @@ public partial class StatechartTest : Node
 		{
 			indentStr += "— "; // "└─"
 		}
-		GD.Print(indentStr, delegateName, ": ", path);
+		GD.Print(indentStr, delegateName, " ", path);
 	}
 
 	protected void TestStatechartQueueEvent(StatechartDuct duct)

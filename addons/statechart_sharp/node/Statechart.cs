@@ -93,9 +93,9 @@ public partial class Statechart : StatechartComposition
         }
 
         // Enter active-state
-        foreach (State s in ActiveStates)
+        foreach (State state in ActiveStates)
         {
-            s.StateEnter();
+            state.StateEnter();
         }
 
         // Set node process according to flags
@@ -135,6 +135,7 @@ public partial class Statechart : StatechartComposition
         // Else is not running
         ++EventCount;
         QueuedEvents.Enqueue(eventName);
+        
         IsRunning = true;
 
         while (QueuedEvents.Count > 0)
@@ -223,7 +224,7 @@ public partial class Statechart : StatechartComposition
             Check confliction
                 1. If source is in exit set (descendant to other LCA) already.
                 2. Else, if any other source descendant to this LCA
-                    <=> Any other source's most anscetor state is also descendant to this LCA (or it is case 1)
+                    <=> Any other source's most anscetor state in set is also descendant to this LCA (or it is case 1)
                     <=> Any state in exit set is descendant to this LCA
             */
 

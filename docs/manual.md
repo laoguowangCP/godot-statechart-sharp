@@ -48,9 +48,9 @@ Normally, transition are selected if event matches, but there's an exception. "A
 
 ### Properties of Statechart
 
-**`int MaxInternalEventCount`** : Max internal event count handled in 1 step. If `<=0` , statechart will ignore any internal event.
+**`int MaxInternalEventCount`** : Max internal event count handled in 1 step. If <=0 , statechart will ignore any internal event.
 
-**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting automatic transitions in 1 step. If `<=0` , statechart will ignore any automatic transition.
+**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting automatic transitions in 1 step. If <=0 , statechart will ignore any automatic transition.
 
 **`enum EventFlagEnum EventFlag`** : Event flags control activity of node loop events (process, input, etc.) . All disabled by default.
 
@@ -107,7 +107,53 @@ With given active states, we can further more express their behaviors. Use signa
 
 ## Transition
 
-Transition node is used as child node of a non-history state. Parented state is the state to leave, known as "source". As for the state(s) to go for — known as "target(s)". If no target(s) is assigned, it becomes a "targetless transition".
+Transition node is used as child node of a non-history state, to represent the transition from one state to another/others.
+
+First of all, transition has event. It is used to response to the statechart's step event. You can choose between builtin node loop events and custom event. Additionally, it has an "Auto" event — a null event, which makes it an automatic transition.
+
+From macro scope, transition is involed in 3 stages:
+
+1. Transition is initialized as statechart's composition. Here transition test whether it is valid, and deduce **LCA**, **enter region** and **enter region's edge** from targets.
+2. During a statechart's step, transitions are selected and executed from active states with given event.
+3. During a statechart's step, automatic transitions are selected and executed for several rounds.
+
+### Initialization
+
+For a transition node, its parented state is called "source state", the state we transit from. Correspondingly, there's "target state(s)", the state we transit to.
+
+Transition in statechart can be simple as common state machine, or complex, as transition may have multiple targets and could happen across hierarchy level. But after all, we just need to translate target(s) and source to the actual states to enter/exit.
+
+First of all, we find "least common anscetor (LCA)" of target(s) and source. It is the state with no descendant can be anscestor to all of the target(s) and source. With the LCA found, states to enter/exit can be deduced by following rules:
+
+- All active states descendant to LCA should be exit.
+- For states to be entered, we pick them from descendants of the LCA:
+
+  1. Target(s) are picked, as well as their anscestors, as long as there's no confliction.
+  2. Supplement. Supplementary descendants are picked according to the mode of already picked state:
+
+      - Picked state is not history. For compound with no substate picked, pick its initial state. For parallel, pick its unpicked non-hisotry substates. Do this recursively.
+      - Picked state is shallow history. Substitute history with sibling state(s) once active. Then supplement this/these sibling(s) as non-history state.
+      - Picked state is deep history. Substitute history with all descendants of parent state once active.
+
+- Targetless exception. If transition is assigned with no target, it becomes a "targetless transition". No state(s) will be entered or exit.
+
+Conflict happens when 2 targets descendant to different substate of a compound state. We'll dispose the latter target, by the order they assigned in target array on inspector.
+
+According to the rules, states to exit depend on status of active states. Also transition can not figure out full collection of states to enter, since we may handle history states. Instead, transition produces following results:
+
+- LCA
+- Enter region: a set of non-history states that is determined to be entered.
+- Enter region edge: a set of targeted history states.
+
+One more thing, cases are that the transition will be set invalid:
+
+- Event type is "Custom", but no event name assigned, since that null event is used by automatic transition.
+- Event type is "Auto", while transition is targetless. This will cause endless loop during automatic transitions because source state keeps active whenever this transition invokes.
+- Event type is "Auto", while enter region contains source state. This will cause endless loop during automatic transitions because source state keeps active whenever this transition invokes.
+
+### Select and execute
+
+### Automatic transitions
 
 As mentioned, when statechart runs a step, firt it needs to select transitions from active states. To do this, active states are queried recursively. With a given event, a state first passes recursion onto its direct child (current state of a compound, or all non-history substate of a parallel), then deals with the returned case:
 

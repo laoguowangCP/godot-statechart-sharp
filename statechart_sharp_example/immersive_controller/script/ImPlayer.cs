@@ -1,9 +1,8 @@
 using Godot;
 using System;
-using LGWCP.Util;
 using LGWCP.StatechartSharp;
 
-public partial class IMController : CharacterBody3D
+public partial class ImPlayer : CharacterBody3D
 {
 	public const float Speed = 5.0f;
 	public const float JumpVelocity = 4.5f;
@@ -42,7 +41,7 @@ public partial class IMController : CharacterBody3D
 		MoveAndSlide();
 	}
 
-	public void R_MoveAndSlide(StatechartDuct duct)
+	public void RI_MoveAndSlide(StatechartDuct duct)
 	{
 		MoveAndSlide();
 	}

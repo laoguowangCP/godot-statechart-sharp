@@ -1,0 +1,86 @@
+[gd_scene load_steps=6 format=3 uid="uid://d3e2jbi1gfvnf"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_anaq0"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_dq5oq"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_cluu8"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_7h1vb"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="5_v0mvo"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]State parent warning[/b][/center][/font_size]
+
+Nothing really happens in this test, but state node should update configuration warning in scene editor.
+
+[ul]
+State should be child to statechart or non-history state.
+History state should be child to a non-history state.
+History state should not have child.
+[/ul]"
+threaded = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_anaq0")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_dq5oq")
+
+[node name="HistoryState" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_cluu8")
+StateMode = 2
+
+[node name="State" type="Node" parent="Tester/Statechart/HistoryState"]
+script = ExtResource("3_cluu8")
+StateMode = 1
+
+[node name="Transition" type="Node" parent="Tester/Statechart/HistoryState/State"]
+script = ExtResource("4_7h1vb")
+CustomEventName = &""
+
+[node name="State" type="Node" parent="Tester/Statechart/HistoryState/State/Transition"]
+script = ExtResource("3_cluu8")
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/HistoryState/State"]
+script = ExtResource("5_v0mvo")
+CustomEventName = &""
+
+[node name="State" type="Node" parent="Tester/Statechart/HistoryState/State/Reaction"]
+script = ExtResource("3_cluu8")
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

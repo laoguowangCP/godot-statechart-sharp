@@ -1,0 +1,112 @@
+[gd_scene load_steps=5 format=3 uid="uid://fyv2vrculy0s"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_b3un1"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_ghtrh"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_b8g67"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_6nqgs"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Initial state[/b][/center][/font_size]
+
+Compound state uses \"initial state\" property. It is the default substate to be active:
+
+[ul]
+At statechart initialization, if a compound state is active, then its initial state is active.
+On transition, if a compound state is entered, with no descendant assigned to enter, then its initial state is entered.
+[/ul]
+
+If no non-history substate is assigned as inital state, then first non-history substate will be selected.
+
+For this test, press the test button then you'll see how compound state use its initial state.
+
+[ul]
+The compound root state select \"Init\" as initial state, since it is the first non-history substate. So before you press the test, \"Init\" is active.
+On test pressed, transition invokes. \"Test\" will be entered. \"Test/B\" is assigned as initial state, so it will be entered too.
+You may notice the warning on \"Test/B\" node, because its initial state assignment is invalid. During the runtime, initial state neglects invalid assignment, and fallback to first non-history substate (which is \"Test/B/X\" in this case).
+[/ul]
+
+By the way, initial state property is only used under compound mode.
+"
+threaded = true
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_b3un1")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_ghtrh")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_b8g67")
+
+[node name="Hisotry" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_b8g67")
+StateMode = 2
+
+[node name="Init" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_b8g67")
+
+[node name="Init->Test" type="Node" parent="Tester/Statechart/Root/Init" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_6nqgs")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../Test")]
+
+[node name="Test" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_b8g67")
+InitialState = NodePath("B")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root/Test"]
+script = ExtResource("3_b8g67")
+
+[node name="B" type="Node" parent="Tester/Statechart/Root/Test" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_b8g67")
+InitialState = NodePath("History")
+
+[node name="X" type="Node" parent="Tester/Statechart/Root/Test/B"]
+script = ExtResource("3_b8g67")
+
+[node name="Y" type="Node" parent="Tester/Statechart/Root/Test/B"]
+script = ExtResource("3_b8g67")
+
+[node name="History" type="Node" parent="Tester/Statechart/Root/Test/B"]
+script = ExtResource("3_b8g67")
+StateMode = 2
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

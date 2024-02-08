@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="true"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="22.627417"
-     inkscape:cx="18.760427"
-     inkscape:cy="16.683301"
+     inkscape:zoom="32"
+     inkscape:cx="15.53125"
+     inkscape:cy="18.546875"
      inkscape:window-width="2560"
      inkscape:window-height="1334"
      inkscape:window-x="-11"
@@ -39,20 +39,40 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:#535353;fill-opacity:0;stroke:#7dba7c;stroke-width:1.5875;stroke-dasharray:none;stroke-opacity:1"
-       id="rect2-5"
-       width="4.2333336"
-       height="3.175"
-       x="0.79375005"
-       y="2.6458333"
-       ry="1.3229164"
-       rx="1.3229169" />
-    <rect
-       style="fill:#cf65ff;stroke:#7dba7c;stroke-width:1.5875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       style="opacity:1;mix-blend-mode:normal;fill:#cf65ff;stroke:#000000;stroke-width:1.61396;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.33"
        id="rect1"
        width="2.3812499"
        height="0.5291667"
+       x="5.2718239"
+       y="3.96875"
+       inkscape:label="outline2" />
+    <rect
+       style="opacity:1;mix-blend-mode:normal;fill:#535353;fill-opacity:0;stroke:#000000;stroke-width:1.61396;stroke-dasharray:none;stroke-opacity:0.33"
+       id="rect2-5"
+       width="4.2333336"
+       height="3.175"
+       x="0.80698001"
+       y="2.6458333"
+       ry="1.3229164"
+       rx="1.3229169"
+       inkscape:label="outline1" />
+    <rect
+       style="fill:#cf65ff;stroke:#7dba7c;stroke-width:1.32291666;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect2"
+       width="2.3812499"
+       height="0.5291667"
        x="5.2916665"
-       y="3.96875" />
+       y="3.96875"
+       inkscape:label="rect2" />
+    <rect
+       style="fill:#535353;fill-opacity:0;stroke:#7dba7c;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
+       id="rect3"
+       width="4.2333336"
+       height="3.175"
+       x="0.79375172"
+       y="2.6458333"
+       ry="1.3229164"
+       rx="1.3229169"
+       inkscape:label="rect1" />
   </g>
 </svg>

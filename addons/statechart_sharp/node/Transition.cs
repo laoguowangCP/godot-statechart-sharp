@@ -284,6 +284,21 @@ public partial class Transition : StatechartComposition
             #endif
             IsValid = false;
         }
+
+        // TODO: clean this
+        /*
+        GD.Print("Enter region:");
+        foreach(State s in EnterRegion)
+        {
+            GD.Print(s.GetPath());
+        }
+        GD.Print("Enter region edge:");
+        foreach(State s in EnterRegionEdge)
+        {
+            GD.Print(s.GetPath());
+        }
+        GD.Print();
+        */
     }
 
     internal bool Check(StringName eventName)

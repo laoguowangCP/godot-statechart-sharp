@@ -1,0 +1,136 @@
+[gd_scene load_steps=5 format=3 uid="uid://b6svihf0l0f51"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_ckb1l"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_aled3"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_o6j4f"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_fxhi4"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Deep History 1[/b][/center][/font_size]
+
+You may need to be familiar to transition mechanism before you read this test.
+
+History state represents the history \"active status\" of parent's descendant states. This test shows how deep history works.
+
+A deep history points to [b]leaf[/b] state(s) descendant to parent, once active till last exit of parent state.
+
+For this test, it involves 3 test steps.
+
+[ol]
+In first test step, we transit from \"Init\" to A/Y/2. This makes a history situation.
+Next, we transit from A to B's deep history. B has never been entered before, so history fallbacks to B's initial state B/Y/2.
+Finally, we transit back to A's deep history. It is A/Y/2.
+[/ol]
+
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_ckb1l")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_aled3")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_o6j4f")
+
+[node name="Init" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_o6j4f")
+
+[node name="->A-Y-2" type="Node" parent="Tester/Statechart/Root/Init" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_fxhi4")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../A/Y/2")]
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_o6j4f")
+
+[node name="X" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_o6j4f")
+
+[node name="Y" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_o6j4f")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/A/Y"]
+script = ExtResource("3_o6j4f")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/A/Y"]
+script = ExtResource("3_o6j4f")
+
+[node name="DeepHistory" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_o6j4f")
+StateMode = 2
+IsDeepHistory = true
+
+[node name="->B-DeepHistory" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_fxhi4")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B/DeepHistory")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_o6j4f")
+InitialState = NodePath("Y")
+
+[node name="X" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_o6j4f")
+
+[node name="Y" type="Node" parent="Tester/Statechart/Root/B" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_o6j4f")
+InitialState = NodePath("2")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/B/Y"]
+script = ExtResource("3_o6j4f")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/B/Y"]
+script = ExtResource("3_o6j4f")
+
+[node name="B->A-DeepHistory" type="Node" parent="Tester/Statechart/Root/B/Y/2" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_fxhi4")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../../../A/DeepHistory")]
+
+[node name="DeepHistory" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_o6j4f")
+StateMode = 2
+IsDeepHistory = true
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

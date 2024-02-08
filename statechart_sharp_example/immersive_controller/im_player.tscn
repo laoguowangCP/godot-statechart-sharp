@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://b4dys3gs5yv55"]
+
+[ext_resource type="Shape3D" uid="uid://daw26slb52ktb" path="res://statechart_sharp_example/immersive_controller/resource/shape/shape_player_stand.tres" id="1_6ql00"]
+[ext_resource type="Script" path="res://statechart_sharp_example/immersive_controller/script/ImPlayer.cs" id="1_nsgnp"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="3_8sun5"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="4_hrigw"]
+
+[node name="CharacterBody3D" type="CharacterBody3D"]
+script = ExtResource("1_nsgnp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = ExtResource("1_6ql00")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+current = true
+
+[node name="Statechart" type="Node" parent="."]
+script = ExtResource("3_8sun5")
+EventFlag = 7
+
+[node name="Root" type="Node" parent="Statechart"]
+script = ExtResource("4_hrigw")
+StateMode = 1

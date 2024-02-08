@@ -37,6 +37,8 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Statechart max auto transition round[/b][/center][/font_size]
 
+You may need to be familiar to transition mechanism before you read this test.
+
 In each step, statechart first handle transitions with parsed event 1 round, then transitions with null event for several round.  Transitions with null event is called \"eventless\", or  \"automatic\", as it runs automatically.
 
 Normally after rounds, statechart will reach the status where active states have no automatic transitions to be pended, and will then stop. But endless loop may happens. Property \"MaxAutoTransitionRound\" makes sure that automatic transition round stops in certain iteration.

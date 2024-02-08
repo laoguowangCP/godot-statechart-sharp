@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://c4xtt8c02ri2k"]
 
-[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_pedsa"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_efk2l"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_ae3pn"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_ks2lu"]
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_6hv25"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_ujjdt"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_tq7n8"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_ntv4g"]
 
 [node name="BoxContainer" type="VBoxContainer"]
 custom_minimum_size = Vector2(600, 500)
@@ -35,13 +35,25 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[b]Basic state behaviors[/b]
+text = "[font_size=20][center][b]Active states[/b][/center][/font_size]
 
-[ul]This test shows basis on how compound state and parallel state work.[/ul]
-[ul]Usually, root state is parallel. So it will be easier to extend statechart by adding subtree of states under root state.[/ul]
-[ul]Initially, compound will active its initial state, which is first substate by default.[/ul]
-[ul]Initially, parallel will active all the substate.[/ul]
-[ul]Press test, then you'll see reactions are invoked by \"document order\".[/ul]
+This test shows how state mode determines whether state is active or not.
+
+[ul]
+Root state is always active. Usually, root state is parallel, so it will be easier to extend state tree.
+For active compound state, only 1 non-history substate is active (if there's any). Initially, \"initial state\" is the active substate. If initial s ate is not assigned, then first non-history substate will be initial state.
+For active parallel state,  all non-history substates are active (if there's any).
+History state is never active.
+[/ul]
+
+For this test, press the test button then you'll see active states should invokes their child reactions, while inactive ones should not.
+
+[ul]
+\"Root\" is active.
+\"Root\" is parallel, so \"Compound\" and \"Parallel\" are active. \"History\" is a history state, so it is not active.
+ \"Compound\" is active, so \"Compound/A\" is active, as the initial state.
+\"Parallel\" is active, so \"Parallel/A\", \"Parallel/B\", \"Parallel/C\" are active.
+[/ul]
 "
 threaded = true
 
@@ -53,71 +65,84 @@ text = "Test
 "
 
 [node name="Tester" type="Node" parent="."]
-script = ExtResource("1_pedsa")
+script = ExtResource("1_6hv25")
 StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
-script = ExtResource("2_efk2l")
+script = ExtResource("2_ujjdt")
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 StateMode = 1
 
 [node name="Compound" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 
 [node name="A" type="Node" parent="Tester/Statechart/Root/Compound"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/A"]
-script = ExtResource("4_ks2lu")
+script = ExtResource("4_ntv4g")
 ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="B" type="Node" parent="Tester/Statechart/Root/Compound"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound/B"]
-script = ExtResource("4_ks2lu")
+script = ExtResource("4_ntv4g")
 ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Compound"]
-script = ExtResource("4_ks2lu")
+script = ExtResource("4_ntv4g")
 ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="Parallel" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 StateMode = 1
 
 [node name="A" type="Node" parent="Tester/Statechart/Root/Parallel"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/A"]
-script = ExtResource("4_ks2lu")
+script = ExtResource("4_ntv4g")
 ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="B" type="Node" parent="Tester/Statechart/Root/Parallel"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/B"]
-script = ExtResource("4_ks2lu")
-ReactionEvent = 6
-CustomEventName = &"test"
-
-[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel"]
-script = ExtResource("4_ks2lu")
+script = ExtResource("4_ntv4g")
 ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="C" type="Node" parent="Tester/Statechart/Root/Parallel"]
-script = ExtResource("3_ae3pn")
+script = ExtResource("3_tq7n8")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel/C"]
-script = ExtResource("4_ks2lu")
+script = ExtResource("4_ntv4g")
 ReactionEvent = 6
 CustomEventName = &"test"
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/Parallel"]
+script = ExtResource("4_ntv4g")
+ReactionEvent = 6
+CustomEventName = &"test"
+
+[node name="History" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_tq7n8")
+StateMode = 2
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root/History"]
+script = ExtResource("4_ntv4g")
+ReactionEvent = 6
+CustomEventName = &"test"
+
+[node name="Reaction" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("4_ntv4g")
+CustomEventName = &""
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

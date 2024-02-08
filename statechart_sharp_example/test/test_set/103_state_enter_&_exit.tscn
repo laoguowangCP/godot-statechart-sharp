@@ -1,0 +1,97 @@
+[gd_scene load_steps=5 format=3 uid="uid://dsxitaot7cs71"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_3gpc7"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_xh7qs"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_56c61"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_2vxt0"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Enter & Exit[/b][/center][/font_size]
+
+State has 2 signals: \"Enter\" and \"Exit\".
+
+[ul]
+Enter is emiited when a transition turns an inactive state into active, or when statechart sets initial active states.
+Exit is emitted when a transition turns an active state into inactive.
+[/ul]
+
+For this test, I want to mention you that there is a little different on node setting. Previously, statechart node is set child to \"Tester\", so the initial enter process is ahead of signal connection and won't be printed. It was for clarity. Here statechart has deffered initialization, so you can see \"Enter\" signals are emitted from initial active states, before you press the test button.
+
+By the way, you can see states are entered in document order, while exit in reversed document order (document order = node order in scene from up to down).
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("TestStatechart")]
+script = ExtResource("1_3gpc7")
+StepName = &"test"
+TestStatechart = NodePath("../Statechart")
+
+[node name="Statechart" type="Node" parent="."]
+script = ExtResource("2_xh7qs")
+
+[node name="Root" type="Node" parent="Statechart"]
+script = ExtResource("3_56c61")
+
+[node name="A" type="Node" parent="Statechart/Root"]
+script = ExtResource("3_56c61")
+StateMode = 1
+
+[node name="A->B" type="Node" parent="Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_2vxt0")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B")]
+
+[node name="X" type="Node" parent="Statechart/Root/A"]
+script = ExtResource("3_56c61")
+
+[node name="Y" type="Node" parent="Statechart/Root/A"]
+script = ExtResource("3_56c61")
+
+[node name="B" type="Node" parent="Statechart/Root" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_56c61")
+StateMode = 1
+InitialState = NodePath("Y")
+
+[node name="X" type="Node" parent="Statechart/Root/B"]
+script = ExtResource("3_56c61")
+
+[node name="Y" type="Node" parent="Statechart/Root/B"]
+script = ExtResource("3_56c61")
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

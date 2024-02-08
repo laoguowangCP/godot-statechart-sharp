@@ -45,18 +45,25 @@ public class HistoryComponent : StateComponent
     {
         // Check parent
         bool isParentWarning = true;
+        bool isParentParallel = false;
         Node parent = HostState.GetParent<Node>();
         if (parent != null)
         {
             if (parent is State state)
             {
                 isParentWarning = state.IsHistory;
+                isParentParallel = state.StateMode == StateModeEnum.Parallel;
             }
         }
 
         if (isParentWarning)
         {
             warnings.Add("History state should be child to a non-history state.");
+        }
+
+        if (isParentParallel && !IsDeepHistory)
+        {
+            warnings.Add("Parallel's shallow history is not recommended.");
         }
 
         // Check children

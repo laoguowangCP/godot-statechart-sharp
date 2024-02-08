@@ -46,6 +46,8 @@ Other child states appended to  statechart will be neglected.
 To append more states, you may add them descendant to root state.
 [/ul]
 
+For this case, \"Root1\" will be the root state.
+
 By the way, you can see other compositions pushes warning. They do not want a statechart as parent (precisely history state, transition and reaction want non-history state as parent)."
 threaded = true
 
@@ -87,7 +89,7 @@ script = ExtResource("5_qxgoc")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root1"]
 script = ExtResource("4_1oedl")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [node name="Root2" type="Node" parent="Tester/Statechart"]
@@ -95,7 +97,7 @@ script = ExtResource("5_qxgoc")
 
 [node name="Reaction" type="Node" parent="Tester/Statechart/Root2"]
 script = ExtResource("4_1oedl")
-ReactionEvent = 4
+ReactionEvent = 6
 CustomEventName = &"test"
 
 [connection signal="pressed" from="MarginContainer/Button" to="Tester" method="OnTestButtonPressed"]

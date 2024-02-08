@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://sm7k2oee3ow0"]
+
+[ext_resource type="Material" uid="uid://dxsxnkm5rxjbl" path="res://statechart_sharp_example/immersive_controller/resource/material/mat_field_ground.tres" id="1_g62y5"]
+[ext_resource type="PackedScene" uid="uid://b4dys3gs5yv55" path="res://statechart_sharp_example/immersive_controller/im_player.tscn" id="2_0jsl8"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_mtail"]
+
+[sub_resource type="Sky" id="Sky_fmyui"]
+sky_material = SubResource("PhysicalSkyMaterial_mtail")
+
+[sub_resource type="Environment" id="Environment_jmqqk"]
+background_mode = 2
+sky = SubResource("Sky_fmyui")
+sky_custom_fov = 60.0
+ambient_light_source = 3
+ambient_light_color = Color(0.891456, 0.891456, 0.891456, 1)
+reflected_light_source = 2
+sdfgi_enabled = true
+
+[node name="Node3D" type="Node3D"]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+use_collision = true
+size = Vector3(64, 2, 64)
+material = ExtResource("1_g62y5")
+
+[node name="CharacterBody3D" parent="." instance=ExtResource("2_0jsl8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.656059, 0.75471, 0, -0.75471, 0.656059, 0, 0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_jmqqk")
