@@ -10,17 +10,17 @@
 [node name="Statechart" type="Node" parent="."]
 script = ExtResource("1_vlj4q")
 
-[node name="Root" type="Node" parent="Statechart"]
+[node name="RootState" type="Node" parent="Statechart"]
 script = ExtResource("2_gkmpx")
 
-[node name="State1" type="Node" parent="Statechart/Root"]
+[node name="State1" type="Node" parent="Statechart/RootState"]
 script = ExtResource("2_gkmpx")
 
-[node name="Transition" type="Node" parent="Statechart/Root/State1"]
+[node name="Transition" type="Node" parent="Statechart/RootState/State1"]
 script = ExtResource("3_tfli0")
 
-[node name="Reaction" type="Node" parent="Statechart/Root/State1"]
+[node name="Reaction" type="Node" parent="Statechart/RootState/State1"]
 script = ExtResource("4_yuvf4")
 
-[node name="State2" type="Node" parent="Statechart/Root"]
+[node name="State2" type="Node" parent="Statechart/RootState"]
 script = ExtResource("2_gkmpx")

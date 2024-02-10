@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./Statechart.svg" height="200px" />
+  <img src="./docs/asset/StatechartLogo.svg" height="200px" />
 </p>
 
 # Statechart Sharp
@@ -32,15 +32,15 @@ Download repository, copy `addons/statechart_sharp` to your project folder. Buil
 
 **Step 1** : Build with nodes:
 
-- Add Statechart node.
+- Add Statechart node
 
   <img src="./docs/asset/ss_add_statechart.png" alt="ss_add_statechart" style="width:180px;"/>
 
-- Add State nodes under Statechart.
+- Add States under Statechart
 
-  <img src="./docs/asset/ss_add_state.png" alt="ss_add_state" style="width:180px;"/>
+  <img src="./docs/asset/ss_add_states.png" alt="ss_add_state" style="width:180px;"/>
 
-- Add Transition node and Reaction node under State.
+- Add Transition and Reaction under State
 
   <img src="./docs/asset/ss_add_transition_&_reaction.png" alt="ss_add_transition" style="width:180px;"/>
 

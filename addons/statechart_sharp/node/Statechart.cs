@@ -15,7 +15,7 @@ public partial class Statechart : StatechartComposition
     protected int MaxAutoTransitionRound = 8;
     [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
     protected EventFlagEnum EventFlag { get; set; } = 0;
-    protected bool IsRunning { get; set; }
+    internal bool IsRunning { get; private set; }
     protected int EventCount;
     internal State RootState { get; set; }
     protected SortedSet<State> ActiveStates { get; set; }
@@ -40,7 +40,7 @@ public partial class Statechart : StatechartComposition
         EnterSet = new SortedSet<State>(new StateComparer());
         EnabledReactions = new SortedSet<Reaction>(new ReactionComparer());
 
-        Duct = new StatechartDuct();
+        Duct = new StatechartDuct { HostStatechart = this };
 
         #if TOOLS
         if (!Engine.IsEditorHint())
