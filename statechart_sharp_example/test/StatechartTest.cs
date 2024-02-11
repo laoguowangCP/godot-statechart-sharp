@@ -91,7 +91,7 @@ public partial class StatechartTest : Node
         string indentStr = "";
 		for (int i=1; i<path.GetNameCount(); ++i)
 		{
-			indentStr += "— "; // "└─"
+			indentStr += " — "; // "└─"
 		}
 		GD.Print(indentStr, delegateName, " ", path);
 	}

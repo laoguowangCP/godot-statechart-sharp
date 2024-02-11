@@ -1,0 +1,90 @@
+[gd_scene load_steps=5 format=3 uid="uid://dxnxpf5ixbtbo"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_ernlt"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_fx4fm"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_7et7h"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_15mlh"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Multiple targets 2[/b][/center][/font_size]
+
+Transition can set multiple states as targets. This test is an alternative case where LCA is parallel.
+
+In this test, we set B/2, C/2 as targets. There is no confliction. LCA is Root state, so initially active states A, B, B/1, C, C/1 will be exit. A is re-entered as a supplementary substate of Root, so Root can keep its parallel \"pattern\".
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_ernlt")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_fx4fm")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_7et7h")
+StateMode = 1
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_7et7h")
+
+[node name="->B-2+C-2" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_15mlh")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B/2"), NodePath("../../C/2")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_7et7h")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_7et7h")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_7et7h")
+
+[node name="C" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_7et7h")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/C"]
+script = ExtResource("3_7et7h")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/C"]
+script = ExtResource("3_7et7h")
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

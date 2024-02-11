@@ -1,0 +1,70 @@
+[gd_scene load_steps=5 format=3 uid="uid://bavu1ij3glfea"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_k3e05"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_l0w27"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_01gj5"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_5dgen"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Targetless transition[/b][/center][/font_size]
+
+Targetless transition, as it is named, has no target assigned. It can be selected and executed, and emit signals as usual. But no state will be entered or exit.
+
+By the way, I'd mention you that a targetless transition is not simply a transition targeting itself. A self targeting transition still involves exit and enter, and with descendant status not preserved.
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_k3e05")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_l0w27")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_01gj5")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_01gj5")
+
+[node name="->" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("4_5dgen")
+TransitionEvent = 6
+CustomEventName = &"test"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

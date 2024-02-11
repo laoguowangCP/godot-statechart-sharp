@@ -1,0 +1,91 @@
+[gd_scene load_steps=5 format=3 uid="uid://be4u1i816dgln"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_en86y"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_5vahm"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_q662f"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_5kh01"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Invalid transition[/b][/center][/font_size]
+
+An invalid transition will be ignored. It won't be used, and none of its signals will be emitted. Transitions will be set invalid in following cases:
+
+[ul]
+Event type is \"Custom\", but no event name assigned.
+Event type is \"Auto\", while transition is targetless. This will cause endless loop during automatic transitions because source state keeps active whenever this transition invokes.
+Event type is \"Auto\", while enter region contains source state. This will cause endless loop during automatic transitions because source state keeps active whenever this transition invokes.
+[/ul]
+
+Custom event case has been shown in test 302. This test shows 2 cases involving automatic transitions:
+
+[ul]
+A/-> is an automatic transition with no target. It is warned and will be set invalid in runtime.
+B/->B is an automatic transition with source state as target. Enter region contains source state. It will be set invalid in runtime.
+[/ul]
+
+As a result, no transition will be selected or executed whenever the statechart steps.
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_en86y")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_5vahm")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_q662f")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_q662f")
+
+[node name="->A(Auto)" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("4_5kh01")
+TransitionEvent = 7
+
+[node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_q662f")
+
+[node name="->B(Auto)" type="Node" parent="Tester/Statechart/Root/B" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_5kh01")
+TransitionEvent = 7
+CustomEventName = &""
+TargetStatesArray = [NodePath("..")]
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

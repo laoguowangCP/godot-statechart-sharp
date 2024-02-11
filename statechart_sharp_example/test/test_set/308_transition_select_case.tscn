@@ -1,0 +1,128 @@
+[gd_scene load_steps=5 format=3 uid="uid://c6h3ffl76jhsb"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_d7wa4"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_q8747"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_8001d"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_1o6vq"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Select case[/b][/center][/font_size]
+
+For active states, selecting transition is a recursive process. Leaf states select first, while other states react according to returned case from their descendant(s), and then pass on the case to their parent:
+
+[ul]
+[b]Case \"-1\"[/b] : no transition selected in descendants. State checks its own transitions. Return 1 if a transition is selected, else return -1 .
+[b]Case \"0\"[/b] : transition selected in descendants, but not all of descendant leaf state has an anscestor with selected transition. They still ask for an enabled transition from anscestors, but expecting no confliction to selected one(s). In this case state checks its own [b]targetless[/b] transitions. Return 1 if any is selected, else return 0 .
+[b]Case \"1\"[/b] : transition selected in descendants, and all descendant leaf states has an anscestor with selected transition. No need to check any more. Return 1 .
+[/ul]
+
+In this test, all 3 cases are involved:
+
+[ol]
+A/X/1/Leaf is queried first. It has no transition, so return its parent with case -1. With case -1 received, A/X/1 selects its own transition A/X/1->1 , return case 1 .
+A/X/2/Leaf selects its targetless transition A/X/2/Leaf/-> , returns with case 1 . So A/X/2 do not select transition.
+A/X/1 and A/X/2 has transitions selected themself or in descendants, while A/X/3 has no transition selected. So parallel state A/X receives case 0 . A/X has transition ->X , but it is not targetless, so A/X return to A with case 0.
+With case 0 received, state A select its own transition A/-> , which is targetless.
+[/ol]
+
+As a result, transitions A/X/1->1 , A/X/2/Leaf/-> and A/-> are selected and executed.
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_d7wa4")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_q8747")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_8001d")
+StateMode = 1
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_8001d")
+
+[node name="X" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_8001d")
+StateMode = 1
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/A/X"]
+script = ExtResource("3_8001d")
+
+[node name="Leaf" type="Node" parent="Tester/Statechart/Root/A/X/1"]
+script = ExtResource("3_8001d")
+
+[node name="->1" type="Node" parent="Tester/Statechart/Root/A/X/1" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_1o6vq")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("..")]
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/A/X"]
+script = ExtResource("3_8001d")
+
+[node name="->2" type="Node" parent="Tester/Statechart/Root/A/X/2" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_1o6vq")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("..")]
+
+[node name="Leaf" type="Node" parent="Tester/Statechart/Root/A/X/2"]
+script = ExtResource("3_8001d")
+
+[node name="->" type="Node" parent="Tester/Statechart/Root/A/X/2/Leaf"]
+script = ExtResource("4_1o6vq")
+TransitionEvent = 6
+CustomEventName = &"test"
+
+[node name="3" type="Node" parent="Tester/Statechart/Root/A/X"]
+script = ExtResource("3_8001d")
+
+[node name="->X" type="Node" parent="Tester/Statechart/Root/A/X" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_1o6vq")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("..")]
+
+[node name="->" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("4_1o6vq")
+TransitionEvent = 6
+CustomEventName = &"test"
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

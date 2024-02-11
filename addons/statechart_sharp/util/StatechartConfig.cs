@@ -27,7 +27,7 @@ public enum TransitionEventNameEnum : int
     Custom,
     Auto
 
-    // Extend transition event-set here:
+    // Extend transition event here:
     /*
         MY_EVENT,
     */
@@ -43,7 +43,7 @@ public enum ReactionEventNameEnum : int
     UnhandledInput,
     Custom
 
-    // Extend action event-set here:
+    // Extend action event here:
     /*
         MY_EVENT,
     */
@@ -62,7 +62,7 @@ public partial class StatechartConfig : Node
     public static readonly StringName EVENT_UNHANDLED_KEY_INPUT = "_unhandled_key_input";
     public static readonly StringName EVENT_UNHANDLED_INPUT = "_unhandled_input";
     
-    // Extend event-set here:
+    // Extend event here:
     /*
         protected static readonly StringName MY_EVENT = "my_event";  
     */
@@ -79,7 +79,7 @@ public partial class StatechartConfig : Node
         TransitionEventNameEnum.UnhandledInput => "_unhandled_input",
         TransitionEventNameEnum.Custom => customEventName,
 
-        // Extend transition event-set here:
+        // Extend transition event here:
         /*
             EventNameEnum.MY_EVENT => "my_event",
         */
@@ -97,7 +97,7 @@ public partial class StatechartConfig : Node
         ReactionEventNameEnum.UnhandledInput => "_unhandled_input",
         ReactionEventNameEnum.Custom => customEventName,
 
-        // Extend action event-set here:
+        // Extend reaction event here:
         /*
             EventNameEnum.MY_EVENT => "my_event",
         */

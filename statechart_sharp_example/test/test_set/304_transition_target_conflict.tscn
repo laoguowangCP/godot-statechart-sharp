@@ -1,0 +1,80 @@
+[gd_scene load_steps=5 format=3 uid="uid://c1rrslwrvyms4"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_jsbqn"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_jivmv"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_bh6qs"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_jmg3g"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Target conflict[/b][/center][/font_size]
+
+Conflict happens when 2 targets descendant to different substate of a compound state. We'll dispose the latter target, by the order they assigned in target array on inspector.
+
+Here in this test, transition \"->B-Y+B-X\" happens. It targets to both of B's substate X and Y , while B is a compound state. Thus it makes a confliction. As result, B/Y is entered and B/X is disposed, since B/Y is prior by the order it assgined in target array.
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_jsbqn")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_jivmv")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_bh6qs")
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_bh6qs")
+
+[node name="->B-Y+B-X" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_jmg3g")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B/Y"), NodePath("../../B/X")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_bh6qs")
+
+[node name="X" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_bh6qs")
+
+[node name="Y" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_bh6qs")
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

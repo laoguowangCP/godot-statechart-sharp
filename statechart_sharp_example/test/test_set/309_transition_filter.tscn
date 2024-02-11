@@ -1,0 +1,120 @@
+[gd_scene load_steps=5 format=3 uid="uid://y7sttwmwy6xd"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_u7yvh"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_rx7eb"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_ugtm3"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_to4mx"]
+
+[node name="BoxContainer" type="VBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -81.0
+offset_top = -15.5
+offset_right = 81.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Transition filter[/b][/center][/font_size]
+
+During executing, selected transitions are filtered to avoid enter/exit conflicts. As transitions are iterated, if one's source state is descendant to any former's LCA, or any former's source state is descendant to this LCA, dispose this transition. This is because we want to make it never happens that a transition is executed while its source state has been / will be exit by another transition during the same step.
+
+We have 2 parts in this test, A and B, to demonstrate the 2 opposite situations:
+
+[ol]
+A is parallel, so transitions A/X/->Y and A/Y->X are both guarded and selected. However, the LCA of transition A/X/->Y is state A , which is anscestor to A/Y , the source state of transition A/Y->X . So A/Y->X is disposed, as it is subsequent in document order.
+B is parallel, so transitions B/X/1/->2 and B/Y->X are both guarded and selected. However, the source state of transition B/X/1/->2 is state X , which is descendant to B , the LCA of transition B/Y->X . So B/Y->X is disposed, as it is subsequent in document order.
+[/ol]
+
+So as a result, all the transitions are guarded, but only A/X/->Y and B/X/1/->2 are invoked.
+"
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Test
+"
+
+[node name="Tester" type="Node" parent="."]
+script = ExtResource("1_u7yvh")
+StepName = &"test"
+
+[node name="Statechart" type="Node" parent="Tester"]
+script = ExtResource("2_rx7eb")
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("3_ugtm3")
+StateMode = 1
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ugtm3")
+StateMode = 1
+
+[node name="X" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_ugtm3")
+
+[node name="->Y" type="Node" parent="Tester/Statechart/Root/A/X" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_to4mx")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../Y")]
+
+[node name="Y" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_ugtm3")
+
+[node name="->X" type="Node" parent="Tester/Statechart/Root/A/Y" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_to4mx")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../X")]
+
+[node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ugtm3")
+StateMode = 1
+
+[node name="X" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_ugtm3")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/B/X"]
+script = ExtResource("3_ugtm3")
+
+[node name="->2" type="Node" parent="Tester/Statechart/Root/B/X/1" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_to4mx")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../2")]
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/B/X"]
+script = ExtResource("3_ugtm3")
+
+[node name="Y" type="Node" parent="Tester/Statechart/Root/B"]
+script = ExtResource("3_ugtm3")
+
+[node name="->X" type="Node" parent="Tester/Statechart/Root/B/Y" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_to4mx")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../X")]
+
+[connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

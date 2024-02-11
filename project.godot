@@ -13,7 +13,6 @@ config_version=5
 config/name="godot-statechart-sharp"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 boot_splash/show_image=false
-config/icon="res://Statechart.svg"
 
 [dotnet]
 

@@ -44,12 +44,11 @@ public class CompoundComponent : StateComponent
             else if (child is Transition t)
             {
                 // Root state should not have transition
-                if (ParentState == null)
+                if (ParentState != null)
                 {
-                    continue;
+                    t.Setup(hostStateChart, ref ancestorId);
+                    Transitions.Add(t);
                 }
-                t.Setup(hostStateChart, ref ancestorId);
-                Transitions.Add(t);
             }
             else if (child is Reaction a)
             {

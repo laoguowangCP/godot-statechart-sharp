@@ -222,9 +222,10 @@ public partial class Statechart : StatechartComposition
 
             /*
             Check confliction
-                1. If source is in exit set (descendant to other LCA) already.
-                2. Else, if any other source descendant to this LCA
-                    <=> Any other source's most anscetor state in set is also descendant to this LCA (or it is case 1)
+                1. If this source is descendant to other LCA.
+                    <=> source is in exit set
+                2. Else, if other source descendant to this LCA
+                    <=> Any other source's most anscetor state in set is also descendant to this LCA (or it will be case 1)
                     <=> Any state in exit set is descendant to this LCA
             */
 

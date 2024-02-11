@@ -52,16 +52,5 @@ You can find example scenes in `./statechart_sharp_example` folder. Refer to [ma
 
 ## Feature
 
-- Few plugin nodes to learn about.
+- Node based, but few nodes to learn about.
 - Designed for composition. No need to extend scripts.
-
-## Todo
-
-Statechart:
-
-- add save/load method
-
-Example:
-
-- add test scene
-- add practical usage

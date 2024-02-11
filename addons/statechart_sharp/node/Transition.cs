@@ -130,7 +130,7 @@ public partial class Transition : StatechartComposition
         if (IsTargetless && IsAuto)
         {
             #if DEBUG
-            GD.PushError(
+            GD.PushWarning(
                 GetPath(),
                 ": targetless auto transition is invalid. This will most likely cause loop transition.");
             #endif
@@ -229,7 +229,7 @@ public partial class Transition : StatechartComposition
             int maxReversedIdx = 1; // Reversed
             int maxCountToRoot = srcToRoot.Count < tgtToRoot.Count
                 ? srcToRoot.Count : tgtToRoot.Count;
-            for (int i = 1; i <= maxCountToRoot; ++i)
+            for (int i = 1; i < maxCountToRoot; ++i)
             {
                 if (srcToRoot[^i] == tgtToRoot[^i])
                 {
@@ -284,21 +284,6 @@ public partial class Transition : StatechartComposition
             #endif
             IsValid = false;
         }
-
-        // TODO: clean this
-        /*
-        GD.Print("Enter region:");
-        foreach(State s in EnterRegion)
-        {
-            GD.Print(s.GetPath());
-        }
-        GD.Print("Enter region edge:");
-        foreach(State s in EnterRegionEdge)
-        {
-            GD.Print(s.GetPath());
-        }
-        GD.Print();
-        */
     }
 
     internal bool Check(StringName eventName)
