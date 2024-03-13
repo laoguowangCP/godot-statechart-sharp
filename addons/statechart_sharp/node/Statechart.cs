@@ -26,9 +26,11 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<State> EnterSet { get; set; }
     protected SortedSet<Reaction> EnabledReactions { get; set; }
     internal StatechartDuct Duct { get; private set; }
-    
+
     public override void _Ready()
     {
+        Duct = new StatechartDuct { HostStatechart = this };
+
         IsRunning = false;
         EventCount = 0;
 
@@ -39,8 +41,6 @@ public partial class Statechart : StatechartComposition
         ExitSet = new SortedSet<State>(new ReversedStateComparer());
         EnterSet = new SortedSet<State>(new StateComparer());
         EnabledReactions = new SortedSet<Reaction>(new ReactionComparer());
-
-        Duct = new StatechartDuct { HostStatechart = this };
 
         #if TOOLS
         if (!Engine.IsEditorHint())

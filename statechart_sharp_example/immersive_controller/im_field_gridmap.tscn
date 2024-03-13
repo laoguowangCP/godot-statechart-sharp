@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvr8mx041pas6"]
+
+[ext_resource type="PackedScene" uid="uid://bs18dx0qu16ec" path="res://statechart_sharp_example/immersive_controller/resource/im_field_gridmap/gltf/block_basic.gltf" id="1_6mocd"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="block_basic" parent="." instance=ExtResource("1_6mocd")]
+
+[editable path="block_basic"]

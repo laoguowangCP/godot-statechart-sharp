@@ -1,26 +1,320 @@
-[gd_scene load_steps=5 format=3 uid="uid://b4dys3gs5yv55"]
+[gd_scene load_steps=16 format=3 uid="uid://b4dys3gs5yv55"]
 
 [ext_resource type="Shape3D" uid="uid://daw26slb52ktb" path="res://statechart_sharp_example/immersive_controller/resource/shape/shape_player_stand.tres" id="1_6ql00"]
 [ext_resource type="Script" path="res://statechart_sharp_example/immersive_controller/script/ImPlayer.cs" id="1_nsgnp"]
+[ext_resource type="Resource" uid="uid://dimiqhbyniehm" path="res://statechart_sharp_example/immersive_controller/resource/player_move_prop/stand_walk_prop.tres" id="2_mjiu7"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="3_8sun5"]
+[ext_resource type="Resource" uid="uid://36kosxu62ehc" path="res://statechart_sharp_example/immersive_controller/resource/player_move_prop/stand_sprint_prop.tres" id="3_fjjns"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="4_hrigw"]
+[ext_resource type="Resource" uid="uid://66cwefu0ilnc" path="res://statechart_sharp_example/immersive_controller/resource/player_move_prop/air_prop.tres" id="4_ipoon"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="5_e50wk"]
+[ext_resource type="Resource" uid="uid://cpgaoymw2mjfb" path="res://statechart_sharp_example/immersive_controller/resource/player_move_prop/air_top_prop.tres" id="5_sw2pr"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="6_ap661"]
+
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_3g1ca"]
+length = 0.56
+
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_jb26c"]
+length = 0.125
+slide_on_slope = true
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pnide"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_r8mdc"]
+friction = 0.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_h5ltx"]
+radius = 0.25
 
 [node name="CharacterBody3D" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 7
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+slide_on_ceiling = false
+floor_constant_speed = true
 script = ExtResource("1_nsgnp")
+StandWalkProp = ExtResource("2_mjiu7")
+StandSprintProp = ExtResource("3_fjjns")
+AirProp = ExtResource("4_ipoon")
+AirTopProp = ExtResource("5_sw2pr")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionHead1" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.707107, 0.707107, 0, -0.707107, -0.707107, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+
+[node name="CollisionHead2" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.707107, -0.5, -0.5, -6.18173e-08, -0.707107, 0.707107, -0.707107, -0.5, -0.5, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+disabled = true
+
+[node name="CollisionHead3" type="CollisionShape3D" parent="."]
+transform = Transform3D(-6.30588e-08, -0.707107, -0.707107, -1.0677e-07, -0.707107, 0.707107, -1, 1.20087e-07, -3.09086e-08, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+disabled = true
+
+[node name="CollisionHead4" type="CollisionShape3D" parent="."]
+transform = Transform3D(-0.707107, -0.5, -0.5, 1.0677e-07, -0.707107, 0.707107, -0.707107, 0.5, 0.5, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+disabled = true
+
+[node name="CollisionHead5" type="CollisionShape3D" parent="."]
+transform = Transform3D(-1, 1.50996e-07, 0, -1.0677e-07, -0.707107, 0.707107, 1.0677e-07, 0.707107, 0.707107, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+disabled = true
+
+[node name="CollisionHead6" type="CollisionShape3D" parent="."]
+transform = Transform3D(-0.707107, 0.5, 0.5, 1.0677e-07, -0.707107, 0.707107, 0.707107, 0.5, 0.5, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+disabled = true
+
+[node name="CollisionHead7" type="CollisionShape3D" parent="."]
+transform = Transform3D(1.50482e-07, 0.707107, 0.707107, -1.0677e-07, -0.707107, 0.707107, 1, -1.81904e-07, -3.09086e-08, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+disabled = true
+
+[node name="CollisionHead8" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.707107, 0.5, 0.5, 1.0677e-07, -0.707107, 0.707107, 0.707107, -0.5, -0.5, 0, 1.3, 0)
+shape = SubResource("SeparationRayShape3D_3g1ca")
+disabled = true
+
+[node name="CollisionBody" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = ExtResource("1_6ql00")
 
-[node name="Head" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+[node name="CollisionFeet" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.125, 0)
+shape = SubResource("SeparationRayShape3D_jb26c")
 
-[node name="Camera3D" type="Camera3D" parent="Head"]
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Head"]
+collision_layer = 0
+collision_mask = 0
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Head/StaticBody3D"]
+shape = SubResource("SphereShape3D_pnide")
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="Head"]
+node_a = NodePath("../StaticBody3D")
+node_b = NodePath("../RigidBody3D")
+linear_limit_x/softness = 0.03
+linear_limit_x/restitution = 0.25
+linear_limit_x/damping = 0.5
+linear_limit_y/softness = 0.03
+linear_limit_y/restitution = 0.25
+linear_limit_y/damping = 0.5
+linear_limit_z/softness = 0.03
+linear_limit_z/restitution = 0.25
+linear_limit_z/damping = 0.5
+linear_spring_y/damping = 0.5
+linear_spring_y/equilibrium_point = 0.1
+angular_limit_x/softness = 0.75
+angular_limit_x/damping = 0.75
+angular_limit_y/softness = 0.75
+angular_limit_y/damping = 0.75
+angular_limit_z/softness = 0.75
+angular_limit_z/damping = 0.75
+
+[node name="RigidBody3D" type="RigidBody3D" parent="Head"]
+top_level = true
+collision_layer = 0
+collision_mask = 0
+physics_material_override = SubResource("PhysicsMaterial_r8mdc")
+gravity_scale = 0.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Head/RigidBody3D"]
+shape = SubResource("SphereShape3D_h5ltx")
+
+[node name="BobCam" type="Camera3D" parent="Head/RigidBody3D"]
 current = true
+fov = 45.0
+
+[node name="SteadyCam" type="Camera3D" parent="Head"]
+fov = 45.0
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="CoyoteTimer" type="Timer" parent="Timers"]
+process_callback = 0
+wait_time = 0.015
+
+[node name="PrejumpTimer" type="Timer" parent="Timers"]
+process_callback = 0
+wait_time = 0.01
 
 [node name="Statechart" type="Node" parent="."]
 script = ExtResource("3_8sun5")
-EventFlag = 7
+EventFlag = 39
 
 [node name="Root" type="Node" parent="Statechart"]
 script = ExtResource("4_hrigw")
 StateMode = 1
+
+[node name="Move" type="Node" parent="Statechart/Root"]
+script = ExtResource("4_hrigw")
+
+[node name="ViewRotate" type="Node" parent="Statechart/Root/Move"]
+script = ExtResource("5_e50wk")
+ReactionEvent = 5
+CustomEventName = &""
+
+[node name="Ground" type="Node" parent="Statechart/Root/Move"]
+script = ExtResource("4_hrigw")
+
+[node name="Walk" type="Node" parent="Statechart/Root/Move/Ground"]
+script = ExtResource("4_hrigw")
+
+[node name="StandWalk" type="Node" parent="Statechart/Root/Move/Ground/Walk"]
+script = ExtResource("5_e50wk")
+ReactionEvent = 1
+CustomEventName = &""
+
+[node name="->Sprint" type="Node" parent="Statechart/Root/Move/Ground/Walk" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Sprint")]
+
+[node name="->Crouch" type="Node" parent="Statechart/Root/Move/Ground/Walk" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Crouch")]
+
+[node name="Sprint" type="Node" parent="Statechart/Root/Move/Ground"]
+script = ExtResource("4_hrigw")
+
+[node name="StandSprint" type="Node" parent="Statechart/Root/Move/Ground/Sprint"]
+script = ExtResource("5_e50wk")
+ReactionEvent = 1
+CustomEventName = &""
+
+[node name="->Walk" type="Node" parent="Statechart/Root/Move/Ground/Sprint" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Walk")]
+
+[node name="Crouch" type="Node" parent="Statechart/Root/Move/Ground"]
+script = ExtResource("4_hrigw")
+
+[node name="->Air" type="Node" parent="Statechart/Root/Move/Ground" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Air")]
+
+[node name="Air" type="Node" parent="Statechart/Root/Move"]
+script = ExtResource("4_hrigw")
+
+[node name="->Ground" type="Node" parent="Statechart/Root/Move/Air" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Ground")]
+
+[node name="Descend" type="Node" parent="Statechart/Root/Move/Air"]
+script = ExtResource("4_hrigw")
+StateMode = 1
+
+[node name="Coyote" type="Node" parent="Statechart/Root/Move/Air/Descend"]
+script = ExtResource("4_hrigw")
+
+[node name="Enabled" type="Node" parent="Statechart/Root/Move/Air/Descend/Coyote"]
+script = ExtResource("4_hrigw")
+
+[node name="Reaction" type="Node" parent="Statechart/Root/Move/Air/Descend/Coyote/Enabled"]
+script = ExtResource("5_e50wk")
+CustomEventName = &""
+
+[node name="->Disabled" type="Node" parent="Statechart/Root/Move/Air/Descend/Coyote/Enabled" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 7
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Disabled")]
+
+[node name="Disabled" type="Node" parent="Statechart/Root/Move/Air/Descend/Coyote"]
+script = ExtResource("4_hrigw")
+
+[node name="Prejump" type="Node" parent="Statechart/Root/Move/Air/Descend"]
+script = ExtResource("4_hrigw")
+
+[node name="Reaction" type="Node" parent="Statechart/Root/Move/Air/Descend/Prejump"]
+script = ExtResource("5_e50wk")
+CustomEventName = &""
+
+[node name="->Ascend" type="Node" parent="Statechart/Root/Move/Air/Descend" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 7
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Ascend")]
+
+[node name="Ascend" type="Node" parent="Statechart/Root/Move/Air"]
+script = ExtResource("4_hrigw")
+
+[node name="->Top" type="Node" parent="Statechart/Root/Move/Air/Ascend" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Top")]
+
+[node name="->Descend" type="Node" parent="Statechart/Root/Move/Air/Ascend" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Descend/Coyote/Disabled")]
+
+[node name="Top" type="Node" parent="Statechart/Root/Move/Air"]
+script = ExtResource("4_hrigw")
+
+[node name="->Descend" type="Node" parent="Statechart/Root/Move/Air/Top" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_ap661")
+TransitionEvent = 1
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../Descend/Coyote/Disabled")]
+
+[node name="AirMove" type="Node" parent="Statechart/Root/Move/Air"]
+script = ExtResource("5_e50wk")
+ReactionEvent = 1
+CustomEventName = &""
+
+[node name="Impulse" type="Node" parent="Statechart/Root/Move"]
+script = ExtResource("5_e50wk")
+ReactionEvent = 1
+CustomEventName = &""
+
+[connection signal="Invoke" from="Statechart/Root/Move/ViewRotate" to="." method="RI_ViewRotate"]
+[connection signal="Enter" from="Statechart/Root/Move/Ground/Walk" to="." method="Enter_Walk"]
+[connection signal="Invoke" from="Statechart/Root/Move/Ground/Walk/StandWalk" to="." method="RI_StandWalk"]
+[connection signal="Guard" from="Statechart/Root/Move/Ground/Walk/->Sprint" to="." method="TG_WalkToSprint"]
+[connection signal="Guard" from="Statechart/Root/Move/Ground/Walk/->Crouch" to="." method="TG_IsCrouch"]
+[connection signal="Enter" from="Statechart/Root/Move/Ground/Sprint" to="." method="Enter_Sprint"]
+[connection signal="Invoke" from="Statechart/Root/Move/Ground/Sprint/StandSprint" to="." method="RI_StandWalk"]
+[connection signal="Guard" from="Statechart/Root/Move/Ground/Sprint/->Walk" to="." method="TG_SprintToWalk"]
+[connection signal="Guard" from="Statechart/Root/Move/Ground/->Air" to="." method="TG_GroundToAir"]
+[connection signal="Invoke" from="Statechart/Root/Move/Ground/->Air" to="." method="TI_GroundToAir"]
+[connection signal="Guard" from="Statechart/Root/Move/Air/->Ground" to="." method="TG_AirToGround"]
+[connection signal="Enter" from="Statechart/Root/Move/Air/Descend" to="." method="Enter_AirDescend"]
+[connection signal="Enter" from="Statechart/Root/Move/Air/Descend/Coyote/Enabled" to="." method="Enter_CoyoteEnabled"]
+[connection signal="Exit" from="Statechart/Root/Move/Air/Descend/Coyote/Enabled" to="." method="Exit_CoyoteEnabled"]
+[connection signal="Invoke" from="Statechart/Root/Move/Air/Descend/Coyote/Enabled/Reaction" to="." method="RI_CoyoteEnabled"]
+[connection signal="Guard" from="Statechart/Root/Move/Air/Descend/Coyote/Enabled/->Disabled" to="." method="TG_IsCoyote"]
+[connection signal="Enter" from="Statechart/Root/Move/Air/Descend/Prejump" to="." method="Enter_Prejump"]
+[connection signal="Exit" from="Statechart/Root/Move/Air/Descend/Prejump" to="." method="Exit_Prejump"]
+[connection signal="Invoke" from="Statechart/Root/Move/Air/Descend/Prejump/Reaction" to="." method="RI_Prejump"]
+[connection signal="Guard" from="Statechart/Root/Move/Air/Descend/->Ascend" to="." method="TG_AirIsAscend"]
+[connection signal="Enter" from="Statechart/Root/Move/Air/Ascend" to="." method="Enter_AirAscend"]
+[connection signal="Guard" from="Statechart/Root/Move/Air/Ascend/->Top" to="." method="TG_AirIsTop"]
+[connection signal="Guard" from="Statechart/Root/Move/Air/Ascend/->Descend" to="." method="TG_AirIsDescend"]
+[connection signal="Enter" from="Statechart/Root/Move/Air/Top" to="." method="Enter_AirTop"]
+[connection signal="Guard" from="Statechart/Root/Move/Air/Top/->Descend" to="." method="TG_AirIsDescend"]
+[connection signal="Invoke" from="Statechart/Root/Move/Air/AirMove" to="." method="RI_AirMove"]
+[connection signal="Invoke" from="Statechart/Root/Move/Impulse" to="." method="RI_MoveWithImpulse"]

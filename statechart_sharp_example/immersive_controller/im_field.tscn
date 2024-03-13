@@ -1,7 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://sm7k2oee3ow0"]
+[gd_scene load_steps=9 format=3 uid="uid://sm7k2oee3ow0"]
 
 [ext_resource type="Material" uid="uid://dxsxnkm5rxjbl" path="res://statechart_sharp_example/immersive_controller/resource/material/mat_field_ground.tres" id="1_g62y5"]
 [ext_resource type="PackedScene" uid="uid://b4dys3gs5yv55" path="res://statechart_sharp_example/immersive_controller/im_player.tscn" id="2_0jsl8"]
+[ext_resource type="PackedScene" uid="uid://d1f45qde7pif5" path="res://statechart_sharp_example/immersive_controller/box.tscn" id="2_1154f"]
+[ext_resource type="MeshLibrary" uid="uid://cf8g8m044uubj" path="res://statechart_sharp_example/immersive_controller/resource/im_field_gridmap/field_gridmap.tres" id="2_cj2ft"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ag2wj"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_mtail"]
 
@@ -19,17 +23,136 @@ sdfgi_enabled = true
 
 [node name="Node3D" type="Node3D"]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="World" type="Node3D" parent="."]
+
+[node name="Ground" type="CSGBox3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 use_collision = true
+collision_mask = 7
 size = Vector3(64, 2, 64)
 material = ExtResource("1_g62y5")
 
-[node name="CharacterBody3D" parent="." instance=ExtResource("2_0jsl8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="Wall" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 4, 0)
+use_collision = true
+collision_mask = 7
+size = Vector3(1, 8, 64)
+material = ExtResource("1_g62y5")
+
+[node name="Wall5" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, -2, 0)
+use_collision = true
+collision_mask = 7
+size = Vector3(1, 8, 16)
+material = ExtResource("1_g62y5")
+
+[node name="Wall2" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 4, 0)
+use_collision = true
+collision_mask = 7
+size = Vector3(1, 8, 64)
+material = ExtResource("1_g62y5")
+
+[node name="Wall3" type="CSGBox3D" parent="World"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 4, 32)
+use_collision = true
+collision_mask = 7
+size = Vector3(1, 8, 64)
+material = ExtResource("1_g62y5")
+
+[node name="Wall4" type="CSGBox3D" parent="World"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 4, -32)
+use_collision = true
+collision_mask = 7
+size = Vector3(1, 8, 64)
+material = ExtResource("1_g62y5")
+
+[node name="Stair" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 0.1, 0)
+use_collision = true
+collision_mask = 7
+material = ExtResource("1_g62y5")
+
+[node name="Stair6" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 2.5, 1)
+use_collision = true
+collision_mask = 7
+size = Vector3(1, 1, 8)
+material = ExtResource("1_g62y5")
+
+[node name="Stair7" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 2.5, -3.5)
+use_collision = true
+collision_mask = 7
+size = Vector3(4, 1, 13)
+material = ExtResource("1_g62y5")
+
+[node name="Stair2" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, -0.1, 1)
+use_collision = true
+collision_mask = 7
+material = ExtResource("1_g62y5")
+
+[node name="Stair3" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, -0.1, 2)
+use_collision = true
+collision_mask = 7
+material = ExtResource("1_g62y5")
+
+[node name="Stair4" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, -0.3, 3)
+use_collision = true
+collision_mask = 7
+material = ExtResource("1_g62y5")
+
+[node name="Stair5" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, -0.3, 4)
+use_collision = true
+collision_mask = 7
+material = ExtResource("1_g62y5")
+
+[node name="GridMap" type="GridMap" parent="World"]
+mesh_library = ExtResource("2_cj2ft")
+physics_material = SubResource("PhysicsMaterial_ag2wj")
+cell_size = Vector3(1, 1, 1)
+cell_center_y = false
+data = {
+"cells": PackedInt32Array(1, 65532, 1, 1, 65533, 1, 1, 65534, 1, 1, 65535, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 3, 2, 1, 4, 2, 1, 4, 1, 1, 5, 1, 1, 5, 0, 1, 5, 65535, 1, 5, 65534, 1, 6, 65533, 1, 6, 65532, 1, 6, 65531, 1, 5, 65531, 1, 4, 65531, 1, 3, 65531, 1, 2, 65531, 1, 1, 65531, 1, 5, 65532, 1, 4, 65532, 1, 3, 65532, 1, 2, 65532, 1, 2, 65533, 1, 4, 65533, 1, 3, 65533, 1, 5, 65533, 1, 2, 65534, 1, 3, 65534, 1, 4, 65534, 1, 2, 65535, 1, 3, 65535, 1, 4, 65535, 1, 4, 0, 1, 3, 0, 1, 2, 0, 1, 2, 1, 1, 3, 1, 1, 5, 2, 1, 6, 2, 1, 6, 1, 1, 6, 0, 1, 6, 65535, 1, 6, 65534, 1, 6, 3, 1, 5, 3, 1, 4, 3, 1, 3, 3, 1, 2, 3, 1, 1, 3, 1, 1, 4, 1, 2, 4, 1, 3, 4, 1, 4, 4, 1, 5, 4, 1, 6, 4, 1, 7, 4, 1, 7, 3, 1, 7, 2, 1, 8, 1, 1, 8, 0, 1, 8, 65535, 1, 9, 65535, 1, 9, 65534, 1, 9, 65533, 1, 9, 65532, 1, 10, 65532, 1, 10, 65531, 1, 9, 65531, 1, 9, 65530, 1, 8, 65530, 1, 8, 65531, 1, 7, 65531, 1, 8, 65532, 1, 7, 65532, 1, 7, 65533, 1, 8, 65533, 1, 8, 65534, 1, 7, 65534, 1, 7, 65535, 1, 7, 0, 1, 7, 1, 1, 9, 1, 1, 9, 0, 1, 9, 2, 1, 8, 2, 1, 8, 3, 1, 8, 4, 1, 9, 4, 1, 9, 3, 1, 10, 2, 1, 10, 65533, 1, 10, 65534, 1, 10, 65535, 1, 10, 0, 1, 10, 1, 1, 10, 65530, 1, 7, 65530, 1, 6, 65530, 1, 5, 65530, 1, 4, 65530, 1, 3, 65530, 1, 2, 65530, 1, 1, 65530, 1)
+}
+metadata/_editor_floor_ = Vector3(0, 0, 0)
+
+[node name="Boxs" type="Node3D" parent="World"]
+
+[node name="RigidBody3D" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 4, -3)
+mass = 10.0
+
+[node name="RigidBody3D2" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 4, -3)
+mass = 20.0
+
+[node name="RigidBody3D3" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 4, -3)
+mass = 30.0
+
+[node name="RigidBody3D4" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 4, -3)
+mass = 40.0
+
+[node name="RigidBody3D5" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -3)
+mass = 50.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 1.38528, 0)
+omni_range = 10.0
+
+[node name="Player" parent="." instance=ExtResource("2_0jsl8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.656059, 0.75471, 0, -0.75471, 0.656059, 0, 0, 0)
+shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_jmqqk")
