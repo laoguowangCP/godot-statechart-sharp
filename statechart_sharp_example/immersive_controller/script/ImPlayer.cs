@@ -26,7 +26,8 @@ public partial class ImPlayer : CharacterBody3D
 
 	protected Node3D Head;
 	protected CollisionShape3D BodyCol;
-	protected ShapeCast3D StairStepCast;
+	protected List<CollisionShape3D> HeadCols;
+	protected ShapeCast3D PoseCast;
 
 	// Get the gravity from the project settings to be synced with RigidBody nodes.
 	protected float gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
@@ -40,12 +41,19 @@ public partial class ImPlayer : CharacterBody3D
     public override void _Ready()
     {
 		Head = GetNode<Node3D>("Head");
+
 		BodyCol = GetNode<CollisionShape3D>("CollisionBody");
+		HeadCols = new List<CollisionShape3D>();
+		for(int i = 1; i <= 8; ++i)
+		{
+			var head = GetNode<CollisionShape3D>("CollisionHead" + i.ToString());
+			HeadCols.Add(head);
+		}
+
+		PoseCast = GetNode<ShapeCast3D>("PoseCast");
 
 		CoyoteTimer = GetNode<Timer>("Timers/CoyoteTimer");
 		PrejumpTimer = GetNode<Timer>("Timers/PrejumpTimer");
-		// StairStepCast = GetNode<ShapeCast3D>("StairStepCast");
-		// StairStepCast.TargetPosition = new Vector3(0.0f, -StairHeightMax * 2.0f, 0.0f);
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
 		CamMaxSpeed = Mathf.DegToRad(CamMaxSpeed);
@@ -69,6 +77,58 @@ public partial class ImPlayer : CharacterBody3D
 		// Only change accel & decel
 		MoveAccel = prop.Accel;
 		MoveDecel = prop.Decel;
+	}
+
+	protected void ApplyPose(
+		float height,
+		float feetHeight,
+		float headFromTop,
+		float headColFromTop)
+	{
+		float bodyShapeHeight = height - feetHeight;
+
+		// Body shape height
+		var bodyShape = (CapsuleShape3D)BodyCol.Shape;
+		bodyShape.Height = bodyShapeHeight;
+
+		// BodyCol height
+		var bodyColPos = BodyCol.Position;
+		bodyColPos.Y = 0.5f * bodyShapeHeight + feetHeight;
+		BodyCol.Position = bodyColPos;
+
+		// HeadCol height
+		foreach (var headCol in HeadCols)
+		{
+			var headColPos = headCol.Position;
+			headColPos.Y = height + headColFromTop;
+			headCol.Position = headColPos;
+		}
+
+		// Head height
+		var headPos = Head.Position;
+		headPos.Y = height + headFromTop;
+		Head.Position = headPos;
+	}
+
+	protected bool IsPoseHasRoom(float height, float feetHeight)
+	{
+		float shapeHeight = height-feetHeight;
+		PoseCast.Shape = new CapsuleShape3D() { Height = shapeHeight, Radius = 0.4f };
+		// 0.5f * height + feetHeight
+		var castPos = Vector3.Zero;
+		castPos.Y += 0.5f * shapeHeight + feetHeight;
+		PoseCast.Position = castPos;
+		PoseCast.TargetPosition = Vector3.Zero;
+		// static, player and rigid, 0b0111 => 0xb
+		PoseCast.CollisionMask = 0x3;
+		PoseCast.ForceShapecastUpdate();
+		var res = PoseCast.CollisionResult;
+		foreach (var item in res)
+		{
+			GD.Print(item);
+		}
+		// should not collide with any
+		return res.Count == 0;
 	}
 
 	protected float MaxSpeedMultipler(Vector2 dir, float forwardRatio, float backwardRatio)
@@ -157,8 +217,6 @@ public partial class ImPlayer : CharacterBody3D
 			delta * GetAccelOrDecel(Vel.X, targetVel.X, MoveAccel, MoveDecel));
 		Vel.Z = Mathf.MoveToward(Vel.Z, targetVel.Z,
 			delta * GetAccelOrDecel(Vel.Z, targetVel.Z, MoveAccel, MoveDecel));
-
-		// GD.Print(velocity.Length());
 		
 		Velocity = Vel;
 		MoveAndSlide();
@@ -236,7 +294,7 @@ public partial class ImPlayer : CharacterBody3D
 			return;
 		}
 
-		// Not prejump
+		// Else if not prejump
 		if (Input.IsActionJustPressed("Space"))
 		{
 			IsPrejump = true;
@@ -246,12 +304,32 @@ public partial class ImPlayer : CharacterBody3D
 
 	public void Enter_Walk(StatechartDuct duct)
 	{
+		// Beware of initial state enter, _Ready() is not done yet
+		if (!IsNodeReady())
+		{
+			return;
+		}
+
 		ApplyPlayerMoveProp(StandWalkProp);
+
+		float walkHeight = 1.7f;
+		float feetHeight = 0.1f;
+		float headFromTop = -0.3f;
+		float headColFromTop = -0.4f;
+
+		ApplyPose(walkHeight, feetHeight, headFromTop, headColFromTop);
 	}
 
 	public void Enter_Sprint(StatechartDuct duct)
 	{
 		ApplyPlayerMoveProp(StandSprintProp);
+
+		float walkHeight = 1.7f;
+		float feetHeight = 0.1f;
+		float headFromTop = -0.3f;
+		float headColFromTop = -0.4f;
+
+		ApplyPose(walkHeight, feetHeight, headFromTop, headColFromTop);
 	}
 
 	public void Enter_AirDescend(StatechartDuct duct)
@@ -277,17 +355,32 @@ public partial class ImPlayer : CharacterBody3D
 		GD.Print("Enter Coyote Enabled");
 		CoyoteTimer.Start();
 	}
+
 	public void Enter_Prejump(StatechartDuct duct)
 	{
 		GD.Print("Enter Prejump");
 		IsPrejump = false;
 	}
+
+	public void Enter_Crouch(StatechartDuct duct)
+	{
+		ApplyPlayerMoveProp(CrouchProp);
+
+		float crouchHeight = 1.3f;
+		float feetHeight = 0.1f;
+		float headFromTop = -0.3f;
+		float headColFromTop = -0.4f;
+
+		ApplyPose(crouchHeight, feetHeight, headFromTop, headColFromTop);
+	}
+
 	public void Exit_CoyoteEnabled(StatechartDuct duct)
 	{
 		GD.Print("Enter Coyote Disabled");
 		CoyoteTimer.Stop();
 		IsCoyote = false;
 	}
+
 	public void Exit_Prejump(StatechartDuct duct)
 	{
 		GD.Print("Exit Prejump");
@@ -334,9 +427,14 @@ public partial class ImPlayer : CharacterBody3D
 		duct.IsEnabled = !IsCoyote;
 	}
 
-	public void TG_IsCrouch(StatechartDuct duct)
+	public void TG_WalkToCrouch(StatechartDuct duct)
 	{
-		duct.IsEnabled = false;
+		duct.IsEnabled = Input.IsActionJustPressed("Ctrl");
+	}
+
+	public void TG_CrouchToWalk(StatechartDuct duct)
+	{
+		duct.IsEnabled = Input.IsActionJustPressed("Ctrl") && IsPoseHasRoom(1.7f, 0.1f);
 	}
 
 	public void TI_GroundToAir(StatechartDuct duct)

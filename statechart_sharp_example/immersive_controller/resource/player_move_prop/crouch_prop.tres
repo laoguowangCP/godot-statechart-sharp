@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PlayerMoveProp" load_steps=2 format=3 uid="uid://b6mk676j8oof"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/immersive_controller/script/PlayerMoveProp.cs" id="1_oafpy"]
+
+[resource]
+script = ExtResource("1_oafpy")
+MaxSpeed = 2.5
+ForwardRatio = 1.0
+BackwardRatio = 1.0
+Accel = 25.0
+Decel = 75.0

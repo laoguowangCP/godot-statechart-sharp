@@ -1,9 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1f45qde7pif5"]
+[gd_scene load_steps=4 format=3 uid="uid://d1f45qde7pif5"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_e7vn4"]
 absorbent = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4rkw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jfyjy"]
+albedo_color = Color(0.188235, 0.435294, 0.188235, 1)
+metallic_specular = 0.0
 
 [node name="RigidBody3D" type="RigidBody3D"]
 collision_layer = 4
@@ -16,3 +20,4 @@ continuous_cd = true
 shape = SubResource("BoxShape3D_g4rkw")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
+material = SubResource("StandardMaterial3D_jfyjy")
