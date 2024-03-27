@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 class CompositionComparer : IComparer<StatechartComposition>
 {
@@ -50,5 +49,3 @@ class ReactionComparer : IComparer<Reaction>
         return x.OrderId - y.OrderId;
     }
 }
-
-} // end of namespace

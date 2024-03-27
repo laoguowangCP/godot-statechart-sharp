@@ -3,8 +3,7 @@ using Godot;
 using Godot.Collections;
 
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 [Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
@@ -365,5 +364,3 @@ public partial class Transition : StatechartComposition
     }
     #endif
 }
-
-} // End of namespace

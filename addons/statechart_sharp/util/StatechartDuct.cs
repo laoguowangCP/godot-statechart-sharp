@@ -1,8 +1,7 @@
 using Godot;
 
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 [Tool]
 public partial class StatechartDuct : GodotObject
@@ -18,5 +17,3 @@ public partial class StatechartDuct : GodotObject
     public StatechartComposition CompositionNode { get; internal set; }
     public bool IsRunning { get => HostStatechart.IsRunning; }
 }
-
-} // end of namespace

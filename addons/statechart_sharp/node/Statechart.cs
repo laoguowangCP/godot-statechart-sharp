@@ -2,8 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 [Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
@@ -406,5 +405,3 @@ public partial class Statechart : StatechartComposition
     }
     #endif
 }
-
-} // End of namespace

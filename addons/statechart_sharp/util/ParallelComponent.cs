@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 public class ParallelComponent : StateComponent
 {
@@ -280,5 +279,3 @@ public class ParallelComponent : StateComponent
         }
     }
 }
-
-} // end of namespace

@@ -2,8 +2,7 @@ using Godot;
 using System.Collections.Generic;
 
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 public enum StateModeEnum : int
 {
@@ -172,5 +171,3 @@ public partial class State : StatechartComposition
     }
     #endif
 }
-
-} // End of namespace

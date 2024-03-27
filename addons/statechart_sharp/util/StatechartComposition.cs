@@ -1,7 +1,6 @@
 using Godot;
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 [Tool]
 public partial class StatechartComposition : Node
@@ -31,5 +30,3 @@ public partial class StatechartComposition : Node
         return x.HostStatechart == y.HostStatechart;
     } 
 }
-
-} // End of namespace

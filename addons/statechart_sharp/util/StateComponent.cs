@@ -2,8 +2,7 @@ using Godot;
 using System.Collections.Generic;
 
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 public class StateComponent
 {
@@ -104,5 +103,3 @@ public class StateComponent
     }
     #endif
 }
-
-} // end of namespace

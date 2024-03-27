@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using Godot;
 
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 [Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Reaction.svg")]
@@ -121,5 +120,3 @@ public partial class Reaction : StatechartComposition
     }
     #endif
 }
-
-} // End of namespace

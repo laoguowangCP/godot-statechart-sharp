@@ -2,8 +2,7 @@ using System;
 using Godot;
 
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 [Flags]
 public enum EventFlagEnum
@@ -105,5 +104,3 @@ public partial class StatechartConfig : Node
         _ => null
     };
 }
-
-} // end of namespace

@@ -1,8 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace LGWCP.StatechartSharp
-{
+namespace LGWCP.StatechartSharp;
 
 public class HistoryComponent : StateComponent
 {
@@ -74,5 +73,3 @@ public class HistoryComponent : StateComponent
     }
     #endif
 }
-
-} // end of namespace
