@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
+using System.Collections.Generic;
 
 
 namespace LGWCP.StatechartSharp;
@@ -298,16 +298,33 @@ public partial class Transition : StatechartComposition
         }
 
         // else EventName == eventName, transition is enabled on default.
-        Duct.IsEnabled = true;
-        Duct.CompositionNode = this;
-        EmitSignal(SignalName.Guard, Duct);
-        return Duct.IsEnabled;
+        // Duct.IsEnabled = true;
+        // Duct.CompositionNode = this;
+        // EmitSignal(SignalName.Guard, Duct);
+        return CustomTransitionGuard(Duct);
+    }
+
+    protected virtual bool CustomTransitionGuard(StatechartDuct duct)
+    {
+        // Use signal by default
+        duct.IsEnabled = true;
+        duct.CompositionNode = this;
+        EmitSignal(SignalName.Guard, duct);
+        return duct.IsEnabled;
     }
 
     internal void TransitionInvoke()
     {
-        Duct.CompositionNode = this;
-        EmitSignal(SignalName.Invoke, Duct);
+        // Duct.CompositionNode = this;
+        // EmitSignal(SignalName.Invoke, Duct);
+        CustomTransitionInvoke(Duct);
+    }
+
+    protected virtual void CustomTransitionInvoke(StatechartDuct duct)
+    {
+        // Use signal by default
+        duct.CompositionNode = this;
+        EmitSignal(SignalName.Invoke, duct);
     }
 
     internal SortedSet<State> GetDeducedEnterStates()

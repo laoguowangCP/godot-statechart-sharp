@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Godot;
+using System.Collections.Generic;
 
 
 namespace LGWCP.StatechartSharp;
@@ -80,8 +80,16 @@ public partial class Reaction : StatechartComposition
 
     internal void ReactionInvoke()
     {
-        Duct.CompositionNode = this;
-        EmitSignal(SignalName.Invoke, Duct);
+        // Duct.CompositionNode = this;
+        // EmitSignal(SignalName.Invoke, Duct);
+        CustomReactionInvoke(Duct);
+    }
+
+    protected virtual void CustomReactionInvoke(StatechartDuct duct)
+    {
+        // Use signal by default
+        duct.CompositionNode = this;
+        EmitSignal(SignalName.Invoke, duct);
     }
 
     #if TOOLS

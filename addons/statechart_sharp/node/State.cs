@@ -106,14 +106,30 @@ public partial class State : StatechartComposition
             ParentState.HandleSubstateEnter(this);
         }
         
-        Duct.CompositionNode = this;
-        EmitSignal(SignalName.Enter, Duct);
+        // Duct.CompositionNode = this;
+        // EmitSignal(SignalName.Enter, Duct);
+        CustomStateEnter(Duct);
+    }
+
+    protected virtual void CustomStateEnter(StatechartDuct duct)
+    {
+        // Use signal by default
+        duct.CompositionNode = this;
+        EmitSignal(SignalName.Enter, duct);
     }
 
     internal void StateExit()
     {
-        Duct.CompositionNode = this;
-        EmitSignal(SignalName.Exit, Duct);
+        // Duct.CompositionNode = this;
+        // EmitSignal(SignalName.Exit, Duct);
+        CustomStateExit(Duct);
+    }
+
+    protected virtual void CustomStateExit(StatechartDuct duct)
+    {
+        // Use signal by default
+        duct.CompositionNode = this;
+        EmitSignal(SignalName.Exit, duct);
     }
 
     internal void RegisterActiveState(SortedSet<State> activeStates)
