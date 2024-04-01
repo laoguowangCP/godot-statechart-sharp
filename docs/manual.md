@@ -22,28 +22,20 @@ To get full perspective on statechart, you may refer to:
 
 ## Statechart
 
-The control node of whole statechart. You can simply take it as "state machine" as in common state machine system. To make it work, add 1 child state node (non-history) as "root state".
+The control node of all statechart compositions. It requires 1 child state node (non-history) as "root state".
 
-When statechart is ready, it initializes itself, then root state, then nodes descendant to root state. All the composition will be indexed with **"document order"** — the order they showed in an expanded node tree, which is used in most order-considering cases, like entering states or invoking reactions.
+When statechart is ready, it walks through all the descendant nodes to:
 
-After setup, statechart's main logic runs in `void Step(StringName)`, where parameter is the given "event". Here following things will be done:
+- Index compositions with **"document order"** — the order they showed in expanded node tree. It will be used in most order-considering cases.
+- Enter initially active states.
 
-1. Queue event, if statechart is already running a step. Otherwise, do following tasks with the given event.
-2. Select transitions (with given event) from active states.
-3. Execute selected transitions.
-4. Select and execute automatic transitions from active states, for several rounds.
-5. Select reactions (with given event) from active states.
-6. Execute selected reactions.
-7. If event queue is not cleared, get next event, back to 2.
+Statechart is based on event, using `StringName` type. It can be 1) builtin events like proccess/input or 2) custom event. Given a event, statechart can run a **step**, where following things will be done:
 
-So as you can see, statechart is based on events. It involves 2 situation:
+1. Select & execute [transition](#transition)s from active states (with given event).
+2. Select & execute [automatic transition](#automatic-transition)s from active states.
+3. Select & execute [reaction](#reaction)s from active states (with given event).
 
-- Statechart steps builtin events, triggered by node loop events (process, input, etc.).
-- Name your custom event. Step it manually.
-
-With an event queue, statechart can store parsed events for latter process. It happens when state/transition/reaction steps another event during a running step. Event like this is called "internal event".
-
-Normally, transition are selected if event matches, but there's an exception. "Automatic transitions", also known as eventless transitions, are handled whenever a step is called. This will go for several rounds, until there's no more automatic transition to be executed.
+Additionaly, statechart accepts step calls when a step is already running. Their events, known as **internal event**s, will be queued, while the running step loops .
 
 ### Properties of Statechart
 
@@ -101,6 +93,12 @@ With given active states, we can further more express their behaviors. Use signa
 **`void Enter(StatechartDuct)`** : Emitted when state is entered.
 
 **`void Exit(StatechartDuct)`** : Emitted when state is exit.
+
+### Methods of State
+
+**`void CustomStateEnter(StatechartDuct duct)`**: Overrideable state enter behavior. Emit `Enter` signal by default.
+
+**`void CustomStateExit(StatechartDuct duct)`**: Overrideable state exit behavior. Emit `Exit` signal by default.
 
 <br/>
 
@@ -204,15 +202,19 @@ Basically, setting a transition invalid is to avoid dangerous situations. It usu
 
 **`void Invoke(Transition)`** : Emitted when transition is invoked. It happens when transition is selected and executed, after states' exit and before states' enter.
 
+### Methods of Transition
+
+**`bool CustomTransitionGuard(StatechartDuct duct)`**: Overrideable transition guard behavior. Emit `Guard` signal by default.
+
+**`void CustomTransitionInvoke(StatechartDuct duct)`**: Overrideable transition invoke behavior. Emit `Invoke` signal by default.
+
 <br/>
 
 ## Reaction
 
-Reaction node is used as child node of a non-history state, to represent the actual reaction of an active state during a step.
+Reaction node is used as child node of a non-history state, to represent what state do during a step.
 
-As shown in statechart step procedure, after all the transitions handled, we have updated active states as result. Then, their reactions will be collected if event matches, and invoked in document order.
-
-Likely, reaction has event, responsing to statechart's step event. You can choose between builtin node loop events or custom event (no "automatic reaction" by the way).
+Likely, reaction can assigned with builtin node loop event or custom event. Reactions 1)of active states 2)with matched events will be invoked in document order, **at the end of a step**.
 
 ### Properties of Reaction
 
@@ -222,6 +224,10 @@ Likely, reaction has event, responsing to statechart's step event. You can choos
 ### Signals of Reaction
 
 **`void Invoke(StatechartDuct)`** : Emitted when reaction is invoked. It happens when reaction is child to active state and matches the step event.
+
+### Methods of Reaction
+
+**`void CustomReactionInvoke(StatechartDuct duct)`**: Overrideable reaction invoke behavior. Emit `Invoke` signal by default.
 
 <br/>
 
