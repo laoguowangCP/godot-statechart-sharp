@@ -22,7 +22,7 @@ To get full perspective on statechart, you may refer to:
 
 ## Statechart
 
-The control node of all statechart compositions. It requires 1 child state node (non-history) as "root state".
+The control node of all statechart compositions. It requires 1 child state (non-history) as "root state".
 
 When statechart is ready, it walks through all the descendant nodes to:
 
@@ -35,15 +35,23 @@ Statechart is based on event, using `StringName` type. It can be 1) builtin even
 2. Select & execute [automatic transition](#automatic-transition)s from active states.
 3. Select & execute [reaction](#reaction)s from active states (with given event).
 
-Additionaly, statechart accepts step calls when a step is already running. Their events, known as **internal event**s, will be queued, while the running step loops .
+Additionaly, statechart accepts step calls when a step is already running. Events parsed by these steps, known as **internal event**s, will be queued. It goes like:
+
+```gdscript
+func step(event):
+  events.enqueue(event)
+  if not running:
+    while events.count > 0:
+      handle(events.dequeue())
+```
 
 ### Properties of Statechart
 
-**`int MaxInternalEventCount`** : Max internal event count handled in 1 step. If <=0 , statechart will ignore any internal event.
+**`int MaxInternalEventCount`** : Max internal event count handled per step. If <=0 , ignore any internal event.
 
-**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting automatic transitions in 1 step. If <=0 , statechart will ignore any automatic transition.
+**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting automatic transitions per event. If <=0 , ignore any automatic transition.
 
-**`enum EventFlagEnum EventFlag`** : Event flags control activity of node loop events (process, input, etc.) . All disabled by default.
+**`enum EventFlagEnum EventFlag`** : Control activity of node loop events (process, input, etc.) . All disabled by default.
 
 ### Methods of Statechart
 
@@ -53,26 +61,24 @@ Additionaly, statechart accepts step calls when a step is already running. Their
 
 ## State
 
-This node works as "state" in common state machine system.
+In a hierarchy state machine, states can be arranged in a tree structure (where child state is called **substate**). Statechart is similar, except that the state has 3 **mode**s to choose from. It alters hierarchical behavior:
 
-States can be arranged in a tree structure as hierarchical state machine do. Likely, not all states in the tree are active. Root state is always active. But for the rest, their activity are decided by their parent state, according to parent's state mode.
+**Compound**: the default mode.
 
-`Compound`: the default mode.
+- If a compound state is active, then exactly 1 substate (non-history) will be active (if there's any). The active substate is called **current state**.
+- Compound state will take its first substate (non-history) as **initial state** (if there's any) — the substate a compound will choose as current state by default.
 
-- If a compound state is active, then exactly 1 substate (non-history) will be active (if there's any), which is called current state.
-- Initial state is the substate a compound will choose as current state by default. You can assign it in inspector, or the first substate (non-history) will be initial state (if there's any).
-
-`Parallel`:
+**Parallel**:
 
 - If it is active, then all substate (non-history) will be active.
 
-`History`: with this mode, state represents the history "active status" of parent's descendant states.
+**History**:
 
 - Never active. History state is only used as a transition's target.
-- You can switch whether a history state is deep or shallow.
+- A history state represents the history "active status" of sibling states. You can switch between **deep history** or **shallow history**.
 
-  - A shallow history points to parent's substate(s), once active till last exit of parent state. With compound parent, it points to the sibling once active (or parent's initial state, if parent has never been active before). With parallel parent, it points to all the non-history siblings.
-  - A deep history points to leaf state(s) descendant to parent, once active till last exit of parent state. It makes parent state looks for shallow history recursively onto its descendants.
+  - A shallow history points to sibling state(s), once active till last exit of parent state.
+  - A deep history finds shallow history recursively onto its descendants. Or you can say it points to leaf state(s) descendant to parent, once active till last exit of parent state.
 
 With given active states, we can further more express their behaviors. Use signals, or composite with other nodes:
 
