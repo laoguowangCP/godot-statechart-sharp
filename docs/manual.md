@@ -22,20 +22,22 @@ To get full perspective on statechart, you may refer to:
 
 ## Statechart
 
+> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+
 The control node of all statechart compositions. It requires 1 child state (non-history) as "root state".
 
 When statechart is ready, it walks through all the descendant nodes to:
 
-- Index compositions with **"document order"** — the order they showed in expanded node tree. It will be used in most order-considering cases.
+- Index statechart compositions with **"document order"** — the order they listed in expanded node tree (start with 0, statechart node itself). It will be used in most order-considering cases.
 - Enter initially active states.
 
 Statechart is based on event, using `StringName` type. It can be 1) builtin events like proccess/input or 2) custom event. Given a event, statechart can run a **step**, where following things will be done:
 
-1. Select & execute [transition](#transition)s from active states (with given event).
-2. Select & execute [automatic transition](#automatic-transition)s from active states.
-3. Select & execute [reaction](#reaction)s from active states (with given event).
+1. Select and execute [transition](#transition)s from active states (with given event).
+2. Select and execute [automatic transition](#automatic-transition)s from active states.
+3. Select and execute [reaction](#reaction)s from active states (with given event).
 
-Additionaly, statechart accepts step calls when a step is already running. Events parsed by these steps, known as **internal event**s, will be queued. It goes like:
+Additionaly, statechart accepts step calls when a step is already running. Events parsed by these steps, known as **internal event**s, will be queued. It goes like (not real code):
 
 ```gdscript
 func step(event):
@@ -61,30 +63,28 @@ func step(event):
 
 ## State
 
-In a hierarchy state machine, states can be arranged in a tree structure (where child state is called **substate**). Statechart is similar, except that the state has 3 **mode**s to choose from. It alters hierarchical behavior:
+> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
 
-**Compound**: the default mode.
+Base composition of statechart. Only if a state is **active**, its [transition](#transition)(s) and [reaction](#reaction)(s) will be used during a step. Setting a state active/inactive is called to enter/exit a state. When happened, state will emit `Enter`/`Exit` signal.
+
+Similar to hierarchy state machine, states can be arranged in a tree structure (where child state is called **substate**), except that the state has 3 **mode**s to choose from. It alters hierarchical behavior:
+
+**Compound**: default mode.
 
 - If a compound state is active, then exactly 1 substate (non-history) will be active (if there's any). The active substate is called **current state**.
 - Compound state will take its first substate (non-history) as **initial state** (if there's any) — the substate a compound will choose as current state by default.
 
 **Parallel**:
 
-- If it is active, then all substate (non-history) will be active.
+- If a parallel state is active, then all substate(s) (non-history) will be active.
 
 **History**:
 
-- Never active. History state is only used as a transition's target.
-- A history state represents the history "active status" of sibling states. You can switch between **deep history** or **shallow history**.
+- Never active.
+- A history state represents "history active status". It is only used as target of [transition](#transition), replacing itself to pointed state(s) during runtime. You can switch between **shallow history** or **deep history**:
 
   - A shallow history points to sibling state(s), once active till last exit of parent state.
-  - A deep history finds shallow history recursively onto its descendants. Or you can say it points to leaf state(s) descendant to parent, once active till last exit of parent state.
-
-With given active states, we can further more express their behaviors. Use signals, or composite with other nodes:
-
-- Reaction node is used as a state's child, to express how state react during a step.
-- Transition node is used as a state's child, to how state transit during a step.
-- `Enter`/`Exit` signal is emitted when state is set active/unactive during a transition, used to express actions on state entry/exit.
+  - A deep history points to all state(s) descendant to parent state, once active till last exit of parent state.
 
 ### Properties of State
 
@@ -110,19 +110,21 @@ With given active states, we can further more express their behaviors. Use signa
 
 ## Transition
 
-Transition node is used as child node of a non-history state, to represent the transition from one state to another/others.
+> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
 
-First of all, transition has event. It is used to response to the statechart's step event. You can choose between builtin node loop events and custom event. Additionally, it has an "Auto" event — a null event, which makes it an automatic transition.
+Transition is used as child of a non-history state, to represent transition expected from parented state (called **source state**) to **target state**(s).
+
+Transition is based on event, responsing to the statechart's step event. It can be 1) builtin events like proccess/input, 2) custom event or 3) "Auto" event — a null event, which makes a transition **automatic**.
 
 From macro scope, transition is involed in 3 stages:
 
-1. Transition is initialized as statechart's composition. Here transition test whether it is valid, and deduce **LCA**, **enter region** and **enter region's edge** from targets.
-2. During a statechart's step, transitions are selected and executed from active states with given event.
+1. [Initialization](#initialization). Transition validates itself, and deduces **LCA**, **enter region** and **enter region's edge** from targets.
+2. [Select and execute](#select-and-execute). During a statechart's step, transitions are selected and executed from active states with given event.
 3. During a statechart's step, automatic transitions are selected and executed for several rounds.
 
 ### Initialization
 
-For a transition node, its parented state is called "source state", the state we transit from. Correspondingly, there's "target state(s)", the state we transit to.
+For a transition node, its parented state is called **source state**, the state we transit from. Correspondingly, there's "target state(s)", the state we transit to.
 
 Transition in statechart can be simple as common state machine, or complex, as transition may have multiple targets and could happen across hierarchy level. But after all, we just need to translate target(s) and source to the actual states to enter/exit.
 
@@ -218,9 +220,13 @@ Basically, setting a transition invalid is to avoid dangerous situations. It usu
 
 ## Reaction
 
+> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+
 Reaction node is used as child node of a non-history state, to represent what state do during a step.
 
-Likely, reaction can assigned with builtin node loop event or custom event. Reactions 1)of active states 2)with matched events will be invoked in document order, **at the end of a step**.
+Reaction is based on event, responsing to the statechart's step event. It can be 1) builtin events like proccess/input, 2) custom event.
+
+Reactions of active states, if event matches, will be invoked in document order at the end of a step.
 
 ### Properties of Reaction
 
@@ -239,11 +245,15 @@ Likely, reaction can assigned with builtin node loop event or custom event. Reac
 
 ## StatechartComposition
 
-Base node of `Statechart`, `State`, `Transition` and `Reaction`. Derived from `Node` .
+> **Inherits**: Node
+
+Base node of `Statechart`, `State`, `Transition` and `Reaction`.
 
 <br/>
 
 ## StatechartDuct
+
+> **Inherits**: GodotObject
 
 Conducting object parsed through signals, derived from `GodotObject` . It is used to access "context" from statechart, like delta time or input, when handling node loop events (process, input, etc.).
 
