@@ -256,14 +256,10 @@ public partial class Statechart : StatechartComposition
         }
 
         // 2. Invoke transitions
-        foreach (Transition trans in EnabledFilteredTransitions)
-        {
-            trans.TransitionInvoke();
-        }
-
         // 3. Deduce and merge enter set
         foreach (Transition trans in EnabledFilteredTransitions)
         {
+            trans.TransitionInvoke();
             // If transition is targetless, enter-region is null.
             if (trans.IsTargetless)
             {

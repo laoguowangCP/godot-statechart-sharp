@@ -344,7 +344,7 @@ public partial class Transition : StatechartComposition
         
         // Check parent
         bool isParentWarning = true;
-        Node parent = GetParent<Node>();
+        Node parent = GetParentOrNull<Node>();
 
         if (parent != null && parent is State state)
         {

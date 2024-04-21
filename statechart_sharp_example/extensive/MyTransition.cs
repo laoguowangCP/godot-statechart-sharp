@@ -1,6 +1,8 @@
 using Godot;
 using LGWCP.StatechartSharp;
 
+// Use Tool attribute so editor can check configuration
+[Tool]
 public partial class MyTransition : Transition
 {
     protected override void CustomTransitionInvoke(StatechartDuct duct)

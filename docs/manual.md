@@ -29,7 +29,7 @@ The control node of all statechart compositions. It requires 1 child state (non-
 When statechart is ready, it walks through all the descendant nodes to:
 
 - Index statechart compositions with **"document order"** — the order they listed in expanded node tree (start with 0, statechart node itself). It will be used in most order-considering cases.
-- Enter initially active states.
+- Enter states active initially.
 
 Statechart is based on event, using `StringName` type. It can be 1) builtin events like proccess/input or 2) custom event. Given a event, statechart can run a **step**, where following things will be done:
 
@@ -47,11 +47,27 @@ func step(event):
       handle(events.dequeue())
 ```
 
+Here is the overview of how statechart handles a single event (not real code):
+
+```gdscript
+func handle(event):
+  transitions = select_transitions(event)
+  transitions.execute()
+
+  do:
+    transitions = select_transitions(Auto)
+    transitions.execute()
+  while transitions.count > 0
+
+  reactions = select_reations(event)
+  reactions.execute()
+```
+
 ### Properties of Statechart
 
 **`int MaxInternalEventCount`** : Max internal event count handled per step. If <=0 , ignore any internal event.
 
-**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting automatic transitions per event. If <=0 , ignore any automatic transition.
+**`int MaxAutoTransitionRound`** : Max iteration rounds of selecting and executing automatic transitions per event. If <=0 , ignore any automatic transition.
 
 **`enum EventFlagEnum EventFlag`** : Control activity of node loop events (process, input, etc.) . All disabled by default.
 
@@ -65,7 +81,7 @@ func step(event):
 
 > **Inherits**: [StatechartComposition](#statechartcomposition)<Node
 
-Base composition of statechart. Only if a state is **active**, its [transition](#transition)(s) and [reaction](#reaction)(s) will be used during a step. Setting a state active/inactive is called to enter/exit a state. When happened, state will emit `Enter`/`Exit` signal.
+Base composition of statechart. Only if a state is **active**, its [transition](#transition)(s) and [reaction](#reaction)(s) will be used during a step. Setting a state **active**/**inactive** is called to **enter**/**exit** a state. When happened, state will emit `Enter`/`Exit` signal.
 
 Similar to hierarchy state machine, states can be arranged in a tree structure (where child state is called **substate**), except that the state has 3 **mode**s to choose from. It alters hierarchical behavior:
 
@@ -112,89 +128,63 @@ Similar to hierarchy state machine, states can be arranged in a tree structure (
 
 > **Inherits**: [StatechartComposition](#statechartcomposition)<Node
 
-Transition is used as child of a non-history state, to represent transition expected from parented state (called **source state**) to **target state**(s).
+Transition is used as child of a non-history state, to represent transition from parented state (called **source state**) to state(s) expected to be entered (known as **target state**(s)).
 
-Transition is based on event, responsing to the statechart's step event. It can be 1) builtin events like proccess/input, 2) custom event or 3) "Auto" event — a null event, which makes a transition **automatic**.
+Transition is involed in:
 
-From macro scope, transition is involed in 3 stages:
-
-1. [Initialization](#initialization). Transition validates itself, and deduces **LCA**, **enter region** and **enter region's edge** from targets.
-2. [Select and execute](#select-and-execute). During a statechart's step, transitions are selected and executed from active states with given event.
-3. During a statechart's step, automatic transitions are selected and executed for several rounds.
+- [Initialization](#initialization)
+- [Select and execute](#select-and-execute)
 
 ### Initialization
 
-For a transition node, its parented state is called **source state**, the state we transit from. Correspondingly, there's "target state(s)", the state we transit to.
+A transition is about "exiting a set of state(s)" and then "entering another set of state(s)". But they are not definite during initialization. Instead, transition deduces:
 
-Transition in statechart can be simple as common state machine, or complex, as transition may have multiple targets and could happen across hierarchy level. But after all, we just need to translate target(s) and source to the actual states to enter/exit.
+- **LCA state**, the least common anscetor state of target state(s) and source state. When transition happens, any active states descendant to LCA should be exit.
+- **Enter region**, a set of states to be entered definitely when transition happens. It includes 1) non-history target(s), 2) states descendant to LCA and ancestor to any target, 3) descendants of above states to be entered by default.
+- **Enter region's edge**, a set of history state(s) from target(s). Used for runtime deduction.
 
-First of all, we find "least common anscetor (LCA)" of target(s) and source. It is the state with no descendant can be anscestor to all of the target(s) and source. With the LCA found, states to enter/exit can be deduced by following rules:
+Beware the exception: **targetless transition** has 0 target assigned. LCA is parent of source state, while no state(s) will be entered or exit if this targetless transition happens.
 
-- All active states descendant to LCA should be exit.
-- For states to be entered, we pick them from descendants of the LCA:
-
-  1. Target(s) are picked, as well as their anscestors, as long as there's no confliction.
-  2. Supplement. Supplementary descendants are picked according to the mode of already picked state:
-
-      - Picked state is not history. For compound with no substate picked, pick its initial state. For parallel, pick its unpicked non-hisotry substates. Do this recursively.
-      - Picked state is shallow history. Substitute history with sibling state(s) once active. Then supplement this/these sibling(s) as non-history state.
-      - Picked state is deep history. Substitute history with all descendants of parent state once active.
-
-- Targetless exception. If transition is assigned with no target, it becomes a "targetless transition". No state(s) will be entered or exit.
-
-Conflict happens when 2 targets descendant to different substate of a compound state. We'll dispose the latter target, by the order they assigned in target array on inspector.
-
-According to the rules, the states to exit depend on status of active states. Also transition can not figure out full collection of states to enter, since we may handle history states. Though nothing is certain during initialization, transition produces following results to save some work:
-
-- LCA
-- Enter region: a set of non-history states that is determined to be entered.
-- Enter region edge: a set of targeted history states.
+Conflict happens when mutiple targets are or descendant to different substates of a compound state. Transition will dispose the latter target(s), by the order they assigned in target array in inspector.
 
 ### Select and execute
 
-As mentioned, when statechart runs a step, first it needs to select transitions from active states.
+Transition is based on event, responsing to the statechart's step event. It can be 1) builtin events like proccess/input, 2) custom event or 3) "Auto" event — a null event, which makes it an **automatic** transition. Transitions of active states, if event matches, will be selected and executed in document order during a step. Non-automatic transitions will be dealt first.
 
-- For leaf active states (active states with no non-history substate), selecting transition means iterating through its child transitions (by document order). If event matches, emit the `Guard` signal. It is used to check whether the transition is enabled (should happen) or not. If a transition is enabled, stop iteration and submit it to statechart for latter process.
+To select transitions, a recursion is invoked on active states, starting with leaf state(s):
 
-- For the rest of the active states (active states with non-history substate), it comes with a recursive process. Leaf states select first, while other states react according to returned case from their descendant(s), and then pass on the case to their parent:
+- For a leaf state, its child transitions are iterated in document order. If event matches, `Guard` signal will be emitted to check whether the transition is enabled. If does, then transition is selected, and iteration stops.
+- For non-leaf states, they need consider "selecting situation" of their descendant state(s):
 
-  - **Case "-1"** : no transition selected in descendants. State checks its own transitions. Return 1 if a transition is selected, else return -1 .
-  - **Case "0"** : transition selected in descendants, but not all of descendant leaf state has an anscestor with selected transition. They still ask for an enabled transition from anscestors, but expecting no confliction to selected one(s). In this case state checks its own **targetless** transitions. Return 1 if any is selected, else return 0 .
-  - **Case "1"** : transition selected in descendants, and all descendant leaf states has an anscestor with selected transition. No need to check any more. Return 1 .
+  - **Case "-1"** : no transition selected in active descendant(s). State checks child transitions.
+  - **Case "0"** : transition selected in descendants, but not all of active descendant leaf has an anscestor with selected transition. They still ask for an enabled transition from anscestors, but expecting no confliction to selected one(s). In this case, state only checks targetless transitions.
+  - **Case "1"** : transition selected in descendants, and all active descendant leaf has an anscestor with selected transition. No need to check.
 
-After that, selected transitions will be executed. Simple put, we just exit old states, emit transition's `Invoke` signal, and enter new states, while doing some detection to avoid conflicts. The detailed procedures are followed:
+After that, selected transitions are executed. Here we update active states, invoke transitions, while doing some validation to avoid conflicts:
 
-1. Iterate selected transitions with document order:
+1. Iterate selected transitions with document order. For each transition, do filter. If one's source state is descendant to any former's LCA, or any former's source state is descendant to this LCA, dispose this transition. Otherwise, add transition to **filtered transitions**, deduce states to exit, and merge them to **exit set**.
 
-    1. Deduce exit states. It is the collection of active states descendant to LCA.
-    2. Filter. If one's source state is descendant to any former's LCA, or any former's source state is descendant to this LCA, dispose this transition. Otherwise we enlist it to "filtered transitions".
-    3. Merge exit states to "exit set".
-
-2. Remove states in exit set from active states, and emit their `Exit` signals in **reversed** document order.
+2. For states in exit set, remove them from active states, and emit their `Exit` signals in *reversed* document order.
 3. For filtered transitions, emit `Invoke` signals in document order.
-4. Iterate filtered transitions with document order:
+4. Iterate filtered transitions with document order. For each transition, emit `Invoke` signal, deduce enter states (combines enter region and deduced states from enter region edge), and merge them to **enter set**.
+5. For states in enter set, add them to active states, and emit their `Enter` signals in document order.
 
-    1. Deduce enter states. It is the combination of pre-calculated enter region and deduced enter states for history target.
-    2. Merge enter states to "enter set".
+Automatic transitions are handled after normal given-an-event transitions. The "select and execute" procedures are same, but only 2 differences:
 
-5. Add states in enter set to active states, update their compound parent's current state, and emit their `Enter` signals in document order.
-
-### Automatic transition
-
-Automatic transitions are handled after normal given-an-event transitions in every step. The "select and execute" procedures are same, but only 2 differences:
-
-- Use "Auto" (null) event.
-- Do several rounds, until no automatic transition is selected any more.
+- Use "Auto" event.
+- Do several rounds, till no automatic transition is selected to execute.
 
 ### Invalid transition
 
-An invalid transition will be ignored. It won't be used, and none of its signals will be emitted. Transitions will be set invalid in following cases:
+An invalid transition will be ignored. It won't be checked, and signals won't be emitted. Transitions will be set invalid in following cases:
 
 - Event type is "Custom", but no event name assigned.
-- Event type is "Auto", while transition is targetless. This will cause endless loop during automatic transitions because source state keeps active whenever this transition invokes.
-- Event type is "Auto", while enter region contains source state. This will cause endless loop during automatic transitions because source state keeps active whenever this transition invokes.
+- Event type is "Auto", while transition is targetless. This may cause loop transition, since source state keeps active whenever this transition invokes.
+- Event type is "Auto", while enter region contains source state. This may cause loop transition, since source state keeps active whenever this transition invokes.
 
-Basically, setting a transition invalid is to avoid dangerous situations. It usually happens when assigning target(s) for automatic transitions. However, it can be the case that an automatic transition sets its anscetor's history as target, and an endless loop caused by this is unpredictable. Instead, sticking to safe configuration is recommended: only use the state that has no automatic transition within itself or in its descendants.
+> [!Info]
+>
+> Setting a transition invalid may help you avoid dangerous configuration of automatic transitions, but some situation can be unpredictable. For example, an automatic transition sets its anscetor's history as target, this may also cause a loop transition. A recommanded rule is to use the state as automatic transition's target, as long as it has no automatic transition itself or in its descendants.
 
 ### Properties of Transition
 
@@ -277,8 +267,8 @@ For state's enter signals, `StatechartDuct` should be handled carefully. It is b
 
 **`bool IsEnabled`** : Status of the pending transition. Used in transition's `Guard` signal.
 
-**`StatechartComposition CompositionNode`** : The statechart composition node who emit the signal.
+**`StatechartComposition CompositionNode`** : The statechart composition node who emit the signal and parse this object.
 
-**`bool IsRunning`** : Whether the statechart is running.
+**`bool IsRunning`** : Whether the statechart of the parsed statechart composition is running a step.
 
 <br/>
