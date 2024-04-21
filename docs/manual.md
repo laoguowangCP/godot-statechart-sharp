@@ -5,7 +5,7 @@ To get full perspective on statechart, you may refer to:
 - https://statecharts.dev/ for conceptual introduction.
 - https://www.w3.org/TR/scxml/ for detailed specification.
 
-> [!Warning]
+> [!WARNING]
 >
 > This plugin is a stylized implementation of statechart pattern, details may differ from harel statecharts definition. XML extention defined in SCXML is not implemented.
 
@@ -182,7 +182,7 @@ An invalid transition will be ignored. It won't be checked, and signals won't be
 - Event type is "Auto", while transition is targetless. This may cause loop transition, since source state keeps active whenever this transition invokes.
 - Event type is "Auto", while enter region contains source state. This may cause loop transition, since source state keeps active whenever this transition invokes.
 
-> [!Information]
+> [!TIP]
 >
 > Setting a transition invalid may help you avoid dangerous configuration of automatic transitions, but some situation can be unpredictable. For example, an automatic transition sets its anscetor's history as target, this may also cause a loop transition. A recommanded rule is to use the state as automatic transition's target, as long as it has no automatic transition itself or in its descendants.
 
