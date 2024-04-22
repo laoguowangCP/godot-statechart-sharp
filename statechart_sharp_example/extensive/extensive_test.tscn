@@ -28,5 +28,4 @@ script = ExtResource("2_uxwy2")
 
 [node name="Reaction" type="Node" parent="Statechart/Root/B"]
 script = ExtResource("4_1idey")
-ReactionEvent = 6
 CustomEventName = &""

@@ -33,10 +33,10 @@ radius = 0.25
 [node name="CharacterBody3D" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 7
+collision_priority = 0.1
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 slide_on_ceiling = false
-floor_constant_speed = true
 script = ExtResource("1_nsgnp")
 StandWalkProp = ExtResource("2_mjiu7")
 StandSprintProp = ExtResource("3_fjjns")
