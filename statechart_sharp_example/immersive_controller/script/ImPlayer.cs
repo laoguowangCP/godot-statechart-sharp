@@ -112,11 +112,13 @@ public partial class ImPlayer : CharacterBody3D
 
 	protected bool IsPoseHasRoom(float height, float feetHeight)
 	{
-		float shapeHeight = height-feetHeight;
+		// Shape is little shorter to leave small space from feet
+		float heightOffset = 0.0001f;
+		float shapeHeight = height-feetHeight - heightOffset;
 		PoseCast.Shape = new CapsuleShape3D() { Height = shapeHeight, Radius = 0.4f };
 		// 0.5f * height + feetHeight
 		var castPos = Vector3.Zero;
-		castPos.Y += 0.5f * shapeHeight + feetHeight;
+		castPos.Y += 0.5f * shapeHeight + feetHeight + heightOffset * 2.0f;
 		PoseCast.Position = castPos;
 		PoseCast.TargetPosition = Vector3.Zero;
 		// static, player and rigid, 0b0111 => 0xb

@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://bb3oovk4otf4v"]
+
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_ii6cj"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="2_uxwy2"]
+[ext_resource type="Script" path="res://statechart_sharp_example/extensive/MyState.cs" id="3_t0fih"]
+[ext_resource type="Script" path="res://statechart_sharp_example/extensive/MyReaction.cs" id="4_1idey"]
+[ext_resource type="Script" path="res://statechart_sharp_example/extensive/MyTransition.cs" id="4_8ev4p"]
+
+[node name="ExtensiveTest" type="Node"]
+
+[node name="Statechart" type="Node" parent="."]
+script = ExtResource("1_ii6cj")
+EventFlag = 17
+
+[node name="Root" type="Node" parent="Statechart"]
+script = ExtResource("2_uxwy2")
+
+[node name="A" type="Node" parent="Statechart/Root"]
+script = ExtResource("3_t0fih")
+
+[node name="Transition" type="Node" parent="Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_8ev4p")
+CustomEventName = &""
+TargetStatesArray = [NodePath("../../B")]
+
+[node name="B" type="Node" parent="Statechart/Root"]
+script = ExtResource("2_uxwy2")
+
+[node name="Reaction" type="Node" parent="Statechart/Root/B"]
+script = ExtResource("4_1idey")
+CustomEventName = &""
