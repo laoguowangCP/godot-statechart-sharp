@@ -15,6 +15,7 @@ To get full perspective on statechart, you may refer to:
 - [State](#state)
 - [Transition](#transition)
 - [Reaction](#reaction)
+- [TransitionPromoter](#transitionpromoter)
 - [StatechartComposition](#statechartcomposition)
 - [StatechartDuct](#statechartduct)
 
@@ -233,11 +234,25 @@ Reactions of active states, if event matches, will be invoked in document order 
 
 <br/>
 
+## TransitionPromoter
+
+> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+
+TransitionPromoter node is used as child node of a transition. When parented transition is ready, the promoter will:
+
+1. Find non-history leaf states descendant to parent state of the transition.
+2. Duplicate transition, add it as first child to each leaf state.
+3. Delete origin transition and promoter itself.
+
+This node is useful if you want a transition to be priorized without duplicating them manually in each leaf states.
+
+<br/>
+
 ## StatechartComposition
 
 > **Inherits**: Node
 
-Base node of `Statechart`, `State`, `Transition` and `Reaction`.
+Base composition node for statechart.
 
 <br/>
 

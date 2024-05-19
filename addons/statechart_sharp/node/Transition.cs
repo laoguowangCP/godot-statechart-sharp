@@ -9,14 +9,9 @@ namespace LGWCP.StatechartSharp;
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
 public partial class Transition : StatechartComposition
 {
-    #region define signals
-
     [Signal] public delegate void GuardEventHandler(StatechartDuct duct);
     [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
-    
-    #endregion
 
-    #region define properties
 
     [Export] private TransitionEventNameEnum TransitionEvent
     {
@@ -76,7 +71,6 @@ public partial class Transition : StatechartComposition
     // private bool IsEnabled { get => Duct.IsEnabled; set => Duct.IsEnabled = value; }
     private bool IsValid { get; set; }
 
-    #endregion
 
     public override void _Ready()
     {
@@ -357,9 +351,24 @@ public partial class Transition : StatechartComposition
         }
 
         // Check children
-        if (GetChildren().Count > 0)
+        bool hasPromoter = false;
+        foreach (Node child in GetChildren())
         {
-            warnings.Add("Transition should not have child.");
+            if (child is TransitionPromoter)
+            {
+                if (hasPromoter)
+                {
+                    warnings.Add("Transition should not have multiple TransitionPromoter as child.");
+                }
+                else
+                {
+                    hasPromoter = true;
+                }
+            }
+            else
+            {
+                warnings.Add("Transition should only have TransitionPromoter as child.");
+            }
         }
 
         // Check event

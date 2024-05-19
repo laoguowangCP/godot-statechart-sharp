@@ -88,6 +88,27 @@ public partial class State : StatechartComposition
         _ => null
     };
 
+    internal void GetLeafStates(List<State> states)
+    {
+        bool isAtomic = true;
+        foreach (Node child in GetChildren())
+        {
+            if (child is State state)
+            {
+                if (!state.IsHistory)
+                {
+                    isAtomic = false;
+                    state.GetLeafStates(states);
+                }
+            }
+        }
+
+        if (isAtomic)
+        {
+            states.Add(this);
+        }
+    }
+
     internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
         base.Setup(hostStateChart, ref ancestorId);

@@ -14,9 +14,6 @@ public partial class StatechartComposition : Node
         HostStatechart = hostStatechart;
         ++ancestorId;
         OrderId = ancestorId;
-
-        // TODO: delete it
-        GD.Print(Name, ": ", OrderId);
         
         if (HostStatechart != this)
         {

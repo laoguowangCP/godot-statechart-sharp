@@ -12,7 +12,7 @@
 
 ## Introduction
 
-What is statechart? Simple put:
+What is statechart?
 
 - It is a state machine.
 - Supports hierarchy state, with various state mode.
@@ -25,7 +25,7 @@ This plugin provides basic nodes to build statechart in Godot editor.
 >
 > Before you start, You need .NET-enabled version of Godot.
 
-Download repository, copy `addons/statechart_sharp` to your project folder. Build project once, then enable plugin in project setting. It's good if you see new nodes added to "create new node" interface:
+Download repository, copy `addons/statechart_sharp` to your project folder. Build project once, then enable plugin in project setting. You'll see new nodes added to "create new node" interface:
 
 <img src="./docs/asset/ss_imported_nodes.png" alt="ss_imported_nodes" style="width:300px;"/>
 
@@ -43,7 +43,7 @@ Download repository, copy `addons/statechart_sharp` to your project folder. Buil
 
   <img src="./docs/asset/ss_add_transition_&_reaction.png" alt="ss_add_transition" style="width:180px;"/>
 
-**Step 2** : Wire up. Set properties and connect signals.
+**Step 2** : Set properties and connect signals.
 
 **Step 3** : Build and run.
 
@@ -51,5 +51,13 @@ You can find example scenes in `./statechart_sharp_example` folder. Refer to [ma
 
 ## Feature
 
-- Node based, but few nodes to learn about.
-- Designed for composition. No need to extend scripts.
+- Follow statechart specification:
+
+  - Use document order.
+  - Support auto transition.
+
+- Designed for Godot:
+
+  - Node based.
+  - Support node loop events (process, input, etc.).
+  - Choose your style: extend scripts, or use signals only.

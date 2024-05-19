@@ -113,14 +113,6 @@ public partial class Statechart : StatechartComposition
             return;
         }
 
-        /*
-        If is running
-            if <= max round
-                queue event
-            return
-        Else not running:
-            queue event
-        */
         if (IsRunning)
         {
             if (EventCount <= MaxInternalEventCount)

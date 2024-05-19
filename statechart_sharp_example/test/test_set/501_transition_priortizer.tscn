@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_1bw00"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_ljsqd"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_1uhkf"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/TransitionPriortizer.cs" id="5_2gmxi"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/TransitionPromoter.cs" id="5_2gmxi"]
 
 [node name="BoxContainer" type="VBoxContainer"]
 custom_minimum_size = Vector2(600, 500)
@@ -36,25 +36,14 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[font_size=20][center][b]History 1[/b][/center][/font_size]
+text = "[font_size=20][center][b]Transition promoter[/b][/center][/font_size]
 
-You may need to be familiar to transition mechanism before you read this test.
+TransitionPromoter promotes parent transition. It duplicates parent transition and add them as child of non-history leaf states descendant to transition's parent state. Duplicated transition will be moved as first child node, original transition will be deleted. It happens after parent transition node is ready.
 
-History state represents the history \"active status\" of parent's descendant states. This test shows how shallow history works. Deep history will be showed later. 
-
-A shallow history points to parent's substate(s), once active till last exit of parent state.
-
-[ul]
-With compound parent, it points to the sibling once active (or parent's initial state, if parent has never been active before).
-With parallel parent, it points to all the non-history siblings.
-[/ul]
-
-This test demonstrate compound situation. It involves 3 test steps:
+When test is pressed:
 
 [ol]
-In first test step, we transit from \"Init\" to A/Y/2. This makes a history situation.
-Next, we transit from A to B's history. B has never been entered before, so history fallbacks to B's initial state B/X.
-Finally, we transit back to A's history. It is A/Y. Since it is a shallow history, so A/Y's history status is ignored, and A/Y/1 is entered as initial state.
+A/X/Transition will be selected and execute. A/X/Transition is promoted from A/Transition.
 [/ol]
 
 "
@@ -72,6 +61,7 @@ StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_1bw00")
+EventFlag = 1
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_ljsqd")
@@ -89,11 +79,25 @@ script = ExtResource("3_ljsqd")
 script = ExtResource("3_ljsqd")
 StateMode = 2
 
-[node name="Transition" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="Transition0" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_1uhkf")
-CustomEventName = &""
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B")]
 
-[node name="TransitionPriortizer" type="Node" parent="Tester/Statechart/Root/A/Transition"]
+[node name="TransitionPromoter0" type="Node" parent="Tester/Statechart/Root/A/Transition0"]
+script = ExtResource("5_2gmxi")
+
+[node name="TransitionPromoter1" type="Node" parent="Tester/Statechart/Root/A/Transition0"]
+script = ExtResource("5_2gmxi")
+
+[node name="Transition" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_1uhkf")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B")]
+
+[node name="TransitionPromoter" type="Node" parent="Tester/Statechart/Root/A/Transition"]
 script = ExtResource("5_2gmxi")
 
 [node name="B" type="Node" parent="Tester/Statechart/Root"]

@@ -17,6 +17,11 @@ public class ParallelComponent : StateComponent
         State lastSubstate = null;
         foreach (Node child in HostState.GetChildren())
         {
+            if (child.IsQueuedForDeletion())
+            {
+                continue;
+            }
+            
             if (child is State s)
             {
                 s.Setup(hostStateChart, ref ancestorId);
