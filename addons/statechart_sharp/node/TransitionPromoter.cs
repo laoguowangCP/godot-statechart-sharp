@@ -43,7 +43,7 @@ public partial class TransitionPromoter : StatechartComposition
     protected async void PromoteTransition()
     {
         // Wait transition is ready
-        await ToSignal(HostTransition, Transition.SignalName.Ready);
+        await ToSignal(ParentState, State.SignalName.Ready);
 
         if (HostTransition.IsQueuedForDeletion())
         {
@@ -63,12 +63,9 @@ public partial class TransitionPromoter : StatechartComposition
             HostTransition.RemoveChild(child);
         }
 
-        // Find leaf states
-        Node transitionParent = HostTransition.GetParentOrNull<Node>();
-
         // Get leaf states
         List<State> leafStates = new List<State>();
-        ParentState.GetLeafStates(leafStates);
+        ParentState.GetPromoteStates(leafStates);
 
         // For each leaf state(s), duplicate transition, add it as first child
         foreach (State leafState in leafStates)

@@ -109,6 +109,11 @@ public partial class State : StatechartComposition
         }
     }
 
+    internal bool GetPromoteStates(List<State> states)
+    {
+        return StateComponent.GetPromoteStates(states);
+    }
+
     internal override void Setup(Statechart hostStateChart, ref int ancestorId)
     {
         base.Setup(hostStateChart, ref ancestorId);

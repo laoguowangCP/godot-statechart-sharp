@@ -273,7 +273,6 @@ public partial class ImPlayer : CharacterBody3D
 			{
 				if (body.GetCollisionLayerValue(3))
 				{
-					GD.Print("Detect layer 3");
 					var impluseDir = -collision.GetNormal();
 					var implseForce = Math.Max(impluseDir.Dot(Vel), 0.0f) * 400.0f * delta;
 					body.ApplyCentralImpulse(impluseDir * implseForce);
@@ -414,15 +413,15 @@ public partial class ImPlayer : CharacterBody3D
 
 	public void TG_AirIsAscend(StatechartDuct duct)
 	{
-		duct.IsEnabled = !IsOnFloor() && Velocity.Y > AirTopIntervalVel;
+		duct.IsEnabled = Velocity.Y > AirTopIntervalVel;
 	}
 	public void TG_AirIsDescend(StatechartDuct duct)
 	{
-		duct.IsEnabled = !IsOnFloor() && Velocity.Y < -AirTopIntervalVel;
+		duct.IsEnabled = Velocity.Y < -AirTopIntervalVel;
 	}
 	public void TG_AirIsTop(StatechartDuct duct)
 	{
-		duct.IsEnabled = !IsOnFloor() && Velocity.Y <= AirTopIntervalVel && Velocity.Y >= -AirTopIntervalVel;
+		duct.IsEnabled = Velocity.Y <= AirTopIntervalVel && Velocity.Y >= -AirTopIntervalVel;
 	}
 	public void TG_IsCoyote(StatechartDuct duct)
 	{

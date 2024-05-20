@@ -180,6 +180,30 @@ public class CompoundComponent : StateComponent
                 enterRegion, enterRegionEdge, extraEnterRegion, false);
         }
     }
+
+    internal override bool GetPromoteStates(List<State> states)
+    {
+        bool isPromote = true;
+        foreach (Node child in HostState.GetChildren())
+        {
+            if (child is State state)
+            {
+                bool isChildPromote = !state.GetPromoteStates(states);
+                // Child is promote => this is not
+                if (isChildPromote)
+                {
+                    isPromote = false;
+                }
+            }
+        }
+
+        if (isPromote)
+        {
+            states.Add(HostState);
+        }
+
+        return isPromote;
+    }
     
     internal override void RegisterActiveState(SortedSet<State> activeStates)
     {

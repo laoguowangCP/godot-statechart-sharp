@@ -14,6 +14,12 @@ public class HistoryComponent : StateComponent
         base.Setup(hostStateChart, ref ancestorId);
     }
 
+    internal override bool GetPromoteStates(List<State> states)
+    {
+        // History do not promote
+        return false;
+    }
+
     internal override void ExtendEnterRegion(
         SortedSet<State> enterRegion,
         SortedSet<State> enterRegionEdge,

@@ -148,6 +148,32 @@ public class ParallelComponent : StateComponent
         }
     }
 
+    internal override bool GetPromoteStates(List<State> states)
+    {
+        bool isPromote = true;
+        foreach (Node child in HostState.GetChildren())
+        {
+            if (child is State state)
+            {
+                bool isChildPromote = !state.GetPromoteStates(states);
+                // Child is promote => this is not
+                if (isChildPromote)
+                {
+                    isPromote = false;
+                    // Parallel needs only 1st leaf state to promote
+                    break;
+                }
+            }
+        }
+
+        if (isPromote)
+        {
+            states.Add(HostState);
+        }
+
+        return isPromote;
+    }
+
     internal override bool IsConflictToEnterRegion(
         State tgtSubstate, SortedSet<State> enterRegion)
     {
