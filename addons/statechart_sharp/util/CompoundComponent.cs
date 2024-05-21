@@ -188,9 +188,9 @@ public class CompoundComponent : StateComponent
         {
             if (child is State state)
             {
-                bool isChildPromote = !state.GetPromoteStates(states);
+                bool isDescendantPromote = !state.GetPromoteStates(states);
                 // Child is promote => this is not
-                if (isChildPromote)
+                if (isDescendantPromote)
                 {
                     isPromote = false;
                 }

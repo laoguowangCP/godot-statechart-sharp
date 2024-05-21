@@ -170,14 +170,20 @@ After that, selected transitions are executed. Here we update active states, inv
 4. Iterate filtered transitions with document order. For each transition, emit `Invoke` signal, deduce enter states (combines enter region and deduced states from enter region edge), and merge them to **enter set**.
 5. For states in enter set, add them to active states, and emit their `Enter` signals in document order.
 
-Automatic transitions are handled after normal given-an-event transitions. The "select and execute" procedures are same, but only 2 differences:
+[Automatic transition](#automatic-transition)s are handled after normal given-an-event transitions. The procedures are same, but only 2 differences:
 
 - Use "Auto" event.
 - Do several rounds, till no automatic transition is selected to execute.
 
+### Automatic transition
+
+Also known as eventless transition. Automatic transitions do not response to certain event, but always handled after normal given-an-event transitions.
+
+To make a transition automatic, set its event property to "Auto".
+
 ### Invalid transition
 
-An invalid transition will be ignored. It won't be checked, and signals won't be emitted. Transitions will be set invalid in following cases:
+An invalid transition won't be checked and its signals won't be emitted. Transitions will be set invalid in following cases:
 
 - Event type is "Custom", but no event name assigned.
 - Event type is "Auto", while transition is targetless. This may cause loop transition, since source state keeps active whenever this transition invokes.
@@ -240,11 +246,15 @@ Reactions of active states, if event matches, will be invoked in document order 
 
 TransitionPromoter node is used as child node of a transition. When parented transition is ready, the promoter will:
 
-1. Find non-history leaf states descendant to parent state of the transition.
+1. Get certain leaf states descendant to parent state of the transition.
 2. Duplicate transition, add it as first child to each leaf state.
 3. Delete origin transition and promoter itself.
 
-This node is useful if you want a transition to be priorized without duplicating them manually in each leaf states.
+TransitionPromoter is useful if you need to "prioritize" a transition, meaning you want your transition to be considered first in subtree of statechart in any situation. As transition selection is started from leaf states, prioritized transition needs multiple copies in certain leaf states. The query of certain leaf states comes up with a recursion, started with parent state of the transition:
+
+- For compound state: query each substate. If no descendant state is selected, then commit itself as a leaf state.
+- For parallel state: query substates, but stop if any descendant is selected. Or else no descendant is leaf state, then commit itself as leaf state.
+- For history state: do nothing.
 
 <br/>
 
