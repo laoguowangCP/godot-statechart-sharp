@@ -79,10 +79,11 @@ script = ExtResource("3_ljsqd")
 script = ExtResource("3_ljsqd")
 StateMode = 2
 
-[node name="Transition0" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="Transition0" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_1uhkf")
 TransitionEvent = 6
 CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B")]
 
 [node name="TransitionPromoter0" type="Node" parent="Tester/Statechart/Root/A/Transition0"]
 script = ExtResource("5_2gmxi")
@@ -90,10 +91,11 @@ script = ExtResource("5_2gmxi")
 [node name="TransitionPromoter1" type="Node" parent="Tester/Statechart/Root/A/Transition0"]
 script = ExtResource("5_2gmxi")
 
-[node name="Transition" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="Transition" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_1uhkf")
 TransitionEvent = 6
 CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B")]
 
 [node name="TransitionPromoter" type="Node" parent="Tester/Statechart/Root/A/Transition"]
 script = ExtResource("5_2gmxi")

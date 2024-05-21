@@ -12,7 +12,7 @@ public partial class Statechart : StatechartComposition
     protected int MaxInternalEventCount = 8;
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxAutoTransitionRound = 8;
-    [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
+    [Export(PropertyHint.Flags, "Process,Physics Process,Input,Shortcut Input,UnhandledKey Input,Unhandled Input")]
     protected EventFlagEnum EventFlag { get; set; } = 0;
     internal bool IsRunning { get; private set; }
     protected int EventCount;
