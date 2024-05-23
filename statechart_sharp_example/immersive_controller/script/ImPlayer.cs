@@ -305,12 +305,6 @@ public partial class ImPlayer : CharacterBody3D
 
 	public void Enter_Walk(StatechartDuct duct)
 	{
-		// Beware of initial state enter, _Ready() is not done yet
-		if (!IsNodeReady())
-		{
-			return;
-		}
-
 		ApplyPlayerMoveProp(StandWalkProp);
 
 		float walkHeight = 1.7f;
