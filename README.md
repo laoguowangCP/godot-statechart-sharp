@@ -15,7 +15,8 @@
 What is statechart?
 
 - A state machine.
-- Supports hierarchy state, with various state mode.
+- Supports hierarchy states.
+- Has various state mode.
 
 This plugin provides basic nodes to build statechart in Godot editor.
 

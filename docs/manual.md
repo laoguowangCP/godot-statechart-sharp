@@ -72,6 +72,8 @@ func handle(event):
 
 **`enum EventFlagEnum EventFlag`** : Control activity of node loop events (process, input, etc.) . All disabled by default.
 
+**`IsWaitParentReady`** : If true, statechart setup process will wait parent node to be ready.
+
 ### Methods of Statechart
 
 **`void Step(StringName)`** : Make statechart run a step with given event.

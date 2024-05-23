@@ -14,6 +14,9 @@ public partial class Statechart : StatechartComposition
     protected int MaxAutoTransitionRound = 8;
     [Export(PropertyHint.Flags, "Process,Physics Process,Input,Shortcut Input,UnhandledKey Input,Unhandled Input")]
     protected EventFlagEnum EventFlag { get; set; } = 0;
+    [Export]
+    protected bool IsWaitParentReady = true;
+
     internal bool IsRunning { get; private set; }
     protected int EventCount;
     internal State RootState { get; set; }
@@ -46,9 +49,8 @@ public partial class Statechart : StatechartComposition
         {
         #endif
 
-        // Statechart setup
-        Setup();
-        PostSetup();
+        // Statechart setup async
+        StartSetUp();
 
         #if TOOLS
         }
@@ -57,6 +59,22 @@ public partial class Statechart : StatechartComposition
             UpdateConfigurationWarnings();
         }
         #endif
+    }
+
+    protected async void StartSetUp()
+    {
+        if (IsWaitParentReady)
+        {
+            Node parentNode = GetParent<Node>();
+
+            if (parentNode is not null)
+            {
+                await ToSignal(parentNode, Node.SignalName.Ready);
+            }
+        }
+
+        Setup();
+        PostSetup();
     }
 
     internal override void Setup()
