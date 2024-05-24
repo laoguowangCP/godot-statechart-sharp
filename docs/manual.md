@@ -121,9 +121,9 @@ Similar to hierarchy state machine, states can be arranged in a tree structure (
 
 ### Methods of State
 
-**`void CustomStateEnter(StatechartDuct duct)`**: Overrideable state enter behavior. Emit `Enter` signal by default.
+**`void CustomStateEnter(StatechartDuct)`**: Overrideable state enter behavior. Emit `Enter` signal by default.
 
-**`void CustomStateExit(StatechartDuct duct)`**: Overrideable state exit behavior. Emit `Exit` signal by default.
+**`void CustomStateExit(StatechartDuct)`**: Overrideable state exit behavior. Emit `Exit` signal by default.
 
 <br/>
 
@@ -205,15 +205,15 @@ An invalid transition won't be checked and its signals won't be emitted. Transit
 
 ### Signals of Transition
 
-**`void Guard(Transition)`** : Emitted when transition is checked. Used to judge whether transition is enabled (by default) or not. If it is, then transition will be selected and then executed.
+**`void Guard(StatechartDuct)`** : Emitted when transition is checked. Used to judge whether transition is enabled (by default) or not. If it is, then transition will be selected and then executed.
 
-**`void Invoke(Transition)`** : Emitted when transition is invoked. It happens when transition is selected and executed, after states' exit and before states' enter.
+**`void Invoke(StatechartDuct)`** : Emitted when transition is invoked. It happens when transition is selected and executed, after states' exit and before states' enter.
 
 ### Methods of Transition
 
-**`bool CustomTransitionGuard(StatechartDuct duct)`**: Overrideable transition guard behavior. Emit `Guard` signal by default.
+**`bool CustomTransitionGuard(StatechartDuct)`**: Overrideable transition guard behavior. Emit `Guard` signal by default.
 
-**`void CustomTransitionInvoke(StatechartDuct duct)`**: Overrideable transition invoke behavior. Emit `Invoke` signal by default.
+**`void CustomTransitionInvoke(StatechartDuct)`**: Overrideable transition invoke behavior. Emit `Invoke` signal by default.
 
 <br/>
 
@@ -238,7 +238,7 @@ Reactions of active states, if event matches, will be invoked in document order 
 
 ### Methods of Reaction
 
-**`void CustomReactionInvoke(StatechartDuct duct)`**: Overrideable reaction invoke behavior. Emit `Invoke` signal by default.
+**`void CustomReactionInvoke(StatechartDuct)`**: Overrideable reaction invoke behavior. Emit `Invoke` signal by default.
 
 <br/>
 
