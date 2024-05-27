@@ -15,11 +15,15 @@ public enum StateModeEnum : int
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
 public partial class State : StatechartComposition
 {
-    #region define signals
+    #region signals
+    
     [Signal] public delegate void EnterEventHandler(StatechartDuct duct);
     [Signal] public delegate void ExitEventHandler(StatechartDuct duct);
     
     #endregion
+
+
+    #region properties
 
     [Export] internal StateModeEnum StateMode
     {
@@ -27,6 +31,7 @@ public partial class State : StatechartComposition
         set
         {
             _stateMode = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -44,6 +49,7 @@ public partial class State : StatechartComposition
         set
         {
             _initialState = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -64,6 +70,11 @@ public partial class State : StatechartComposition
     protected StatechartDuct Duct { get => HostStatechart.Duct; }
     internal bool IsHistory { get => StateMode == StateModeEnum.History; }
     
+    #endregion
+
+
+    #region methods
+
     public override void _Ready()
     {
         Substates = new List<State>();
@@ -88,27 +99,6 @@ public partial class State : StatechartComposition
         _ => null
     };
 
-    internal void GetLeafStates(List<State> states)
-    {
-        bool isAtomic = true;
-        foreach (Node child in GetChildren())
-        {
-            if (child is State state)
-            {
-                if (!state.IsHistory)
-                {
-                    isAtomic = false;
-                    state.GetLeafStates(states);
-                }
-            }
-        }
-
-        if (isAtomic)
-        {
-            states.Add(this);
-        }
-    }
-
     internal bool GetPromoteStates(List<State> states)
     {
         return StateComponent.GetPromoteStates(states);
@@ -127,13 +117,7 @@ public partial class State : StatechartComposition
 
     internal void StateEnter()
     {
-        if (ParentState != null)
-        {
-            ParentState.HandleSubstateEnter(this);
-        }
-        
-        // Duct.CompositionNode = this;
-        // EmitSignal(SignalName.Enter, Duct);
+        ParentState?.HandleSubstateEnter(this);
         CustomStateEnter(Duct);
     }
 
@@ -146,8 +130,6 @@ public partial class State : StatechartComposition
 
     internal void StateExit()
     {
-        // Duct.CompositionNode = this;
-        // EmitSignal(SignalName.Exit, Duct);
         CustomStateExit(Duct);
     }
 
@@ -190,11 +172,11 @@ public partial class State : StatechartComposition
 
     internal void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
     {
-        foreach (Reaction a in Reactions)
+        foreach (Reaction reaction in Reactions)
         {
-            if (a.Check(eventName))
+            if (reaction.Check(eventName))
             {
-                enabledReactions.Add(a);
+                enabledReactions.Add(reaction);
             }
         }
     }
@@ -203,13 +185,10 @@ public partial class State : StatechartComposition
     public override string[] _GetConfigurationWarnings()
     {
         List<string> warnings = new List<string>();
-
-        if (StateComponent != null)
-        {
-            StateComponent.GetConfigurationWarnings(warnings);
-        }
-
+        StateComponent?.GetConfigurationWarnings(warnings);
         return warnings.ToArray();
     }
     #endif
+
+    #endregion
 }

@@ -5,16 +5,18 @@ using System.Collections.Generic;
 namespace LGWCP.StatechartSharp;
 
 [Tool]
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/Reaction.svg")]
+[GlobalClass]
+[Icon("res://addons/statechart_sharp/icon/Reaction.svg")]
 public partial class Reaction : StatechartComposition
 {
-    #region define signals
+    #region signals
 
     [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
     
     #endregion
 
-    #region define properties
+
+    #region properties
 
     [Export] protected ReactionEventNameEnum ReactionEvent
     {
@@ -22,6 +24,7 @@ public partial class Reaction : StatechartComposition
         set
         {
             _reactionEvent = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -37,6 +40,7 @@ public partial class Reaction : StatechartComposition
         set
         {
             _customEventName = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -50,6 +54,9 @@ public partial class Reaction : StatechartComposition
     protected StatechartDuct Duct { get => HostStatechart.Duct; }
 
     #endregion
+
+
+    #region methods
 
     public override void _Ready()
     {
@@ -67,7 +74,7 @@ public partial class Reaction : StatechartComposition
         #if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)
         {
-            GD.PushError(Name, ": no event name for custom-event.");
+            GD.PushError(GetPath(), ": no event name for custom-event.");
         }
         #endif
         EventName = StatechartConfig.GetReactionEventName(ReactionEvent, CustomEventName);
@@ -80,8 +87,6 @@ public partial class Reaction : StatechartComposition
 
     internal void ReactionInvoke()
     {
-        // Duct.CompositionNode = this;
-        // EmitSignal(SignalName.Invoke, Duct);
         CustomReactionInvoke(Duct);
     }
 
@@ -127,4 +132,6 @@ public partial class Reaction : StatechartComposition
         return warnings.ToArray();
     }
     #endif
+
+    #endregion
 }
