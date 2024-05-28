@@ -19,6 +19,7 @@ public partial class Transition : StatechartComposition
         set
         {
             _transitionEvent = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -34,6 +35,7 @@ public partial class Transition : StatechartComposition
         set
         {
             _customEventName = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -49,6 +51,7 @@ public partial class Transition : StatechartComposition
         set
         {
             _targetStatesArray = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -57,7 +60,7 @@ public partial class Transition : StatechartComposition
             #endif
         }
     }
-    private Array<State> _targetStatesArray = new Array<State>();
+    private Array<State> _targetStatesArray = new();
     private StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
     internal State SourceState { get; set; }
@@ -68,7 +71,6 @@ public partial class Transition : StatechartComposition
     protected StatechartDuct Duct { get => HostStatechart.Duct; }
     internal bool IsTargetless { get; private set; }
     internal bool IsAuto { get; private set; }
-    // private bool IsEnabled { get => Duct.IsEnabled; set => Duct.IsEnabled = value; }
     private bool IsValid { get; set; }
 
 
@@ -108,9 +110,7 @@ public partial class Transition : StatechartComposition
             &&  (CustomEventName == null || CustomEventName == ""))
         {
             #if DEBUG
-            GD.PushError(
-                GetPath(),
-                ": no event name for custom event.");
+            GD.PushError(GetPath(), ": no event name for custom event.");
             #endif
             IsValid = false;
         }
@@ -122,25 +122,25 @@ public partial class Transition : StatechartComposition
 
         if (IsTargetless && IsAuto)
         {
-            #if DEBUG
-            GD.PushWarning(
-                GetPath(),
-                ": targetless auto transition is invalid. This will most likely cause loop transition.");
-            #endif
             IsValid = false;
+
+            #if DEBUG
+            GD.PushWarning(GetPath(),
+                ": targetless auto transition is invalid. This may cause loop transition.");
+            #endif
         }
     }
 
     internal override void PostSetup()
     {
         /*
-        Process target states:
-            1. Find LCA(Least Common Ancestor) of source and targets.
-            2. Record path from LCA to targets.
-            3. Update enter-region
+        Post setup:
+            1. Find LCA(Least Common Ancestor) of source and targets
+            2. Record path from LCA to targets
+            3. Update enter region
         */
 
-        // Though targetless has no exit set or enter set, still have LCA = source.parent as defined
+        // Targetless transition's LCA is source's parent state as defined
         if (IsTargetless)
         {
             LcaState = SourceState.ParentState;
@@ -149,16 +149,16 @@ public partial class Transition : StatechartComposition
 
         // Record source-to-root
         State iterState = SourceState;
-        List<State> srcToRoot = new List<State>();
+        List<State> srcToRoot = new();
         while (iterState != null)
         {
             srcToRoot.Add(iterState);
             iterState = iterState.ParentState;
         }
 
-        // Init LCA as SourceState, the first state in srcToRoot
+        // Init LCA as source state, the first state in srcToRoot
         int reversedLcaIdx = srcToRoot.Count;
-        List<State> tgtToRoot = new List<State>();
+        List<State> tgtToRoot = new();
         foreach (State target in TargetStates)
         {
             // Check under same statechart
@@ -166,18 +166,16 @@ public partial class Transition : StatechartComposition
             {
                 #if DEBUG
                 GD.PushWarning(
-                    GetPath(),
-                    ": target ",
-                    target.GetPath(),
-                    " should under same statechart as source state.");
+                    GetPath(), ": target ", target.GetPath(), " is not under same statechart as source state.");
                 #endif
+
                 continue;
             }
 
             /*
             Record target-to-root with conflict check:
-                1. Do conflict check once when iter state's parent first reach enter region.
-                2. If target is already in enter region, it conflicts naturally.
+                1. Do conflict check once when iterated state's parent first reach enter region
+                2. If target is already in enter region, conflicts
             */
             tgtToRoot.Clear();
             bool isConflict = EnterRegion.Contains(target);
@@ -186,14 +184,12 @@ public partial class Transition : StatechartComposition
             bool isReachEnterRegion = false;
             while (!isConflict && iterState != null)
             {
-                // Check transition conflicts
+                // Check target conflicts
                 State iterParent = iterState.ParentState;
 
                 if (!isReachEnterRegion && iterParent != null)
                 {
                     isReachEnterRegion = EnterRegion.Contains(iterParent);
-
-                    // First reach enter region
                     if (isReachEnterRegion)
                     {
                         isConflict = iterParent.IsConflictToEnterRegion(
@@ -210,15 +206,13 @@ public partial class Transition : StatechartComposition
             {
                 #if DEBUG
                 GD.PushWarning(
-                    SourceState.GetPath(),
-                    ": target ",
-                    target.GetPath(),
-                    " conflicts with previous target(s).");
+                    GetPath(), ": target ", target.GetPath(), " conflicts with previous target(s).");
                 #endif
+
                 continue;
             }
 
-            // local-LCA between src and 1 tgt
+            // Local LCA between src and 1 tgt
             int maxReversedIdx = 1; // Reversed
             int maxCountToRoot = srcToRoot.Count < tgtToRoot.Count
                 ? srcToRoot.Count : tgtToRoot.Count;
@@ -242,9 +236,9 @@ public partial class Transition : StatechartComposition
             }
 
             /*
-            Update enter-region, with entire tgtToRoot, for that:
-                1. Following targets may check conflict in local-LCA's ancestor
-                2. When extending, states need check substate in enter-region
+            Add tgtToRoot to enter region, because:
+                1. Later target(s) need check conflict in local-LCA's ancestor
+                2. When extending, states need check if their substate in enter region
             */
             for (int i = 1; i <= tgtToRoot.Count; ++i)
             {
@@ -256,7 +250,7 @@ public partial class Transition : StatechartComposition
         LcaState = srcToRoot[^reversedLcaIdx];
 
         // Extend enter region under LCA
-        SortedSet<State> extraEnterRegion = new SortedSet<State>(new StateComparer());
+        SortedSet<State> extraEnterRegion = new(new StateComparer());
         LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
         EnterRegion.UnionWith(extraEnterRegion);
 
@@ -269,13 +263,14 @@ public partial class Transition : StatechartComposition
         // Check auto-transition loop case
         if (IsAuto && EnterRegion.Contains(SourceState))
         {
+            IsValid = false;
+
             #if DEBUG
             GD.PushWarning(
                 GetPath(),
-                ": auto transition's enter region contains source state, ",
-                "causes transition invalid, this will most likely cause loop transition.");
+                ": auto transition's enter region contains source state ",
+                "causes transition invalid, this may cause loop transition.");
             #endif
-            IsValid = false;
         }
     }
 

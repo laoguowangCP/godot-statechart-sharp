@@ -145,9 +145,9 @@ public partial class State : StatechartComposition
         StateComponent.RegisterActiveState(activeStates);
     }
 
-    internal bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
+    internal bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegionUnextended)
     {
-        return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
+        return StateComponent.IsConflictToEnterRegion(substate, enterRegionUnextended);
     }
 
     internal void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)

@@ -127,13 +127,14 @@ public class CompoundComponent : StateComponent
     }
 
     internal override bool IsConflictToEnterRegion(
-        State tgtSubstate, SortedSet<State> enterRegion)
+        State tgtSubstate,
+        SortedSet<State> enterRegionUnextended)
     {
-        // Conflicts if any substate is already exist in enter-region.
-        SortedSet<State> descInRegion = enterRegion.GetViewBetween(
+        // Conflicts if any substate is already exist in enter region
+        // At this point history is not excluded from enter region
+        SortedSet<State> descInRegion = enterRegionUnextended.GetViewBetween(
             LowerState, UpperState);
         return descInRegion.Count > 0;
-        // Covers history cases.
     }
 
     internal override void ExtendEnterRegion(
@@ -145,7 +146,7 @@ public class CompoundComponent : StateComponent
         /*
         if need check (state is in region, checked by parent):
             if any substate in region:
-                extend this very substate, still need check
+                extend this substate, still need check
             else (no substate in region)
                 extend initial state, need no check
         else (need no check)
@@ -235,21 +236,21 @@ public class CompoundComponent : StateComponent
             return handleInfo;
         }
 
-        foreach (Transition t in Transitions)
+        foreach (Transition transtion in Transitions)
         {
             // If == 0, only check targetless
             if (handleInfo == 0)
             {
-                if (!t.IsTargetless)
+                if (!transtion.IsTargetless)
                 {
                     continue;
                 }
             }
 
-            bool isEnabled = t.Check(eventName);
+            bool isEnabled = transtion.Check(eventName);
             if (isEnabled)
             {
-                enabledTransitions.Add(t);
+                enabledTransitions.Add(transtion);
                 handleInfo = 1;
                 break;
             }
@@ -262,9 +263,9 @@ public class CompoundComponent : StateComponent
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /* 
-        If is edge-state:
-            - It is called from history substate.
-            - "IsHistory" argument represents "IsDeepHistory"
+        If is edge state:
+            1. It is called from history substate
+            2. IsHistory arg represents IsDeepHistory
         */
         if (isEdgeState)
         {
@@ -276,7 +277,7 @@ public class CompoundComponent : StateComponent
             return;
         }
 
-        // Not edge-state
+        // Not edge state
         deducedSet.Add(HostState);
         State deducedSubstate = isHistory ? CurrentState : InitialState;
 

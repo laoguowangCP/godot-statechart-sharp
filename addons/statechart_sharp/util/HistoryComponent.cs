@@ -34,10 +34,11 @@ public class HistoryComponent : StateComponent
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /*
-        History-state start the deduction:
-            1. Parent can be compound or parallel.
-            2. Handle the sibling.
-            3. Should not be called recursively by other states.
+        History state(s) in region nedge start the deduction:
+            1. Parent can be compound or parallel
+            2. Let parent handles sibling(s) of this history state
+            3. Should not be called recursively by other states
+            4. Parse IsDeepHistory in IsHistory arg
         */
         if (isEdgeState)
         {
@@ -68,7 +69,7 @@ public class HistoryComponent : StateComponent
 
         if (isParentParallel && !IsDeepHistory)
         {
-            warnings.Add("Parallel's shallow history is not recommended.");
+            warnings.Add("Parallel's shallow history is of no avail. You may want parallel's deep history.");
         }
 
         // Check children
