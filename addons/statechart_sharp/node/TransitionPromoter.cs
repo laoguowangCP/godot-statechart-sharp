@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 namespace LGWCP.StatechartSharp;
 
 [Tool]
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/TransitionPromoter.svg")]
+[GlobalClass]
+[Icon("res://addons/statechart_sharp/icon/TransitionPromoter.svg")]
 public partial class TransitionPromoter : StatechartComposition
 {
     protected Transition HostTransition;
@@ -52,7 +53,7 @@ public partial class TransitionPromoter : StatechartComposition
 
         /*
         Priortize parent transition:
-        1. Get leaf state(s) (non-history)
+        1. Get promote state(s)
         2. For each leaf state(s), duplicate transition, add it as first child
         3. Delete transition
         */
@@ -63,19 +64,15 @@ public partial class TransitionPromoter : StatechartComposition
             HostTransition.RemoveChild(child);
         }
 
-        // Get leaf states
+        // Get promote state(s)
         List<State> leafStates = new List<State>();
         ParentState.GetPromoteStates(leafStates);
 
-        // For each leaf state(s), duplicate transition, add it as first child
+        // Duplicate
         foreach (State leafState in leafStates)
         {
-            // Duplicated transition with signal
             Node t = HostTransition.Duplicate();
-
-            // Add child
             leafState.AddChild(t);
-            // Move child to top
             leafState.MoveChild(t, 0);
         }
 

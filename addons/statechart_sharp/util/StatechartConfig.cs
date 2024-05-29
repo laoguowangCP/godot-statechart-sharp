@@ -1,5 +1,5 @@
-using System;
 using Godot;
+using System;
 
 
 namespace LGWCP.StatechartSharp;
@@ -23,13 +23,14 @@ public enum TransitionEventNameEnum : int
     ShortcutInput,
     UnhandledKeyInput,
     UnhandledInput,
-    Custom,
-    Auto
 
     // Extend transition event here:
     /*
-        MY_EVENT,
+        MyEvent,
     */
+
+    Custom,
+    Auto
 }
 
 public enum ReactionEventNameEnum : int
@@ -40,13 +41,13 @@ public enum ReactionEventNameEnum : int
     ShortcutInput,
     UnhandledKeyInput,
     UnhandledInput,
-    Custom
 
     // Extend action event here:
     /*
-        MY_EVENT,
+        MyEvent,
     */
 
+    Custom
 }
 
 public partial class StatechartConfig : Node
@@ -63,44 +64,44 @@ public partial class StatechartConfig : Node
     
     // Extend event here:
     /*
-        protected static readonly StringName MY_EVENT = "my_event";  
+        protected static readonly StringName MY_EVENT = "_my_event";  
     */
 
     #endregion
     
     public static StringName GetTransitionEventName(TransitionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
-        TransitionEventNameEnum.Process => "_process",
-        TransitionEventNameEnum.PhysicsProcess => "_physics_process",
-        TransitionEventNameEnum.Input => "_input",
-        TransitionEventNameEnum.ShortcutInput => "_shortcut_input",
-        TransitionEventNameEnum.UnhandledKeyInput => "_unhandled_key_input",
-        TransitionEventNameEnum.UnhandledInput => "_unhandled_input",
-        TransitionEventNameEnum.Custom => customEventName,
+        TransitionEventNameEnum.Process => EVENT_PROCESS,
+        TransitionEventNameEnum.PhysicsProcess => EVENT_PHYSICS_PROCESS,
+        TransitionEventNameEnum.Input => EVENT_INPUT,
+        TransitionEventNameEnum.ShortcutInput => EVENT_SHORTCUT_INPUT,
+        TransitionEventNameEnum.UnhandledKeyInput => EVENT_UNHANDLED_KEY_INPUT,
+        TransitionEventNameEnum.UnhandledInput => EVENT_UNHANDLED_INPUT,
 
         // Extend transition event here:
         /*
-            EventNameEnum.MY_EVENT => "my_event",
+            TransitionEventNameEnum.MyEvent => MY_EVENT,
         */
-        
+
+        TransitionEventNameEnum.Custom => customEventName,
         _ => null
     };
 
     public static StringName GetReactionEventName(ReactionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
-        ReactionEventNameEnum.Process => "_process",
-        ReactionEventNameEnum.PhysicsProcess => "_physics_process",
-        ReactionEventNameEnum.Input => "_input",
-        ReactionEventNameEnum.ShortcutInput => "_shortcut_input",
-        ReactionEventNameEnum.UnhandledKeyInput => "_unhandled_key_input",
-        ReactionEventNameEnum.UnhandledInput => "_unhandled_input",
-        ReactionEventNameEnum.Custom => customEventName,
+        ReactionEventNameEnum.Process => EVENT_PROCESS,
+        ReactionEventNameEnum.PhysicsProcess => EVENT_PHYSICS_PROCESS,
+        ReactionEventNameEnum.Input => EVENT_INPUT,
+        ReactionEventNameEnum.ShortcutInput => EVENT_SHORTCUT_INPUT,
+        ReactionEventNameEnum.UnhandledKeyInput => EVENT_UNHANDLED_KEY_INPUT,
+        ReactionEventNameEnum.UnhandledInput => EVENT_UNHANDLED_INPUT,
 
         // Extend reaction event here:
         /*
-            EventNameEnum.MY_EVENT => "my_event",
+            ReactionEventNameEnum.MyEvent => MY_EVENT,
         */
         
+        ReactionEventNameEnum.Custom => customEventName,
         _ => null
     };
 }

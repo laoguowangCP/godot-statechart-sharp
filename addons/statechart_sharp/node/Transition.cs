@@ -9,9 +9,15 @@ namespace LGWCP.StatechartSharp;
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
 public partial class Transition : StatechartComposition
 {
+    #region signals
+
     [Signal] public delegate void GuardEventHandler(StatechartDuct duct);
     [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
 
+    #endregion
+
+
+    #region properties
 
     [Export] private TransitionEventNameEnum TransitionEvent
     {
@@ -73,6 +79,10 @@ public partial class Transition : StatechartComposition
     internal bool IsAuto { get; private set; }
     private bool IsValid { get; set; }
 
+    #endregion
+
+
+    #region methods
 
     public override void _Ready()
     {
@@ -98,8 +108,8 @@ public partial class Transition : StatechartComposition
     {
         base.Setup(hostStatechart, ref ancestorId);
 
-        // Get source-state
-        Node parent = GetParent<Node>();
+        // Get source state
+        Node parent = GetParentOrNull<Node>();
         if (parent != null && parent is State)
         {
             SourceState = parent as State;
@@ -135,9 +145,9 @@ public partial class Transition : StatechartComposition
     {
         /*
         Post setup:
-            1. Find LCA(Least Common Ancestor) of source and targets
-            2. Record path from LCA to targets
-            3. Update enter region
+        1. Find LCA(Least Common Ancestor) of source and targets
+        2. Record path from LCA to targets
+        3. Update enter region
         */
 
         // Targetless transition's LCA is source's parent state as defined
@@ -174,8 +184,8 @@ public partial class Transition : StatechartComposition
 
             /*
             Record target-to-root with conflict check:
-                1. Do conflict check once when iterated state's parent first reach enter region
-                2. If target is already in enter region, conflicts
+            1. Do conflict check once when iterated state's parent first reach enter region
+            2. If target is already in enter region, conflicts
             */
             tgtToRoot.Clear();
             bool isConflict = EnterRegion.Contains(target);
@@ -237,8 +247,8 @@ public partial class Transition : StatechartComposition
 
             /*
             Add tgtToRoot to enter region, because:
-                1. Later target(s) need check conflict in local-LCA's ancestor
-                2. When extending, states need check if their substate in enter region
+            1. Later target(s) need check conflict in local-LCA's ancestor
+            2. When extending, states need check if their substate in enter region
             */
             for (int i = 1; i <= tgtToRoot.Count; ++i)
             {
@@ -286,10 +296,6 @@ public partial class Transition : StatechartComposition
             return false;
         }
 
-        // else EventName == eventName, transition is enabled on default.
-        // Duct.IsEnabled = true;
-        // Duct.CompositionNode = this;
-        // EmitSignal(SignalName.Guard, Duct);
         return CustomTransitionGuard(Duct);
     }
 
@@ -304,8 +310,6 @@ public partial class Transition : StatechartComposition
 
     internal void TransitionInvoke()
     {
-        // Duct.CompositionNode = this;
-        // EmitSignal(SignalName.Invoke, Duct);
         CustomTransitionInvoke(Duct);
     }
 
@@ -384,4 +388,6 @@ public partial class Transition : StatechartComposition
         return warnings.ToArray();
     }
     #endif
+
+    #endregion
 }

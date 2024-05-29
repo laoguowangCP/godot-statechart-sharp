@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using Godot;
+
 
 namespace LGWCP.StatechartSharp;
 
@@ -299,10 +299,15 @@ public class CompoundComponent : StateComponent
         base.GetConfigurationWarnings(warnings);
 
         // Check child
-        if (InitialState != null
-            && (InitialState.GetParent<Node>() != HostState || InitialState.IsHistory))
+        if (InitialState != null)
         {
-            warnings.Add("Initial state should be a non-history substate.");
+            var initialStateParent = InitialState.GetParentOrNull<Node>();
+            if (initialStateParent is null
+                || initialStateParent != HostState
+                || InitialState.IsHistory)
+            {
+                warnings.Add("Initial state should be a non-history substate.");
+            }
         }
     }
     #endif

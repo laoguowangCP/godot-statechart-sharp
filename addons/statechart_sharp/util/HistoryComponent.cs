@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
+
 namespace LGWCP.StatechartSharp;
 
 public class HistoryComponent : StateComponent
@@ -52,7 +53,7 @@ public class HistoryComponent : StateComponent
         // Check parent
         bool isParentWarning = true;
         bool isParentParallel = false;
-        Node parent = HostState.GetParent<Node>();
+        Node parent = HostState.GetParentOrNull<Node>();
         if (parent != null)
         {
             if (parent is State state)

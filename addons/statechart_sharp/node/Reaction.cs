@@ -71,12 +71,14 @@ public partial class Reaction : StatechartComposition
     internal override void Setup(Statechart hostStatechart, ref int ancestorId)
     {
         base.Setup(hostStatechart, ref ancestorId);
+
         #if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)
         {
             GD.PushError(GetPath(), ": no event name for custom-event.");
         }
         #endif
+        
         EventName = StatechartConfig.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 

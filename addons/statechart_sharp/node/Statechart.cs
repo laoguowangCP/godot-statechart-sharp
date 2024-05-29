@@ -2,10 +2,12 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace LGWCP.StatechartSharp;
 
 [Tool]
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
+[GlobalClass]
+[Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
     [Export(PropertyHint.Range, "0,32,")]
@@ -65,7 +67,7 @@ public partial class Statechart : StatechartComposition
     {
         if (IsWaitParentReady)
         {
-            Node parentNode = GetParent<Node>();
+            Node parentNode = GetParentOrNull<Node>();
 
             if (parentNode is not null)
             {

@@ -35,7 +35,7 @@ public class StateComponent
     internal virtual void Setup(Statechart hostStateChart, ref int ancestorId)
     {
         // Get parent state
-        Node parent = HostState.GetParent<Node>();
+        Node parent = HostState.GetParentOrNull<Node>();
         if (parent != null && parent is State)
         {
             ParentState = parent as State;
@@ -53,7 +53,6 @@ public class StateComponent
         return false;
     }
 
-    // < 0 no selected yet, 0 => targetless only, > 0 selected, 
     internal virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         return 1;
@@ -71,7 +70,7 @@ public class StateComponent
         // Check parent
         bool isParentWarning = true;
         bool isRootState = false;
-        Node parent = HostState.GetParent<Node>();
+        Node parent = HostState.GetParentOrNull<Node>();
         if (parent != null)
         {
             if (parent is Statechart)
@@ -90,7 +89,7 @@ public class StateComponent
         {
             foreach (Node child in HostState.GetChildren())
             {
-                if (child is Transition trans)
+                if (child is Transition)
                 {
                     warnings.Add("Root state should not have transition");
                     break;
