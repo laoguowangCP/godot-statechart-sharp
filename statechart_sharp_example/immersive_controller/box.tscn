@@ -1,4 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://d1f45qde7pif5"]
+[gd_scene load_steps=5 format=3 uid="uid://d1f45qde7pif5"]
+
+[ext_resource type="Texture2D" uid="uid://cdksbmc40qmpt" path="res://statechart_sharp_example/immersive_controller/resource/material/block_basic_tex_triplanar.png" id="1_ybq8i"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_e7vn4"]
 absorbent = true
@@ -6,8 +8,10 @@ absorbent = true
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4rkw"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jfyjy"]
-albedo_color = Color(0.188235, 0.435294, 0.188235, 1)
+albedo_color = Color(0.6006, 0.91, 0.6006, 1)
+albedo_texture = ExtResource("1_ybq8i")
 metallic_specular = 0.0
+uv1_triplanar = true
 
 [node name="RigidBody3D" type="RigidBody3D"]
 collision_layer = 4

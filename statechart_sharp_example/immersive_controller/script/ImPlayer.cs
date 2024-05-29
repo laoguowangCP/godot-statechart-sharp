@@ -236,6 +236,7 @@ public partial class ImPlayer : CharacterBody3D
 		// Handle Jump.
 		if (Input.IsActionJustPressed("Space") && IsCoyote)
 		{
+			GD.Print("Coyote!!!");
 			Vel.Y = JumpVelocity;
 		}
 

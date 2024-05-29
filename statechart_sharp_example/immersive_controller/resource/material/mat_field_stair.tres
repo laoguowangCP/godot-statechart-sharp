@@ -1,6 +1,10 @@
-[gd_resource type="StandardMaterial3D" format=3 uid="uid://dxsxnkm5rxjbl"]
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dxsxnkm5rxjbl"]
+
+[ext_resource type="Texture2D" uid="uid://cdksbmc40qmpt" path="res://statechart_sharp_example/immersive_controller/resource/material/block_basic_tex_triplanar.png" id="1_hufyf"]
 
 [resource]
-albedo_color = Color(1, 0.521569, 0, 1)
+albedo_color = Color(1, 0.632667, 0.24, 1)
+albedo_texture = ExtResource("1_hufyf")
 metallic_specular = 0.0
 uv1_triplanar = true
+uv1_world_triplanar = true

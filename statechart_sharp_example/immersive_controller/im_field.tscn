@@ -1,12 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://sm7k2oee3ow0"]
+[gd_scene load_steps=8 format=3 uid="uid://sm7k2oee3ow0"]
 
 [ext_resource type="Material" uid="uid://dxsxnkm5rxjbl" path="res://statechart_sharp_example/immersive_controller/resource/material/mat_field_stair.tres" id="1_g62y5"]
 [ext_resource type="PackedScene" uid="uid://b4dys3gs5yv55" path="res://statechart_sharp_example/immersive_controller/im_player.tscn" id="2_0jsl8"]
 [ext_resource type="PackedScene" uid="uid://d1f45qde7pif5" path="res://statechart_sharp_example/immersive_controller/box.tscn" id="2_1154f"]
-[ext_resource type="MeshLibrary" uid="uid://cf8g8m044uubj" path="res://statechart_sharp_example/immersive_controller/resource/im_field_gridmap/field_gridmap.tres" id="2_cj2ft"]
 [ext_resource type="Material" uid="uid://cmamlk8c7q3at" path="res://statechart_sharp_example/immersive_controller/resource/material/mat_field_ground_triplanar.tres" id="3_6p65w"]
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ag2wj"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_mtail"]
 
@@ -26,46 +23,6 @@ sdfgi_enabled = true
 
 [node name="World" type="Node3D" parent="."]
 
-[node name="Stair" type="CSGBox3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1.1, 2)
-use_collision = true
-collision_mask = 7
-material = ExtResource("1_g62y5")
-
-[node name="Stair2" type="CSGBox3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1.5, 0)
-use_collision = true
-collision_mask = 7
-material = ExtResource("1_g62y5")
-
-[node name="Stair3" type="CSGBox3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0.9, 3)
-use_collision = true
-collision_mask = 7
-material = ExtResource("1_g62y5")
-
-[node name="Stair4" type="CSGBox3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1.3, 1)
-use_collision = true
-collision_mask = 7
-material = ExtResource("1_g62y5")
-
-[node name="Stair5" type="CSGBox3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0.7, 4)
-use_collision = true
-collision_mask = 7
-material = ExtResource("1_g62y5")
-
-[node name="GridMap" type="GridMap" parent="World"]
-mesh_library = ExtResource("2_cj2ft")
-physics_material = SubResource("PhysicsMaterial_ag2wj")
-cell_size = Vector3(1, 1, 1)
-cell_center_y = false
-data = {
-"cells": PackedInt32Array(1, 65535, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 3, 2, 1, 4, 2, 1, 4, 1, 1, 5, 1, 1, 5, 0, 1, 5, 65535, 1, 5, 65534, 1, 6, 65533, 1, 6, 65532, 1, 6, 65531, 1, 5, 65531, 1, 4, 65531, 1, 3, 65531, 1, 2, 65531, 1, 5, 65532, 1, 4, 65532, 1, 3, 65532, 1, 2, 65532, 1, 2, 65533, 1, 4, 65533, 1, 3, 65533, 1, 5, 65533, 1, 2, 65534, 1, 3, 65534, 1, 4, 65534, 1, 2, 65535, 1, 3, 65535, 1, 4, 65535, 1, 4, 0, 1, 3, 0, 1, 2, 0, 1, 2, 1, 1, 3, 1, 1, 5, 2, 1, 6, 2, 1, 6, 1, 1, 6, 0, 1, 6, 65535, 1, 6, 65534, 1, 6, 3, 1, 5, 3, 1, 4, 3, 1, 3, 3, 1, 2, 3, 1, 1, 4, 1, 2, 4, 1, 3, 4, 1, 4, 4, 1, 5, 4, 1, 6, 4, 1, 7, 4, 1, 7, 3, 1, 7, 2, 1, 8, 1, 1, 8, 0, 1, 8, 65535, 1, 9, 65535, 1, 9, 65534, 1, 9, 65533, 1, 9, 65532, 1, 10, 65532, 1, 10, 65531, 1, 9, 65531, 1, 9, 65530, 1, 8, 65530, 1, 8, 65531, 1, 7, 65531, 1, 8, 65532, 1, 7, 65532, 1, 7, 65533, 1, 8, 65533, 1, 8, 65534, 1, 7, 65534, 1, 7, 65535, 1, 7, 0, 1, 7, 1, 1, 9, 1, 1, 9, 0, 1, 9, 2, 1, 8, 2, 1, 8, 3, 1, 8, 4, 1, 9, 4, 1, 9, 3, 1, 10, 2, 1, 10, 65533, 1, 10, 65534, 1, 10, 65535, 1, 10, 0, 1, 10, 1, 1, 10, 65530, 1, 7, 65530, 1, 6, 65530, 1, 5, 65530, 1, 4, 65530, 1, 3, 65530, 1, 2, 65530, 1, 1, 65530, 1, 65532, 65530, 1, 65534, 65531, 1, 65535, 65531, 1, 65535, 65530, 1, 65535, 65529, 1, 65534, 65529, 1, 65533, 65529, 1, 65533, 65530, 1, 65534, 65530, 1, 65529, 65530, 1, 10, 3, 1, 10, 4, 1, 10, 5, 1, 9, 5, 1, 8, 5, 1, 7, 5, 1, 6, 5, 1, 5, 5, 1, 4, 5, 1, 3, 5, 1, 3, 6, 1, 4, 6, 1, 5, 6, 1, 6, 6, 1, 7, 6, 1, 8, 6, 1, 9, 6, 1, 10, 6, 1, 9, 7, 1, 8, 7, 1, 7, 7, 1, 6, 7, 1, 5, 7, 1, 4, 7, 1, 10, 7, 1, 10, 8, 1, 9, 8, 1, 8, 8, 1, 7, 8, 1, 6, 8, 1, 5, 8, 1, 4, 8, 1, 3, 8, 1, 2, 8, 1, 10, 65529, 1, 9, 65529, 1, 2, 65529, 1, 3, 65529, 1, 4, 65529, 1, 5, 65529, 1, 6, 65529, 1, 7, 65529, 1, 8, 65529, 1, 8, 65528, 1, 0, 65529, 1, 1, 65529, 1, 65526, 65530, 1, 65525, 65531, 1, 65526, 65529, 1, 65529, 65529, 1, 65529, 65528, 1, 65525, 65530, 1, 65525, 65529, 1, 65525, 65528, 1, 65526, 65528, 1, 65530, 65528, 1, 65531, 65528, 1, 65531, 65527, 1, 65533, 65527, 1, 65534, 65527, 1, 65535, 65527, 1, 0, 65527, 1, 1, 65527, 1, 2, 65527, 1, 3, 65527, 1, 4, 65527, 1, 5, 65527, 1, 6, 65527, 1, 7, 65527, 1, 8, 65527, 1, 9, 65527, 1, 10, 65527, 1, 10, 65528, 1, 5, 65528, 1, 6, 65528, 1, 7, 65528, 1, 9, 65528, 1, 4, 65528, 1, 3, 65528, 1, 2, 65528, 1, 1, 65528, 1, 0, 65528, 1, 65535, 65528, 1, 65534, 65528, 1, 65533, 65528, 1, 65527, 65527, 1, 65526, 65527, 1, 65525, 65527, 1, 65529, 65527, 1, 65530, 65527, 1, 10, 65526, 1, 9, 65526, 1, 8, 65526, 1, 7, 65526, 1, 6, 65526, 1, 5, 65526, 1, 4, 65526, 1, 3, 65526, 1, 2, 65526, 1, 1, 65526, 1, 0, 65526, 1, 65535, 65526, 1, 65534, 65526, 1, 65525, 65526, 1, 65526, 65526, 1, 65527, 65526, 1, 65529, 65526, 1, 65530, 65526, 1, 65531, 65526, 1, 65532, 65526, 1, 65533, 65526, 1, 10, 65525, 1, 9, 65525, 1, 8, 65525, 1, 7, 65525, 1, 6, 65525, 1, 5, 65525, 1, 4, 65525, 1, 3, 65525, 1, 2, 65525, 1, 1, 65525, 1, 0, 65525, 1, 65530, 65525, 1, 65529, 65525, 1, 65527, 65525, 1, 65526, 65525, 1, 65525, 65525, 1, 65531, 65525, 1, 65532, 65525, 1, 65533, 65525, 1, 65534, 65525, 1, 65535, 65525, 1, 65524, 65525, 1, 65524, 65526, 1, 65524, 65527, 1, 65524, 65528, 1, 65524, 65529, 1, 65524, 65530, 1, 65523, 65530, 1, 65523, 65531, 1, 65524, 65531, 1, 65523, 65525, 1, 65523, 65526, 1, 65523, 65527, 1, 65523, 65528, 1, 65523, 65529, 1, 65538, 2, 1, 65538, 1, 1, 65538, 0, 1, 196618, 65526, 1, 196618, 65527, 1, 196618, 65528, 1, 196618, 65529, 1, 196618, 65530, 1, 196618, 65531, 1, 196618, 65532, 1, 196618, 65533, 1, 196618, 65534, 1, 196618, 65535, 1, 196618, 0, 1, 196618, 1, 1, 196618, 2, 1, 196618, 3, 1, 196618, 4, 1, 196618, 5, 1, 196618, 6, 1, 196618, 7, 1, 196618, 8, 1, 196618, 65525, 1, 196617, 65525, 1, 196616, 65525, 1, 196615, 65525, 1, 196614, 65525, 1, 196613, 65525, 1, 196612, 65525, 1, 196611, 65525, 1, 196610, 65525, 1, 196609, 65525, 1, 196608, 65525, 1, 262143, 65525, 1, 262142, 65525, 1, 262141, 65525, 1, 262140, 65525, 1, 262139, 65525, 1, 262138, 65525, 1, 262137, 65525, 1, 262136, 65525, 1, 262135, 65525, 1, 262134, 65525, 1, 262133, 65525, 1, 262132, 65525, 1, 262131, 65525, 1, 262131, 65526, 1, 262131, 65527, 1, 262131, 65528, 1, 262131, 65529, 1, 262131, 65530, 1, 262131, 65531, 1, 262131, 65535, 0, 262131, 0, 0, 262131, 1, 0, 262131, 2, 0, 262131, 3, 0, 262131, 4, 0, 262131, 7, 1, 262131, 8, 1, 196617, 8, 1, 196616, 8, 1, 196615, 8, 1, 196614, 8, 1, 196613, 8, 1, 196612, 8, 1, 196611, 8, 1, 196610, 8, 1, 196609, 8, 1, 196608, 8, 1, 262143, 8, 1, 262142, 8, 1, 262141, 8, 1, 262140, 8, 1, 262139, 8, 1, 262138, 8, 1, 262137, 8, 1, 262135, 8, 1, 262134, 8, 1, 262133, 8, 1, 262132, 8, 1, 262136, 8, 1, 196595, 8, 1, 196596, 8, 1, 196597, 8, 1, 196598, 8, 1, 196599, 8, 1, 196600, 8, 1, 196601, 8, 1, 196602, 8, 1, 196603, 8, 1, 196604, 8, 1, 196605, 8, 1, 196606, 8, 1, 196607, 8, 1, 131072, 8, 1, 131073, 8, 1, 131074, 8, 1, 131075, 8, 1, 131076, 8, 1, 131077, 8, 1, 131078, 8, 1, 131079, 8, 1, 131080, 8, 1, 131081, 8, 1, 131082, 8, 1, 131082, 7, 1, 131082, 6, 1, 131082, 5, 1, 131082, 4, 1, 131082, 3, 1, 131082, 2, 1, 131082, 1, 1, 131082, 0, 1, 131082, 65535, 1, 131082, 65534, 1, 131082, 65533, 1, 131082, 65532, 1, 131082, 65531, 1, 131082, 65530, 1, 131082, 65529, 1, 131082, 65528, 1, 131082, 65527, 1, 131082, 65526, 1, 131082, 65525, 1, 131081, 65525, 1, 131080, 65525, 1, 131079, 65525, 1, 131078, 65525, 1, 131077, 65525, 1, 131076, 65525, 1, 131075, 65525, 1, 131074, 65525, 1, 131073, 65525, 1, 131072, 65525, 1, 196607, 65525, 1, 196606, 65525, 1, 196605, 65525, 1, 196604, 65525, 1, 196603, 65525, 1, 196602, 65525, 1, 196601, 65525, 1, 196600, 65525, 1, 196599, 65525, 1, 196598, 65525, 1, 196597, 65525, 1, 196596, 65525, 1, 196595, 65525, 1, 196595, 65527, 1, 196595, 65528, 1, 196595, 65531, 1, 196595, 65526, 1, 196595, 65529, 1, 196595, 65530, 1, 196595, 65535, 0, 196595, 0, 0, 196595, 1, 0, 196595, 2, 0, 196595, 3, 0, 196595, 4, 0, 196595, 7, 1, 131061, 8, 1, 131060, 8, 1, 131059, 8, 1, 131062, 8, 1, 131063, 8, 1, 131064, 8, 1, 131065, 8, 1, 131066, 8, 1, 131067, 8, 1, 131068, 8, 1, 131069, 8, 1, 131070, 8, 1, 131071, 8, 1, 65536, 8, 1, 65537, 8, 1, 65538, 8, 1, 65539, 8, 1, 65540, 8, 1, 65541, 8, 1, 65542, 8, 1, 65543, 8, 1, 65544, 8, 1, 65545, 8, 1, 65546, 8, 1, 65546, 7, 1, 65546, 6, 1, 65546, 5, 1, 65546, 4, 1, 65546, 3, 1, 65546, 2, 1, 65546, 1, 1, 65546, 0, 1, 65546, 65535, 1, 65546, 65534, 1, 65546, 65533, 1, 65546, 65532, 1, 65546, 65531, 1, 65546, 65530, 1, 65546, 65529, 1, 65546, 65528, 1, 65546, 65527, 1, 65546, 65526, 1, 65546, 65525, 1, 65545, 65525, 1, 65544, 65525, 1, 65543, 65525, 1, 65542, 65525, 1, 65541, 65525, 1, 65540, 65525, 1, 65539, 65525, 1, 65538, 65525, 1, 65537, 65525, 1, 65536, 65525, 1, 131071, 65525, 1, 131070, 65525, 1, 131069, 65525, 1, 131068, 65525, 1, 131067, 65525, 1, 131066, 65525, 1, 131065, 65525, 1, 131064, 65525, 1, 131063, 65525, 1, 131062, 65525, 1, 131061, 65525, 1, 131060, 65525, 1, 131059, 65525, 1, 131059, 65526, 1, 131059, 65527, 1, 131059, 65528, 1, 131059, 65529, 1, 131059, 65530, 1, 131059, 65531, 1, 131059, 65535, 0, 131059, 0, 0, 131059, 1, 0, 131059, 2, 0, 131059, 3, 0, 131059, 4, 0, 262132, 3, 0, 262132, 2, 0, 262132, 1, 0, 262132, 0, 0, 262132, 65535, 0, 262132, 4, 0, 262133, 65535, 0, 262133, 0, 0, 262133, 1, 0, 262133, 2, 0, 262133, 3, 0, 262133, 4, 0, 196597, 65535, 0, 196597, 0, 0, 196597, 1, 0, 196597, 2, 0, 196597, 3, 0, 196597, 4, 0, 131061, 65535, 0, 131061, 0, 0, 131061, 1, 0, 131061, 2, 0, 131061, 3, 0, 131061, 4, 0, 196598, 65535, 0, 196598, 0, 0, 196598, 1, 0, 196598, 2, 0, 196598, 4, 0, 196598, 3, 0, 196594, 65535, 0, 196594, 0, 0, 196594, 1, 0, 196594, 2, 0, 196594, 3, 0, 196594, 4, 0, 131062, 65535, 0, 131062, 0, 0, 131062, 1, 0, 131062, 2, 0, 131062, 3, 0, 131062, 4, 0, 131063, 65535, 0, 131063, 0, 0, 131063, 1, 0, 131063, 2, 0, 131063, 3, 0, 131063, 4, 0, 131058, 4, 0, 131058, 3, 0, 131058, 2, 0, 131058, 1, 0, 131058, 0, 0, 131058, 65535, 0, 131057, 65535, 0, 131057, 0, 0, 131057, 1, 0, 131057, 4, 0, 131057, 3, 0, 131057, 2, 0, 327668, 65535, 0, 327668, 0, 0, 327668, 1, 0, 327668, 2, 0, 327668, 3, 0, 327668, 4, 0)
-}
-metadata/_editor_floor_ = Vector3(0, 4, 0)
-
 [node name="Ground" type="CSGBox3D" parent="World"]
 transform = Transform3D(128, 0, 0, 0, 2, 0, 0, 0, 128, 0, 0, 0)
 use_collision = true
@@ -75,27 +32,59 @@ material = ExtResource("3_6p65w")
 [node name="Walls" type="Node" parent="World"]
 
 [node name="Wall" type="CSGBox3D" parent="World/Walls"]
-transform = Transform3D(128, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, 64)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 64)
 use_collision = true
 collision_mask = 7
+size = Vector3(128, 8, 1)
 material = ExtResource("3_6p65w")
 
 [node name="Wall2" type="CSGBox3D" parent="World/Walls"]
-transform = Transform3D(128, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, -64)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -64)
 use_collision = true
 collision_mask = 7
+size = Vector3(128, 8, 1)
 material = ExtResource("3_6p65w")
 
 [node name="Wall3" type="CSGBox3D" parent="World/Walls"]
-transform = Transform3D(-5.59506e-06, 0, 1, 0, 8, 0, -128, 0, -4.37114e-08, 64, 0, 0)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 64, 0, 0)
 use_collision = true
 collision_mask = 7
+size = Vector3(128, 8, 1)
 material = ExtResource("3_6p65w")
 
 [node name="Wall4" type="CSGBox3D" parent="World/Walls"]
-transform = Transform3D(-5.59506e-06, 0, 1, 0, 8, 0, -128, 0, -4.37114e-08, -64, 0, 0)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -64, 0, 0)
 use_collision = true
 collision_mask = 7
+size = Vector3(128, 8, 1)
+material = ExtResource("3_6p65w")
+
+[node name="Wall5" type="CSGBox3D" parent="World/Walls"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -10, 2, 2)
+use_collision = true
+collision_mask = 7
+size = Vector3(8, 2, 1)
+material = ExtResource("3_6p65w")
+
+[node name="Wall6" type="CSGBox3D" parent="World/Walls"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -13, 2, 2)
+use_collision = true
+collision_mask = 7
+size = Vector3(8, 2, 1)
+material = ExtResource("3_6p65w")
+
+[node name="Wall8" type="CSGBox3D" parent="World/Walls"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -8.5, 2, 4.75)
+use_collision = true
+collision_mask = 7
+size = Vector3(2.5, 4, 2)
+material = ExtResource("3_6p65w")
+
+[node name="Wall7" type="CSGBox3D" parent="World/Walls"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -11.5, 3.5, 2)
+use_collision = true
+collision_mask = 7
+size = Vector3(8, 1, 4)
 material = ExtResource("3_6p65w")
 
 [node name="Pillars" type="Node" parent="World"]
@@ -124,34 +113,213 @@ use_collision = true
 collision_mask = 7
 material = ExtResource("3_6p65w")
 
+[node name="Stairs" type="Node" parent="World"]
+
+[node name="Stair" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1.1, 2)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 1)
+material = ExtResource("1_g62y5")
+
+[node name="Stair2" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1.5, 0)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 1)
+material = ExtResource("1_g62y5")
+
+[node name="Stair3" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0.9, 3)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 1)
+material = ExtResource("1_g62y5")
+
+[node name="Stair4" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1.3, 1)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 1)
+material = ExtResource("1_g62y5")
+
+[node name="Stair5" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0.7, 4)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 1)
+material = ExtResource("1_g62y5")
+
+[node name="Stair6" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.1, -2.24877)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair7" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.5, -1.24877)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair8" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 0.9, -2.74877)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair9" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.3, -1.74877)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair10" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 0.7, -3.24877)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 1, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair11" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 0.9, -0.248771)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair12" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.3, 0.751229)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair13" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 0.7, -0.748771)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair14" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.1, 0.251229)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair15" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.5, 1.25)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair16" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.7, 1.75)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair17" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 1.9, 2.25)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair18" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 2.1, 2.75)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
+[node name="Stair19" type="CSGBox3D" parent="World/Stairs"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -8.5, 2.3, 3.25)
+use_collision = true
+collision_mask = 7
+size = Vector3(2, 3, 0.5)
+material = ExtResource("1_g62y5")
+
 [node name="Boxs" type="Node" parent="World"]
 
 [node name="RigidBody3D" parent="World/Boxs" instance=ExtResource("2_1154f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 4, 2)
-mass = 10.0
+mass = 15.0
 
 [node name="RigidBody3D2" parent="World/Boxs" instance=ExtResource("2_1154f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 4, 2)
-mass = 20.0
+mass = 15.0
 
 [node name="RigidBody3D3" parent="World/Boxs" instance=ExtResource("2_1154f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 4, 2)
-mass = 30.0
+mass = 15.0
 
 [node name="RigidBody3D4" parent="World/Boxs" instance=ExtResource("2_1154f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 4, 2)
-mass = 40.0
+mass = 15.0
 
 [node name="RigidBody3D5" parent="World/Boxs" instance=ExtResource("2_1154f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 4, 2)
-mass = 50.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.56005, 6, 2)
+mass = 15.0
+
+[node name="RigidBody3D6" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.56005, 6, 2)
+mass = 15.0
+
+[node name="RigidBody3D7" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.439948, 6, 2)
+mass = 15.0
+
+[node name="RigidBody3D8" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.43995, 6, 2)
+mass = 15.0
+
+[node name="RigidBody3D9" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3223, 8, 2)
+mass = 15.0
+
+[node name="RigidBody3D10" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3223, 8, 2)
+mass = 15.0
+
+[node name="RigidBody3D11" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.677699, 8, 2)
+mass = 15.0
+
+[node name="RigidBody3D12" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6777, 8, 2)
+mass = 15.0
+
+[node name="RigidBody3D13" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.56015, 10, 2)
+mass = 15.0
+
+[node name="RigidBody3D14" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.56015, 10, 2)
+mass = 15.0
+
+[node name="RigidBody3D15" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.439855, 10, 2)
+mass = 15.0
+
+[node name="RigidBody3D16" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.43985, 10, 2)
+mass = 15.0
 
 [node name="OmniLight3D" type="OmniLight3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.4651, 2.41097, 2.70146)
 omni_range = 10.0
 
 [node name="Player" parent="." instance=ExtResource("2_0jsl8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, 16)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.656059, 0.75471, 0, -0.75471, 0.656059, 0, 0, 0)
