@@ -146,9 +146,23 @@ public partial class State : StatechartComposition
         StateComponent.RegisterActiveState(activeStates);
     }
 
-    internal bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegionUnextended)
+    internal bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
     {
-        return StateComponent.IsConflictToEnterRegion(substate, enterRegionUnextended);
+        return StateComponent.IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
+    }
+
+    internal bool IsAncestorStateOf(State state)
+    {
+        int id = state.OrderId;
+
+        // Leaf state
+        if (LowerState is null || UpperState is null)
+        {
+            return false;
+        }
+
+        return id >= LowerState.OrderId
+            && id <= UpperState.OrderId;
     }
 
     internal void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)

@@ -39,7 +39,7 @@ text = "[font_size=20][center][b]Multiple targets 2[/b][/center][/font_size]
 
 Transition can set multiple states as targets. This test is an alternative case where LCA is parallel.
 
-In this test, we set B/2, C/2 as targets. There is no confliction. LCA is Root state, so initially active states A, B, B/1, C, C/1 will be exit. A is re-entered as a supplementary substate of Root, so Root can keep its parallel \"pattern\".
+In this test, we set B/2, C/2 as targets. There is no confliction. LCA is Root state, so initially active states A, B, B/1, C, C/1 will be exit. A is re-entered， since Root is parallel.
 "
 
 [node name="Button" type="Button" parent="."]

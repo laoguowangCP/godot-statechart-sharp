@@ -48,7 +48,7 @@ public class StateComponent
 
     internal virtual void RegisterActiveState(SortedSet<State> activeStates) {}
 
-    internal virtual bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegionUnextended)
+    internal virtual bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
     {
         return false;
     }

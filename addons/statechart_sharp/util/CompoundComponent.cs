@@ -75,9 +75,9 @@ public class CompoundComponent : StateComponent
                 UpperState = lastSubstate;
             }
         }
-        // Else state is atomic, lower and upper are both null. GetViewBetween can handle it.
+        // Else state is atomic, lower and upper are both null.
 
-        // Set initial-state
+        // Set initial state
         if (InitialState != null)
         {
             // Check selected initial-state is non-history substate
@@ -92,7 +92,7 @@ public class CompoundComponent : StateComponent
             }
         }
 
-        // No assigned initial-state, use first non-history substate
+        // No assigned initial state, use first non-history substate
         if (InitialState == null)
         {
             foreach (State substate in Substates)
@@ -105,7 +105,7 @@ public class CompoundComponent : StateComponent
             }
         }
 
-        // Set current-state
+        // Set current state
         CurrentState = InitialState;
     }
 
@@ -128,17 +128,12 @@ public class CompoundComponent : StateComponent
     }
 
     internal override bool IsConflictToEnterRegion(
-        State targetSubstate,
+        State substateToPend,
         SortedSet<State> enterRegionUnextended)
     {
-        // Conflicts if any substate is already exist in enter region unextended
-        /*
-        SortedSet<State> descInRegion = enterRegionUnextended.GetViewBetween(
-            LowerState, UpperState);
-        return descInRegion.Count > 0;
-        */
+        // Conflicts if any substate is already exist in region
         return enterRegionUnextended.Any<State>(
-            state => HostState.IsAncestorOf(state));
+            state => HostState.IsAncestorStateOf(state));
     }
 
     internal override void ExtendEnterRegion(

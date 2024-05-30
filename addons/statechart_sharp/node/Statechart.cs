@@ -245,18 +245,13 @@ public partial class Statechart : StatechartComposition
                     <=> Any state in exit set is descendant to this LCA
             */
 
-            if (ExitSet.Contains(transition.SourceState))
+            bool hasConfliction = ExitSet.Contains(transition.SourceState)
+                || ExitSet.Any<State>(
+                    state => transition.LcaState.IsAncestorStateOf(state));
+
+            if (hasConfliction)
             {
                 continue;
-            }
-            else
-            {
-                bool IsDescendantInExit = ExitSet.Any<State>(
-                    state => transition.LcaState.IsAncestorOf(state));
-                if (IsDescendantInExit)
-                {
-                    continue;
-                }
             }
 
             EnabledFilteredTransitions.Add(transition);

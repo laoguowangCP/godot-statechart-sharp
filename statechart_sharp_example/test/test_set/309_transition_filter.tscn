@@ -42,7 +42,7 @@ During executing, selected transitions are filtered to avoid enter/exit conflict
 We have 2 parts in this test, A and B, to demonstrate the 2 opposite situations:
 
 [ol]
-A is parallel, so transitions A/X/->Y and A/Y->X are both guarded and selected. However, the LCA of transition A/X/->Y is state A , which is anscestor to A/Y , the source state of transition A/Y->X . So A/Y->X is disposed, as it is subsequent in document order.
+A is parallel, so transitions A/X/->Y and A/Y->X are both guarded and selected. However, the LCA of transition A/X/->Y is state A , which is ancestor to A/Y , the source state of transition A/Y->X . So A/Y->X is disposed, as it is subsequent in document order.
 B is parallel, so transitions B/X/1/->2 and B/Y->X are both guarded and selected. However, the source state of transition B/X/1/->2 is state X , which is descendant to B , the LCA of transition B/Y->X . So B/Y->X is disposed, as it is subsequent in document order.
 [/ol]
 

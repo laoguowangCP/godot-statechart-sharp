@@ -41,7 +41,7 @@ Nothing really happens in this test, but state node should update configuration 
 
 Root state should not have transition. Transitions that child to root state will be ignored.
 
-Actually, it is the rules of transition make it impossible to handle root's transition. When deducing enter/exit states, \"least common anscestor\" (LCA) of target(s) and source need to be found. It should be at least the parent of the source state, as for the root state, null. This will confuse the transition filter progress. Also, \"making a root state transit\" doesn't stand semantically.
+Actually, it is the rules of transition make it impossible to handle root's transition. When deducing enter/exit states, \"least common ancestor\" (LCA) of target(s) and source need to be found. It should be at least the parent of the source state, as for the root state, null. This will confuse the transition filter progress. Also, \"making a root state transit\" doesn't stand semantically.
 
 "
 threaded = true

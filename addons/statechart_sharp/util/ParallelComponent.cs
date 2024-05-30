@@ -116,38 +116,34 @@ public class ParallelComponent : StateComponent
     }
 
     internal override bool IsConflictToEnterRegion(
-        State targetSubstate,
+        State substateToPend,
         SortedSet<State> enterRegionUnextended)
     {
         /*
         Deals history cases:
-            1. Target substate is history, conflicts if any descendant in region.
+            1. Pending substate is history, conflicts if any descendant in region.
             2. Any history substate in enter region, conflicts.
         */
         // At this point history is not excluded from enter region
 
-        // Target substate is history
-        if (targetSubstate.IsHistory)
+        // Pending substate is history
+        if (substateToPend.IsHistory)
         {
-            /*
-            SortedSet<State> descInRegion = enterRegionUnextended.GetViewBetween(
-                LowerState, UpperState);
-            return descInRegion.Count > 0;
-            */
             return enterRegionUnextended.Any<State>(
-                state => HostState.IsAncestorOf(state));
+                state => HostState.IsAncestorStateOf(state));
         }
 
-        // Any history substate in region edge, conflicts.
+        // Any history substate in region, conflicts.
         foreach (State substate in Substates)
         {
-            if (substate.IsHistory && enterRegionUnextended.Contains(substate))
+            if (substate.IsHistory
+                && enterRegionUnextended.Contains(substate))
             {
                 return true;
             }
         }
 
-        // If nothing involves history, no conflicts.
+        // No conflicts.
         return false;
     }
     

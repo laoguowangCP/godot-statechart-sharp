@@ -41,8 +41,8 @@ For active states, selecting transition is a recursive process. Leaf states sele
 
 [ul]
 [b]Case \"-1\"[/b] : no transition selected in descendants. State checks its own transitions. Return 1 if a transition is selected, else return -1 .
-[b]Case \"0\"[/b] : transition selected in descendants, but not all of descendant leaf state has an anscestor with selected transition. They still ask for an enabled transition from anscestors, but expecting no confliction to selected one(s). In this case state checks its own [b]targetless[/b] transitions. Return 1 if any is selected, else return 0 .
-[b]Case \"1\"[/b] : transition selected in descendants, and all descendant leaf states has an anscestor with selected transition. No need to check any more. Return 1 .
+[b]Case \"0\"[/b] : transition selected in descendants, but not all of descendant leaf state has an ancestor with selected transition. They still ask for an enabled transition from ancestors, but expecting no confliction to selected one(s). In this case state checks its own [b]targetless[/b] transitions. Return 1 if any is selected, else return 0 .
+[b]Case \"1\"[/b] : transition selected in descendants, and all descendant leaf states has an ancestor with selected transition. No need to check any more. Return 1 .
 [/ul]
 
 In this test, all 3 cases are involved:

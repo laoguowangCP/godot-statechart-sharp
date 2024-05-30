@@ -160,8 +160,8 @@ To select transitions, a recursion is invoked on active states, starting with le
 - For non-leaf states, they need consider "selecting situation" of their descendant state(s):
 
   - **Case "-1"** : no transition selected in active descendant(s). State checks child transitions.
-  - **Case "0"** : transition selected in descendants, but not all of active descendant leaf has an anscestor with selected transition. They still ask for an enabled transition from anscestors, but expecting no confliction to selected one(s). In this case, state only checks targetless transitions.
-  - **Case "1"** : transition selected in descendants, and all active descendant leaf has an anscestor with selected transition. No need to check.
+  - **Case "0"** : transition selected in descendants, but not all of active descendant leaf has an ancestor with selected transition. They still ask for an enabled transition from ancestors, but expecting no confliction to selected one(s). In this case, state only checks targetless transitions.
+  - **Case "1"** : transition selected in descendants, and all active descendant leaf has an ancestor with selected transition. No need to check.
 
 After that, selected transitions are executed. Here we update active states, invoke transitions, while doing some validation to avoid conflicts:
 
