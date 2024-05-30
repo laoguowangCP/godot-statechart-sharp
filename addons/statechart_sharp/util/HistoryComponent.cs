@@ -10,9 +10,9 @@ public class HistoryComponent : StateComponent
 
     public HistoryComponent(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
-        base.Setup(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref parentOrderId);
     }
 
     internal override bool GetPromoteStates(List<State> states)

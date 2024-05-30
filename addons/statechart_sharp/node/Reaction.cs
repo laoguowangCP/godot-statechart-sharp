@@ -68,9 +68,9 @@ public partial class Reaction : StatechartComposition
         #endif
     }
 
-    internal override void Setup(Statechart hostStatechart, ref int ancestorId)
+    internal override void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
-        base.Setup(hostStatechart, ref ancestorId);
+        base.Setup(hostStatechart, ref parentOrderId);
 
         #if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)
@@ -78,7 +78,7 @@ public partial class Reaction : StatechartComposition
             GD.PushError(GetPath(), ": no event name for custom-event.");
         }
         #endif
-        
+
         EventName = StatechartConfig.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 

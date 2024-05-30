@@ -32,7 +32,7 @@ public class StateComponent
         HostState = state;
     }
 
-    internal virtual void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal virtual void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
         // Get parent state
         Node parent = HostState.GetParentOrNull<Node>();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 
@@ -19,9 +20,9 @@ public class CompoundComponent : StateComponent
     
     public CompoundComponent(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
-        base.Setup(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref parentOrderId);
 
         // Init & collect states, transitions, actions
         // Get lower-state and upper-state
@@ -35,7 +36,7 @@ public class CompoundComponent : StateComponent
             
             if (child is State s)
             {
-                s.Setup(hostStateChart, ref ancestorId);
+                s.Setup(hostStateChart, ref parentOrderId);
                 Substates.Add(s);
 
                 // First substate is lower-state
@@ -50,13 +51,13 @@ public class CompoundComponent : StateComponent
                 // Root state should not have transition
                 if (ParentState != null)
                 {
-                    t.Setup(hostStateChart, ref ancestorId);
+                    t.Setup(hostStateChart, ref parentOrderId);
                     Transitions.Add(t);
                 }
             }
             else if (child is Reaction a)
             {
-                a.Setup(hostStateChart, ref ancestorId);
+                a.Setup(hostStateChart, ref parentOrderId);
                 Reactions.Add(a);
             }
         }
@@ -127,14 +128,17 @@ public class CompoundComponent : StateComponent
     }
 
     internal override bool IsConflictToEnterRegion(
-        State tgtSubstate,
+        State targetSubstate,
         SortedSet<State> enterRegionUnextended)
     {
-        // Conflicts if any substate is already exist in enter region
-        // At this point history is not excluded from enter region
+        // Conflicts if any substate is already exist in enter region unextended
+        /*
         SortedSet<State> descInRegion = enterRegionUnextended.GetViewBetween(
             LowerState, UpperState);
         return descInRegion.Count > 0;
+        */
+        return enterRegionUnextended.Any<State>(
+            state => HostState.IsAncestorOf(state));
     }
 
     internal override void ExtendEnterRegion(
@@ -209,10 +213,7 @@ public class CompoundComponent : StateComponent
     internal override void RegisterActiveState(SortedSet<State> activeStates)
     {
         activeStates.Add(HostState);
-        if (CurrentState != null)
-        {
-            CurrentState.RegisterActiveState(activeStates);
-        }
+        CurrentState?.RegisterActiveState(activeStates);
     }
 
     internal override int SelectTransitions(

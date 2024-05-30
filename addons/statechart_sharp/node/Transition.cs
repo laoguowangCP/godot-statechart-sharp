@@ -104,9 +104,9 @@ public partial class Transition : StatechartComposition
         #endif
     }
 
-    internal override void Setup(Statechart hostStatechart, ref int ancestorId)
+    internal override void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
-        base.Setup(hostStatechart, ref ancestorId);
+        base.Setup(hostStatechart, ref parentOrderId);
 
         // Get source state
         Node parent = GetParentOrNull<Node>();

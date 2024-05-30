@@ -105,10 +105,10 @@ public partial class State : StatechartComposition
         return StateComponent.GetPromoteStates(states);
     }
 
-    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
-        base.Setup(hostStateChart, ref ancestorId);
-        StateComponent.Setup(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref parentOrderId);
+        StateComponent.Setup(hostStateChart, ref parentOrderId);
     }
 
     internal override void PostSetup()

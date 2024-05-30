@@ -33,7 +33,10 @@ public partial class Statechart : StatechartComposition
 
     public override void _Ready()
     {
-        Duct = new StatechartDuct { HostStatechart = this };
+        Duct = new StatechartDuct
+        {
+            HostStatechart = this
+        };
 
         IsRunning = false;
         EventCount = 0;
@@ -69,7 +72,7 @@ public partial class Statechart : StatechartComposition
         {
             Node parentNode = GetParentOrNull<Node>();
 
-            if (parentNode is not null)
+            if (parentNode != null)
             {
                 await ToSignal(parentNode, Node.SignalName.Ready);
             }
@@ -85,11 +88,11 @@ public partial class Statechart : StatechartComposition
         HostStatechart = this;
         foreach (Node child in GetChildren())
         {
-            if (child is State rootState)
+            if (child is State state)
             {
-                if (!rootState.IsHistory)
+                if (!state.IsHistory)
                 {
-                    RootState = rootState;
+                    RootState = state;
                     break;
                 }
             }
@@ -97,8 +100,8 @@ public partial class Statechart : StatechartComposition
         
         if (RootState != null)
         {
-            int ancestorId = 0;
-            RootState.Setup(this, ref ancestorId);
+            int parentOrderId = 0;
+            RootState.Setup(this, ref parentOrderId);
         }
     }
 
@@ -118,12 +121,18 @@ public partial class Statechart : StatechartComposition
         }
 
         // Set node process according to flags
-        SetProcess(EventFlag.HasFlag(EventFlagEnum.Process));
-        SetPhysicsProcess(EventFlag.HasFlag(EventFlagEnum.PhysicsProcess));
-        SetProcessInput(EventFlag.HasFlag(EventFlagEnum.Input));
-        SetProcessShortcutInput(EventFlag.HasFlag(EventFlagEnum.ShortcutInput));
-        SetProcessUnhandledKeyInput(EventFlag.HasFlag(EventFlagEnum.UnhandledKeyInput));
-        SetProcessUnhandledInput(EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
+        SetProcess(
+            EventFlag.HasFlag(EventFlagEnum.Process));
+        SetPhysicsProcess(
+            EventFlag.HasFlag(EventFlagEnum.PhysicsProcess));
+        SetProcessInput(
+            EventFlag.HasFlag(EventFlagEnum.Input));
+        SetProcessShortcutInput(
+            EventFlag.HasFlag(EventFlagEnum.ShortcutInput));
+        SetProcessUnhandledKeyInput(
+            EventFlag.HasFlag(EventFlagEnum.UnhandledKeyInput));
+        SetProcessUnhandledInput(
+            EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
     }
 
     public void Step(StringName eventName)
@@ -159,10 +168,6 @@ public partial class Statechart : StatechartComposition
         EventCount = 0;
     }
 
-    /// <summary>
-    /// Macro step
-    /// </summary>
-    /// <param name="eventName"></param>
     protected void HandleEvent(StringName eventName)
     {
         if (RootState == null)
@@ -204,9 +209,9 @@ public partial class Statechart : StatechartComposition
             state.SelectReactions(EnabledReactions, eventName);
         }
 
-        foreach (Reaction react in EnabledReactions)
+        foreach (Reaction reaction in EnabledReactions)
         {
-            react.ReactionInvoke();
+            reaction.ReactionInvoke();
         }
 
         EnabledReactions.Clear();
@@ -222,12 +227,12 @@ public partial class Statechart : StatechartComposition
         */
 
         // 1. Deduce and merge exit set
-        foreach (Transition trans in EnabledTransitions)
+        foreach (Transition transition in EnabledTransitions)
         {
             // Targetless checks no conflicts, and do no set operations.
-            if (trans.IsTargetless)
+            if (transition.IsTargetless)
             {
-                EnabledFilteredTransitions.Add(trans);
+                EnabledFilteredTransitions.Add(transition);
                 continue;
             }
 
@@ -240,24 +245,24 @@ public partial class Statechart : StatechartComposition
                     <=> Any state in exit set is descendant to this LCA
             */
 
-            if (ExitSet.Contains(trans.SourceState))
+            if (ExitSet.Contains(transition.SourceState))
             {
                 continue;
             }
             else
             {
                 bool IsDescendantInExit = ExitSet.Any<State>(
-                    s => trans.LcaState.IsAncestorOf(s));
+                    state => transition.LcaState.IsAncestorOf(state));
                 if (IsDescendantInExit)
                 {
                     continue;
                 }
             }
 
-            EnabledFilteredTransitions.Add(trans);
+            EnabledFilteredTransitions.Add(transition);
 
             SortedSet<State> exitStates = ActiveStates.GetViewBetween(
-                trans.LcaState.LowerState, trans.LcaState.UpperState);
+                transition.LcaState.LowerState, transition.LcaState.UpperState);
             ExitSet.UnionWith(exitStates);
         }
 
