@@ -386,51 +386,51 @@ public partial class ImPlayer : CharacterBody3D
 	public void TG_WalkToSprint(StatechartDuct duct)
 	{
 		bool forwardTest = Input.GetAxis("Forward", "Backward") < -0.1f;
-		duct.IsEnabled = Input.IsActionPressed("Shift")
+		duct.IsTransitionEnabled = Input.IsActionPressed("Shift")
 			&& forwardTest;
 	}
 
 	public void TG_SprintToWalk(StatechartDuct duct)
 	{
-		duct.IsEnabled = Input.IsActionJustReleased("Shift")
+		duct.IsTransitionEnabled = Input.IsActionJustReleased("Shift")
 			|| Input.IsActionJustReleased("Forward");
 	}
 
 	public void TG_GroundToAir(StatechartDuct duct)
 	{
-		duct.IsEnabled = !IsOnFloor();
+		duct.IsTransitionEnabled = !IsOnFloor();
 	}
 
 	public void TG_AirToGround(StatechartDuct duct)
 	{
-		duct.IsEnabled = IsOnFloor();
+		duct.IsTransitionEnabled = IsOnFloor();
 	}
 
 	public void TG_AirIsAscend(StatechartDuct duct)
 	{
-		duct.IsEnabled = Velocity.Y > AirTopIntervalVel;
+		duct.IsTransitionEnabled = Velocity.Y > AirTopIntervalVel;
 	}
 	public void TG_AirIsDescend(StatechartDuct duct)
 	{
-		duct.IsEnabled = Velocity.Y < -AirTopIntervalVel;
+		duct.IsTransitionEnabled = Velocity.Y < -AirTopIntervalVel;
 	}
 	public void TG_AirIsTop(StatechartDuct duct)
 	{
-		duct.IsEnabled = Velocity.Y <= AirTopIntervalVel && Velocity.Y >= -AirTopIntervalVel;
+		duct.IsTransitionEnabled = Velocity.Y <= AirTopIntervalVel && Velocity.Y >= -AirTopIntervalVel;
 	}
 	public void TG_IsCoyote(StatechartDuct duct)
 	{
-		duct.IsEnabled = !IsCoyote;
+		duct.IsTransitionEnabled = !IsCoyote;
 	}
 
 	public void TG_WalkToCrouch(StatechartDuct duct)
 	{
-		duct.IsEnabled = Input.IsActionJustPressed("Ctrl");
+		duct.IsTransitionEnabled = Input.IsActionJustPressed("Ctrl");
 	}
 
 	public void TG_CrouchToWalk(StatechartDuct duct)
 	{
-		duct.IsEnabled = Input.IsActionJustPressed("Ctrl") && IsPoseHasRoom(1.7f, 0.1f);
+		duct.IsTransitionEnabled = Input.IsActionJustPressed("Ctrl") && IsPoseHasRoom(1.7f, 0.1f);
 	}
 
 	public void TI_GroundToAir(StatechartDuct duct)

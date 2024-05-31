@@ -302,10 +302,10 @@ public partial class Transition : StatechartComposition
     protected virtual bool CustomTransitionGuard(StatechartDuct duct)
     {
         // Use signal by default
-        duct.IsEnabled = true;
+        duct.IsTransitionEnabled = true;
         duct.CompositionNode = this;
         EmitSignal(SignalName.Guard, duct);
-        return duct.IsEnabled;
+        return duct.IsTransitionEnabled;
     }
 
     internal void TransitionInvoke()

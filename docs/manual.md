@@ -292,7 +292,7 @@ For state's enter signals, `StatechartDuct` should be handled carefully. It is b
 
 **`InputEvent UnhandledInput`** : Recently updated input event statechart received from `_UnhandledInput(InputEvent @event)` .
 
-**`bool IsEnabled`** : Status of the pending transition. Used in transition's `Guard` signal.
+**`bool IsTransitionEnabled`** : Status of the pending transition. Used in transition's `Guard` signal.
 
 **`StatechartComposition CompositionNode`** : The statechart composition node who emit the signal and parse this object.
 
