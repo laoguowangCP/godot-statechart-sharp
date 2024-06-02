@@ -9,11 +9,11 @@ public partial class StatechartComposition : Node
     internal Statechart HostStatechart { get; set; }
 
     internal virtual void Setup() {}
-    internal virtual void Setup(Statechart hostStatechart, ref int ancestorId)
+    internal virtual void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         HostStatechart = hostStatechart;
-        ++ancestorId;
-        OrderId = ancestorId;
+        ++parentOrderId;
+        OrderId = parentOrderId;
         
         if (HostStatechart != this)
         {

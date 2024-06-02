@@ -19,6 +19,7 @@ public partial class StatechartTest : Node
 		if (TestStatechart == null)
 		{
 			GD.PrintErr(GetPath(), "Test statechart not set.");
+			return;
 		}
 		ConnectToTest(TestStatechart);
 	}
@@ -52,7 +53,6 @@ public partial class StatechartTest : Node
 
 	public void OnTestButtonPressed()
 	{
-		// GD.Print("[", GetParent<Node>().Name, "]");
 		GD.Print(">> Test Start: step ", TestCnt);
 		TestStatechart?.Step(StepName);
 		GD.Print(">> Finish\n");

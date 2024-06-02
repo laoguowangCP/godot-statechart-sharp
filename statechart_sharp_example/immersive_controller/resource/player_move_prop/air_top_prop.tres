@@ -7,5 +7,5 @@ script = ExtResource("1_3ggjt")
 MaxSpeed = 5.0
 ForwardRatio = 1.0
 BackwardRatio = 1.0
-Accel = 75.0
+Accel = 50.0
 Decel = 75.0

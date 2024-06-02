@@ -1,25 +1,32 @@
-using System.Collections.Generic;
 using Godot;
+using System.Collections.Generic;
+using System.Linq;
+
 
 namespace LGWCP.StatechartSharp;
 
 public class ParallelComponent : StateComponent
 {
-    protected int NonHistorySubCnt = 0;
+    protected int NonHistorySubstateCnt = 0;
     public ParallelComponent(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
-        base.Setup(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref parentOrderId);
 
         // Init & collect states, transitions, actions
         // Get lower-state and upper-state
         State lastSubstate = null;
         foreach (Node child in HostState.GetChildren())
         {
+            if (child.IsQueuedForDeletion())
+            {
+                continue;
+            }
+            
             if (child is State s)
             {
-                s.Setup(hostStateChart, ref ancestorId);
+                s.Setup(hostStateChart, ref parentOrderId);
                 Substates.Add(s);
 
                 // First substate is lower-state
@@ -31,7 +38,7 @@ public class ParallelComponent : StateComponent
 
                 if (!s.IsHistory)
                 {
-                    NonHistorySubCnt += 1;
+                    NonHistorySubstateCnt += 1;
                 }
             }
             else if (child is Transition t)
@@ -39,13 +46,13 @@ public class ParallelComponent : StateComponent
                 // Root state should not have transition
                 if (ParentState != null)
                 {
-                    t.Setup(hostStateChart, ref ancestorId);
+                    t.Setup(hostStateChart, ref parentOrderId);
                     Transitions.Add(t);
                 }
             }
             else if (child is Reaction a)
             {
-                a.Setup(hostStateChart, ref ancestorId);
+                a.Setup(hostStateChart, ref parentOrderId);
                 Reactions.Add(a);
             }
         }
@@ -66,6 +73,81 @@ public class ParallelComponent : StateComponent
         // Else state is atomic, lower and upper are null
     }
 
+    internal override void PostSetup()
+    {
+        foreach (State state in Substates)
+        {
+            state.PostSetup();
+        }
+
+        foreach (Transition transistion in Transitions)
+        {
+            transistion.PostSetup();
+        }
+
+        foreach (Reaction reaction in Reactions)
+        {
+            reaction.PostSetup();
+        }
+    }
+
+    internal override bool GetPromoteStates(List<State> states)
+    {
+        bool isPromote = true;
+        foreach (Node child in HostState.GetChildren())
+        {
+            if (child is State state)
+            {
+                bool isChildPromoted = state.GetPromoteStates(states);
+                if (isChildPromoted)
+                {
+                    isPromote = false;
+                    break;
+                }
+            }
+        }
+
+        if (isPromote)
+        {
+            states.Add(HostState);
+        }
+
+        // Make sure promoted
+        return true;
+    }
+
+    internal override bool IsConflictToEnterRegion(
+        State substateToPend,
+        SortedSet<State> enterRegionUnextended)
+    {
+        /*
+        Deals history cases:
+            1. Pending substate is history, conflicts if any descendant in region.
+            2. Any history substate in enter region, conflicts.
+        */
+        // At this point history is not excluded from enter region
+
+        // Pending substate is history
+        if (substateToPend.IsHistory)
+        {
+            return enterRegionUnextended.Any<State>(
+                state => HostState.IsAncestorStateOf(state));
+        }
+
+        // Any history substate in region, conflicts.
+        foreach (State substate in Substates)
+        {
+            if (substate.IsHistory
+                && enterRegionUnextended.Contains(substate))
+            {
+                return true;
+            }
+        }
+
+        // No conflicts.
+        return false;
+    }
+    
     internal override void ExtendEnterRegion(
         SortedSet<State> enterRegion,
         SortedSet<State> enterRegionEdge,
@@ -75,7 +157,7 @@ public class ParallelComponent : StateComponent
         /*
         if need check (state in region, checked by parent):
             if any history substate in region:
-                extend this very history
+                extend this history
                 return
             else (no history substate in region)
                 foreach substate:
@@ -116,60 +198,13 @@ public class ParallelComponent : StateComponent
             {
                 continue;
             }
-            // Need check && substate in region  => still need check
+
+            // Need check && substate in region => still need check
             bool stillNeedCheck =
                 needCheckContain && enterRegion.Contains(substate);
             substate.ExtendEnterRegion(
                 enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
         }
-
-    }
-
-    internal override void PostSetup()
-    {
-        foreach (State state in Substates)
-        {
-            state.PostSetup();
-        }
-
-        foreach (Transition trans in Transitions)
-        {
-            trans.PostSetup();
-        }
-
-        foreach (Reaction react in Reactions)
-        {
-            react.PostSetup();
-        }
-    }
-
-    internal override bool IsConflictToEnterRegion(
-        State tgtSubstate, SortedSet<State> enterRegion)
-    {
-        /*
-        Deals history cases:
-            1. Target substate is history, conflicts if any descendant in region.
-            2. Already a history substate in region, always conflicts.
-        */
-        foreach (State substate in Substates)
-        {
-            // A history substate in region, conflicts.
-            if (substate.IsHistory && enterRegion.Contains(substate))
-            {
-                return true;
-            }
-        }
-
-        // Target substate is history
-        if (tgtSubstate.IsHistory)
-        {
-            SortedSet<State> descInRegion = enterRegion.GetViewBetween(
-                LowerState, UpperState);
-            return descInRegion.Count > 0;
-        }
-
-        // If nothing involves history, no conflicts.
-        return false;
     }
 
     internal override void RegisterActiveState(SortedSet<State> activeStates)
@@ -184,7 +219,7 @@ public class ParallelComponent : StateComponent
     internal override int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         int handleInfo = -1;
-        if (NonHistorySubCnt > 0)
+        if (NonHistorySubstateCnt > 0)
         {
             int negCnt = 0;
             int posCnt = 0;
@@ -207,11 +242,11 @@ public class ParallelComponent : StateComponent
                 }
             }
 
-            if (negCnt == NonHistorySubCnt) // No selected
+            if (negCnt == NonHistorySubstateCnt) // No selected
             {
                 handleInfo = -1;
             }
-            else if (posCnt == NonHistorySubCnt) // All done
+            else if (posCnt == NonHistorySubstateCnt) // All done
             {
                 handleInfo = 1;
             }
@@ -223,30 +258,29 @@ public class ParallelComponent : StateComponent
 
         /*
         Check source's transitions:
-            - < 0, check any
-            - == 0, only check targetless
-            - > 0, do nothing
+            a) < 0, check any
+            b) == 0, check targetless
+            c) > 0, check none
         */
         if (handleInfo > 0)
         {
             return handleInfo;
         }
 
-        foreach (Transition t in Transitions)
+        foreach (Transition transition in Transitions)
         {
-            // If == 0, only check targetless
             if (handleInfo == 0)
             {
-                if (!t.IsTargetless)
+                if (!transition.IsTargetless)
                 {
                     continue;
                 }
             }
 
-            bool isEnabled = t.Check(eventName);
+            bool isEnabled = transition.Check(eventName);
             if (isEnabled)
             {
-                enabledTransitions.Add(t);
+                enabledTransitions.Add(transition);
                 handleInfo = 1;
                 break;
             }
@@ -260,8 +294,8 @@ public class ParallelComponent : StateComponent
     {
         /* 
         If is edge-state:
-            - It is called from history substate.
-            - "IsHistory" argument represents "IsDeepHistory"
+            1. Called from history substate.
+            2. IsHistory arg represents IsDeepHistory
         */
         if (!isEdgeState)
         {
@@ -270,7 +304,7 @@ public class ParallelComponent : StateComponent
 
         foreach (State substate in Substates)
         {
-            // Pass history-states
+            // Ignore history states
             if (substate.IsHistory)
             {
                 continue;

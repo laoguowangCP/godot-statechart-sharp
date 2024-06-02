@@ -40,13 +40,13 @@ text = "[font_size=20][center][b]Enter & Exit[/b][/center][/font_size]
 State has 2 signals: \"Enter\" and \"Exit\".
 
 [ul]
-Enter is emiited when a transition turns an inactive state into active, or when statechart sets initial active states.
+Enter is emiited when a transition turns an inactive state into active, or when statechart setting initial active states.
 Exit is emitted when a transition turns an active state into inactive.
 [/ul]
 
-For this test, I want to mention you that there is a little different on node setting. Previously, statechart node is set child to \"Tester\", so the initial enter process is ahead of signal connection and won't be printed. It was for clarity. Here statechart has deffered initialization, so you can see \"Enter\" signals are emitted from initial active states, before you press the test button.
+In this test, statechart initialization process is printed. You can see \"Enter\" signals are emitted from initial active states, before you press the test button.
 
-By the way, you can see states are entered in document order, while exit in reversed document order (document order = node order in scene from up to down).
+After you press the test button, you will see a transition invokes. This make several states emit their \"Enter\" and \"Exit\" signals
 "
 
 [node name="Button" type="Button" parent="."]

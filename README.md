@@ -12,10 +12,11 @@
 
 ## Introduction
 
-What is statechart? Simple put:
+What is statechart?
 
-- It is a state machine.
-- Supports hierarchy state, with various state mode.
+- A state machine.
+- Supports hierarchy states.
+- Has various state mode.
 
 This plugin provides basic nodes to build statechart in Godot editor.
 
@@ -23,33 +24,41 @@ This plugin provides basic nodes to build statechart in Godot editor.
 
 > [!IMPORTANT]
 >
-> Before you start, You need .NET-enabled version of Godot.
+> .NET-enabled version of Godot is required.
 
-Download repository, copy `addons/statechart_sharp` to your project folder. Build project once, then enable plugin in project setting. It's good if you see new nodes added to "create new node" interface:
+Download repository, copy `addons/statechart_sharp` to your project folder. Build project once, then enable plugin in project setting. You'll see new nodes added to "create new node" interface:
 
-<img src="./docs/asset/ss_imported_nodes.png" alt="ss_imported_nodes" style="width:300px;"/>
+<img src="./docs/asset/ss_imported_nodes.png" alt="ss_imported_nodes" style="width:400px;"/>
 
-**Step 1** : Build with nodes:
+**Step 1** : Add nodes:
 
-- Add Statechart node
+- Add Statechart
 
-  <img src="./docs/asset/ss_add_statechart.png" alt="ss_add_statechart" style="width:180px;"/>
+  <img src="./docs/asset/ss_add_statechart.png" alt="ss_add_statechart" style="width:256px;"/>
 
-- Add States under Statechart
+- Add State(s)
 
-  <img src="./docs/asset/ss_add_states.png" alt="ss_add_state" style="width:180px;"/>
+  <img src="./docs/asset/ss_add_states.png" alt="ss_add_state" style="width:256px;"/>
 
-- Add Transition and Reaction under State
+- Add Transition(s) and Reaction(s)
 
-  <img src="./docs/asset/ss_add_transition_&_reaction.png" alt="ss_add_transition" style="width:180px;"/>
+  <img src="./docs/asset/ss_add_transition_&_reaction.png" alt="ss_add_transition" style="width:256px;"/>
 
-**Step 2** : Wire up. Set properties and connect signals.
+**Step 2** : Set properties and connect signals.
 
 **Step 3** : Build and run.
 
-You can find example scenes in `./statechart_sharp_example` folder. Refer to [manual](./docs/manual.md) to see what these nodes are and how they work together.
+Refer to [manual](./docs/manual.md) to see what these nodes are and how they work together. Get example scenes in `./statechart_sharp_example` folder.
 
 ## Feature
 
-- Node based, but few nodes to learn about.
-- Designed for composition. No need to extend scripts.
+- Follow statechart specification:
+
+  - Use document order.
+  - Support automatic transition.
+
+- Designed for Godot:
+
+  - Node based.
+  - Support node loop events (process, input, etc.).
+  - Choose your style: extend scripts, or use signals only.

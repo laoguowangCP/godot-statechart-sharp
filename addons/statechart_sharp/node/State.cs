@@ -12,14 +12,19 @@ public enum StateModeEnum : int
 }
 
 [Tool]
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/State.svg")]
+[GlobalClass]
+[Icon("res://addons/statechart_sharp/icon/State.svg")]
 public partial class State : StatechartComposition
 {
-    #region define signals
+    #region signals
+    
     [Signal] public delegate void EnterEventHandler(StatechartDuct duct);
     [Signal] public delegate void ExitEventHandler(StatechartDuct duct);
     
     #endregion
+
+
+    #region properties
 
     [Export] internal StateModeEnum StateMode
     {
@@ -27,6 +32,7 @@ public partial class State : StatechartComposition
         set
         {
             _stateMode = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -44,6 +50,7 @@ public partial class State : StatechartComposition
         set
         {
             _initialState = value;
+
             #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -64,6 +71,11 @@ public partial class State : StatechartComposition
     protected StatechartDuct Duct { get => HostStatechart.Duct; }
     internal bool IsHistory { get => StateMode == StateModeEnum.History; }
     
+    #endregion
+
+
+    #region methods
+
     public override void _Ready()
     {
         Substates = new List<State>();
@@ -88,10 +100,15 @@ public partial class State : StatechartComposition
         _ => null
     };
 
-    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal bool GetPromoteStates(List<State> states)
     {
-        base.Setup(hostStateChart, ref ancestorId);
-        StateComponent.Setup(hostStateChart, ref ancestorId);
+        return StateComponent.GetPromoteStates(states);
+    }
+
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
+    {
+        base.Setup(hostStateChart, ref parentOrderId);
+        StateComponent.Setup(hostStateChart, ref parentOrderId);
     }
 
     internal override void PostSetup()
@@ -101,13 +118,7 @@ public partial class State : StatechartComposition
 
     internal void StateEnter()
     {
-        if (ParentState != null)
-        {
-            ParentState.HandleSubstateEnter(this);
-        }
-        
-        // Duct.CompositionNode = this;
-        // EmitSignal(SignalName.Enter, Duct);
+        ParentState?.HandleSubstateEnter(this);
         CustomStateEnter(Duct);
     }
 
@@ -120,8 +131,6 @@ public partial class State : StatechartComposition
 
     internal void StateExit()
     {
-        // Duct.CompositionNode = this;
-        // EmitSignal(SignalName.Exit, Duct);
         CustomStateExit(Duct);
     }
 
@@ -137,9 +146,23 @@ public partial class State : StatechartComposition
         StateComponent.RegisterActiveState(activeStates);
     }
 
-    internal bool IsConflictToEnterRegion(State substate, SortedSet<State> enterRegion)
+    internal bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
     {
-        return StateComponent.IsConflictToEnterRegion(substate, enterRegion);
+        return StateComponent.IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
+    }
+
+    internal bool IsAncestorStateOf(State state)
+    {
+        int id = state.OrderId;
+
+        // Leaf state
+        if (LowerState is null || UpperState is null)
+        {
+            return false;
+        }
+
+        return id >= LowerState.OrderId
+            && id <= UpperState.OrderId;
     }
 
     internal void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
@@ -164,11 +187,11 @@ public partial class State : StatechartComposition
 
     internal void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
     {
-        foreach (Reaction a in Reactions)
+        foreach (Reaction reaction in Reactions)
         {
-            if (a.Check(eventName))
+            if (reaction.Check(eventName))
             {
-                enabledReactions.Add(a);
+                enabledReactions.Add(reaction);
             }
         }
     }
@@ -177,13 +200,10 @@ public partial class State : StatechartComposition
     public override string[] _GetConfigurationWarnings()
     {
         List<string> warnings = new List<string>();
-
-        if (StateComponent != null)
-        {
-            StateComponent.GetConfigurationWarnings(warnings);
-        }
-
+        StateComponent?.GetConfigurationWarnings(warnings);
         return warnings.ToArray();
     }
     #endif
+
+    #endregion
 }

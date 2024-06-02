@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 using Godot;
+
 
 namespace LGWCP.StatechartSharp;
 
@@ -19,18 +20,23 @@ public class CompoundComponent : StateComponent
     
     public CompoundComponent(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
-        base.Setup(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref parentOrderId);
 
         // Init & collect states, transitions, actions
         // Get lower-state and upper-state
         State lastSubstate = null;
         foreach (Node child in HostState.GetChildren())
         {
+            if (child.IsQueuedForDeletion())
+            {
+                continue;
+            }
+            
             if (child is State s)
             {
-                s.Setup(hostStateChart, ref ancestorId);
+                s.Setup(hostStateChart, ref parentOrderId);
                 Substates.Add(s);
 
                 // First substate is lower-state
@@ -45,13 +51,13 @@ public class CompoundComponent : StateComponent
                 // Root state should not have transition
                 if (ParentState != null)
                 {
-                    t.Setup(hostStateChart, ref ancestorId);
+                    t.Setup(hostStateChart, ref parentOrderId);
                     Transitions.Add(t);
                 }
             }
             else if (child is Reaction a)
             {
-                a.Setup(hostStateChart, ref ancestorId);
+                a.Setup(hostStateChart, ref parentOrderId);
                 Reactions.Add(a);
             }
         }
@@ -69,9 +75,9 @@ public class CompoundComponent : StateComponent
                 UpperState = lastSubstate;
             }
         }
-        // Else state is atomic, lower and upper are both null. GetViewBetween can handle it.
+        // Else state is atomic, lower and upper are both null.
 
-        // Set initial-state
+        // Set initial state
         if (InitialState != null)
         {
             // Check selected initial-state is non-history substate
@@ -86,7 +92,7 @@ public class CompoundComponent : StateComponent
             }
         }
 
-        // No assigned initial-state, use first non-history substate
+        // No assigned initial state, use first non-history substate
         if (InitialState == null)
         {
             foreach (State substate in Substates)
@@ -99,7 +105,7 @@ public class CompoundComponent : StateComponent
             }
         }
 
-        // Set current-state
+        // Set current state
         CurrentState = InitialState;
     }
 
@@ -122,13 +128,12 @@ public class CompoundComponent : StateComponent
     }
 
     internal override bool IsConflictToEnterRegion(
-        State tgtSubstate, SortedSet<State> enterRegion)
+        State substateToPend,
+        SortedSet<State> enterRegionUnextended)
     {
-        // Conflicts if any substate is already exist in enter-region.
-        SortedSet<State> descInRegion = enterRegion.GetViewBetween(
-            LowerState, UpperState);
-        return descInRegion.Count > 0;
-        // Covers history cases.
+        // Conflicts if any substate is already exist in region
+        return enterRegionUnextended.Any<State>(
+            state => HostState.IsAncestorStateOf(state));
     }
 
     internal override void ExtendEnterRegion(
@@ -140,7 +145,7 @@ public class CompoundComponent : StateComponent
         /*
         if need check (state is in region, checked by parent):
             if any substate in region:
-                extend this very substate, still need check
+                extend this substate, still need check
             else (no substate in region)
                 extend initial state, need no check
         else (need no check)
@@ -175,14 +180,35 @@ public class CompoundComponent : StateComponent
                 enterRegion, enterRegionEdge, extraEnterRegion, false);
         }
     }
+
+    internal override bool GetPromoteStates(List<State> states)
+    {
+        bool isPromote = true;
+        foreach (Node child in HostState.GetChildren())
+        {
+            if (child is State state)
+            {
+                bool isChildPromoted = state.GetPromoteStates(states);
+                if (isChildPromoted)
+                {
+                    isPromote = false;
+                }
+            }
+        }
+
+        if (isPromote)
+        {
+            states.Add(HostState);
+        }
+
+        // Make sure promoted
+        return true;
+    }
     
     internal override void RegisterActiveState(SortedSet<State> activeStates)
     {
         activeStates.Add(HostState);
-        if (CurrentState != null)
-        {
-            CurrentState.RegisterActiveState(activeStates);
-        }
+        CurrentState?.RegisterActiveState(activeStates);
     }
 
     internal override int SelectTransitions(
@@ -206,21 +232,21 @@ public class CompoundComponent : StateComponent
             return handleInfo;
         }
 
-        foreach (Transition t in Transitions)
+        foreach (Transition transtion in Transitions)
         {
             // If == 0, only check targetless
             if (handleInfo == 0)
             {
-                if (!t.IsTargetless)
+                if (!transtion.IsTargetless)
                 {
                     continue;
                 }
             }
 
-            bool isEnabled = t.Check(eventName);
+            bool isEnabled = transtion.Check(eventName);
             if (isEnabled)
             {
-                enabledTransitions.Add(t);
+                enabledTransitions.Add(transtion);
                 handleInfo = 1;
                 break;
             }
@@ -233,9 +259,9 @@ public class CompoundComponent : StateComponent
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /* 
-        If is edge-state:
-            - It is called from history substate.
-            - "IsHistory" argument represents "IsDeepHistory"
+        If is edge state:
+            1. It is called from history substate
+            2. IsHistory arg represents IsDeepHistory
         */
         if (isEdgeState)
         {
@@ -247,7 +273,7 @@ public class CompoundComponent : StateComponent
             return;
         }
 
-        // Not edge-state
+        // Not edge state
         deducedSet.Add(HostState);
         State deducedSubstate = isHistory ? CurrentState : InitialState;
 
@@ -269,10 +295,15 @@ public class CompoundComponent : StateComponent
         base.GetConfigurationWarnings(warnings);
 
         // Check child
-        if (InitialState != null
-            && (InitialState.GetParent<Node>() != HostState || InitialState.IsHistory))
+        if (InitialState != null)
         {
-            warnings.Add("Initial state should be a non-history substate.");
+            var initialStateParent = InitialState.GetParentOrNull<Node>();
+            if (initialStateParent is null
+                || initialStateParent != HostState
+                || InitialState.IsHistory)
+            {
+                warnings.Add("Initial state should be a non-history substate.");
+            }
         }
     }
     #endif

@@ -2,18 +2,25 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace LGWCP.StatechartSharp;
 
 [Tool]
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
+[GlobalClass]
+[Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
+    #region properties
+
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxInternalEventCount = 8;
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxAutoTransitionRound = 8;
-    [Export(PropertyHint.Flags, "Process,Physics Process,Input,Unhandled Input")]
+    [Export(PropertyHint.Flags, "Process,Physics Process,Input,Shortcut Input,UnhandledKey Input,Unhandled Input")]
     protected EventFlagEnum EventFlag { get; set; } = 0;
+    [Export]
+    protected bool IsWaitParentReady = true;
+
     internal bool IsRunning { get; private set; }
     protected int EventCount;
     internal State RootState { get; set; }
@@ -26,9 +33,17 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<Reaction> EnabledReactions { get; set; }
     internal StatechartDuct Duct { get; private set; }
 
+    #endregion
+
+
+    #region methods
+
     public override void _Ready()
     {
-        Duct = new StatechartDuct { HostStatechart = this };
+        Duct = new StatechartDuct
+        {
+            HostStatechart = this
+        };
 
         IsRunning = false;
         EventCount = 0;
@@ -46,9 +61,8 @@ public partial class Statechart : StatechartComposition
         {
         #endif
 
-        // Statechart setup
-        Setup();
-        PostSetup();
+        // Statechart setup async
+        StartSetUp();
 
         #if TOOLS
         }
@@ -59,51 +73,71 @@ public partial class Statechart : StatechartComposition
         #endif
     }
 
+    protected async void StartSetUp()
+    {
+        if (IsWaitParentReady)
+        {
+            Node parentNode = GetParentOrNull<Node>();
+            if (parentNode != null)
+            {
+                await ToSignal(parentNode, Node.SignalName.Ready);
+            }
+        }
+
+        Setup();
+        PostSetup();
+    }
+
     internal override void Setup()
     {
-        OrderId = 0;
         HostStatechart = this;
         foreach (Node child in GetChildren())
         {
-            if (child is State rootState)
+            if (child is State state)
             {
-                if (!rootState.IsHistory)
+                if (!state.IsHistory)
                 {
-                    RootState = rootState;
+                    RootState = state;
                     break;
                 }
             }
         }
         
+        OrderId = 0;
         if (RootState != null)
         {
-            int ancestorId = 0;
-            RootState.Setup(this, ref ancestorId);
+            int parentOrderId = 0;
+            RootState.Setup(this, ref parentOrderId);
         }
     }
 
     internal override void PostSetup()
     {
+        // Get and enter active states
         if (RootState != null)
         {
-            // Get activeStates
             RootState.RegisterActiveState(ActiveStates);
             RootState.PostSetup();
         }
 
-        // Enter active-state
         foreach (State state in ActiveStates)
         {
             state.StateEnter();
         }
 
         // Set node process according to flags
-        SetProcess(EventFlag.HasFlag(EventFlagEnum.Process));
-        SetPhysicsProcess(EventFlag.HasFlag(EventFlagEnum.PhysicsProcess));
-        SetProcessInput(EventFlag.HasFlag(EventFlagEnum.Input));
-        SetProcessShortcutInput(EventFlag.HasFlag(EventFlagEnum.ShortcutInput));
-        SetProcessUnhandledKeyInput(EventFlag.HasFlag(EventFlagEnum.UnhandledKeyInput));
-        SetProcessUnhandledInput(EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
+        SetProcess(
+            EventFlag.HasFlag(EventFlagEnum.Process));
+        SetPhysicsProcess(
+            EventFlag.HasFlag(EventFlagEnum.PhysicsProcess));
+        SetProcessInput(
+            EventFlag.HasFlag(EventFlagEnum.Input));
+        SetProcessShortcutInput(
+            EventFlag.HasFlag(EventFlagEnum.ShortcutInput));
+        SetProcessUnhandledKeyInput(
+            EventFlag.HasFlag(EventFlagEnum.UnhandledKeyInput));
+        SetProcessUnhandledInput(
+            EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
     }
 
     public void Step(StringName eventName)
@@ -113,14 +147,6 @@ public partial class Statechart : StatechartComposition
             return;
         }
 
-        /*
-        If is running
-            if <= max round
-                queue event
-            return
-        Else not running:
-            queue event
-        */
         if (IsRunning)
         {
             if (EventCount <= MaxInternalEventCount)
@@ -147,10 +173,6 @@ public partial class Statechart : StatechartComposition
         EventCount = 0;
     }
 
-    /// <summary>
-    /// Macro step
-    /// </summary>
-    /// <param name="eventName"></param>
     protected void HandleEvent(StringName eventName)
     {
         if (RootState == null)
@@ -159,26 +181,27 @@ public partial class Statechart : StatechartComposition
         }
         /*
         Handle event:
-            1. Select transitions
-            2. Do transitions
-            3. While iter < MAX_AUTO_ROUND:
-                - Select auto-transition
-                - Do auto-transition
-                - Break if no queued auto-transition
-            4. Do reactions
+        1. Select transitions
+        2. Do transitions
+        3. While iter < MAX_AUTO_ROUND:
+            - Select auto-transition
+            - Do auto-transition
+            - Break if no queued auto-transition
+        4. Do reactions
         */
+
         // 1. Select transitions
         RootState.SelectTransitions(EnabledTransitions, eventName);
 
         // 2. Do transitions
         DoTransitions();
 
-        // 3. Select and do auto transitions
+        // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
             RootState.SelectTransitions(EnabledTransitions);
 
-            // Active-states are stable
+            // Stop if active states are stable
             if (EnabledTransitions.Count == 0)
             {
                 break;
@@ -192,9 +215,9 @@ public partial class Statechart : StatechartComposition
             state.SelectReactions(EnabledReactions, eventName);
         }
 
-        foreach (Reaction react in EnabledReactions)
+        foreach (Reaction reaction in EnabledReactions)
         {
-            react.ReactionInvoke();
+            reaction.ReactionInvoke();
         }
 
         EnabledReactions.Clear();
@@ -210,42 +233,37 @@ public partial class Statechart : StatechartComposition
         */
 
         // 1. Deduce and merge exit set
-        foreach (Transition trans in EnabledTransitions)
+        foreach (Transition transition in EnabledTransitions)
         {
-            // Targetless checks no conflicts, and do no set operations.
-            if (trans.IsTargetless)
-            {
-                EnabledFilteredTransitions.Add(trans);
-                continue;
-            }
-
             /*
             Check confliction
-                1. If this source is descendant to other LCA.
-                    <=> source is in exit set
-                2. Else, if other source descendant to this LCA
-                    <=> Any other source's most anscetor state in set is also descendant to this LCA (or it will be case 1)
-                    <=> Any state in exit set is descendant to this LCA
+            1. If this source is descendant to other LCA.
+                <=> source is in exit set
+            2. Else, if other source descendant to this LCA
+                <=> Any other source's most anscetor state in set is also descendant to this LCA (or it will be case 1)
+                <=> Any state in exit set is descendant to this LCA
             */
 
-            if (ExitSet.Contains(trans.SourceState))
+            // Targetless has no confliction
+            if (transition.IsTargetless)
+            {
+                EnabledFilteredTransitions.Add(transition);
+                continue;
+            }
+
+            bool hasConfliction = ExitSet.Contains(transition.SourceState)
+                || ExitSet.Any<State>(
+                    state => transition.LcaState.IsAncestorStateOf(state));
+
+            if (hasConfliction)
             {
                 continue;
             }
-            else
-            {
-                bool IsDescendantInExit = ExitSet.Any<State>(
-                    s => trans.LcaState.IsAncestorOf(s));
-                if (IsDescendantInExit)
-                {
-                    continue;
-                }
-            }
 
-            EnabledFilteredTransitions.Add(trans);
+            EnabledFilteredTransitions.Add(transition);
 
             SortedSet<State> exitStates = ActiveStates.GetViewBetween(
-                trans.LcaState.LowerState, trans.LcaState.UpperState);
+                transition.LcaState.LowerState, transition.LcaState.UpperState);
             ExitSet.UnionWith(exitStates);
         }
 
@@ -257,17 +275,18 @@ public partial class Statechart : StatechartComposition
 
         // 2. Invoke transitions
         // 3. Deduce and merge enter set
-        foreach (Transition trans in EnabledFilteredTransitions)
+        foreach (Transition transition in EnabledFilteredTransitions)
         {
-            trans.TransitionInvoke();
+            transition.TransitionInvoke();
+            
             // If transition is targetless, enter-region is null.
-            if (trans.IsTargetless)
+            if (transition.IsTargetless)
             {
                 continue;
             }
 
-            SortedSet<State> enterRegion = trans.EnterRegion;
-            SortedSet<State> deducedEnterStates = trans.GetDeducedEnterStates();
+            SortedSet<State> enterRegion = transition.EnterRegion;
+            SortedSet<State> deducedEnterStates = transition.GetDeducedEnterStates();
             EnterSet.UnionWith(enterRegion);
             EnterSet.UnionWith(deducedEnterStates);
         }
@@ -381,7 +400,6 @@ public partial class Statechart : StatechartComposition
                 }
                 if (hasRootState)
                 {
-                    // We already have a root state
                     hasOtherChild = true;
                 }
                 hasRootState = true;
@@ -394,10 +412,12 @@ public partial class Statechart : StatechartComposition
 
         if (!hasRootState || hasOtherChild)
         {
-            warnings.Add("Statechart needs exactly 1 non-history root state.");
+            warnings.Add("Statechart should have exactly 1 non-history root state.");
         }
 
         return warnings.ToArray();
     }
     #endif
+
+    #endregion
 }

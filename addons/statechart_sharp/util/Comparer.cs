@@ -2,22 +2,6 @@ using System.Collections.Generic;
 
 namespace LGWCP.StatechartSharp;
 
-class CompositionComparer : IComparer<StatechartComposition>
-{
-    public int Compare(StatechartComposition x, StatechartComposition y)
-    {
-        return x.OrderId - y.OrderId;
-    }
-}
-
-class ReversedCompositionComparer : IComparer<StatechartComposition>
-{
-    public int Compare(StatechartComposition x, StatechartComposition y)
-    {
-        return y.OrderId - x.OrderId;
-    }
-}
-
 class StateComparer : IComparer<State>
 {
     public int Compare(State x, State y)

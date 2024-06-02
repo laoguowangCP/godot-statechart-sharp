@@ -35,20 +35,19 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[font_size=20][center][b]Statechart max auto transition round[/b][/center][/font_size]
+text = "[font_size=20][center][b]Statechart max automatic transition round[/b][/center][/font_size]
 
-You may need to be familiar to transition mechanism before you read this test.
+In each step, statechart first handles transitions with parsed event, then automatic transitions for several rounds, till statechart reaches the status where active states have no automatic transitions to be invoked. However, too much iteraction or endless loops are unexpected. Property \"MaxAutoTransitionRound\" makes sure that automatic transition handling stops within fixed iteration steps.
 
-In each step, statechart first handle transitions with parsed event 1 round, then transitions with null event for several round.  Transitions with null event is called \"eventless\", or  \"automatic\", as it runs automatically.
+Also, you can set this property <=0 so statechart can ignore any automatic transition. It may save you some performance if you don't need automatic transition in your statemachine.
 
-Normally after rounds, statechart will reach the status where active states have no automatic transitions to be pended, and will then stop. But endless loop may happens. Property \"MaxAutoTransitionRound\" makes sure that automatic transition round stops in certain iteration.
-
-Also, you can set this property <=0 . This makes statechart ignores any automatic transition. It may save you some performance if you don't need this feature.
-
-Press test to see what will happen:
+Press test button then you will see:
 
 [ol]
-First "
+State1/->State2(Auto) is guard and invoked. Next round State2/->State1(Auto) is guard and invoked.
+This loop goes till we reach MaxAutoTransitionRound.
+[/ol]
+"
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -70,7 +69,6 @@ StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_8ujbo")
-MaxAutoTransitionRound = 2
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_gifu4")

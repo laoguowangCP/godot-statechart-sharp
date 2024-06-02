@@ -39,7 +39,7 @@ text = "[font_size=20][center][b]Custom event warning[/b][/center][/font_size]
 
 Reactions are invoked in document order.
 
-For this test, Root is parallel, so all the reactions will be invoked as they have matched event. The order is RR1 -> RA -> RR2 -> RB -> RR3 , which is the order they listed in scene.
+For this test, Root is parallel, so all the reactions will be invoked as they have matched event. The order is \"R1\" -> \"RA\" -> \"R2\" -> \"RB\" -> \"R3\" , which is the order they listed in unfolded scene tree.
 "
 
 [node name="Button" type="Button" parent="."]
@@ -60,7 +60,7 @@ script = ExtResource("2_8aavl")
 script = ExtResource("3_n3o1y")
 StateMode = 1
 
-[node name="RR1" type="Node" parent="Tester/Statechart/Root"]
+[node name="R1" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("4_q4d8j")
 ReactionEvent = 6
 CustomEventName = &"test"
@@ -73,7 +73,7 @@ script = ExtResource("4_q4d8j")
 ReactionEvent = 6
 CustomEventName = &"test"
 
-[node name="RR2" type="Node" parent="Tester/Statechart/Root"]
+[node name="R2" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("4_q4d8j")
 ReactionEvent = 6
 CustomEventName = &"test"
@@ -86,7 +86,7 @@ script = ExtResource("4_q4d8j")
 ReactionEvent = 6
 CustomEventName = &"test"
 
-[node name="RR3" type="Node" parent="Tester/Statechart/Root"]
+[node name="R3" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("4_q4d8j")
 ReactionEvent = 6
 CustomEventName = &"test"

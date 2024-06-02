@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
+
 namespace LGWCP.StatechartSharp;
 
 public class HistoryComponent : StateComponent
@@ -9,9 +10,15 @@ public class HistoryComponent : StateComponent
 
     public HistoryComponent(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int ancestorId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
-        base.Setup(hostStateChart, ref ancestorId);
+        base.Setup(hostStateChart, ref parentOrderId);
+    }
+
+    internal override bool GetPromoteStates(List<State> states)
+    {
+        // History do not promote
+        return false;
     }
 
     internal override void ExtendEnterRegion(
@@ -28,10 +35,11 @@ public class HistoryComponent : StateComponent
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /*
-        History-state start the deduction:
-            1. Parent can be compound or parallel.
-            2. Handle the sibling.
-            3. Should not be called recursively by other states.
+        History state(s) in region nedge start the deduction:
+            1. Parent can be compound or parallel
+            2. Let parent handles sibling(s) of this history state
+            3. Should not be called recursively by other states
+            4. Parse IsDeepHistory in IsHistory arg
         */
         if (isEdgeState)
         {
@@ -45,7 +53,7 @@ public class HistoryComponent : StateComponent
         // Check parent
         bool isParentWarning = true;
         bool isParentParallel = false;
-        Node parent = HostState.GetParent<Node>();
+        Node parent = HostState.GetParentOrNull<Node>();
         if (parent != null)
         {
             if (parent is State state)

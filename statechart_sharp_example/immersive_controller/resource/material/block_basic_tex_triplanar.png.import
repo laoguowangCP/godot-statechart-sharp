@@ -2,20 +2,17 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://umvkdatwhjyh"
-path.s3tc="res://.godot/imported/block_basic_block_basic_tex.png-a7b29ffb4a668f43d23997b4d14ded86.s3tc.ctex"
+uid="uid://cdksbmc40qmpt"
+path.s3tc="res://.godot/imported/block_basic_tex_triplanar.png-4b4830be46bd0d9f15cf7ce114fcad59.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "6e1e366db9c0b0fcbde0559f6ec8d94d"
-}
 
 [deps]
 
-source_file="res://statechart_sharp_example/immersive_controller/resource/im_field_gridmap/gltf/block_basic_block_basic_tex.png"
-dest_files=["res://.godot/imported/block_basic_block_basic_tex.png-a7b29ffb4a668f43d23997b4d14ded86.s3tc.ctex"]
+source_file="res://statechart_sharp_example/immersive_controller/resource/material/block_basic_tex_triplanar.png"
+dest_files=["res://.godot/imported/block_basic_tex_triplanar.png-4b4830be46bd0d9f15cf7ce114fcad59.s3tc.ctex"]
 
 [params]
 

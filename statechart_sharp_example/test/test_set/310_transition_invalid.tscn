@@ -37,7 +37,7 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Invalid transition[/b][/center][/font_size]
 
-An invalid transition will be ignored. It won't be used, and none of its signals will be emitted. Transitions will be set invalid in following cases:
+An invalid transition will be ignored. It won't be used, and its signals won't be emitted. Transitions will be set invalid in following cases:
 
 [ul]
 Event type is \"Custom\", but no event name assigned.
@@ -45,14 +45,13 @@ Event type is \"Auto\", while transition is targetless. This will cause endless 
 Event type is \"Auto\", while enter region contains source state. This will cause endless loop during automatic transitions because source state keeps active whenever this transition invokes.
 [/ul]
 
-Custom event case has been shown in test 302. This test shows 2 cases involving automatic transitions:
+This test shows 2 cases involving automatic transitions:
 
 [ul]
-A/-> is an automatic transition with no target. It is warned and will be set invalid in runtime.
-B/->B is an automatic transition with source state as target. Enter region contains source state. It will be set invalid in runtime.
+\"A/->\" is an automatic transition with no target. It is warned and will be set invalid in runtime.
+\"B/->B\" is an automatic transition with source state as target. Enter region contains source state. It will be set invalid in runtime.
 [/ul]
 
-As a result, no transition will be selected or executed whenever the statechart steps.
 "
 
 [node name="Button" type="Button" parent="."]
@@ -78,6 +77,7 @@ script = ExtResource("3_q662f")
 [node name="->A(Auto)" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("4_5kh01")
 TransitionEvent = 7
+CustomEventName = &""
 
 [node name="B" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_q662f")

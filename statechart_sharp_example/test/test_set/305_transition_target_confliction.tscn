@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://c1rrslwrvyms4"]
 
-[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_jsbqn"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_jivmv"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_bh6qs"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_jmg3g"]
+[ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_lkjm3"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_jhagy"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_nty0h"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_gcmbm"]
 
 [node name="BoxContainer" type="VBoxContainer"]
 custom_minimum_size = Vector2(600, 500)
@@ -35,11 +35,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[font_size=20][center][b]Target conflict[/b][/center][/font_size]
+text = "[font_size=20][center][b]Target confliction[/b][/center][/font_size]
 
-Conflict happens when 2 targets descendant to different substate of a compound state. We'll dispose the latter target, by the order they assigned in target array on inspector.
+Conflict happens when a transition's 2 targets descendant to different substate of a compound state. We'll dispose the latter target, by the order they assigned in target array on inspector.
 
-Here in this test, transition \"->B-Y+B-X\" happens. It targets to both of B's substate X and Y , while B is a compound state. Thus it makes a confliction. As result, B/Y is entered and B/X is disposed, since B/Y is prior by the order it assgined in target array.
+In this test, transition \"->B-Y+B-X\" invokes. It targets to both of \"B\"'s substate \"X\" and \"Y\" , while \"B\" is a compound state. Thus it makes a confliction. As a result, \"B/Y\" is entered and \"B/X\" is disposed, since \"B/Y\" is prior by the order it assgined in target array.
+
+A confliction will be pushed as warning during runtime, during statechart's initialization.
 "
 
 [node name="Button" type="Button" parent="."]
@@ -50,31 +52,31 @@ text = "Test
 "
 
 [node name="Tester" type="Node" parent="."]
-script = ExtResource("1_jsbqn")
+script = ExtResource("1_lkjm3")
 StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
-script = ExtResource("2_jivmv")
+script = ExtResource("2_jhagy")
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
-script = ExtResource("3_bh6qs")
+script = ExtResource("3_nty0h")
 
 [node name="A" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("3_bh6qs")
+script = ExtResource("3_nty0h")
 
 [node name="->B-Y+B-X" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("4_jmg3g")
+script = ExtResource("4_gcmbm")
 TransitionEvent = 6
 CustomEventName = &"test"
 TargetStatesArray = [NodePath("../../B/Y"), NodePath("../../B/X")]
 
 [node name="B" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("3_bh6qs")
+script = ExtResource("3_nty0h")
 
 [node name="X" type="Node" parent="Tester/Statechart/Root/B"]
-script = ExtResource("3_bh6qs")
+script = ExtResource("3_nty0h")
 
 [node name="Y" type="Node" parent="Tester/Statechart/Root/B"]
-script = ExtResource("3_bh6qs")
+script = ExtResource("3_nty0h")
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

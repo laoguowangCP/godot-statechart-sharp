@@ -35,18 +35,7 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]An empty statechart[/b][/center][/font_size]
 
-Nothing really happens, but statechart node should update configuration warning in scene editor. It warns that \"Statechart needs exactly 1 non-history root state\", since there's no root state under this statechart.
-
-By the way, whether you start here or not, I would like to mention you that most of the test scene need you to:
-
-[ol]
-Run current scene.
-Press the \"Test\" button 1 or several times.
-[/ol]
-
-Then you will see what happened in the output panel.
-
-What really happens is that, when \"Tester\" node is ready, it connects all the signals in statechart compositions, to a simple printing function. As you press the test button, \"test\" event is parsed to step the statechart."
+Nothing really happens, but statechart node should update configuration warning in scene editor. It warns that \"Statechart needs exactly 1 non-history root state\", since there's no root state under this statechart."
 threaded = true
 
 [node name="MarginContainer" type="MarginContainer" parent="."]

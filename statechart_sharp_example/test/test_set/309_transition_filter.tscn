@@ -37,16 +37,16 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Transition filter[/b][/center][/font_size]
 
-During executing, selected transitions are filtered to avoid enter/exit conflicts. As transitions are iterated, if one's source state is descendant to any former's LCA, or any former's source state is descendant to this LCA, dispose this transition. This is because we want to make it never happens that a transition is executed while its source state has been / will be exit by another transition during the same step.
+During executing, selected transitions are filtered to avoid enter/exit conflicts. As selected transitions are iterated by document order, if a transition's source state is descendant to any former's LCA, or any former's source state is descendant to this LCA, then this transition is disposed. This is because we want to avoid that a transition is executed while its source state has been/will be exit by another transition in the same batch of transition handling.
 
-We have 2 parts in this test, A and B, to demonstrate the 2 opposite situations:
+We have 2 parts in this test, A and B, to demonstrate the 2 different situations:
 
 [ol]
-A is parallel, so transitions A/X/->Y and A/Y->X are both guarded and selected. However, the LCA of transition A/X/->Y is state A , which is anscestor to A/Y , the source state of transition A/Y->X . So A/Y->X is disposed, as it is subsequent in document order.
-B is parallel, so transitions B/X/1/->2 and B/Y->X are both guarded and selected. However, the source state of transition B/X/1/->2 is state X , which is descendant to B , the LCA of transition B/Y->X . So B/Y->X is disposed, as it is subsequent in document order.
+\"A\" is parallel, so transitions \"A/X/->Y\" and \"A/Y->X\" are both guarded and selected. However, the LCA of transition \"A/X/->Y\" is state \"A\" , which is ancestor to \"A/Y\" , the source state of transition \"A/Y->X\" . So \"A/Y->X\" is disposed, as it is subsequent in document order.
+\"B\" is parallel, so transitions \"B/X/1/->2\" and \"B/Y->X\" are both guarded and selected. However, the source state of transition \"B/X/1/->2\" is state \"X\" , which is descendant to \"B\" , the LCA of transition \"B/Y->X\" . So \"B/Y->X\" is disposed, as it is subsequent in document order.
 [/ol]
 
-So as a result, all the transitions are guarded, but only A/X/->Y and B/X/1/->2 are invoked.
+So as a result, all the transitions are guarded, but only \"A/X/->Y\" and \"B/X/1/->2\" are invoked.
 "
 
 [node name="Button" type="Button" parent="."]

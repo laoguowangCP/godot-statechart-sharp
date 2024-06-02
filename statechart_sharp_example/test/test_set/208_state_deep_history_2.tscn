@@ -37,18 +37,16 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Deep History 2[/b][/center][/font_size]
 
-You may need to be familiar to transition mechanism before you read this test.
-
 History state represents the history \"active status\" of parent's descendant states. This test shows how deep history works.
 
-A deep history points to [b]leaf[/b] state(s) descendant to parent, once active till last exit of parent state.
+A deep history points to leaf state(s) descendant to parent, once active till last exit of parent state. If parent has never been active before, then it points to leaf state(s) should be active once parent is enter.
 
-For this test, it involves 3 test steps.
+This test demonstrate parallel situation. It involves 3 test steps:
 
 [ol]
-In first test step, we transit from \"Init\" to A/X/2 and A/Y/2, where A is parallel. This makes a history situation.
-Next, we transit from A to B's deep history. B has never been entered before, so history fallbacks to X/2 and Y/2.
-Finally, we transit back to A's deep history. It is A/X/2 and A/Y/2.
+In first test step, we transit from \"Init\" to \"A/X/2\" and \"A/Y/2\" (\"A\" is parallel). This makes a history situation.
+Next, we transit from \"A\" to \"B\"'s deep history. \"B\" and its descendants has never been entered before, so history fallbacks to \"B/X/2\" and \"B/Y/2\".
+Finally, we transit back to \"A\"'s deep history. It is \"A/X/2\" and \"A/Y/2\".
 [/ol]
 
 "

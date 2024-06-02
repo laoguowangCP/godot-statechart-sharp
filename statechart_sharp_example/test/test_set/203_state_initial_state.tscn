@@ -37,24 +37,22 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Initial state[/b][/center][/font_size]
 
-Compound state uses \"initial state\" property. It is the default substate to be active:
+\"initial state\" property is only used by compound state, refering to the default substate to be active:
 
 [ul]
-At statechart initialization, if a compound state is active, then its initial state is active.
-On transition, if a compound state is entered, with no descendant assigned to enter, then its initial state is entered.
+During statechart initialization, if a compound state is active, then its initial state is active.
+During transition, if a compound state is entered, with no descendant assigned to enter, then its initial state is entered.
 [/ul]
 
 If no non-history substate is assigned as inital state, then first non-history substate will be selected.
 
-For this test, press the test button then you'll see how compound state use its initial state.
+In this test, press the test button then you will see:
 
 [ul]
-The compound root state select \"Init\" as initial state, since it is the first non-history substate. So before you press the test, \"Init\" is active.
-On test pressed, transition invokes. \"Test\" will be entered. \"Test/B\" is assigned as initial state, so it will be entered too.
-You may notice the warning on \"Test/B\" node, because its initial state assignment is invalid. During the runtime, initial state neglects invalid assignment, and fallback to first non-history substate (which is \"Test/B/X\" in this case).
+The compound root state select \"Init\" as initial state. So before you press the test, \"Init\" is active.
+After test button is pressed, transition invokes. \"Test\" will be entered. \"Test/B\" is assigned as initial state, so it will be entered.
+A warning shows on \"Test/B\" node, because its initial state is assigned to a history state, which is an invalid configuration. During the runtime, initial state neglects invalid assignment, and fallbacks to first non-history substate (\"Test/B/X\" state).
 [/ul]
-
-By the way, initial state property is only used under compound mode.
 "
 threaded = true
 

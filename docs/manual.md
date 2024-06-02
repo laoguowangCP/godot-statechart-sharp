@@ -15,6 +15,7 @@ To get full perspective on statechart, you may refer to:
 - [State](#state)
 - [Transition](#transition)
 - [Reaction](#reaction)
+- [TransitionPromoter](#transitionpromoter)
 - [StatechartComposition](#statechartcomposition)
 - [StatechartDuct](#statechartduct)
 
@@ -71,6 +72,8 @@ func handle(event):
 
 **`enum EventFlagEnum EventFlag`** : Control activity of node loop events (process, input, etc.) . All disabled by default.
 
+**`IsWaitParentReady`** : If true, statechart setup process will wait parent node to be ready.
+
 ### Methods of Statechart
 
 **`void Step(StringName)`** : Make statechart run a step with given event.
@@ -118,9 +121,9 @@ Similar to hierarchy state machine, states can be arranged in a tree structure (
 
 ### Methods of State
 
-**`void CustomStateEnter(StatechartDuct duct)`**: Overrideable state enter behavior. Emit `Enter` signal by default.
+**`void CustomStateEnter(StatechartDuct)`**: Overrideable state enter behavior. Emit `Enter` signal by default.
 
-**`void CustomStateExit(StatechartDuct duct)`**: Overrideable state exit behavior. Emit `Exit` signal by default.
+**`void CustomStateExit(StatechartDuct)`**: Overrideable state exit behavior. Emit `Exit` signal by default.
 
 <br/>
 
@@ -156,9 +159,9 @@ To select transitions, a recursion is invoked on active states, starting with le
 - For a leaf state, its child transitions are iterated in document order. If event matches, `Guard` signal will be emitted to check whether the transition is enabled. If does, then transition is selected, and iteration stops.
 - For non-leaf states, they need consider "selecting situation" of their descendant state(s):
 
-  - **Case "-1"** : no transition selected in active descendant(s). State checks child transitions.
-  - **Case "0"** : transition selected in descendants, but not all of active descendant leaf has an anscestor with selected transition. They still ask for an enabled transition from anscestors, but expecting no confliction to selected one(s). In this case, state only checks targetless transitions.
-  - **Case "1"** : transition selected in descendants, and all active descendant leaf has an anscestor with selected transition. No need to check.
+  - **Case "-1"** : no transition selected in active descendant state(s). State checks child transitions.
+  - **Case "0"** : transition selected in descendant state(s), but not all of active descendant leaf state has an ancestor with selected transition. They still ask for an enabled transition from ancestors, but expecting no confliction to selected one(s). In this case, state only checks targetless transitions.
+  - **Case "1"** : transition selected in descendants, and all active descendant leaf has an ancestor with selected transition. No need to check.
 
 After that, selected transitions are executed. Here we update active states, invoke transitions, while doing some validation to avoid conflicts:
 
@@ -169,14 +172,20 @@ After that, selected transitions are executed. Here we update active states, inv
 4. Iterate filtered transitions with document order. For each transition, emit `Invoke` signal, deduce enter states (combines enter region and deduced states from enter region edge), and merge them to **enter set**.
 5. For states in enter set, add them to active states, and emit their `Enter` signals in document order.
 
-Automatic transitions are handled after normal given-an-event transitions. The "select and execute" procedures are same, but only 2 differences:
+[Automatic transition](#automatic-transition)s are handled after normal given-an-event transitions. The procedures are same, but only 2 differences:
 
 - Use "Auto" event.
 - Do several rounds, till no automatic transition is selected to execute.
 
+### Automatic transition
+
+Also known as eventless transition. Automatic transitions do not response to certain event, but always handled after normal given-an-event transitions.
+
+To make a transition automatic, set its event property to "Auto".
+
 ### Invalid transition
 
-An invalid transition will be ignored. It won't be checked, and signals won't be emitted. Transitions will be set invalid in following cases:
+An invalid transition won't be checked and its signals won't be emitted. Transitions will be set invalid in following cases:
 
 - Event type is "Custom", but no event name assigned.
 - Event type is "Auto", while transition is targetless. This may cause loop transition, since source state keeps active whenever this transition invokes.
@@ -196,15 +205,15 @@ An invalid transition will be ignored. It won't be checked, and signals won't be
 
 ### Signals of Transition
 
-**`void Guard(Transition)`** : Emitted when transition is checked. Used to judge whether transition is enabled (by default) or not. If it is, then transition will be selected and then executed.
+**`void Guard(StatechartDuct)`** : Emitted when transition is checked. Used to judge whether transition is enabled (by default) or not. If it is, then transition will be selected and then executed.
 
-**`void Invoke(Transition)`** : Emitted when transition is invoked. It happens when transition is selected and executed, after states' exit and before states' enter.
+**`void Invoke(StatechartDuct)`** : Emitted when transition is invoked. It happens when transition is selected and executed, after states' exit and before states' enter.
 
 ### Methods of Transition
 
-**`bool CustomTransitionGuard(StatechartDuct duct)`**: Overrideable transition guard behavior. Emit `Guard` signal by default.
+**`bool CustomTransitionGuard(StatechartDuct)`**: Overrideable transition guard behavior. Emit `Guard` signal by default.
 
-**`void CustomTransitionInvoke(StatechartDuct duct)`**: Overrideable transition invoke behavior. Emit `Invoke` signal by default.
+**`void CustomTransitionInvoke(StatechartDuct)`**: Overrideable transition invoke behavior. Emit `Invoke` signal by default.
 
 <br/>
 
@@ -229,7 +238,25 @@ Reactions of active states, if event matches, will be invoked in document order 
 
 ### Methods of Reaction
 
-**`void CustomReactionInvoke(StatechartDuct duct)`**: Overrideable reaction invoke behavior. Emit `Invoke` signal by default.
+**`void CustomReactionInvoke(StatechartDuct)`**: Overrideable reaction invoke behavior. Emit `Invoke` signal by default.
+
+<br/>
+
+## TransitionPromoter
+
+> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+
+TransitionPromoter node is used as child node of a transition. When parented transition is ready, the promoter will:
+
+1. Get certain leaf states descendant to parent state of the transition.
+2. Duplicate transition, add it as first child to each leaf state.
+3. Delete origin transition and promoter itself.
+
+TransitionPromoter is useful if you need to "prioritize" a transition, meaning you want your transition to be considered first in subtree of statechart in any situation. As transition selection is started from leaf states, prioritized transition needs multiple copies in certain leaf states. The query of certain leaf states comes up with a recursion, started with parent state of the transition:
+
+- For compound state: query each substate. If no descendant state is selected, then commit itself as a leaf state.
+- For parallel state: query substates, but stop if any descendant is selected. Or else no descendant is leaf state, then commit itself as leaf state.
+- For history state: do nothing.
 
 <br/>
 
@@ -237,7 +264,7 @@ Reactions of active states, if event matches, will be invoked in document order 
 
 > **Inherits**: Node
 
-Base node of `Statechart`, `State`, `Transition` and `Reaction`.
+Base composition node for statechart.
 
 <br/>
 
@@ -265,7 +292,7 @@ For state's enter signals, `StatechartDuct` should be handled carefully. It is b
 
 **`InputEvent UnhandledInput`** : Recently updated input event statechart received from `_UnhandledInput(InputEvent @event)` .
 
-**`bool IsEnabled`** : Status of the pending transition. Used in transition's `Guard` signal.
+**`bool IsTransitionEnabled`** : Status of the pending transition. Used in transition's `Guard` signal.
 
 **`StatechartComposition CompositionNode`** : The statechart composition node who emit the signal and parse this object.
 
