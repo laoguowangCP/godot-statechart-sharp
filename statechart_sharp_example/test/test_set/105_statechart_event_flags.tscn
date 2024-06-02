@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bci712yn0sqcn"]
+[gd_scene load_steps=5 format=3 uid="uid://bci712yn0sqcn"]
 
 [ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_7bprx"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_oe807"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_23u1a"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_wkf5e"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="5_yf35a"]
 
 [node name="BoxContainer" type="VBoxContainer"]
@@ -42,7 +41,7 @@ text = "[font_size=20][center][b]Statechart event flags[/b][/center][/font_size]
 
 Defaultly, no event is enabled.
 
-For this case, \"Input\" is enabled.  You can press any button to see what happens (no need to press test button).
+In this test, \"Input\" is enabled. You can press any key or make mouse input and you will see InputReaction is invoked.
 "
 threaded = true
 
@@ -63,35 +62,6 @@ EventFlag = 4
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_23u1a")
-
-[node name="ProcessTransition" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("4_wkf5e")
-CustomEventName = &"test"
-
-[node name="PhysicsProcessTransition" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("4_wkf5e")
-TransitionEvent = 1
-CustomEventName = &"test"
-
-[node name="InputTransition" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("4_wkf5e")
-TransitionEvent = 2
-CustomEventName = &"test"
-
-[node name="ShortcutInputTransition" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("4_wkf5e")
-TransitionEvent = 3
-CustomEventName = &"test"
-
-[node name="UnhandledKeyInputTransition" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("4_wkf5e")
-TransitionEvent = 4
-CustomEventName = &"test"
-
-[node name="UnhandledInputTransition" type="Node" parent="Tester/Statechart/Root"]
-script = ExtResource("4_wkf5e")
-TransitionEvent = 5
-CustomEventName = &"test"
 
 [node name="ProcessReaction" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("5_yf35a")

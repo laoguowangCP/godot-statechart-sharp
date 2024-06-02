@@ -37,18 +37,17 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Statechart max internal event[/b][/center][/font_size]
 
-Statechart can store parsed events for latter process. It happens when state/transition/reaction calls another step during a running step. Event like this is called \"internal event\".
+Statechart can store parsed events for latter process when running. It happens when state/transition/reaction calls another step during a running step. Event like this is called \"internal event\".
 
-Normally statechart handles an internal event, then another. But it can be the case you called same event during a step, which makes an endless event loop. Or simply you just called to much internal event. Property \"MaxInternalEventCount\" makes sure that there won't be too much internal event during 1 step.
+Property \"MaxInternalEventCount\" makes sure that there won't be too much internal event during 1 step.
 
-Also, you can set this property <=0 . This makes statechart ignores any internal event.
+You can set this property <=0 . This makes statechart ignores any internal event.
 
-Press test to see what will happen:
+Press test button then you will see:
 
 [ol]
-Statechart can queue event if \"Step\" is called when already running one.
-In this test, Reaction1 steps statechart with event \"test_queue_event\" during \"test\" step.
-Loop goes untill it reaches MaxInternalEventCount.
+State/Reaction invokes. It starts a steps with event \"test_queue_event\". Then State/QueuedReaction will loop stepping with event \"test_queue_event\".
+Loop count should be same as MaxInternalEventCount.
 [/ol]
 "
 threaded = true

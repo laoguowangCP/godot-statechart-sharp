@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://clh8xd7t3ukya"]
+[gd_scene load_steps=6 format=3 uid="uid://clh8xd7t3ukya"]
 
 [ext_resource type="Script" path="res://statechart_sharp_example/test/StatechartTest.cs" id="1_t17in"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_2pkpw"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_eoftm"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="4_orq76"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/TransitionPromoter.cs" id="5_6smt2"]
 
 [node name="BoxContainer" type="VBoxContainer"]
 custom_minimum_size = Vector2(600, 500)
@@ -40,7 +42,7 @@ Nothing really happens in this test, but transition node should update configura
 
 [ul]
 Transition should be child to non-history state.
-Transition should not have a child.
+Transition should not have a child, except TransitionPromoter.
 [/ul]
 "
 
@@ -65,5 +67,17 @@ CustomEventName = &""
 [node name="Transition" type="Node" parent="Tester/Statechart/Transition"]
 script = ExtResource("4_eoftm")
 CustomEventName = &""
+
+[node name="Root" type="Node" parent="Tester/Statechart"]
+script = ExtResource("4_orq76")
+
+[node name="State" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("4_orq76")
+
+[node name="Transition" type="Node" parent="Tester/Statechart/Root/State"]
+script = ExtResource("4_eoftm")
+
+[node name="TransitionPromoter" type="Node" parent="Tester/Statechart/Root/State/Transition"]
+script = ExtResource("5_6smt2")
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

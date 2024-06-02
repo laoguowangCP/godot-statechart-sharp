@@ -37,9 +37,9 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Multiple targets 1[/b][/center][/font_size]
 
-Transition can set multiple states as targets. All expected targets will be fulfilled, as long as there is no confliction.
+Transition can set multiple states as targets. All expected targets will be considered, as long as there is no confliction.
 
-In this test, we set B/X/2, B/Y, B/Y/2 as targets. There is no confliction. LCA is Root state, so initially active states A and A/X will be exit. B/Z is also entered as a supplementary substate of B, so B can keep its parallel \"pattern\".
+In this test, we set \"B/X/2\", \"B/Y\", \"B/Y/2\" as targets. There is no confliction. LCA is Root state, so initially active states \"A\" and \"A/X\" will be exit. \"B/Z\" is also entered since B is parallel.
 "
 
 [node name="Button" type="Button" parent="."]
@@ -65,7 +65,7 @@ script = ExtResource("3_gfmuj")
 [node name="X" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("3_gfmuj")
 
-[node name="->" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="->B-X-2+B-Y+B-Y-2" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_pcmdv")
 TransitionEvent = 6
 CustomEventName = &"test"

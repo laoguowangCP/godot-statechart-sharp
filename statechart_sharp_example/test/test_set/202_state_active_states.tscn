@@ -37,22 +37,22 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Active states[/b][/center][/font_size]
 
-This test shows how state mode determines whether state is active or not.
+In statechart, only active states' transitions and reactions will response to step events.
 
 [ul]
-Root state is always active. Usually, root state is parallel, so it will be easier to extend state tree.
-For active compound state, only 1 non-history substate is active (if there's any). Initially, \"initial state\" is the active substate. If initial s ate is not assigned, then first non-history substate will be initial state.
-For active parallel state,  all non-history substates are active (if there's any).
+Root state is always active.
+For active compound state, only 1 non-history substate is active (if there's any). By default, \"initial state\" is the active substate. If initial state is not assigned, then first non-history substate will be initial state.
+For active parallel state, all non-history substates are active (if there's any).
 History state is never active.
 [/ul]
 
-For this test, press the test button then you'll see active states should invokes their child reactions, while inactive ones should not.
+In this test, press the test button then you'll see only active states invoke their child reactions:
 
 [ul]
 \"Root\" is active.
 \"Root\" is parallel, so \"Compound\" and \"Parallel\" are active. \"History\" is a history state, so it is not active.
- \"Compound\" is active, so \"Compound/A\" is active, as the initial state.
-\"Parallel\" is active, so \"Parallel/A\", \"Parallel/B\", \"Parallel/C\" are active.
+ \"Compound\" is active, so \"Compound/A\" is active, as an initial state.
+\"Parallel\" is active, so \"Parallel/A\", \"Parallel/B\", \"Parallel/C\" are active, since they are not history.
 [/ul]
 "
 threaded = true

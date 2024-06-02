@@ -37,18 +37,18 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]History 2[/b][/center][/font_size]
 
-You may need to be familiar to transition mechanism before you read this test.
-
-History state represents the history \"active status\" of parent's descendant states. This test shows how shallow history works. Deep history will be showed later. 
+History state represents the history \"active status\" of parent's descendant states. This test shows how shallow history works.
 
 A shallow history points to parent's substate(s), once active till last exit of parent state.
 
 [ul]
-With compound parent, it points to the sibling once active (or parent's initial state, if parent has never been active before).
+For a compound parent, it points to the sibling once active. If parent has never been active before, then it points to parent's initial state.
 With parallel parent, it points to all the non-history siblings.
 [/ul]
 
-This test demonstrate parallel situation. When tested, parallel state A's history is targeted, so A's non-history substates X, Y are entered. Also, a shallow history under a parallel parent is not recommended. It functions but makes no difference as setting parallel parent itself as transition target.
+This test demonstrate parallel situation. When test button pressed, \"Init->A-History\" is invoked, so \"A\"'s non-history substates \"X\", \"Y\" are entered.
+
+A shallow history under a parallel parent will push warning. It is not recommended, since setting parallel parent as transition target is same.
 "
 
 [node name="Button" type="Button" parent="."]

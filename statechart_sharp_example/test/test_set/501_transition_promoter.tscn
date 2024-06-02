@@ -38,14 +38,17 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Transition promoter[/b][/center][/font_size]
 
-TransitionPromoter promotes parent transition. It duplicates parent transition and add them as child of non-history leaf states descendant to transition's parent state. Duplicated transition will be moved as first child node, original transition will be deleted. It happens after parent transition node is ready.
+TransitionPromoter promotes a transition. It duplicates parent transition and add them as child of certain leaf state(s) descendant to transition's parent state. Duplicated transition will be moved as first child node, original transition will be deleted. It happens after parent transition node is ready.
 
-When test is pressed:
+In this test, \"A/->B\" is promoted by \"A/->B/Promoter0\" (duplicated promoter \"Promoter1\" is ignored), and \"A/->C\" is promoted by \"A/->C/Promoter\". As a result:
 
-[ol]
-A/X/Transition will be selected and execute. A/X/Transition is promoted from A/Transition.
-[/ol]
+[ul]
+\"A/X/1\" and \"A/X/2\" has child transitions \"->C\" and \"->B\".
+\"A/Y/1\" has child transitions \"->C\" and \"->B\". \"A/Y\" is parallel so transition promoted to first branch is ample.
+For these leaf states, \"->C\" is prior to \"->B\" since it is promoted later.
+[/ul]
 
+Configure initial states and press test button, you will see different \"->C\" invoked.
 "
 
 [node name="Button" type="Button" parent="."]
@@ -69,38 +72,55 @@ script = ExtResource("3_ljsqd")
 [node name="A" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_ljsqd")
 
-[node name="X" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="X" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("3_ljsqd")
+InitialState = NodePath("2")
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/A/X"]
+script = ExtResource("3_ljsqd")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/A/X"]
 script = ExtResource("3_ljsqd")
 
 [node name="Y" type="Node" parent="Tester/Statechart/Root/A"]
+script = ExtResource("3_ljsqd")
+StateMode = 1
+
+[node name="1" type="Node" parent="Tester/Statechart/Root/A/Y"]
+script = ExtResource("3_ljsqd")
+
+[node name="2" type="Node" parent="Tester/Statechart/Root/A/Y"]
 script = ExtResource("3_ljsqd")
 
 [node name="History" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("3_ljsqd")
 StateMode = 2
 
-[node name="Transition0" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="->B" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_1uhkf")
 TransitionEvent = 6
 CustomEventName = &"test"
 TargetStatesArray = [NodePath("../../B")]
 
-[node name="TransitionPromoter0" type="Node" parent="Tester/Statechart/Root/A/Transition0"]
+[node name="Promoter0" type="Node" parent="Tester/Statechart/Root/A/->B"]
 script = ExtResource("5_2gmxi")
 
-[node name="TransitionPromoter1" type="Node" parent="Tester/Statechart/Root/A/Transition0"]
+[node name="Promoter1" type="Node" parent="Tester/Statechart/Root/A/->B"]
 script = ExtResource("5_2gmxi")
 
-[node name="Transition" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+[node name="->C" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_1uhkf")
 TransitionEvent = 6
 CustomEventName = &"test"
-TargetStatesArray = [NodePath("../../B")]
+TargetStatesArray = [NodePath("../../C")]
 
-[node name="TransitionPromoter" type="Node" parent="Tester/Statechart/Root/A/Transition"]
+[node name="Promoter" type="Node" parent="Tester/Statechart/Root/A/->C"]
 script = ExtResource("5_2gmxi")
 
 [node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_ljsqd")
+
+[node name="C" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_ljsqd")
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

@@ -37,24 +37,24 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Select case[/b][/center][/font_size]
 
-For active states, selecting transition is a recursive process. Leaf states select first, while other states react according to returned case from their descendant(s), and then pass on the case to their parent:
+For active states, selecting transition is a recursive process. Leaf states select their transition first, and other states choose according to returned case from their substate(s):
 
 [ul]
-[b]Case \"-1\"[/b] : no transition selected in descendants. State checks its own transitions. Return 1 if a transition is selected, else return -1 .
-[b]Case \"0\"[/b] : transition selected in descendants, but not all of descendant leaf state has an ancestor with selected transition. They still ask for an enabled transition from ancestors, but expecting no confliction to selected one(s). In this case state checks its own [b]targetless[/b] transitions. Return 1 if any is selected, else return 0 .
-[b]Case \"1\"[/b] : transition selected in descendants, and all descendant leaf states has an ancestor with selected transition. No need to check any more. Return 1 .
+[b]Case \"-1\"[/b] : no transition selected in active descendant state(s). State checks child transitions.
+[b]Case \"0\"[/b] : transition selected in descendant state(s), but not all of active descendant leaf state has an ancestor with selected transition. They still ask for an enabled transition from ancestors, but expecting no confliction to selected one(s). In this case, state only checks targetless transitions.
+[b]Case \"1\"[/b] : transition selected in descendants, and all descendant leaf states has an ancestor with selected transition. No need to check.
 [/ul]
 
-In this test, all 3 cases are involved:
+In this test, press test button and you will see:
 
 [ol]
-A/X/1/Leaf is queried first. It has no transition, so return its parent with case -1. With case -1 received, A/X/1 selects its own transition A/X/1->1 , return case 1 .
-A/X/2/Leaf selects its targetless transition A/X/2/Leaf/-> , returns with case 1 . So A/X/2 do not select transition.
-A/X/1 and A/X/2 has transitions selected themself or in descendants, while A/X/3 has no transition selected. So parallel state A/X receives case 0 . A/X has transition ->X , but it is not targetless, so A/X return to A with case 0.
-With case 0 received, state A select its own transition A/-> , which is targetless.
+\"A/X/1/Leaf\" selects first. It has no transition, so return its parent with case -1. With case -1 received, \"A/X/1\" selects transition \"A/X/1->1\" , return case 1 .
+\"A/X/2/Leaf\" selects its targetless transition \"A/X/2/Leaf/->\" , returns with case 1 . So \"A/X/2\" do not select transition.
+\"A/X/1\" and \"A/X/2\" has transitions selected themself or in descendants, but \"A/X/3\" has no transition selected. So parallel state A/X receives case 0 . \"A/X\" has transition \"->X\" , but it is not targetless, so \"A/X\" return to \"A\" with case 0.
+With case 0 received, state \"A\" select targetless transition \"A/->\" .
 [/ol]
 
-As a result, transitions A/X/1->1 , A/X/2/Leaf/-> and A/-> are selected and executed.
+As a result, transitions \"A/X/1->1\" , \"A/X/2/Leaf/->\" and \"A/->\" are selected and executed.
 "
 
 [node name="Button" type="Button" parent="."]

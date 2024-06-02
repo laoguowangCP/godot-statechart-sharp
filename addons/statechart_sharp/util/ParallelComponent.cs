@@ -98,8 +98,8 @@ public class ParallelComponent : StateComponent
         {
             if (child is State state)
             {
-                bool isChildPromote = !state.GetPromoteStates(states);
-                if (isChildPromote)
+                bool isChildPromoted = state.GetPromoteStates(states);
+                if (isChildPromoted)
                 {
                     isPromote = false;
                     break;
@@ -112,7 +112,8 @@ public class ParallelComponent : StateComponent
             states.Add(HostState);
         }
 
-        return isPromote;
+        // Make sure promoted
+        return true;
     }
 
     internal override bool IsConflictToEnterRegion(

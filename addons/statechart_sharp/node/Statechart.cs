@@ -10,6 +10,8 @@ namespace LGWCP.StatechartSharp;
 [Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
+    #region properties
+
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxInternalEventCount = 8;
     [Export(PropertyHint.Range, "0,32,")]
@@ -30,6 +32,11 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<State> EnterSet { get; set; }
     protected SortedSet<Reaction> EnabledReactions { get; set; }
     internal StatechartDuct Duct { get; private set; }
+
+    #endregion
+
+
+    #region methods
 
     public override void _Ready()
     {
@@ -71,7 +78,6 @@ public partial class Statechart : StatechartComposition
         if (IsWaitParentReady)
         {
             Node parentNode = GetParentOrNull<Node>();
-
             if (parentNode != null)
             {
                 await ToSignal(parentNode, Node.SignalName.Ready);
@@ -84,7 +90,6 @@ public partial class Statechart : StatechartComposition
 
     internal override void Setup()
     {
-        OrderId = 0;
         HostStatechart = this;
         foreach (Node child in GetChildren())
         {
@@ -98,6 +103,7 @@ public partial class Statechart : StatechartComposition
             }
         }
         
+        OrderId = 0;
         if (RootState != null)
         {
             int parentOrderId = 0;
@@ -107,14 +113,13 @@ public partial class Statechart : StatechartComposition
 
     internal override void PostSetup()
     {
+        // Get and enter active states
         if (RootState != null)
         {
-            // Get activeStates
             RootState.RegisterActiveState(ActiveStates);
             RootState.PostSetup();
         }
 
-        // Enter active-state
         foreach (State state in ActiveStates)
         {
             state.StateEnter();
@@ -176,26 +181,27 @@ public partial class Statechart : StatechartComposition
         }
         /*
         Handle event:
-            1. Select transitions
-            2. Do transitions
-            3. While iter < MAX_AUTO_ROUND:
-                - Select auto-transition
-                - Do auto-transition
-                - Break if no queued auto-transition
-            4. Do reactions
+        1. Select transitions
+        2. Do transitions
+        3. While iter < MAX_AUTO_ROUND:
+            - Select auto-transition
+            - Do auto-transition
+            - Break if no queued auto-transition
+        4. Do reactions
         */
+
         // 1. Select transitions
         RootState.SelectTransitions(EnabledTransitions, eventName);
 
         // 2. Do transitions
         DoTransitions();
 
-        // 3. Select and do auto transitions
+        // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
             RootState.SelectTransitions(EnabledTransitions);
 
-            // Active-states are stable
+            // Stop if active states are stable
             if (EnabledTransitions.Count == 0)
             {
                 break;
@@ -229,21 +235,21 @@ public partial class Statechart : StatechartComposition
         // 1. Deduce and merge exit set
         foreach (Transition transition in EnabledTransitions)
         {
-            // Targetless checks no conflicts, and do no set operations.
+            /*
+            Check confliction
+            1. If this source is descendant to other LCA.
+                <=> source is in exit set
+            2. Else, if other source descendant to this LCA
+                <=> Any other source's most anscetor state in set is also descendant to this LCA (or it will be case 1)
+                <=> Any state in exit set is descendant to this LCA
+            */
+
+            // Targetless has no confliction
             if (transition.IsTargetless)
             {
                 EnabledFilteredTransitions.Add(transition);
                 continue;
             }
-
-            /*
-            Check confliction
-                1. If this source is descendant to other LCA.
-                    <=> source is in exit set
-                2. Else, if other source descendant to this LCA
-                    <=> Any other source's most anscetor state in set is also descendant to this LCA (or it will be case 1)
-                    <=> Any state in exit set is descendant to this LCA
-            */
 
             bool hasConfliction = ExitSet.Contains(transition.SourceState)
                 || ExitSet.Any<State>(
@@ -269,17 +275,18 @@ public partial class Statechart : StatechartComposition
 
         // 2. Invoke transitions
         // 3. Deduce and merge enter set
-        foreach (Transition trans in EnabledFilteredTransitions)
+        foreach (Transition transition in EnabledFilteredTransitions)
         {
-            trans.TransitionInvoke();
+            transition.TransitionInvoke();
+            
             // If transition is targetless, enter-region is null.
-            if (trans.IsTargetless)
+            if (transition.IsTargetless)
             {
                 continue;
             }
 
-            SortedSet<State> enterRegion = trans.EnterRegion;
-            SortedSet<State> deducedEnterStates = trans.GetDeducedEnterStates();
+            SortedSet<State> enterRegion = transition.EnterRegion;
+            SortedSet<State> deducedEnterStates = transition.GetDeducedEnterStates();
             EnterSet.UnionWith(enterRegion);
             EnterSet.UnionWith(deducedEnterStates);
         }
@@ -393,7 +400,6 @@ public partial class Statechart : StatechartComposition
                 }
                 if (hasRootState)
                 {
-                    // We already have a root state
                     hasOtherChild = true;
                 }
                 hasRootState = true;
@@ -406,10 +412,12 @@ public partial class Statechart : StatechartComposition
 
         if (!hasRootState || hasOtherChild)
         {
-            warnings.Add("Statechart needs exactly 1 non-history root state.");
+            warnings.Add("Statechart should have exactly 1 non-history root state.");
         }
 
         return warnings.ToArray();
     }
     #endif
+
+    #endregion
 }

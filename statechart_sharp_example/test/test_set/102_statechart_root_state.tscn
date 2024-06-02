@@ -36,9 +36,9 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[font_size=20][center][b]Statechart with unwanted child[/b][/center][/font_size]
+text = "[font_size=20][center][b]Statechart root state[/b][/center][/font_size]
 
-Statechart needs exactly 1 root state (non-history) as child node.
+Statechart needs exactly 1 non-history state as child node, a root state.
 
 [ul]
 If there's multiple child state, first one (non-history) will be selected as root state.
@@ -46,9 +46,7 @@ Other child states appended to  statechart will be neglected.
 To append more states, you may add them descendant to root state.
 [/ul]
 
-For this case, \"Root1\" will be the root state.
-
-By the way, you can see other compositions pushes warning. They do not want a statechart as parent (precisely history state, transition and reaction want non-history state as parent)."
+In this test, \"Root1\" will be the root state."
 threaded = true
 
 [node name="MarginContainer" type="MarginContainer" parent="."]

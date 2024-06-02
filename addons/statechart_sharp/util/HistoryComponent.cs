@@ -70,7 +70,7 @@ public class HistoryComponent : StateComponent
 
         if (isParentParallel && !IsDeepHistory)
         {
-            warnings.Add("Parallel's shallow history is of no avail. You may want parallel's deep history.");
+            warnings.Add("Parallel's shallow history is not recommended.");
         }
 
         // Check children

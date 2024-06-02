@@ -39,7 +39,7 @@ text = "[font_size=20][center][b]Targetless transition[/b][/center][/font_size]
 
 Targetless transition, as it is named, has no target assigned. It can be selected and executed, and emit signals as usual. But no state will be entered or exit.
 
-By the way, I'd mention you that a targetless transition is not simply a transition targeting itself. A self targeting transition still involves exit and enter, and with descendant status not preserved.
+In this test, after you press test button, you will see targetless transition is guarded and invoked, but no state is entered or exit.
 "
 
 [node name="Button" type="Button" parent="."]

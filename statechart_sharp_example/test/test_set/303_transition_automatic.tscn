@@ -37,16 +37,16 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Automatic transition[/b][/center][/font_size]
 
-You can set transition event to \"Auto\" , which makes it an automatic transition. Automatic transition is also called eventless transition, since the actual event it response is null.
+You can set transition event to \"Auto\" , which makes it an automatic transition. Automatic transition is also called eventless transition, since the event it use is null.
 
-Parsing null event to step the statechart won't touch any automatic transition. Actually statechart ignores parsed null event. Automatic transitions are used automatically in every normal step, after statechart has selected and executed non-eventless transitions with parsed event.
+Automatic transitions are selected and executed automatically in every normal step, after normal has-an-event transitions. You shall not parse null event to step the statechart.
 
-Here in this test:
+In this test:
 
 [ol]
-Initially, we have Root/A/X active. But at this point statechart is not stepped yet, so automatic transition A/X/(Auto)->Y is not touched. You'll see exit of A/X as you step.
-In first step, transition A/->B is executed so A/X is exit and B/X is entered. In the moment, B/X/(Auto)->Y is selected and executed, so B/X is exit and B/Y is entered.
-In second step, we transit back to A/X. This time A/X/(Auto)->Y is executed, so A/X is exit and A/Y is entered immediately.
+Initially, \"Root/A/X\" is active.
+In first step, transition \"A/->B\" invokes so \"A/X\" is exit and \"B/X\" is entered. In the same step, \"B/X/(Auto)->Y\" is selected and executed automatically, so \"B/X\" is exit and \"B/Y\" is entered.
+In second step, \"B/->A\" invokes so we transit back to \"A/X\". In the same step, \"A/X/(Auto)->Y\" is selected executed automatically, so \"A/X\" is exit and \"A/Y\" is entered.
 [/ol]
 "
 

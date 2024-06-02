@@ -40,10 +40,8 @@ text = "[font_size=20][center][b]Custom event warning[/b][/center][/font_size]
 Nothing really happens in this test, but reaction node should update configuration warning in scene editor.
 
 [ul]
-If \"Custom\" is selected as reaction event, non-null custom event name should be assigned.
+If \"Custom\" is selected as reaction event, al custom event name should be assigned.
 [/ul]
-
-By the way, it is not recommended to assign an event name like \"  \" (just blanks), it can be confusing.
 "
 
 [node name="Button" type="Button" parent="."]

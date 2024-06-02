@@ -188,9 +188,8 @@ public class CompoundComponent : StateComponent
         {
             if (child is State state)
             {
-                bool isDescendantPromote = !state.GetPromoteStates(states);
-                // Child is promote => this is not
-                if (isDescendantPromote)
+                bool isChildPromoted = state.GetPromoteStates(states);
+                if (isChildPromoted)
                 {
                     isPromote = false;
                 }
@@ -202,7 +201,8 @@ public class CompoundComponent : StateComponent
             states.Add(HostState);
         }
 
-        return isPromote;
+        // Make sure promoted
+        return true;
     }
     
     internal override void RegisterActiveState(SortedSet<State> activeStates)

@@ -3,6 +3,7 @@ using System;
 using LGWCP.StatechartSharp;
 using System.Collections.Generic;
 
+
 public partial class ImPlayer : CharacterBody3D
 {
 	[ExportGroup("Player Move Property")]
