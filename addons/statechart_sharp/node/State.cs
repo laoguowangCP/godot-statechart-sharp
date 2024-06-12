@@ -105,6 +105,11 @@ public partial class State : StatechartComposition
         return StateComponent.GetPromoteStates(states);
     }
 
+    internal bool IsAvailableRootState()
+    {
+        return StateComponent.IsAvailableRootState();
+    }
+
     internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
         base.Setup(hostStateChart, ref parentOrderId);

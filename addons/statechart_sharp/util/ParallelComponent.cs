@@ -10,6 +10,11 @@ public class ParallelComponent : StateComponent
     protected int NonHistorySubstateCnt = 0;
     public ParallelComponent(State state) : base(state) {}
 
+    internal override bool IsAvailableRootState()
+    {
+        return true;
+    }
+
     internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
         base.Setup(hostStateChart, ref parentOrderId);

@@ -124,7 +124,7 @@ public partial class Transition : StatechartComposition
             #endif
             IsValid = false;
         }
-        EventName = StatechartConfig.GetTransitionEventName(TransitionEvent, CustomEventName);
+        EventName = StatechartEventName.GetTransitionEventName(TransitionEvent, CustomEventName);
         IsAuto = TransitionEvent == TransitionEventNameEnum.Auto;
 
         // Set targetless

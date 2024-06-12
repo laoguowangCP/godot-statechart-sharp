@@ -95,7 +95,7 @@ public partial class Statechart : StatechartComposition
         {
             if (child is State state)
             {
-                if (!state.IsHistory)
+                if (state.IsAvailableRootState())
                 {
                     RootState = state;
                     break;
@@ -171,6 +171,40 @@ public partial class Statechart : StatechartComposition
 
         IsRunning = false;
         EventCount = 0;
+    }
+
+    public async void Step(StringName eventName, Timer delayTimer)
+    {
+        if (delayTimer == null)
+        {
+            return;
+        }
+
+        delayTimer.Start();
+        await ToSignal(delayTimer, SceneTreeTimer.SignalName.Timeout);
+        Step(eventName);
+    }
+
+    public async void Step(StringName eventName, SceneTreeTimer delayTimer)
+    {
+        if (delayTimer == null)
+        {
+            return;
+        }
+
+        await ToSignal(delayTimer, SceneTreeTimer.SignalName.Timeout);
+        Step(eventName);
+    }
+
+    public StatechartSnapshot Save(StatechartSnapshotFlagEnum snapshotFlag)
+    {
+        StatechartSnapshot snapshot = new();
+        return snapshot;
+    }
+
+    public void Load(StatechartSnapshot snapshot)
+    {
+        return;
     }
 
     protected void HandleEvent(StringName eventName)
@@ -314,7 +348,7 @@ public partial class Statechart : StatechartComposition
         #endif
 
         Duct.Delta = delta;
-        Step(StatechartConfig.EVENT_PROCESS);
+        Step(StatechartEventName.EVENT_PROCESS);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -327,7 +361,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.PhysicsDelta = delta;
-        Step(StatechartConfig.EVENT_PHYSICS_PROCESS);
+        Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
     }
 
     public override void _Input(InputEvent @event)
@@ -340,7 +374,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.Input = @event;
-        Step(StatechartConfig.EVENT_INPUT);
+        Step(StatechartEventName.EVENT_INPUT);
     }
 
     public override void _ShortcutInput(InputEvent @event)
@@ -353,7 +387,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.ShortcutInput = @event;
-        Step(StatechartConfig.EVENT_SHORTCUT_INPUT);
+        Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
     }
 
     public override void _UnhandledKeyInput(InputEvent @event)
@@ -366,7 +400,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.UnhandledKeyInput = @event;
-        Step(StatechartConfig.EVENT_UNHANDLED_KEY_INPUT);
+        Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -379,7 +413,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.UnhandledInput = @event;
-        Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
+        Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
     }
 
     #if TOOLS

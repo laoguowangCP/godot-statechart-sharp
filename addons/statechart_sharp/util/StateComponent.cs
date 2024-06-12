@@ -32,6 +32,11 @@ public class StateComponent
         HostState = state;
     }
 
+    internal virtual bool IsAvailableRootState()
+    {
+        return false;
+    }
+
     internal virtual void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
         // Get parent state
