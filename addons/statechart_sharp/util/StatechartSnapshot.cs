@@ -6,15 +6,18 @@ namespace LGWCP.StatechartSharp;
 
 
 [Flags]
-public enum StatechartSnapshotFlagEnum
+public enum SnapshotFlagEnum : int
 {
-    IncludeInactiveState = 1,
-    DelayedEvent = 2
+    AllStateConfiguration = 1,
+    DelayedEvent = 2,
+    ExitOnLoad = 4,
+    EnterOnLoad = 8,
 }
 
-public class StatechartSnapshot
+
+public partial class StatechartSnapshot : Resource
 {
-    protected StatechartSnapshotFlagEnum SnapshotFlag;
-    protected int[] stateConfiguration;
+    public int SnapshotFlag;
+    public int[] stateConfiguration;
 }
 

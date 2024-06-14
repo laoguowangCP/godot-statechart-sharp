@@ -20,6 +20,8 @@ public partial class Statechart : StatechartComposition
     protected EventFlagEnum EventFlag { get; set; } = 0;
     [Export]
     protected bool IsWaitParentReady = true;
+    [Export(PropertyHint.Range, "0,32,")]
+    protected int DelayedEventCount = 8;
 
     internal bool IsRunning { get; private set; }
     protected int EventCount;
@@ -32,6 +34,7 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<State> EnterSet { get; set; }
     protected SortedSet<Reaction> EnabledReactions { get; set; }
     internal StatechartDuct Duct { get; private set; }
+    protected LinkedList<StatechartStep> DelayedSteps;
 
     #endregion
 
@@ -196,7 +199,7 @@ public partial class Statechart : StatechartComposition
         Step(eventName);
     }
 
-    public StatechartSnapshot Save(StatechartSnapshotFlagEnum snapshotFlag)
+    public StatechartSnapshot Save(SnapshotFlagEnum snapshotFlag)
     {
         StatechartSnapshot snapshot = new();
         return snapshot;
