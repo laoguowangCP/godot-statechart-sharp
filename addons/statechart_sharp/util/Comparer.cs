@@ -33,3 +33,21 @@ class ReactionComparer : IComparer<Reaction>
         return x.OrderId - y.OrderId;
     }
 }
+
+
+// TODO: use generic comparer
+class StatechartComparer<T> : IComparer<T> where T : StatechartComposition
+{
+    public int Compare(T x, T y)
+    {
+        return x.OrderId - y.OrderId;
+    }
+}
+
+class StatechartReversedComparer<T> : IComparer<T> where T : StatechartComposition
+{
+    public int Compare(T x, T y)
+    {
+        return y.OrderId - x.OrderId;
+    }
+}

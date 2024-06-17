@@ -9,9 +9,9 @@ namespace LGWCP.StatechartSharp;
 public enum SnapshotFlagEnum : int
 {
     AllStateConfiguration = 1,
-    DelayedEvent = 2,
-    ExitOnLoad = 4,
-    EnterOnLoad = 8,
+    ExitOnLoad = 2,
+    EnterOnLoad = 4,
+    CancelDelayed = 8
 }
 
 
