@@ -178,6 +178,9 @@ public partial class Statechart : StatechartComposition
     {
         if (IsRunning)
         {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Statechart is running, abort save.");
+            #endif
             return null;
         }
         
@@ -187,7 +190,52 @@ public partial class Statechart : StatechartComposition
 
     public void Load(StatechartSnapshot snapshot)
     {
-        return;
+        Load(snapshot, (SnapshotFlagEnum)snapshot.SnapshotFlag);
+    }
+
+    public void Load(StatechartSnapshot snapshot, SnapshotFlagEnum snapshotFlag)
+    {
+        if (IsRunning)
+        {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Statechart is running, abort load.");
+            #endif
+            return;
+        }
+
+        if (snapshot is null)
+        {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Snapshot is null, abort load.");
+            #endif
+            return;
+        }
+
+        /*
+        1. Iterate state configuration:
+          - Set current idx
+          - Add to statesToLoad
+          - If config not aligned, abort
+        2. Deal enter/exit on load:
+          - Get differed states
+          - Exit old states
+          - Enter new states
+        3. Update active states
+        */
+        
+        List<State> statesToLoad = new();
+        if (snapshotFlag.HasFlag(SnapshotFlagEnum.AllStateConfiguration))
+        {
+            // Load all state configuration
+            foreach (int idx in snapshot.stateConfiguration)
+            {
+                
+            }
+        }
+        else
+        {
+            // Load active state configuration
+        }
     }
 
     protected void HandleEvent(StringName eventName)
