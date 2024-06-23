@@ -12,6 +12,10 @@ public class CompoundComponent : StateComponent
         get => HostState.CurrentState;
         set { HostState.CurrentState = value; }
     }
+    /// <summary>
+    /// The index of this state exists in parent state.
+    /// </summary>
+    private int SubstateIdx;
     private State InitialState
     {
         get => HostState.InitialState;
