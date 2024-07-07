@@ -49,13 +49,13 @@ public partial class Statechart : StatechartComposition
         IsRunning = false;
         EventCount = 0;
 
-        ActiveStates = new SortedSet<State>(new StateComparer());
+        ActiveStates = new SortedSet<State>(new StatechartComparer<State>());
         QueuedEvents = new Queue<StringName>();
-        EnabledTransitions = new SortedSet<Transition>(new TransitionComparer());
-        EnabledFilteredTransitions = new SortedSet<Transition>(new TransitionComparer());
-        ExitSet = new SortedSet<State>(new ReversedStateComparer());
-        EnterSet = new SortedSet<State>(new StateComparer());
-        EnabledReactions = new SortedSet<Reaction>(new ReactionComparer());
+        EnabledTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
+        EnabledFilteredTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
+        ExitSet = new SortedSet<State>(new StatechartReversedComparer<State>());
+        EnterSet = new SortedSet<State>(new StatechartComparer<State>());
+        EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
 
         #if TOOLS
         if (!Engine.IsEditorHint())
@@ -174,7 +174,12 @@ public partial class Statechart : StatechartComposition
         EventCount = 0;
     }
 
-    public StatechartSnapshot Save(SnapshotFlagEnum snapshotFlag)
+    public int[] Save(int snapshotFlag)
+    {
+        return Save((SnapshotFlagEnum)snapshotFlag);
+    }
+
+    public int[] Save(SnapshotFlagEnum snapshotFlag)
     {
         if (IsRunning)
         {
@@ -184,16 +189,22 @@ public partial class Statechart : StatechartComposition
             return null;
         }
         
-        StatechartSnapshot snapshot = new();
+        int[] snapshot = { (int)snapshotFlag };
+        // Save
         return snapshot;
     }
 
-    public void Load(StatechartSnapshot snapshot)
+    public void Load(int[] snapshot)
     {
-        Load(snapshot, (SnapshotFlagEnum)snapshot.SnapshotFlag);
+        Load(snapshot, (SnapshotFlagEnum)snapshot[0]);
     }
 
-    public void Load(StatechartSnapshot snapshot, SnapshotFlagEnum snapshotFlag)
+    public void Load(int[] snapshot, int snapshotFlag)
+    {
+        Load(snapshot, (SnapshotFlagEnum)snapshotFlag);
+    }
+
+    public void Load(int[] snapshot, SnapshotFlagEnum snapshotFlag)
     {
         if (IsRunning)
         {
@@ -227,7 +238,7 @@ public partial class Statechart : StatechartComposition
         if (snapshotFlag.HasFlag(SnapshotFlagEnum.AllStateConfiguration))
         {
             // Load all state configuration
-            foreach (int idx in snapshot.stateConfiguration)
+            for (int i = 1; i < snapshot.Length; i++)
             {
                 
             }

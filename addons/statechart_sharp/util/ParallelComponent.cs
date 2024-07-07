@@ -15,9 +15,9 @@ public class ParallelComponent : StateComponent
         return true;
     }
 
-    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
-        base.Setup(hostStateChart, ref parentOrderId);
+        base.Setup(hostStateChart, ref parentOrderId, substateIdx);
 
         // Init & collect states, transitions, actions
         // Get lower-state and upper-state
@@ -31,7 +31,7 @@ public class ParallelComponent : StateComponent
             
             if (child is State s)
             {
-                s.Setup(hostStateChart, ref parentOrderId);
+                s.Setup(hostStateChart, ref parentOrderId, Substates.Count);
                 Substates.Add(s);
 
                 // First substate is lower-state
@@ -316,5 +316,11 @@ public class ParallelComponent : StateComponent
             }
             substate.DeduceDescendants(deducedSet, isHistory);
         }
+    }
+
+    internal override bool Save(ref int[] snapshot, bool isAllStateConfig)
+    {
+        // TODO: save
+        return base.Save(ref snapshot, isAllStateConfig);
     }
 }

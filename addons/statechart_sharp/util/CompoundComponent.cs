@@ -12,10 +12,6 @@ public class CompoundComponent : StateComponent
         get => HostState.CurrentState;
         set { HostState.CurrentState = value; }
     }
-    /// <summary>
-    /// The index of this state exists in parent state.
-    /// </summary>
-    private int SubstateIdx;
     private State InitialState
     {
         get => HostState.InitialState;
@@ -29,12 +25,12 @@ public class CompoundComponent : StateComponent
         return true;
     }
 
-    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
-        base.Setup(hostStateChart, ref parentOrderId);
+        base.Setup(hostStateChart, ref parentOrderId, substateIdx);
 
         // Init & collect states, transitions, actions
-        // Get lower-state and upper-state
+        // Get lower state and upper state
         State lastSubstate = null;
         foreach (Node child in HostState.GetChildren())
         {
@@ -45,11 +41,11 @@ public class CompoundComponent : StateComponent
             
             if (child is State s)
             {
-                s.Setup(hostStateChart, ref parentOrderId);
+                s.Setup(hostStateChart, ref parentOrderId, Substates.Count);
                 Substates.Add(s);
 
                 // First substate is lower-state
-                if (LowerState == null)
+                if (LowerState is null)
                 {
                     LowerState = s;
                 }
@@ -295,6 +291,20 @@ public class CompoundComponent : StateComponent
     internal override void HandleSubstateEnter(State substate)
     {
         HostState.CurrentState = substate;
+    }
+
+    internal override bool Save(ref int[] snapshot, bool isAllStateConfig)
+    {
+        // TODO: save
+        if (isAllStateConfig)
+        {
+            // all config
+        }
+        else
+        {
+            // Active states only
+            snapshot.Append(CurrentState.SubstateIdx);
+        }
     }
 
     #if TOOLS

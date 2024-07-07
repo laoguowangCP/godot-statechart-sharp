@@ -68,6 +68,10 @@ public partial class State : StatechartComposition
     protected StateComponent StateComponent { get; set; }
     internal State LowerState { get; set; }
     internal State UpperState { get; set; }
+    /// <summary>
+    /// The index of this state exists in parent state.
+    /// </summary>
+    internal int SubstateIdx;
     protected StatechartDuct Duct { get => HostStatechart.Duct; }
     internal bool IsHistory { get => StateMode == StateModeEnum.History; }
     
@@ -113,7 +117,14 @@ public partial class State : StatechartComposition
     internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
     {
         base.Setup(hostStateChart, ref parentOrderId);
-        StateComponent.Setup(hostStateChart, ref parentOrderId);
+        // Called from statechart node, root state substate index is 0
+        StateComponent.Setup(hostStateChart, ref parentOrderId, 0);
+    }
+
+    internal void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    {
+        base.Setup(hostStateChart, ref parentOrderId);
+        StateComponent.Setup(hostStateChart, ref parentOrderId, substateIdx);
     }
 
     internal override void PostSetup()
@@ -199,6 +210,11 @@ public partial class State : StatechartComposition
                 enabledReactions.Add(reaction);
             }
         }
+    }
+
+    internal bool Save(ref int[] snapshot, bool isAllStateConfig)
+    {
+        return StateComponent.Save(ref snapshot, isAllStateConfig);
     }
 
     #if TOOLS

@@ -10,9 +10,9 @@ public class HistoryComponent : StateComponent
 
     public HistoryComponent(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
-        base.Setup(hostStateChart, ref parentOrderId);
+        base.Setup(hostStateChart, ref parentOrderId, substateIdx);
     }
 
     internal override bool GetPromoteStates(List<State> states)
@@ -45,6 +45,12 @@ public class HistoryComponent : StateComponent
         {
             ParentState.DeduceDescendants(deducedSet, IsDeepHistory, isEdgeState: true);
         }
+    }
+
+    internal override bool Save(ref int[] snapshot, bool isAllStateConfig)
+    {
+        // TODO: save
+        return base.Save(ref snapshot, isAllStateConfig);
     }
 
     #if TOOLS

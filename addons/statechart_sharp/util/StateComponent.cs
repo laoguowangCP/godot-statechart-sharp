@@ -37,7 +37,7 @@ public class StateComponent
         return false;
     }
 
-    internal virtual void Setup(Statechart hostStateChart, ref int parentOrderId)
+    internal virtual void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         // Get parent state
         Node parent = HostState.GetParentOrNull<Node>();
@@ -45,6 +45,8 @@ public class StateComponent
         {
             ParentState = parent as State;
         }
+
+        HostState.SubstateIdx = substateIdx;
     }
 
     internal virtual void PostSetup() {}
@@ -68,6 +70,8 @@ public class StateComponent
     internal virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
 
     internal virtual void HandleSubstateEnter(State substate) {}
+
+    internal virtual bool Save(ref int[] snapshot, bool isAllStateConfig) { return false; }
 
     #if TOOLS
     internal virtual void GetConfigurationWarnings(List<string> warnings)

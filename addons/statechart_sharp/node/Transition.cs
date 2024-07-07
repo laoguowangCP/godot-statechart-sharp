@@ -90,9 +90,9 @@ public partial class Transition : StatechartComposition
         TargetStates = new List<State>(TargetStatesArray);
 
         // Init Sets
-        EnterRegion = new SortedSet<State>(new StateComparer());
-        EnterRegionEdge = new SortedSet<State>(new StateComparer());
-        DeducedEnterStates = new SortedSet<State>(new StateComparer());
+        EnterRegion = new SortedSet<State>(new StatechartComparer<State>());
+        EnterRegionEdge = new SortedSet<State>(new StatechartComparer<State>());
+        DeducedEnterStates = new SortedSet<State>(new StatechartComparer<State>());
 
         IsValid = true;
 
@@ -260,7 +260,7 @@ public partial class Transition : StatechartComposition
         LcaState = srcToRoot[^reversedLcaIdx];
 
         // Extend enter region under LCA
-        SortedSet<State> extraEnterRegion = new(new StateComparer());
+        SortedSet<State> extraEnterRegion = new(new StatechartComparer<State>());
         LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
         EnterRegion.UnionWith(extraEnterRegion);
 
