@@ -212,7 +212,7 @@ public partial class State : StatechartComposition
         }
     }
 
-    internal bool Save(ref int[] snapshot, bool isAllStateConfig)
+    internal bool Save(ref List<int> snapshot, bool isAllStateConfig)
     {
         return StateComponent.Save(ref snapshot, isAllStateConfig);
     }

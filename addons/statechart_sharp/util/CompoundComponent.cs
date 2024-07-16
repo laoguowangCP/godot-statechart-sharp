@@ -293,7 +293,7 @@ public class CompoundComponent : StateComponent
         HostState.CurrentState = substate;
     }
 
-    internal override bool Save(ref int[] snapshot, bool isAllStateConfig)
+    internal override bool Save(ref List<int> snapshot, bool isAllStateConfig)
     {
         // TODO: save
         if (isAllStateConfig)
