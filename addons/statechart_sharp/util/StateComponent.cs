@@ -71,7 +71,13 @@ public class StateComponent
 
     internal virtual void HandleSubstateEnter(State substate) {}
 
-    internal virtual bool Save(ref List<int> snapshot, bool isAllStateConfig) { return false; }
+    internal virtual void SaveAllStateConfig(ref List<int> snapshot) {}
+
+    internal virtual void SaveActiveStateConfig(ref List<int> snapshot) {}
+
+    internal bool LoadAllStateConfig(ref int[] config) { return false; }
+    
+    internal bool LoadActiveStateConfig(ref int[] config) { return false; }
 
     #if TOOLS
     internal virtual void GetConfigurationWarnings(List<string> warnings)

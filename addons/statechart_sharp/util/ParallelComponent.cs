@@ -318,9 +318,19 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override bool Save(ref int[] snapshot, bool isAllStateConfig)
+    internal override void SaveAllStateConfig(ref List<int> snapshot)
     {
-        // TODO: save
-        return base.Save(ref snapshot, isAllStateConfig);
+        foreach (State substate in Substates)
+        {
+            substate.SaveActiveStateConfig(ref snapshot);
+        }
+    }
+
+    internal override void SaveActiveStateConfig(ref List<int> snapshot)
+    {
+        foreach (State substate in Substates)
+        {
+            substate.SaveActiveStateConfig(ref snapshot);
+        }
     }
 }

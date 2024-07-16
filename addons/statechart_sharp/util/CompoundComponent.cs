@@ -293,18 +293,21 @@ public class CompoundComponent : StateComponent
         HostState.CurrentState = substate;
     }
 
-    internal override bool Save(ref List<int> snapshot, bool isAllStateConfig)
+    internal override void SaveAllStateConfig(ref List<int> snapshot)
     {
-        // TODO: save
-        if (isAllStateConfig)
+        // Breadth first for better load order
+        snapshot.Add(CurrentState.SubstateIdx);
+        foreach (State substate in Substates)
         {
-            // all config
+            substate.SaveActiveStateConfig(ref snapshot);
         }
-        else
-        {
-            // Active states only
-            snapshot.Append(CurrentState.SubstateIdx);
-        }
+    }
+
+    internal override void SaveActiveStateConfig(ref List<int> snapshot)
+    {
+        // Breadth first for better load order
+        snapshot.Add(CurrentState.SubstateIdx);
+        CurrentState.SaveActiveStateConfig(ref snapshot);
     }
 
     #if TOOLS

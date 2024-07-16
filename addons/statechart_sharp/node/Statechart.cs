@@ -195,17 +195,22 @@ public partial class Statechart : StatechartComposition
         }
         
         Snapshot.Flag = (int)flag;
-        SnapshotConfiguration.Clear();
-        RootState.Save(
-            ref SnapshotConfiguration,
-            flag.HasFlag(SnapshotFlagEnum.AllStateConfiguration));
+        if (flag.HasFlag(SnapshotFlagEnum.AllStateConfiguration))
+        {
+            RootState.SaveAllStateConfig(ref SnapshotConfiguration);
+        }
+        else
+        {
+            RootState.SaveActiveStateConfig(ref SnapshotConfiguration);
+        }
         Snapshot.Configuration = SnapshotConfiguration.ToArray();
+        SnapshotConfiguration.Clear();
         return Snapshot;
     }
 
     public void Load(StatechartSnapshot snapshot)
     {
-        Load(snapshot, (SnapshotFlagEnum)(snapshot.Flag));
+        Load(snapshot, (SnapshotFlagEnum)snapshot.Flag);
     }
 
     public void Load(StatechartSnapshot snapshot, int flag)
@@ -244,14 +249,10 @@ public partial class Statechart : StatechartComposition
         */
         
         List<State> statesToLoad = new();
+        int[] config = snapshot.Configuration;
         if (flag.HasFlag(SnapshotFlagEnum.AllStateConfiguration))
         {
             // Load all state configuration
-            var config = snapshot.Configuration;
-            for (int i = 1; i < config.Length; i++)
-            {
-                
-            }
         }
         else
         {

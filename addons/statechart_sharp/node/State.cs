@@ -212,9 +212,19 @@ public partial class State : StatechartComposition
         }
     }
 
-    internal bool Save(ref List<int> snapshot, bool isAllStateConfig)
+    internal void SaveAllStateConfig(ref List<int> config)
     {
-        return StateComponent.Save(ref snapshot, isAllStateConfig);
+        StateComponent.SaveAllStateConfig(ref config);
+    }
+
+    internal void SaveActiveStateConfig(ref List<int> config)
+    {
+        StateComponent.SaveActiveStateConfig(ref config);
+    }
+
+    internal bool LoadAllStateConfig(ref int[] config)
+    {
+        return StateComponent.LoadAllStateConfig(ref config);
     }
 
     #if TOOLS
