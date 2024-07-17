@@ -310,6 +310,41 @@ public class CompoundComponent : StateComponent
         CurrentState.SaveActiveStateConfig(ref snapshot);
     }
 
+    internal override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+    {
+        if (configIdx > config.Length)
+        {
+            return false;
+        }
+
+        CurrentState = Substates[configIdx];
+        ++configIdx;
+
+        bool isLoadSuccess;
+        foreach (State substate in Substates)
+        {
+            isLoadSuccess = substate.LoadAllStateConfig(ref config, ref configIdx);
+            if (!isLoadSuccess)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    internal override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+    {
+        if (configIdx > config.Length)
+        {
+            return false;
+        }
+
+        CurrentState = Substates[configIdx];
+        ++configIdx;
+        return CurrentState.LoadActiveStateConfig(ref config, ref configIdx);
+    }
+
     #if TOOLS
     internal override void GetConfigurationWarnings(List<string> warnings)
     {

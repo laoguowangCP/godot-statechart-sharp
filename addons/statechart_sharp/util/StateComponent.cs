@@ -75,9 +75,9 @@ public class StateComponent
 
     internal virtual void SaveActiveStateConfig(ref List<int> snapshot) {}
 
-    internal bool LoadAllStateConfig(ref int[] config) { return false; }
+    internal virtual bool LoadAllStateConfig(ref int[] config, ref int configIdx) { return false; }
     
-    internal bool LoadActiveStateConfig(ref int[] config) { return false; }
+    internal virtual bool LoadActiveStateConfig(ref int[] config, ref int configIdx) { return false; }
 
     #if TOOLS
     internal virtual void GetConfigurationWarnings(List<string> warnings)

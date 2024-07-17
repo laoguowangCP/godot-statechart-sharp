@@ -179,12 +179,7 @@ public partial class Statechart : StatechartComposition
         EventCount = 0;
     }
 
-    public StatechartSnapshot Save(int snapshotFlag = 0)
-    {
-        return Save((SnapshotFlagEnum)snapshotFlag);
-    }
-
-    public StatechartSnapshot Save(SnapshotFlagEnum flag)
+    public StatechartSnapshot Save(bool isAllStateConfiguration = false)
     {
         if (IsRunning)
         {
@@ -194,8 +189,8 @@ public partial class Statechart : StatechartComposition
             return null;
         }
         
-        Snapshot.Flag = (int)flag;
-        if (flag.HasFlag(SnapshotFlagEnum.AllStateConfiguration))
+        Snapshot.IsAllStateConfiguration = isAllStateConfiguration;
+        if (isAllStateConfiguration)
         {
             RootState.SaveAllStateConfig(ref SnapshotConfiguration);
         }
@@ -208,22 +203,14 @@ public partial class Statechart : StatechartComposition
         return Snapshot;
     }
 
-    public void Load(StatechartSnapshot snapshot)
-    {
-        Load(snapshot, (SnapshotFlagEnum)snapshot.Flag);
-    }
-
-    public void Load(StatechartSnapshot snapshot, int flag)
-    {
-        Load(snapshot, (SnapshotFlagEnum)flag);
-    }
-
-    public void Load(StatechartSnapshot snapshot, SnapshotFlagEnum flag)
+    public void Load(StatechartSnapshot snapshot, bool isExitOnLoad, bool isEnterOnLoad)
     {
         if (IsRunning)
         {
             #if DEBUG
-            GD.PushWarning(GetPath(), "Statechart is running, abort load.");
+            GD.PushWarning(
+                GetPath(),
+                "Statechart is running, abort load.");
             #endif
             return;
         }
@@ -231,7 +218,9 @@ public partial class Statechart : StatechartComposition
         if (snapshot is null)
         {
             #if DEBUG
-            GD.PushWarning(GetPath(), "Snapshot is null, abort load.");
+            GD.PushWarning(
+                GetPath(),
+                "Snapshot is null, abort load.");
             #endif
             return;
         }
@@ -250,13 +239,50 @@ public partial class Statechart : StatechartComposition
         
         List<State> statesToLoad = new();
         int[] config = snapshot.Configuration;
-        if (flag.HasFlag(SnapshotFlagEnum.AllStateConfiguration))
+        bool isLoadSuccess;
+        int configIdx = 0;
+        if (snapshot.IsAllStateConfiguration)
         {
             // Load all state configuration
+            isLoadSuccess = RootState.LoadAllStateConfig(
+                ref config, ref configIdx);
         }
         else
         {
             // Load active state configuration
+            isLoadSuccess = RootState.LoadActiveStateConfig(
+                ref config, ref configIdx);
+        }
+
+        #if DEBUG
+        if (!isLoadSuccess)
+        {
+            GD.PushWarning(
+                GetPath(),
+                "Load failed, configuration not aligned."
+            );
+        }
+        #endif
+
+        // Exit on load
+        if (isExitOnLoad)
+        {
+            foreach (State state in ActiveStates)
+            {
+                state.StateExit();
+            }
+        }
+
+        ActiveStates.Clear();
+        RootState.RegisterActiveState(ActiveStates);
+
+        // Enter on load
+        if (isEnterOnLoad)
+        {
+            foreach (State state in ActiveStates)
+            {
+                state.StateEnter();
+            }
         }
     }
 

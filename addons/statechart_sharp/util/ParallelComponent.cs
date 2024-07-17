@@ -333,4 +333,34 @@ public class ParallelComponent : StateComponent
             substate.SaveActiveStateConfig(ref snapshot);
         }
     }
+
+    internal override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+    {
+        bool isLoadSuccess;
+        foreach (State substate in Substates)
+        {
+            isLoadSuccess = substate.LoadAllStateConfig(ref config, ref configIdx);
+            if (!isLoadSuccess)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    internal override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+    {
+        bool isLoadSuccess;
+        foreach (State substate in Substates)
+        {
+            isLoadSuccess = substate.LoadAllStateConfig(ref config, ref configIdx);
+            if (!isLoadSuccess)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

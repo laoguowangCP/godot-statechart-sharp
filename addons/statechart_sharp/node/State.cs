@@ -222,9 +222,14 @@ public partial class State : StatechartComposition
         StateComponent.SaveActiveStateConfig(ref config);
     }
 
-    internal bool LoadAllStateConfig(ref int[] config)
+    internal bool LoadAllStateConfig(ref int[] config, ref int configIdx)
     {
-        return StateComponent.LoadAllStateConfig(ref config);
+        return StateComponent.LoadAllStateConfig(ref config, ref configIdx);
+    }
+
+    internal bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+    {
+        return StateComponent.LoadActiveStateConfig(ref config, ref configIdx);
     }
 
     #if TOOLS
