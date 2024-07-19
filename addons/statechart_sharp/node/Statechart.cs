@@ -203,7 +203,7 @@ public partial class Statechart : StatechartComposition
         return Snapshot;
     }
 
-    public void Load(StatechartSnapshot snapshot, bool isExitOnLoad, bool isEnterOnLoad)
+    public void Load(StatechartSnapshot snapshot, bool isExitOnLoad = false, bool isEnterOnLoad = false)
     {
         if (IsRunning)
         {
@@ -243,31 +243,31 @@ public partial class Statechart : StatechartComposition
         int configIdx = 0;
         if (snapshot.IsAllStateConfiguration)
         {
-            // Load all state configuration
             isLoadSuccess = RootState.LoadAllStateConfig(
                 ref config, ref configIdx);
         }
         else
         {
-            // Load active state configuration
             isLoadSuccess = RootState.LoadActiveStateConfig(
                 ref config, ref configIdx);
         }
 
-        #if DEBUG
         if (!isLoadSuccess)
         {
+            #if DEBUG
             GD.PushWarning(
                 GetPath(),
                 "Load failed, configuration not aligned."
             );
+            #endif
+
+            return;
         }
-        #endif
 
         // Exit on load
         if (isExitOnLoad)
         {
-            foreach (State state in ActiveStates)
+            foreach (State state in ActiveStates.Reverse())
             {
                 state.StateExit();
             }

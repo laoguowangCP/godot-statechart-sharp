@@ -296,6 +296,10 @@ public class CompoundComponent : StateComponent
     internal override void SaveAllStateConfig(ref List<int> snapshot)
     {
         // Breadth first for better load order
+        if (CurrentState is null)
+        {
+            return;
+        }
         snapshot.Add(CurrentState.SubstateIdx);
         foreach (State substate in Substates)
         {
@@ -306,6 +310,10 @@ public class CompoundComponent : StateComponent
     internal override void SaveActiveStateConfig(ref List<int> snapshot)
     {
         // Breadth first for better load order
+        if (CurrentState is null)
+        {
+            return;
+        }
         snapshot.Add(CurrentState.SubstateIdx);
         CurrentState.SaveActiveStateConfig(ref snapshot);
     }
@@ -315,6 +323,11 @@ public class CompoundComponent : StateComponent
         if (configIdx > config.Length)
         {
             return false;
+        }
+
+        if (Substates.Count == 0)
+        {
+            return true;
         }
 
         CurrentState = Substates[configIdx];
@@ -338,6 +351,11 @@ public class CompoundComponent : StateComponent
         if (configIdx > config.Length)
         {
             return false;
+        }
+
+        if (Substates.Count == 0)
+        {
+            return true;
         }
 
         CurrentState = Substates[configIdx];
