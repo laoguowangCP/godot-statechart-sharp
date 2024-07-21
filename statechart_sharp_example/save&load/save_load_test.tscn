@@ -7,21 +7,91 @@
 [node name="Node" type="Node"]
 script = ExtResource("1_57pf3")
 
-[node name="Statechart" type="Node" parent="."]
+[node name="BoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -308.0
+offset_top = -251.0
+offset_right = 308.0
+offset_bottom = 251.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="BoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="BoxContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="BoxContainer/Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Save & load[/b][/center][/font_size]
+
+Press to save configuration of statechart1 and load to statechart2."
+threaded = true
+
+[node name="MarginContainer" type="MarginContainer" parent="BoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Button" type="Button" parent="BoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Go
+"
+
+[node name="Statechart1" type="Node" parent="."]
 script = ExtResource("2_sviad")
 IsWaitParentReady = false
 
-[node name="State" type="Node" parent="Statechart"]
+[node name="State" type="Node" parent="Statechart1"]
 script = ExtResource("3_gi8w8")
 
-[node name="A" type="Node" parent="Statechart/State"]
+[node name="A" type="Node" parent="Statechart1/State"]
 script = ExtResource("3_gi8w8")
 
-[node name="X" type="Node" parent="Statechart/State/A"]
+[node name="X" type="Node" parent="Statechart1/State/A"]
 script = ExtResource("3_gi8w8")
 
-[node name="Y" type="Node" parent="Statechart/State/A"]
+[node name="Y" type="Node" parent="Statechart1/State/A"]
 script = ExtResource("3_gi8w8")
 
-[node name="B" type="Node" parent="Statechart/State"]
+[node name="B" type="Node" parent="Statechart1/State"]
 script = ExtResource("3_gi8w8")
+
+[node name="Statechart2" type="Node" parent="."]
+script = ExtResource("2_sviad")
+IsWaitParentReady = false
+
+[node name="State" type="Node" parent="Statechart2"]
+script = ExtResource("3_gi8w8")
+
+[node name="A" type="Node" parent="Statechart2/State"]
+script = ExtResource("3_gi8w8")
+
+[node name="X" type="Node" parent="Statechart2/State/A"]
+script = ExtResource("3_gi8w8")
+
+[node name="Y" type="Node" parent="Statechart2/State/A"]
+script = ExtResource("3_gi8w8")
+
+[node name="B" type="Node" parent="Statechart2/State"]
+script = ExtResource("3_gi8w8")
+
+[connection signal="pressed" from="BoxContainer/MarginContainer/Button" to="." method="_test"]
