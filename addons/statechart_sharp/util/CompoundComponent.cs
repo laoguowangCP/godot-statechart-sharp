@@ -320,8 +320,9 @@ public class CompoundComponent : StateComponent
 
     internal override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
     {
-        if (configIdx > config.Length)
+        if (configIdx >= config.Length)
         {
+            GD.Print(HostState.GetPath());
             return false;
         }
 
@@ -330,7 +331,7 @@ public class CompoundComponent : StateComponent
             return true;
         }
 
-        CurrentState = Substates[configIdx];
+        CurrentState = Substates[config[configIdx]];
         ++configIdx;
 
         bool isLoadSuccess;
@@ -358,8 +359,9 @@ public class CompoundComponent : StateComponent
             return true;
         }
 
-        CurrentState = Substates[configIdx];
+        CurrentState = Substates[config[configIdx]];
         ++configIdx;
+
         return CurrentState.LoadActiveStateConfig(ref config, ref configIdx);
     }
 

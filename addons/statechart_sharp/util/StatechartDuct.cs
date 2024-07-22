@@ -4,6 +4,7 @@ using Godot;
 namespace LGWCP.StatechartSharp;
 
 [Tool]
+[GlobalClass]
 public partial class StatechartDuct : GodotObject
 {
     internal Statechart HostStatechart { private get; set; } = null;
