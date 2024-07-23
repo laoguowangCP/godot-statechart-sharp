@@ -203,26 +203,22 @@ public partial class Statechart : StatechartComposition
         return Snapshot;
     }
 
-    public void Load(StatechartSnapshot snapshot, bool isExitOnLoad = false, bool isEnterOnLoad = false)
+    public bool Load(StatechartSnapshot snapshot, bool isExitOnLoad = false, bool isEnterOnLoad = false)
     {
         if (IsRunning)
         {
             #if DEBUG
-            GD.PushWarning(
-                GetPath(),
-                "Statechart is running, abort load.");
+            GD.PushWarning(GetPath(), "Statechart is running, abort load.");
             #endif
-            return;
+            return false;
         }
 
         if (snapshot is null)
         {
             #if DEBUG
-            GD.PushWarning(
-                GetPath(),
-                "Snapshot is null, abort load.");
+            GD.PushWarning(GetPath(), "Snapshot is null, abort load.");
             #endif
-            return;
+            return false;
         }
 
         /*
@@ -239,6 +235,14 @@ public partial class Statechart : StatechartComposition
         
         List<State> statesToLoad = new();
         int[] config = snapshot.Configuration;
+        if (config.Length == 0)
+        {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Configuration is null, abort load.");
+            #endif
+            return false;
+        }
+
         bool isLoadSuccess;
         int configIdx = 0;
         if (snapshot.IsAllStateConfiguration)
@@ -261,7 +265,7 @@ public partial class Statechart : StatechartComposition
             );
             #endif
 
-            return;
+            return false;
         }
 
         // Exit on load
@@ -284,6 +288,8 @@ public partial class Statechart : StatechartComposition
                 state.StateEnter();
             }
         }
+
+        return true;
     }
 
     protected void HandleEvent(StringName eventName)

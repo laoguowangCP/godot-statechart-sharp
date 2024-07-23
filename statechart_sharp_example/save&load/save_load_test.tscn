@@ -8,6 +8,7 @@
 [node name="Node" type="Node"]
 script = ExtResource("1_57pf3")
 is_all_state_config = true
+enter_on_load = true
 
 [node name="BoxContainer" type="VBoxContainer" parent="."]
 custom_minimum_size = Vector2(600, 500)
@@ -74,6 +75,12 @@ StateMode = 1
 script = ExtResource("3_gi8w8")
 
 [node name="1" type="Node" parent="Statechart/Root/A/X"]
+script = ExtResource("3_gi8w8")
+
+[node name="a" type="Node" parent="Statechart/Root/A/X/1"]
+script = ExtResource("3_gi8w8")
+
+[node name="b" type="Node" parent="Statechart/Root/A/X/1"]
 script = ExtResource("3_gi8w8")
 
 [node name="2" type="Node" parent="Statechart/Root/A/X"]

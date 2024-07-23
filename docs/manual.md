@@ -78,6 +78,10 @@ func handle(event):
 
 **`void Step(StringName)`** : Make statechart run a step with given event.
 
+**`StatechartSnapshot Save(bool isAllStateConfiguration)`** : Save statechart. If `isAllStateConfiguration` is set true, it saves all states' configuration, so history info can be preserved. Else it only saves active states' configuration.
+
+**`bool Load(StatechartSnapshot snapshot, bool isExitOnLoad, bool isEnterOnLoad)`** : Load statechart, using `StatechartSnapshot` from save process. If `isExitOnLoad`, active states before loading will be exit. If `isEnterOnLoad`, active states after loading will be entered.
+
 </br>
 
 ## State
@@ -297,5 +301,13 @@ For state's enter signals, `StatechartDuct` should be handled carefully. It is b
 **`StatechartComposition CompositionNode`** : The statechart composition node who emit the signal and parse this object.
 
 **`bool IsRunning`** : Whether the statechart of the parsed statechart composition is running a step.
+
+<br/>
+
+## StatechartSnapshot
+
+> **Inherits**: Resource
+
+StatechartSnapshot is the save object of statechart. 
 
 <br/>

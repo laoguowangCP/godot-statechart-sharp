@@ -9,6 +9,7 @@ extends Node
 
 var _statechart: Statechart
 var _snapshot: StatechartSnapshot
+var _save_path: String = "res://statechart_sharp_example/save&load/statechart.tres"
 
 
 func _ready() -> void:
@@ -65,9 +66,11 @@ func PrintDelegateInfo(duct: StatechartDuct, delegateName: String) -> void:
 func _go() -> void:
 	print(">> Save ")
 	_snapshot = _statechart.Save(is_all_state_config)
+	ResourceSaver.save(_snapshot, _save_path)
 	print(">> Sudo step")
 	_statechart.Step("sudo_step")
 	print(">> Load ")
+	_snapshot = ResourceLoader.load(_save_path) as StatechartSnapshot
 	_statechart.Load(_snapshot, exit_on_load, enter_on_load)
 	print("Statechart configuration loaded.")
 
