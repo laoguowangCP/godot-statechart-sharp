@@ -33,7 +33,6 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<State> EnterSet { get; set; }
     protected SortedSet<Reaction> EnabledReactions { get; set; }
     internal StatechartDuct Duct { get; private set; }
-    protected StatechartSnapshot Snapshot;
     protected List<int> SnapshotConfiguration;
 
     #endregion
@@ -59,7 +58,6 @@ public partial class Statechart : StatechartComposition
         EnterSet = new SortedSet<State>(new StatechartComparer<State>());
         EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
         
-        Snapshot = new StatechartSnapshot();
         SnapshotConfiguration = new List<int>();
 
         #if TOOLS
@@ -188,8 +186,12 @@ public partial class Statechart : StatechartComposition
             #endif
             return null;
         }
+
+        StatechartSnapshot snapshot = new()
+        {
+            IsAllStateConfiguration = isAllStateConfiguration
+        };
         
-        Snapshot.IsAllStateConfiguration = isAllStateConfiguration;
         if (isAllStateConfiguration)
         {
             RootState.SaveAllStateConfig(ref SnapshotConfiguration);
@@ -198,9 +200,9 @@ public partial class Statechart : StatechartComposition
         {
             RootState.SaveActiveStateConfig(ref SnapshotConfiguration);
         }
-        Snapshot.Configuration = SnapshotConfiguration.ToArray();
+        snapshot.Configuration = SnapshotConfiguration.ToArray();
         SnapshotConfiguration.Clear();
-        return Snapshot;
+        return snapshot;
     }
 
     public bool Load(StatechartSnapshot snapshot, bool isExitOnLoad = false, bool isEnterOnLoad = false)

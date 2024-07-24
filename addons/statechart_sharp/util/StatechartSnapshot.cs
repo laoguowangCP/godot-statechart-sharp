@@ -8,6 +8,6 @@ namespace LGWCP.StatechartSharp;
 [GlobalClass]
 public partial class StatechartSnapshot : Resource
 {
-    [Export] public bool IsAllStateConfiguration;
-    [Export] public int[] Configuration;
+    [Export] internal bool IsAllStateConfiguration;
+    [Export] internal int[] Configuration;
 }

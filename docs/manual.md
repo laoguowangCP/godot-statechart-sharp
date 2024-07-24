@@ -78,9 +78,9 @@ func handle(event):
 
 **`void Step(StringName)`** : Make statechart run a step with given event.
 
-**`StatechartSnapshot Save(bool isAllStateConfiguration)`** : Save statechart. If `isAllStateConfiguration` is set true, it saves all states' configuration, so history info can be preserved. Else it only saves active states' configuration.
+**`StatechartSnapshot Save(bool)`** : Save statechart. If arg1 is set true, it saves all states' configuration, so history info can be preserved. Else it only saves active states' configuration. Return [StatechartSnapshot](#statechartsnapshot) object, null if save is not successed.
 
-**`bool Load(StatechartSnapshot snapshot, bool isExitOnLoad, bool isEnterOnLoad)`** : Load statechart, using `StatechartSnapshot` from save process. If `isExitOnLoad`, active states before loading will be exit. If `isEnterOnLoad`, active states after loading will be entered.
+**`bool Load(StatechartSnapshot, bool, bool)`** : Load statechart. Arg1 is the `StatechartSnapshot` you saved. Arg2 is `isExitOnLoad`, if true, active states will be exit before configuration update. Arg3 is `isEnterOnLoad`, if true, active states will be entered after configuration update. Return true if load is successed.
 
 </br>
 
@@ -308,6 +308,6 @@ For state's enter signals, `StatechartDuct` should be handled carefully. It is b
 
 > **Inherits**: Resource
 
-StatechartSnapshot is the save object of statechart. 
+Save object of a statechart. It stores the save flag (boolean parsed during `Statechart.Save(bool)`) and states configuration (an integer array, listing compound states' substate index). Can be serialized/deserialized without custom resource saver/loader.
 
 <br/>
