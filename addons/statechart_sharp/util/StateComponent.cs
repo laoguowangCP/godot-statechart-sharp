@@ -24,15 +24,21 @@ public class StateComponent
         get => HostState.UpperState;
         set => HostState.UpperState = value;
     }
-    protected List<Transition> Transitions { get => HostState.Transitions; }
-    protected List<Reaction> Reactions { get => HostState.Reactions; }
+    protected Dictionary<StringName, List<Transition>> Transitions { get => HostState.Transitions; }
+    protected List<Transition> AutoTransitions { get => HostState.AutoTransitions; }
+    protected Dictionary<StringName, List<Reaction>> Reactions { get => HostState.Reactions; }
 
     public StateComponent(State state)
     {
         HostState = state;
     }
 
-    internal virtual void Setup(Statechart hostStateChart, ref int parentOrderId)
+    internal virtual bool IsAvailableRootState()
+    {
+        return false;
+    }
+
+    internal virtual void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         // Get parent state
         Node parent = HostState.GetParentOrNull<Node>();
@@ -40,6 +46,8 @@ public class StateComponent
         {
             ParentState = parent as State;
         }
+
+        HostState.SubstateIdx = substateIdx;
     }
 
     internal virtual void PostSetup() {}
@@ -63,6 +71,14 @@ public class StateComponent
     internal virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
 
     internal virtual void HandleSubstateEnter(State substate) {}
+
+    internal virtual void SaveAllStateConfig(ref List<int> snapshot) {}
+
+    internal virtual void SaveActiveStateConfig(ref List<int> snapshot) {}
+
+    internal virtual bool LoadAllStateConfig(ref int[] config, ref int configIdx) { return true; }
+    
+    internal virtual bool LoadActiveStateConfig(ref int[] config, ref int configIdx) { return true; }
 
     #if TOOLS
     internal virtual void GetConfigurationWarnings(List<string> warnings)

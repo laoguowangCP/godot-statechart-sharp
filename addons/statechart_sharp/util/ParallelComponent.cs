@@ -10,9 +10,14 @@ public class ParallelComponent : StateComponent
     protected int NonHistorySubstateCnt = 0;
     public ParallelComponent(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
+    internal override bool IsAvailableRootState()
     {
-        base.Setup(hostStateChart, ref parentOrderId);
+        return true;
+    }
+
+    internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    {
+        base.Setup(hostStateChart, ref parentOrderId, substateIdx);
 
         // Init & collect states, transitions, actions
         // Get lower-state and upper-state
@@ -26,7 +31,7 @@ public class ParallelComponent : StateComponent
             
             if (child is State s)
             {
-                s.Setup(hostStateChart, ref parentOrderId);
+                s.Setup(hostStateChart, ref parentOrderId, Substates.Count);
                 Substates.Add(s);
 
                 // First substate is lower-state
@@ -42,19 +47,46 @@ public class ParallelComponent : StateComponent
                 }
             }
             else if (child is Transition t)
-            {
-                // Root state should not have transition
-                if (ParentState != null)
-                {
-                    t.Setup(hostStateChart, ref parentOrderId);
-                    Transitions.Add(t);
-                }
-            }
-            else if (child is Reaction a)
-            {
-                a.Setup(hostStateChart, ref parentOrderId);
-                Reactions.Add(a);
-            }
+			{
+				// Root state should not have transition
+				if (ParentState is null)
+				{
+					continue;
+				}
+
+				t.Setup(hostStateChart, ref parentOrderId);
+
+                if (t.IsAuto)
+				{
+					AutoTransitions.Add(t);
+					continue;
+				}
+
+				bool hasEvent = Transitions.TryGetValue(t.EventName, out var matched);
+				if (hasEvent)
+				{
+					matched.Add(t);
+				}
+				else
+				{
+					List<Transition> transitions = new() { t };
+					Transitions.Add(t.EventName, transitions);
+				}
+			}
+			else if (child is Reaction a)
+			{
+				a.Setup(hostStateChart, ref parentOrderId);
+				bool hasEvent = Reactions.TryGetValue(a.EventName, out var matched);
+				if (hasEvent)
+				{
+					matched.Add(a);
+				}
+				else
+				{
+					List<Reaction> reactions = new() { a };
+					Reactions.Add(a.EventName, reactions);
+				}
+			}
         }
 
         if (lastSubstate != null)
@@ -80,15 +112,27 @@ public class ParallelComponent : StateComponent
             state.PostSetup();
         }
 
-        foreach (Transition transistion in Transitions)
-        {
-            transistion.PostSetup();
-        }
+        // Post process is order unconcerned
+		foreach (var pair in Transitions)
+		{
+			foreach(var t in pair.Value)
+			{
+				t.PostSetup();
+			}
+		}
+        
+		foreach (var t in AutoTransitions)
+		{
+			t.PostSetup();
+		}
 
-        foreach (Reaction reaction in Reactions)
-        {
-            reaction.PostSetup();
-        }
+		foreach (var pair in Reactions)
+		{
+			foreach(var a in pair.Value)
+			{
+				a.PostSetup();
+			}
+		}
     }
 
     internal override bool GetPromoteStates(List<State> states)
@@ -267,20 +311,34 @@ public class ParallelComponent : StateComponent
             return handleInfo;
         }
 
-        foreach (Transition transition in Transitions)
+        List<Transition> matched;
+		if (eventName is null)
+		{
+			matched = AutoTransitions;
+		}
+		else
+		{
+			bool hasEvent = Transitions.TryGetValue(eventName, out matched);
+			if (!hasEvent)
+			{
+				return handleInfo;
+			}
+		}
+
+        foreach (Transition t in matched)
         {
             if (handleInfo == 0)
             {
-                if (!transition.IsTargetless)
+                if (!t.IsTargetless)
                 {
                     continue;
                 }
             }
 
-            bool isEnabled = transition.Check(eventName);
+            bool isEnabled = t.Check();
             if (isEnabled)
             {
-                enabledTransitions.Add(transition);
+                enabledTransitions.Add(t);
                 handleInfo = 1;
                 break;
             }
@@ -311,5 +369,51 @@ public class ParallelComponent : StateComponent
             }
             substate.DeduceDescendants(deducedSet, isHistory);
         }
+    }
+
+    internal override void SaveAllStateConfig(ref List<int> snapshot)
+    {
+        foreach (State substate in Substates)
+        {
+            substate.SaveActiveStateConfig(ref snapshot);
+        }
+    }
+
+    internal override void SaveActiveStateConfig(ref List<int> snapshot)
+    {
+        foreach (State substate in Substates)
+        {
+            substate.SaveActiveStateConfig(ref snapshot);
+        }
+    }
+
+    internal override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+    {
+        bool isLoadSuccess;
+        foreach (State substate in Substates)
+        {
+            isLoadSuccess = substate.LoadAllStateConfig(ref config, ref configIdx);
+            if (!isLoadSuccess)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    internal override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+    {
+        bool isLoadSuccess;
+        foreach (State substate in Substates)
+        {
+            isLoadSuccess = substate.LoadAllStateConfig(ref config, ref configIdx);
+            if (!isLoadSuccess)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

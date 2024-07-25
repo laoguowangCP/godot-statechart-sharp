@@ -1,0 +1,122 @@
+[gd_scene load_steps=5 format=3 uid="uid://b2waqn6j3q7xx"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/save&load/save_load_test.gd" id="1_57pf3"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="2_sviad"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="3_gi8w8"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="4_4jbsj"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_57pf3")
+is_all_state_config = true
+enter_on_load = true
+
+[node name="BoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(600, 500)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -308.0
+offset_top = -251.0
+offset_right = 308.0
+offset_bottom = 251.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="BoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="BoxContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="BoxContainer/Panel/MarginContainer"]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[font_size=20][center][b]Save & load[/b][/center][/font_size]
+
+Press \"go\" to:
+
+[ol]
+Save statechart config.
+Do some transition to change config.
+Serialize config to file.
+Deserialize config.
+Load statechart config.
+[/ol]
+"
+threaded = true
+
+[node name="MarginContainer" type="MarginContainer" parent="BoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Button" type="Button" parent="BoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Go
+"
+
+[node name="Statechart" type="Node" parent="."]
+script = ExtResource("2_sviad")
+IsWaitParentReady = false
+
+[node name="Root" type="Node" parent="Statechart"]
+script = ExtResource("3_gi8w8")
+StateMode = 1
+
+[node name="A" type="Node" parent="Statechart/Root"]
+script = ExtResource("3_gi8w8")
+StateMode = 1
+
+[node name="X" type="Node" parent="Statechart/Root/A"]
+script = ExtResource("3_gi8w8")
+
+[node name="1" type="Node" parent="Statechart/Root/A/X"]
+script = ExtResource("3_gi8w8")
+
+[node name="a" type="Node" parent="Statechart/Root/A/X/1"]
+script = ExtResource("3_gi8w8")
+
+[node name="b" type="Node" parent="Statechart/Root/A/X/1"]
+script = ExtResource("3_gi8w8")
+
+[node name="2" type="Node" parent="Statechart/Root/A/X"]
+script = ExtResource("3_gi8w8")
+
+[node name="Y" type="Node" parent="Statechart/Root/A"]
+script = ExtResource("3_gi8w8")
+
+[node name="Transition" type="Node" parent="Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("4_4jbsj")
+TransitionEvent = 6
+CustomEventName = &"sudo_step"
+TargetStatesArray = [NodePath("../X/2"), NodePath("../../B/Y")]
+
+[node name="B" type="Node" parent="Statechart/Root"]
+script = ExtResource("3_gi8w8")
+
+[node name="X" type="Node" parent="Statechart/Root/B"]
+script = ExtResource("3_gi8w8")
+StateMode = 1
+
+[node name="Y" type="Node" parent="Statechart/Root/B"]
+script = ExtResource("3_gi8w8")
+StateMode = 1
+
+[node name="History" type="Node" parent="Statechart/Root/B"]
+script = ExtResource("3_gi8w8")
+StateMode = 2
+
+[connection signal="pressed" from="BoxContainer/MarginContainer/Button" to="." method="_go"]

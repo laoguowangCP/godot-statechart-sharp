@@ -11,15 +11,18 @@ public partial class Transition : StatechartComposition
 {
     #region signals
 
-    [Signal] public delegate void GuardEventHandler(StatechartDuct duct);
-    [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
+    [Signal]
+    public delegate void GuardEventHandler(StatechartDuct duct);
+    [Signal]
+    public delegate void InvokeEventHandler(StatechartDuct duct);
 
     #endregion
 
 
     #region properties
 
-    [Export] private TransitionEventNameEnum TransitionEvent
+    [Export]
+    private TransitionEventNameEnum TransitionEvent
     {
         get => _transitionEvent;
         set
@@ -35,7 +38,8 @@ public partial class Transition : StatechartComposition
         }
     }
     private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.Process;
-    [Export] private StringName CustomEventName
+    [Export]
+    private StringName CustomEventName
     {
         get => _customEventName;
         set
@@ -51,7 +55,8 @@ public partial class Transition : StatechartComposition
         }
     }
     private StringName _customEventName;
-    [Export] private Array<State> TargetStatesArray
+    [Export]
+    private Array<State> TargetStatesArray
     {
         get => _targetStatesArray;
         set
@@ -67,7 +72,7 @@ public partial class Transition : StatechartComposition
         }
     }
     private Array<State> _targetStatesArray = new();
-    private StringName EventName { get; set; }
+    internal StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
     internal State SourceState { get; set; }
     internal State LcaState { get; private set; }
@@ -90,9 +95,9 @@ public partial class Transition : StatechartComposition
         TargetStates = new List<State>(TargetStatesArray);
 
         // Init Sets
-        EnterRegion = new SortedSet<State>(new StateComparer());
-        EnterRegionEdge = new SortedSet<State>(new StateComparer());
-        DeducedEnterStates = new SortedSet<State>(new StateComparer());
+        EnterRegion = new SortedSet<State>(new StatechartComparer<State>());
+        EnterRegionEdge = new SortedSet<State>(new StatechartComparer<State>());
+        DeducedEnterStates = new SortedSet<State>(new StatechartComparer<State>());
 
         IsValid = true;
 
@@ -124,7 +129,7 @@ public partial class Transition : StatechartComposition
             #endif
             IsValid = false;
         }
-        EventName = StatechartConfig.GetTransitionEventName(TransitionEvent, CustomEventName);
+        EventName = StatechartEventName.GetTransitionEventName(TransitionEvent, CustomEventName);
         IsAuto = TransitionEvent == TransitionEventNameEnum.Auto;
 
         // Set targetless
@@ -260,7 +265,7 @@ public partial class Transition : StatechartComposition
         LcaState = srcToRoot[^reversedLcaIdx];
 
         // Extend enter region under LCA
-        SortedSet<State> extraEnterRegion = new(new StateComparer());
+        SortedSet<State> extraEnterRegion = new(new StatechartComparer<State>());
         LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
         EnterRegion.UnionWith(extraEnterRegion);
 
@@ -284,14 +289,9 @@ public partial class Transition : StatechartComposition
         }
     }
 
-    internal bool Check(StringName eventName)
+    internal bool Check()
     {
         if (!IsValid)
-        {
-            return false;
-        }
-
-        if (EventName != eventName)
         {
             return false;
         }

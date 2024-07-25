@@ -50,9 +50,9 @@ public enum ReactionEventNameEnum : int
     Custom
 }
 
-public partial class StatechartConfig : Node
+
+public partial class StatechartEventName
 {
-    
     #region Preset EventName
 
     public static readonly StringName EVENT_PROCESS = "_process";

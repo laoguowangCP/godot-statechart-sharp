@@ -79,7 +79,7 @@ public partial class Reaction : StatechartComposition
         }
         #endif
 
-        EventName = StatechartConfig.GetReactionEventName(ReactionEvent, CustomEventName);
+        EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 
     internal bool Check(StringName eventName)

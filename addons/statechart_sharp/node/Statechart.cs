@@ -12,6 +12,9 @@ public partial class Statechart : StatechartComposition
 {
     #region properties
 
+    /// <summary>
+    /// MaxInternalEventCount
+    /// </summary>
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxInternalEventCount = 8;
     [Export(PropertyHint.Range, "0,32,")]
@@ -20,7 +23,6 @@ public partial class Statechart : StatechartComposition
     protected EventFlagEnum EventFlag { get; set; } = 0;
     [Export]
     protected bool IsWaitParentReady = true;
-
     internal bool IsRunning { get; private set; }
     protected int EventCount;
     internal State RootState { get; set; }
@@ -32,6 +34,7 @@ public partial class Statechart : StatechartComposition
     protected SortedSet<State> EnterSet { get; set; }
     protected SortedSet<Reaction> EnabledReactions { get; set; }
     internal StatechartDuct Duct { get; private set; }
+    protected List<int> SnapshotConfiguration;
 
     #endregion
 
@@ -48,13 +51,15 @@ public partial class Statechart : StatechartComposition
         IsRunning = false;
         EventCount = 0;
 
-        ActiveStates = new SortedSet<State>(new StateComparer());
+        ActiveStates = new SortedSet<State>(new StatechartComparer<State>());
         QueuedEvents = new Queue<StringName>();
-        EnabledTransitions = new SortedSet<Transition>(new TransitionComparer());
-        EnabledFilteredTransitions = new SortedSet<Transition>(new TransitionComparer());
-        ExitSet = new SortedSet<State>(new ReversedStateComparer());
-        EnterSet = new SortedSet<State>(new StateComparer());
-        EnabledReactions = new SortedSet<Reaction>(new ReactionComparer());
+        EnabledTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
+        EnabledFilteredTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
+        ExitSet = new SortedSet<State>(new StatechartReversedComparer<State>());
+        EnterSet = new SortedSet<State>(new StatechartComparer<State>());
+        EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
+        
+        SnapshotConfiguration = new List<int>();
 
         #if TOOLS
         if (!Engine.IsEditorHint())
@@ -95,7 +100,7 @@ public partial class Statechart : StatechartComposition
         {
             if (child is State state)
             {
-                if (!state.IsHistory)
+                if (state.IsAvailableRootState())
                 {
                     RootState = state;
                     break;
@@ -171,6 +176,123 @@ public partial class Statechart : StatechartComposition
 
         IsRunning = false;
         EventCount = 0;
+    }
+
+    public StatechartSnapshot Save(bool isAllStateConfiguration = false)
+    {
+        if (IsRunning)
+        {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Statechart is running, abort save.");
+            #endif
+            return null;
+        }
+
+        StatechartSnapshot snapshot = new()
+        {
+            IsAllStateConfiguration = isAllStateConfiguration
+        };
+        
+        if (isAllStateConfiguration)
+        {
+            RootState.SaveAllStateConfig(ref SnapshotConfiguration);
+        }
+        else
+        {
+            RootState.SaveActiveStateConfig(ref SnapshotConfiguration);
+        }
+        snapshot.Configuration = SnapshotConfiguration.ToArray();
+        SnapshotConfiguration.Clear();
+        return snapshot;
+    }
+
+    public bool Load(StatechartSnapshot snapshot, bool isExitOnLoad = false, bool isEnterOnLoad = false)
+    {
+        if (IsRunning)
+        {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Statechart is running, abort load.");
+            #endif
+            return false;
+        }
+
+        if (snapshot is null)
+        {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Snapshot is null, abort load.");
+            #endif
+            return false;
+        }
+
+        /*
+        1. Iterate state configuration:
+          - Set current idx
+          - Add to statesToLoad
+          - If config not aligned, abort
+        2. Deal enter/exit on load:
+          - Get differed states
+          - Exit old states
+          - Enter new states
+        3. Update active states
+        */
+        
+        List<State> statesToLoad = new();
+        int[] config = snapshot.Configuration;
+        if (config.Length == 0)
+        {
+            #if DEBUG
+            GD.PushWarning(GetPath(), "Configuration is null, abort load.");
+            #endif
+            return false;
+        }
+
+        bool isLoadSuccess;
+        int configIdx = 0;
+        if (snapshot.IsAllStateConfiguration)
+        {
+            isLoadSuccess = RootState.LoadAllStateConfig(
+                ref config, ref configIdx);
+        }
+        else
+        {
+            isLoadSuccess = RootState.LoadActiveStateConfig(
+                ref config, ref configIdx);
+        }
+
+        if (!isLoadSuccess)
+        {
+            #if DEBUG
+            GD.PushWarning(
+                GetPath(),
+                "Load failed, configuration not aligned."
+            );
+            #endif
+
+            return false;
+        }
+
+        // Exit on load
+        if (isExitOnLoad)
+        {
+            foreach (State state in ActiveStates.Reverse())
+            {
+                state.StateExit();
+            }
+        }
+
+        ActiveStates.Clear();
+        RootState.RegisterActiveState(ActiveStates);
+
+        // Enter on load
+        if (isEnterOnLoad)
+        {
+            foreach (State state in ActiveStates)
+            {
+                state.StateEnter();
+            }
+        }
+
+        return true;
     }
 
     protected void HandleEvent(StringName eventName)
@@ -314,7 +436,7 @@ public partial class Statechart : StatechartComposition
         #endif
 
         Duct.Delta = delta;
-        Step(StatechartConfig.EVENT_PROCESS);
+        Step(StatechartEventName.EVENT_PROCESS);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -327,7 +449,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.PhysicsDelta = delta;
-        Step(StatechartConfig.EVENT_PHYSICS_PROCESS);
+        Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
     }
 
     public override void _Input(InputEvent @event)
@@ -340,7 +462,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.Input = @event;
-        Step(StatechartConfig.EVENT_INPUT);
+        Step(StatechartEventName.EVENT_INPUT);
     }
 
     public override void _ShortcutInput(InputEvent @event)
@@ -353,7 +475,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.ShortcutInput = @event;
-        Step(StatechartConfig.EVENT_SHORTCUT_INPUT);
+        Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
     }
 
     public override void _UnhandledKeyInput(InputEvent @event)
@@ -366,7 +488,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.UnhandledKeyInput = @event;
-        Step(StatechartConfig.EVENT_UNHANDLED_KEY_INPUT);
+        Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -379,7 +501,7 @@ public partial class Statechart : StatechartComposition
         #endif
         
         Duct.UnhandledInput = @event;
-        Step(StatechartConfig.EVENT_UNHANDLED_INPUT);
+        Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
     }
 
     #if TOOLS
