@@ -18,6 +18,7 @@ To get full perspective on statechart, you may refer to:
 - [TransitionPromoter](#transitionpromoter)
 - [StatechartComposition](#statechartcomposition)
 - [StatechartDuct](#statechartduct)
+- [StatechartSnapshot](#statechartsnapshot)
 
 <br/>
 
