@@ -25,6 +25,7 @@ public class StateComponent
         set => HostState.UpperState = value;
     }
     protected Dictionary<StringName, List<Transition>> Transitions { get => HostState.Transitions; }
+    protected List<Transition> AutoTransitions { get => HostState.AutoTransitions; }
     protected Dictionary<StringName, List<Reaction>> Reactions { get => HostState.Reactions; }
 
     public StateComponent(State state)

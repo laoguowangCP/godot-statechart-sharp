@@ -18,15 +18,18 @@ public partial class State : StatechartComposition
 {
     #region signals
     
-    [Signal] public delegate void EnterEventHandler(StatechartDuct duct);
-    [Signal] public delegate void ExitEventHandler(StatechartDuct duct);
+    [Signal]
+    public delegate void EnterEventHandler(StatechartDuct duct);
+    [Signal]
+    public delegate void ExitEventHandler(StatechartDuct duct);
     
     #endregion
 
 
     #region properties
 
-    [Export] internal StateModeEnum StateMode
+    [Export]
+    internal StateModeEnum StateMode
     {
         get => _stateMode;
         set
@@ -43,8 +46,10 @@ public partial class State : StatechartComposition
         }
     }
     private StateModeEnum _stateMode = StateModeEnum.Compound;
-    [Export] internal bool IsDeepHistory { get; private set; }
-    [Export] internal State InitialState
+    [Export]
+    internal bool IsDeepHistory { get; private set; }
+    [Export]
+    internal State InitialState
     {
         get { return _initialState; }
         set
@@ -64,6 +69,7 @@ public partial class State : StatechartComposition
     internal State CurrentState { get; set; }
     internal List<State> Substates { get; set; }
     internal Dictionary<StringName, List<Transition>> Transitions { get; set; }
+    internal List<Transition> AutoTransitions { get; set; }
     internal Dictionary<StringName, List<Reaction>> Reactions { get; set; }
     protected StateComponent StateComponent { get; set; }
     internal State LowerState { get; set; }
@@ -84,6 +90,7 @@ public partial class State : StatechartComposition
     {
         Substates = new List<State>();
         Transitions = new Dictionary<StringName, List<Transition>>();
+        AutoTransitions = new List<Transition>();
         Reactions = new Dictionary<StringName, List<Reaction>>();
 
         StateComponent = GetStateComponent(StateMode);
@@ -186,7 +193,7 @@ public partial class State : StatechartComposition
         StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
     }
 
-    internal int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+    internal int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName = null)
     {
         return StateComponent.SelectTransitions(enabledTransitions, eventName);
     }

@@ -23,8 +23,6 @@ public partial class Statechart : StatechartComposition
     protected EventFlagEnum EventFlag { get; set; } = 0;
     [Export]
     protected bool IsWaitParentReady = true;
-    [Export(PropertyHint.Range, "0,32,")]
-
     internal bool IsRunning { get; private set; }
     protected int EventCount;
     internal State RootState { get; set; }
@@ -323,7 +321,7 @@ public partial class Statechart : StatechartComposition
         // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
-            RootState.SelectTransitions(EnabledTransitions, );
+            RootState.SelectTransitions(EnabledTransitions);
 
             // Stop if active states are stable
             if (EnabledTransitions.Count == 0)
@@ -386,6 +384,19 @@ public partial class Statechart : StatechartComposition
 
             EnabledFilteredTransitions.Add(transition);
 
+            // TODO: delete
+            if (transition.LcaState is null)
+            {
+                GD.PushError("LcaState is null: ", GetPathTo(transition));
+            }
+            if (transition.LcaState.LowerState is null)
+            {
+                GD.PushError("LowerState is null: ", GetPathTo(transition));
+            }
+            if (transition.LcaState.UpperState is null)
+            {
+                GD.PushError("UpperState is null: ", GetPathTo(transition));
+            }
             SortedSet<State> exitStates = ActiveStates.GetViewBetween(
                 transition.LcaState.LowerState, transition.LcaState.UpperState);
             ExitSet.UnionWith(exitStates);

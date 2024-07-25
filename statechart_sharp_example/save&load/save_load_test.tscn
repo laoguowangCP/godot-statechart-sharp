@@ -42,7 +42,16 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[font_size=20][center][b]Save & load[/b][/center][/font_size]
 
-Press to save configuration of statechart1 and load to statechart2."
+Press \"go\" to:
+
+[ol]
+Save statechart config.
+Do some transition to change config.
+Serialize config to file.
+Deserialize config.
+Load statechart config.
+[/ol]
+"
 threaded = true
 
 [node name="MarginContainer" type="MarginContainer" parent="BoxContainer"]

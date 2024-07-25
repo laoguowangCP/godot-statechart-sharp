@@ -55,6 +55,13 @@ public class ParallelComponent : StateComponent
 				}
 
 				t.Setup(hostStateChart, ref parentOrderId);
+
+                if (t.IsAuto)
+				{
+					AutoTransitions.Add(t);
+					continue;
+				}
+
 				bool hasEvent = Transitions.TryGetValue(t.EventName, out var matched);
 				if (hasEvent)
 				{
@@ -112,6 +119,11 @@ public class ParallelComponent : StateComponent
 			{
 				t.PostSetup();
 			}
+		}
+        
+		foreach (var t in AutoTransitions)
+		{
+			t.PostSetup();
 		}
 
 		foreach (var pair in Reactions)
@@ -299,10 +311,18 @@ public class ParallelComponent : StateComponent
             return handleInfo;
         }
 
-        bool hasEvent = Transitions.TryGetValue(eventName, out var matched);
-		if (!hasEvent)
+        List<Transition> matched;
+		if (eventName is null)
 		{
-			return handleInfo;
+			matched = AutoTransitions;
+		}
+		else
+		{
+			bool hasEvent = Transitions.TryGetValue(eventName, out matched);
+			if (!hasEvent)
+			{
+				return handleInfo;
+			}
 		}
 
         foreach (Transition t in matched)

@@ -11,15 +11,18 @@ public partial class Transition : StatechartComposition
 {
     #region signals
 
-    [Signal] public delegate void GuardEventHandler(StatechartDuct duct);
-    [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
+    [Signal]
+    public delegate void GuardEventHandler(StatechartDuct duct);
+    [Signal]
+    public delegate void InvokeEventHandler(StatechartDuct duct);
 
     #endregion
 
 
     #region properties
 
-    [Export] private TransitionEventNameEnum TransitionEvent
+    [Export]
+    private TransitionEventNameEnum TransitionEvent
     {
         get => _transitionEvent;
         set
@@ -35,7 +38,8 @@ public partial class Transition : StatechartComposition
         }
     }
     private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.Process;
-    [Export] private StringName CustomEventName
+    [Export]
+    private StringName CustomEventName
     {
         get => _customEventName;
         set
@@ -51,7 +55,8 @@ public partial class Transition : StatechartComposition
         }
     }
     private StringName _customEventName;
-    [Export] private Array<State> TargetStatesArray
+    [Export]
+    private Array<State> TargetStatesArray
     {
         get => _targetStatesArray;
         set
