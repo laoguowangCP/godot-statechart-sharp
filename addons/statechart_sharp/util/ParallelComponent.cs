@@ -47,19 +47,39 @@ public class ParallelComponent : StateComponent
                 }
             }
             else if (child is Transition t)
-            {
-                // Root state should not have transition
-                if (ParentState != null)
-                {
-                    t.Setup(hostStateChart, ref parentOrderId);
-                    Transitions.Add(t);
-                }
-            }
-            else if (child is Reaction a)
-            {
-                a.Setup(hostStateChart, ref parentOrderId);
-                Reactions.Add(a);
-            }
+			{
+				// Root state should not have transition
+				if (ParentState is null)
+				{
+					continue;
+				}
+
+				t.Setup(hostStateChart, ref parentOrderId);
+				bool hasEvent = Transitions.TryGetValue(t.EventName, out var matched);
+				if (hasEvent)
+				{
+					matched.Add(t);
+				}
+				else
+				{
+					List<Transition> transitions = new() { t };
+					Transitions.Add(t.EventName, transitions);
+				}
+			}
+			else if (child is Reaction a)
+			{
+				a.Setup(hostStateChart, ref parentOrderId);
+				bool hasEvent = Reactions.TryGetValue(a.EventName, out var matched);
+				if (hasEvent)
+				{
+					matched.Add(a);
+				}
+				else
+				{
+					List<Reaction> reactions = new() { a };
+					Reactions.Add(a.EventName, reactions);
+				}
+			}
         }
 
         if (lastSubstate != null)
@@ -85,15 +105,22 @@ public class ParallelComponent : StateComponent
             state.PostSetup();
         }
 
-        foreach (Transition transistion in Transitions)
-        {
-            transistion.PostSetup();
-        }
+        // Post process is order unconcerned
+		foreach (var pair in Transitions)
+		{
+			foreach(var t in pair.Value)
+			{
+				t.PostSetup();
+			}
+		}
 
-        foreach (Reaction reaction in Reactions)
-        {
-            reaction.PostSetup();
-        }
+		foreach (var pair in Reactions)
+		{
+			foreach(var a in pair.Value)
+			{
+				a.PostSetup();
+			}
+		}
     }
 
     internal override bool GetPromoteStates(List<State> states)
@@ -272,20 +299,26 @@ public class ParallelComponent : StateComponent
             return handleInfo;
         }
 
-        foreach (Transition transition in Transitions)
+        bool hasEvent = Transitions.TryGetValue(eventName, out var matched);
+		if (!hasEvent)
+		{
+			return handleInfo;
+		}
+
+        foreach (Transition t in matched)
         {
             if (handleInfo == 0)
             {
-                if (!transition.IsTargetless)
+                if (!t.IsTargetless)
                 {
                     continue;
                 }
             }
 
-            bool isEnabled = transition.Check(eventName);
+            bool isEnabled = t.Check();
             if (isEnabled)
             {
-                enabledTransitions.Add(transition);
+                enabledTransitions.Add(t);
                 handleInfo = 1;
                 break;
             }

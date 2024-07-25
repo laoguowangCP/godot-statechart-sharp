@@ -12,6 +12,9 @@ public partial class Statechart : StatechartComposition
 {
     #region properties
 
+    /// <summary>
+    /// MaxInternalEventCount
+    /// </summary>
     [Export(PropertyHint.Range, "0,32,")]
     protected int MaxInternalEventCount = 8;
     [Export(PropertyHint.Range, "0,32,")]
@@ -320,7 +323,7 @@ public partial class Statechart : StatechartComposition
         // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
-            RootState.SelectTransitions(EnabledTransitions);
+            RootState.SelectTransitions(EnabledTransitions, );
 
             // Stop if active states are stable
             if (EnabledTransitions.Count == 0)

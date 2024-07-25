@@ -63,8 +63,8 @@ public partial class State : StatechartComposition
     internal State ParentState { get; set; }
     internal State CurrentState { get; set; }
     internal List<State> Substates { get; set; }
-    internal List<Transition> Transitions { get; set; }
-    internal List<Reaction> Reactions { get; set; }
+    internal Dictionary<StringName, List<Transition>> Transitions { get; set; }
+    internal Dictionary<StringName, List<Reaction>> Reactions { get; set; }
     protected StateComponent StateComponent { get; set; }
     internal State LowerState { get; set; }
     internal State UpperState { get; set; }
@@ -83,8 +83,8 @@ public partial class State : StatechartComposition
     public override void _Ready()
     {
         Substates = new List<State>();
-        Transitions = new List<Transition>();
-        Reactions = new List<Reaction>();
+        Transitions = new Dictionary<StringName, List<Transition>>();
+        Reactions = new Dictionary<StringName, List<Reaction>>();
 
         StateComponent = GetStateComponent(StateMode);
 
@@ -186,7 +186,7 @@ public partial class State : StatechartComposition
         StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
     }
 
-    internal int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName = null)
+    internal int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         return StateComponent.SelectTransitions(enabledTransitions, eventName);
     }
@@ -203,12 +203,15 @@ public partial class State : StatechartComposition
 
     internal void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
     {
-        foreach (Reaction reaction in Reactions)
+        bool hasEventName = Reactions.TryGetValue(eventName, out var matchedReactions);
+        if (!hasEventName)
         {
-            if (reaction.Check(eventName))
-            {
-                enabledReactions.Add(reaction);
-            }
+            return;
+        }
+
+        foreach (Reaction reaction in matchedReactions)
+        {
+            enabledReactions.Add(reaction);
         }
     }
 

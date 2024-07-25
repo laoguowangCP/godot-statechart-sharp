@@ -54,16 +54,36 @@ public class CompoundComponent : StateComponent
 			else if (child is Transition t)
 			{
 				// Root state should not have transition
-				if (ParentState != null)
+				if (ParentState is null)
 				{
-					t.Setup(hostStateChart, ref parentOrderId);
-					Transitions.Add(t);
+					continue;
+				}
+
+				t.Setup(hostStateChart, ref parentOrderId);
+				bool hasEvent = Transitions.TryGetValue(t.EventName, out var matched);
+				if (hasEvent)
+				{
+					matched.Add(t);
+				}
+				else
+				{
+					List<Transition> transitions = new() { t };
+					Transitions.Add(t.EventName, transitions);
 				}
 			}
 			else if (child is Reaction a)
 			{
 				a.Setup(hostStateChart, ref parentOrderId);
-				Reactions.Add(a);
+				bool hasEvent = Reactions.TryGetValue(a.EventName, out var matched);
+				if (hasEvent)
+				{
+					matched.Add(a);
+				}
+				else
+				{
+					List<Reaction> reactions = new() { a };
+					Reactions.Add(a.EventName, reactions);
+				}
 			}
 		}
 
@@ -121,14 +141,21 @@ public class CompoundComponent : StateComponent
 			state.PostSetup();
 		}
 
-		foreach (Transition trans in Transitions)
+		// Post process is order unconcerned
+		foreach (var pair in Transitions)
 		{
-			trans.PostSetup();
+			foreach(var t in pair.Value)
+			{
+				t.PostSetup();
+			}
 		}
 
-		foreach (Reaction react in Reactions)
+		foreach (var pair in Reactions)
 		{
-			react.PostSetup();
+			foreach(var a in pair.Value)
+			{
+				a.PostSetup();
+			}
 		}
 	}
 
@@ -237,21 +264,27 @@ public class CompoundComponent : StateComponent
 			return handleInfo;
 		}
 
-		foreach (Transition transtion in Transitions)
+		bool hasEvent = Transitions.TryGetValue(eventName, out var matched);
+		if (!hasEvent)
+		{
+			return handleInfo;
+		}
+
+		foreach (Transition t in matched)
 		{
 			// If == 0, only check targetless
 			if (handleInfo == 0)
 			{
-				if (!transtion.IsTargetless)
+				if (!t.IsTargetless)
 				{
 					continue;
 				}
 			}
 
-			bool isEnabled = transtion.Check(eventName);
+			bool isEnabled = t.Check();
 			if (isEnabled)
 			{
-				enabledTransitions.Add(transtion);
+				enabledTransitions.Add(t);
 				handleInfo = 1;
 				break;
 			}

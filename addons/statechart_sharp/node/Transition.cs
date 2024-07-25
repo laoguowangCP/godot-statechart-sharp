@@ -67,7 +67,7 @@ public partial class Transition : StatechartComposition
         }
     }
     private Array<State> _targetStatesArray = new();
-    private StringName EventName { get; set; }
+    internal StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
     internal State SourceState { get; set; }
     internal State LcaState { get; private set; }
@@ -284,14 +284,9 @@ public partial class Transition : StatechartComposition
         }
     }
 
-    internal bool Check(StringName eventName)
+    internal bool Check()
     {
         if (!IsValid)
-        {
-            return false;
-        }
-
-        if (EventName != eventName)
         {
             return false;
         }

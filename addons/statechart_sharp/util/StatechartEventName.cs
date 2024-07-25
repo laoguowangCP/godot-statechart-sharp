@@ -77,6 +77,7 @@ public partial class StatechartEventName
         TransitionEventNameEnum.ShortcutInput => EVENT_SHORTCUT_INPUT,
         TransitionEventNameEnum.UnhandledKeyInput => EVENT_UNHANDLED_KEY_INPUT,
         TransitionEventNameEnum.UnhandledInput => EVENT_UNHANDLED_INPUT,
+        TransitionEventNameEnum.Auto => EVENT_AUTO,
 
         // Extend transition event here:
         /*
