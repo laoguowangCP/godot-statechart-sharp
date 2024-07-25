@@ -62,9 +62,3 @@ Refer to [manual](./docs/manual.md) to see what these nodes are and how they wor
   - Node based.
   - Support node loop events (process, input, etc.).
   - Choose your style: extend scripts, or use signals only.
-
-## Todo
-
-- [ ] Delayed event
-- [ ] Cancel event
-- [ ] Save&load states configuration

@@ -384,19 +384,6 @@ public partial class Statechart : StatechartComposition
 
             EnabledFilteredTransitions.Add(transition);
 
-            // TODO: delete
-            if (transition.LcaState is null)
-            {
-                GD.PushError("LcaState is null: ", GetPathTo(transition));
-            }
-            if (transition.LcaState.LowerState is null)
-            {
-                GD.PushError("LowerState is null: ", GetPathTo(transition));
-            }
-            if (transition.LcaState.UpperState is null)
-            {
-                GD.PushError("UpperState is null: ", GetPathTo(transition));
-            }
             SortedSet<State> exitStates = ActiveStates.GetViewBetween(
                 transition.LcaState.LowerState, transition.LcaState.UpperState);
             ExitSet.UnionWith(exitStates);
