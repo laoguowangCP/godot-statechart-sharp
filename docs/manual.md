@@ -16,7 +16,7 @@ To get full perspective on statechart, you may refer to:
 - [Transition](#transition)
 - [Reaction](#reaction)
 - [TransitionPromoter](#transitionpromoter)
-- [StatechartComposition](#statechartcomposition)
+- [StatechartComposition](#statechartcompositiont)
 - [StatechartDuct](#statechartduct)
 - [StatechartSnapshot](#statechartsnapshot)
 
@@ -24,7 +24,7 @@ To get full perspective on statechart, you may refer to:
 
 ## Statechart
 
-> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+> **Inherits**: [StatechartComposition\<T\>](#statechartcompositiont) < Node
 
 The control node of all statechart compositions. It requires 1 child state (non-history) as "root state".
 
@@ -87,7 +87,7 @@ func handle(event):
 
 ## State
 
-> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+> **Inherits**: [StatechartComposition\<T\>](#statechartcompositiont) < Node
 
 Base composition of statechart. Only if a state is **active**, its [transition](#transition)(s) and [reaction](#reaction)(s) will be used during a step. Setting a state **active**/**inactive** is called to **enter**/**exit** a state. When happened, state will emit `Enter`/`Exit` signal.
 
@@ -134,7 +134,7 @@ Similar to hierarchy state machine, states can be arranged in a tree structure (
 
 ## Transition
 
-> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+> **Inherits**: [StatechartComposition\<T\>](#statechartcompositiont) < Node
 
 Transition is used as child of a non-history state, to represent transition from parented state (called **source state**) to state(s) expected to be entered (known as **target state**(s)).
 
@@ -198,7 +198,7 @@ An invalid transition won't be checked and its signals won't be emitted. Transit
 
 > [!TIP]
 >
-> Setting a transition invalid may help you avoid dangerous configuration of automatic transitions, but some situation can be unpredictable. For example, an automatic transition sets its anscetor's history as target, this may also cause a loop transition. A recommanded rule is to use the state as automatic transition's target, as long as it has no automatic transition itself or in its descendants.
+> Setting a transition invalid is intended to suppress dangerous configuration of automatic transitions. But situations can be unpredictable (automatic transition sets its anscetor's history as target, pairs of cyclic automatic transition, etc.) . A safer way to utilize automatic transition is to only use certain state as target, as long as it has no automatic transition itself or in its descendants.
 
 ### Properties of Transition
 
@@ -224,7 +224,7 @@ An invalid transition won't be checked and its signals won't be emitted. Transit
 
 ## Reaction
 
-> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+> **Inherits**: [StatechartComposition\<T\>](#statechartcompositiont) < Node
 
 Reaction node is used as child node of a non-history state, to represent what state do during a step.
 
@@ -249,7 +249,7 @@ Reactions of active states, if event matches, will be invoked in document order 
 
 ## TransitionPromoter
 
-> **Inherits**: [StatechartComposition](#statechartcomposition)<Node
+> **Inherits**: [StatechartComposition\<T\>](#statechartcompositiont) < Node
 
 TransitionPromoter node is used as child node of a transition. When parented transition is ready, the promoter will:
 
@@ -257,19 +257,23 @@ TransitionPromoter node is used as child node of a transition. When parented tra
 2. Duplicate transition, add it as first child to each leaf state.
 3. Delete origin transition and promoter itself.
 
-TransitionPromoter is useful if you need to "prioritize" a transition, meaning you want your transition to be considered first in subtree of statechart in any situation. As transition selection is started from leaf states, prioritized transition needs multiple copies in certain leaf states. The query of certain leaf states comes up with a recursion, started with parent state of the transition:
+TransitionPromoter is useful if you need to "prioritize" a transition, meaning you want your transition to be considered first in a subtree of statechart. As transition selection is started from leaf states, prioritized transition needs multiple copies in *certain leaf states*. The query of certain leaf states comes up with a recursion, started with parent state of the transition:
 
-- For compound state: query each substate. If no descendant state is selected, then commit itself as a leaf state.
-- For parallel state: query substates, but stop if any descendant is selected. Or else no descendant is leaf state, then commit itself as leaf state.
-- For history state: do nothing.
+- Compound state: query each substate. If no descendant state is selected, then commit itself as a leaf state.
+- Parallel state: query substates, but stop if any descendant is selected. Or else no descendant is leaf state, then commit itself as leaf state.
+- History state: do nothing.
 
 <br/>
 
-## StatechartComposition
+## StatechartComposition\<T\>
 
 > **Inherits**: Node
 
 Base composition node for statechart.
+
+### Methods of StatechartComposition\<T\>
+
+**`public T Append<U>(U) where U : StatechartComposition<U>`**: Add parsed composition node as child, returns parent node itself. Used for building statechart from scripts.
 
 <br/>
 

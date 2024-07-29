@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://by5nr1hpqm5sf"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/build_with_script/StatechartBuildTest.cs" id="1_qmyng"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_qmyng")

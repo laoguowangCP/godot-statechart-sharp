@@ -7,7 +7,7 @@ namespace LGWCP.StatechartSharp;
 
 [Tool]
 [GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
-public partial class Transition : StatechartComposition
+public partial class Transition : StatechartComposition<Transition>
 {
     #region signals
 
@@ -56,7 +56,7 @@ public partial class Transition : StatechartComposition
     }
     private StringName _customEventName;
     [Export]
-    private Array<State> TargetStatesArray
+    public Array<State> TargetStatesArray
     {
         get => _targetStatesArray;
         set

@@ -8,7 +8,7 @@ namespace LGWCP.StatechartSharp;
 [Tool]
 [GlobalClass]
 [Icon("res://addons/statechart_sharp/icon/TransitionPromoter.svg")]
-public partial class TransitionPromoter : StatechartComposition
+public partial class TransitionPromoter : StatechartComposition<TransitionPromoter>
 {
     protected Transition HostTransition;
     protected State ParentState;

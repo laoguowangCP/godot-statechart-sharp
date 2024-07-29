@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LGWCP.StatechartSharp;
 
-public class StateComponent
+public class StateImpl
 {
     protected State HostState;
     protected Statechart HostStatechart { get => HostState.HostStatechart; }
@@ -28,7 +28,7 @@ public class StateComponent
     protected List<Transition> AutoTransitions { get => HostState.AutoTransitions; }
     protected Dictionary<StringName, List<Reaction>> Reactions { get => HostState.Reactions; }
 
-    public StateComponent(State state)
+    public StateImpl(State state)
     {
         HostState = state;
     }

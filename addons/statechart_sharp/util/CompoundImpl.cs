@@ -5,7 +5,7 @@ using Godot;
 
 namespace LGWCP.StatechartSharp;
 
-public class CompoundComponent : StateComponent
+public class CompoundImpl : StateImpl
 {
 	private State CurrentState
 	{
@@ -18,7 +18,7 @@ public class CompoundComponent : StateComponent
 		set { HostState.InitialState = value; }
 	}
 	
-	public CompoundComponent(State state) : base(state) {}
+	public CompoundImpl(State state) : base(state) {}
 
 	internal override bool IsAvailableRootState()
 	{
@@ -375,7 +375,6 @@ public class CompoundComponent : StateComponent
 	{
 		if (configIdx >= config.Length)
 		{
-			GD.Print(HostState.GetPath());
 			return false;
 		}
 

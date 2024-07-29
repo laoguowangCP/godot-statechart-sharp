@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace LGWCP.StatechartSharp;
 
 class StatechartComparer<T> : IComparer<T>
-    where T : StatechartComposition
+    where T : StatechartComposition<T>
 {
     public int Compare(T x, T y)
     {
@@ -13,7 +13,7 @@ class StatechartComparer<T> : IComparer<T>
 }
 
 class StatechartReversedComparer<T> : IComparer<T>
-    where T : StatechartComposition
+    where T : StatechartComposition<T>
 {
     public int Compare(T x, T y)
     {

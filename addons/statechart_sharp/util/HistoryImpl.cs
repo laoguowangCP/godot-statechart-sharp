@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace LGWCP.StatechartSharp;
 
-public class HistoryComponent : StateComponent
+public class HistoryImpl : StateImpl
 {
     private bool IsDeepHistory { get => HostState.IsDeepHistory; }
 
-    public HistoryComponent(State state) : base(state) {}
+    public HistoryImpl(State state) : base(state) {}
 
     internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {

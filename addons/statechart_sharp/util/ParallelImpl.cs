@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace LGWCP.StatechartSharp;
 
-public class ParallelComponent : StateComponent
+public class ParallelImpl : StateImpl
 {
     protected int NonHistorySubstateCnt = 0;
-    public ParallelComponent(State state) : base(state) {}
+    public ParallelImpl(State state) : base(state) {}
 
     internal override bool IsAvailableRootState()
     {
