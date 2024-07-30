@@ -83,7 +83,8 @@ public partial class Statechart : StatechartComposition<Statechart>
 		if (IsWaitParentReady)
 		{
 			Node parentNode = GetParentOrNull<Node>();
-			if (parentNode != null)
+			if (parentNode is not null
+				&& parentNode.IsNodeReady())
 			{
 				await ToSignal(parentNode, Node.SignalName.Ready);
 			}
