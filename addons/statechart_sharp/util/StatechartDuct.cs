@@ -7,14 +7,14 @@ namespace LGWCP.StatechartSharp;
 [GlobalClass]
 public partial class StatechartDuct : GodotObject
 {
-    internal Statechart HostStatechart { private get; set; } = null;
-    public double Delta { get; internal set; } = 0.0;
-    public double PhysicsDelta { get; internal set; } = 0.0;
-    public InputEvent Input { get; internal set; }
-    public InputEvent ShortcutInput { get; internal set; }
-    public InputEvent UnhandledKeyInput { get; internal set; }
-    public InputEvent UnhandledInput { get; internal set; }
-    public bool IsTransitionEnabled { internal get; set; } = false;
-    public Node CompositionNode { get; internal set; }
+    public Statechart HostStatechart { private get; set; } = null;
+    public double Delta { get; set; } = 0.0;
+    public double PhysicsDelta { get; set; } = 0.0;
+    public InputEvent Input { get; set; }
+    public InputEvent ShortcutInput { get; set; }
+    public InputEvent UnhandledKeyInput { get; set; }
+    public InputEvent UnhandledInput { get; set; }
+    public bool IsTransitionEnabled { get; set; } = false;
+    public Node CompositionNode { get; set; }
     public bool IsRunning { get => HostStatechart is not null && HostStatechart.IsRunning; }
 }

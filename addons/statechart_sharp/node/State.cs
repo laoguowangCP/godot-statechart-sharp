@@ -29,7 +29,7 @@ public partial class State : StatechartComposition<State>
 	#region properties
 
 	[Export]
-	internal StateModeEnum StateMode
+	public StateModeEnum StateMode
 	{
 		get => _stateMode;
 		set
@@ -47,9 +47,9 @@ public partial class State : StatechartComposition<State>
 	}
 	private StateModeEnum _stateMode = StateModeEnum.Compound;
 	[Export]
-	internal bool IsDeepHistory { get; private set; }
+	public bool IsDeepHistory { get; private set; }
 	[Export]
-	internal State InitialState
+	public State InitialState
 	{
 		get { return _initialState; }
 		set
@@ -65,21 +65,21 @@ public partial class State : StatechartComposition<State>
 		}
 	}
 	private State _initialState;
-	internal State ParentState { get; set; }
-	internal State CurrentState { get; set; }
-	internal List<State> Substates { get; set; }
-	internal Dictionary<StringName, List<Transition>> Transitions { get; set; }
-	internal List<Transition> AutoTransitions { get; set; }
-	internal Dictionary<StringName, List<Reaction>> Reactions { get; set; }
+	public State ParentState { get; set; }
+	public State CurrentState { get; set; }
+	public List<State> Substates { get; set; }
+	public Dictionary<StringName, List<Transition>> Transitions { get; set; }
+	public List<Transition> AutoTransitions { get; set; }
+	public Dictionary<StringName, List<Reaction>> Reactions { get; set; }
 	protected StateImpl StateComponent { get; set; }
-	internal State LowerState { get; set; }
-	internal State UpperState { get; set; }
+	public State LowerState { get; set; }
+	public State UpperState { get; set; }
 	/// <summary>
 	/// The index of this state exists in parent state.
 	/// </summary>
-	internal int SubstateIdx;
+	public int SubstateIdx;
 	protected StatechartDuct Duct { get => HostStatechart.Duct; }
-	internal bool IsHistory { get => StateMode == StateModeEnum.History; }
+	public bool IsHistory { get => StateMode == StateModeEnum.History; }
 	
 	#endregion
 
@@ -103,7 +103,7 @@ public partial class State : StatechartComposition<State>
 		#endif
 	}
 
-	public StateImpl GetStateComponent(StateModeEnum mode) => mode switch
+	protected StateImpl GetStateComponent(StateModeEnum mode) => mode switch
 	{
 		StateModeEnum.Compound => new CompoundImpl(this),
 		StateModeEnum.Parallel => new ParallelImpl(this),
@@ -111,35 +111,35 @@ public partial class State : StatechartComposition<State>
 		_ => null
 	};
 
-	internal bool GetPromoteStates(List<State> states)
+	public bool GetPromoteStates(List<State> states)
 	{
 		return StateComponent.GetPromoteStates(states);
 	}
 
-	internal bool IsAvailableRootState()
+	public bool IsAvailableRootState()
 	{
 		return StateComponent.IsAvailableRootState();
 	}
 
-	internal override void Setup(Statechart hostStateChart, ref int parentOrderId)
+	public override void Setup(Statechart hostStateChart, ref int parentOrderId)
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
 		// Called from statechart node, root state substate index is 0
 		StateComponent.Setup(hostStateChart, ref parentOrderId, 0);
 	}
 
-	internal void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+	public void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
 		StateComponent.Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
 
-	internal override void PostSetup()
+	public override void PostSetup()
 	{
 		StateComponent.PostSetup();
 	}
 
-	internal void StateEnter()
+	public void StateEnter()
 	{
 		ParentState?.HandleSubstateEnter(this);
 		CustomStateEnter(Duct);
@@ -152,7 +152,7 @@ public partial class State : StatechartComposition<State>
 		EmitSignal(SignalName.Enter, duct);
 	}
 
-	internal void StateExit()
+	public void StateExit()
 	{
 		CustomStateExit(Duct);
 	}
@@ -164,17 +164,17 @@ public partial class State : StatechartComposition<State>
 		EmitSignal(SignalName.Exit, duct);
 	}
 
-	internal void RegisterActiveState(SortedSet<State> activeStates)
+	public void RegisterActiveState(SortedSet<State> activeStates)
 	{
 		StateComponent.RegisterActiveState(activeStates);
 	}
 
-	internal bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
+	public bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
 	{
 		return StateComponent.IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
 	}
 
-	internal bool IsAncestorStateOf(State state)
+	public bool IsAncestorStateOf(State state)
 	{
 		int id = state.OrderId;
 
@@ -188,27 +188,27 @@ public partial class State : StatechartComposition<State>
 			&& id <= UpperState.OrderId;
 	}
 
-	internal void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
+	public void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
 	{
 		StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
 	}
 
-	internal int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName = null)
+	public int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName = null)
 	{
 		return StateComponent.SelectTransitions(enabledTransitions, eventName);
 	}
 
-	internal void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
+	public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
 	{
 		StateComponent.DeduceDescendants(deducedSet, isHistory, isEdgeState);
 	}
 
-	internal void HandleSubstateEnter(State substate)
+	public void HandleSubstateEnter(State substate)
 	{
 		StateComponent.HandleSubstateEnter(substate);
 	}
 
-	internal void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
+	public void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
 	{
 		bool hasEventName = Reactions.TryGetValue(eventName, out var matchedReactions);
 		if (!hasEventName)
@@ -222,22 +222,22 @@ public partial class State : StatechartComposition<State>
 		}
 	}
 
-	internal void SaveAllStateConfig(ref List<int> config)
+	public void SaveAllStateConfig(ref List<int> config)
 	{
 		StateComponent.SaveAllStateConfig(ref config);
 	}
 
-	internal void SaveActiveStateConfig(ref List<int> config)
+	public void SaveActiveStateConfig(ref List<int> config)
 	{
 		StateComponent.SaveActiveStateConfig(ref config);
 	}
 
-	internal bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+	public bool LoadAllStateConfig(ref int[] config, ref int configIdx)
 	{
 		return StateComponent.LoadAllStateConfig(ref config, ref configIdx);
 	}
 
-	internal bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+	public bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
 	{
 		return StateComponent.LoadActiveStateConfig(ref config, ref configIdx);
 	}

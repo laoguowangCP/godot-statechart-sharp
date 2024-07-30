@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace LGWCP.StatechartSharp;
 
+
 public class StateImpl
 {
     protected State HostState;
@@ -33,12 +34,12 @@ public class StateImpl
         HostState = state;
     }
 
-    internal virtual bool IsAvailableRootState()
+    public virtual bool IsAvailableRootState()
     {
         return false;
     }
 
-    internal virtual void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    public virtual void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         // Get parent state
         Node parent = HostState.GetParentOrNull<Node>();
@@ -50,38 +51,38 @@ public class StateImpl
         HostState.SubstateIdx = substateIdx;
     }
 
-    internal virtual void PostSetup() {}
+    public virtual void PostSetup() {}
 
-    internal virtual bool GetPromoteStates(List<State> states) { return false; }
+    public virtual bool GetPromoteStates(List<State> states) { return false; }
 
-    internal virtual void RegisterActiveState(SortedSet<State> activeStates) {}
+    public virtual void RegisterActiveState(SortedSet<State> activeStates) {}
 
-    internal virtual bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
+    public virtual bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
     {
         return false;
     }
 
-    internal virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+    public virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         return 1;
     }
     
-    internal virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
+    public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
-    internal virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
+    public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
 
-    internal virtual void HandleSubstateEnter(State substate) {}
+    public virtual void HandleSubstateEnter(State substate) {}
 
-    internal virtual void SaveAllStateConfig(ref List<int> snapshot) {}
+    public virtual void SaveAllStateConfig(ref List<int> snapshot) {}
 
-    internal virtual void SaveActiveStateConfig(ref List<int> snapshot) {}
+    public virtual void SaveActiveStateConfig(ref List<int> snapshot) {}
 
-    internal virtual bool LoadAllStateConfig(ref int[] config, ref int configIdx) { return true; }
+    public virtual bool LoadAllStateConfig(ref int[] config, ref int configIdx) { return true; }
     
-    internal virtual bool LoadActiveStateConfig(ref int[] config, ref int configIdx) { return true; }
+    public virtual bool LoadActiveStateConfig(ref int[] config, ref int configIdx) { return true; }
 
     #if TOOLS
-    internal virtual void GetConfigurationWarnings(List<string> warnings)
+    public virtual void GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
         bool isParentWarning = true;

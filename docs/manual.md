@@ -73,7 +73,7 @@ func handle(event):
 
 **`enum EventFlagEnum EventFlag`** : Control activity of node loop events (process, input, etc.) . All disabled by default.
 
-**`IsWaitParentReady`** : If true, statechart setup process will wait parent node to be ready.
+**`bool IsWaitParentReady`** : If true, statechart setup process will wait parent node to be ready.
 
 ### Methods of Statechart
 
@@ -112,7 +112,7 @@ Similar to hierarchy state machine, states can be arranged in a tree structure (
 
 ### Properties of State
 
-**`enum StateModeEnum StateMode`** : Enumeration of state mode.
+**`StateModeEnum StateMode`** : Enumeration of state mode.
 
 **`bool IsDeepHistory`** : History is deep or not (shallow). Only used in history mode.
 

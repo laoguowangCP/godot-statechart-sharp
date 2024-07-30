@@ -16,16 +16,16 @@ public partial class Statechart : StatechartComposition<Statechart>
 	/// MaxInternalEventCount
 	/// </summary>
 	[Export(PropertyHint.Range, "0,32,")]
-	protected int MaxInternalEventCount = 8;
+	public int MaxInternalEventCount = 8;
 	[Export(PropertyHint.Range, "0,32,")]
-	protected int MaxAutoTransitionRound = 8;
+	public int MaxAutoTransitionRound = 8;
 	[Export(PropertyHint.Flags, "Process,Physics Process,Input,Shortcut Input,UnhandledKey Input,Unhandled Input")]
-	protected EventFlagEnum EventFlag { get; set; } = 0;
+	public EventFlagEnum EventFlag { get; set; } = 0;
 	[Export]
-	protected bool IsWaitParentReady = true;
-	internal bool IsRunning { get; private set; }
+	public bool IsWaitParentReady = true;
+	public bool IsRunning { get; private set; }
 	protected int EventCount;
-	internal State RootState { get; set; }
+	protected State RootState { get; set; }
 	protected SortedSet<State> ActiveStates { get; set; }
 	protected Queue<StringName> QueuedEvents { get; set; }
 	protected SortedSet<Transition> EnabledTransitions { get; set; }
@@ -33,7 +33,7 @@ public partial class Statechart : StatechartComposition<Statechart>
 	protected SortedSet<State> ExitSet { get; set; }
 	protected SortedSet<State> EnterSet { get; set; }
 	protected SortedSet<Reaction> EnabledReactions { get; set; }
-	internal StatechartDuct Duct { get; private set; }
+	public StatechartDuct Duct { get; private set; }
 	protected List<int> SnapshotConfiguration;
 
 	#endregion
@@ -93,7 +93,7 @@ public partial class Statechart : StatechartComposition<Statechart>
 		PostSetup();
 	}
 
-	internal override void Setup()
+	public override void Setup()
 	{
 		HostStatechart = this;
 		foreach (Node child in GetChildren())
@@ -116,7 +116,7 @@ public partial class Statechart : StatechartComposition<Statechart>
 		}
 	}
 
-	internal override void PostSetup()
+	public override void PostSetup()
 	{
 		// Get and enter active states
 		if (RootState != null)

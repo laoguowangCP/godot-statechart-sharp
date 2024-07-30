@@ -6,19 +6,19 @@ namespace LGWCP.StatechartSharp;
 public partial class StatechartComposition<T> : Node
     where T : StatechartComposition<T>
 {
-    internal int OrderId;
-    internal Statechart HostStatechart { get; set; }
+    public int OrderId;
+    public Statechart HostStatechart { get; set; }
 
-    internal virtual void Setup() {}
-    internal virtual void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public virtual void Setup() {}
+    public virtual void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         HostStatechart = hostStatechart;
         OrderId = parentOrderId;
         ++parentOrderId;
         ProcessMode = ProcessModeEnum.Disabled;
     }
-    internal virtual void PostSetup() {}
-    internal static bool IsCommonHost<U, V>(U x, V y)
+    public virtual void PostSetup() {}
+    public static bool IsCommonHost<U, V>(U x, V y)
         where U : StatechartComposition<U>
         where V : StatechartComposition<V>
     {

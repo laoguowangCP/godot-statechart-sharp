@@ -4,24 +4,25 @@ using System.Collections.Generic;
 
 namespace LGWCP.StatechartSharp;
 
+
 public class HistoryImpl : StateImpl
 {
     private bool IsDeepHistory { get => HostState.IsDeepHistory; }
 
     public HistoryImpl(State state) : base(state) {}
 
-    internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    public override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         base.Setup(hostStateChart, ref parentOrderId, substateIdx);
     }
 
-    internal override bool GetPromoteStates(List<State> states)
+    public override bool GetPromoteStates(List<State> states)
     {
         // History do not promote
         return false;
     }
 
-    internal override void ExtendEnterRegion(
+    public override void ExtendEnterRegion(
         SortedSet<State> enterRegion,
         SortedSet<State> enterRegionEdge,
         SortedSet<State> extraEnterRegion,
@@ -31,7 +32,7 @@ public class HistoryImpl : StateImpl
         enterRegionEdge.Add(HostState);
     }
 
-    internal override void DeduceDescendants(
+    public override void DeduceDescendants(
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /*
@@ -48,7 +49,7 @@ public class HistoryImpl : StateImpl
     }
     
     #if TOOLS
-    internal override void GetConfigurationWarnings(List<string> warnings)
+    public override void GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
         bool isParentWarning = true;

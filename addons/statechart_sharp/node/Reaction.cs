@@ -18,7 +18,8 @@ public partial class Reaction : StatechartComposition<Reaction>
 
     #region properties
 
-    [Export] protected ReactionEventNameEnum ReactionEvent
+    [Export]
+    public ReactionEventNameEnum ReactionEvent
     {
         get => _reactionEvent;
         set
@@ -34,7 +35,8 @@ public partial class Reaction : StatechartComposition<Reaction>
         }
     }
     private ReactionEventNameEnum _reactionEvent = ReactionEventNameEnum.Process;
-    [Export] protected StringName CustomEventName
+    [Export]
+    public StringName CustomEventName
     {
         get => _customEventName;
         set
@@ -68,7 +70,7 @@ public partial class Reaction : StatechartComposition<Reaction>
         #endif
     }
 
-    internal override void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public override void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         base.Setup(hostStatechart, ref parentOrderId);
 
@@ -82,12 +84,12 @@ public partial class Reaction : StatechartComposition<Reaction>
         EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 
-    internal bool Check(StringName eventName)
+    public bool Check(StringName eventName)
     {
         return EventName == eventName;
     }
 
-    internal void ReactionInvoke()
+    public void ReactionInvoke()
     {
         CustomReactionInvoke(Duct);
     }

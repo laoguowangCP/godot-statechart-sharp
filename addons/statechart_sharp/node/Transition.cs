@@ -6,7 +6,8 @@ using System.Collections.Generic;
 namespace LGWCP.StatechartSharp;
 
 [Tool]
-[GlobalClass, Icon("res://addons/statechart_sharp/icon/Transition.svg")]
+[GlobalClass]
+[Icon("res://addons/statechart_sharp/icon/Transition.svg")]
 public partial class Transition : StatechartComposition<Transition>
 {
     #region signals
@@ -22,7 +23,7 @@ public partial class Transition : StatechartComposition<Transition>
     #region properties
 
     [Export]
-    private TransitionEventNameEnum TransitionEvent
+    public TransitionEventNameEnum TransitionEvent
     {
         get => _transitionEvent;
         set
@@ -39,7 +40,7 @@ public partial class Transition : StatechartComposition<Transition>
     }
     private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.Process;
     [Export]
-    private StringName CustomEventName
+    public StringName CustomEventName
     {
         get => _customEventName;
         set
@@ -72,16 +73,16 @@ public partial class Transition : StatechartComposition<Transition>
         }
     }
     private Array<State> _targetStatesArray = new();
-    internal StringName EventName { get; set; }
+    public StringName EventName { get; set; }
     private List<State> TargetStates { get; set; }
-    internal State SourceState { get; set; }
-    internal State LcaState { get; private set; }
-    internal SortedSet<State> EnterRegion  { get; private set; }
+    public State SourceState { get; set; }
+    public State LcaState { get; private set; }
+    public SortedSet<State> EnterRegion  { get; private set; }
     private SortedSet<State> EnterRegionEdge { get; set; }
     private SortedSet<State> DeducedEnterStates { get; set; }
     protected StatechartDuct Duct { get => HostStatechart.Duct; }
-    internal bool IsTargetless { get; private set; }
-    internal bool IsAuto { get; private set; }
+    public bool IsTargetless { get; private set; }
+    public bool IsAuto { get; private set; }
     private bool IsValid { get; set; }
 
     #endregion
@@ -109,7 +110,7 @@ public partial class Transition : StatechartComposition<Transition>
         #endif
     }
 
-    internal override void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public override void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         base.Setup(hostStatechart, ref parentOrderId);
 
@@ -146,7 +147,7 @@ public partial class Transition : StatechartComposition<Transition>
         }
     }
 
-    internal override void PostSetup()
+    public override void PostSetup()
     {
         /*
         Post setup:
@@ -289,7 +290,7 @@ public partial class Transition : StatechartComposition<Transition>
         }
     }
 
-    internal bool Check()
+    public bool Check()
     {
         if (!IsValid)
         {
@@ -308,7 +309,7 @@ public partial class Transition : StatechartComposition<Transition>
         return duct.IsTransitionEnabled;
     }
 
-    internal void TransitionInvoke()
+    public void TransitionInvoke()
     {
         CustomTransitionInvoke(Duct);
     }
@@ -320,7 +321,7 @@ public partial class Transition : StatechartComposition<Transition>
         EmitSignal(SignalName.Invoke, duct);
     }
 
-    internal SortedSet<State> GetDeducedEnterStates()
+    public SortedSet<State> GetDeducedEnterStates()
     {
         DeducedEnterStates.Clear();
         foreach (State edgeState in EnterRegionEdge)
