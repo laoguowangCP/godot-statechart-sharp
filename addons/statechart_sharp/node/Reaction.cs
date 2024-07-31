@@ -7,7 +7,7 @@ namespace LGWCP.StatechartSharp;
 [Tool]
 [GlobalClass]
 [Icon("res://addons/statechart_sharp/icon/Reaction.svg")]
-public partial class Reaction : StatechartComposition<Reaction>
+public partial class Reaction : StatechartComposition
 {
     #region signals
 

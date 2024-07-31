@@ -8,7 +8,7 @@ namespace LGWCP.StatechartSharp;
 [Tool]
 [GlobalClass]
 [Icon("res://addons/statechart_sharp/icon/Transition.svg")]
-public partial class Transition : StatechartComposition<Transition>
+public partial class Transition : StatechartComposition
 {
     #region signals
 

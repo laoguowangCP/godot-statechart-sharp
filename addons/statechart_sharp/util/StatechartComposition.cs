@@ -5,8 +5,7 @@ namespace LGWCP.StatechartSharp;
 
 
 [Tool]
-public partial class StatechartComposition<T> : Node
-    where T : StatechartComposition<T>
+public partial class StatechartComposition : Node
 {
     public int OrderId;
     public Statechart HostStatechart { get; set; }
@@ -20,9 +19,7 @@ public partial class StatechartComposition<T> : Node
         ProcessMode = ProcessModeEnum.Disabled;
     }
     public virtual void PostSetup() {}
-    public static bool IsCommonHost<U, V>(U x, V y)
-        where U : StatechartComposition<U>
-        where V : StatechartComposition<V>
+    public static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
     {
         if (x == null || y == null)
         {
@@ -31,10 +28,9 @@ public partial class StatechartComposition<T> : Node
         return x.HostStatechart == y.HostStatechart;
     }
 
-    public T Append<U>(U compositionNode)
-        where U : StatechartComposition<U>
+    public StatechartComposition Append(StatechartComposition compositionNode)
     {
         AddChild(compositionNode);
-        return (T)this;
+        return this;
     }
 }

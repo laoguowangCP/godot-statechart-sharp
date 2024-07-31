@@ -6,12 +6,15 @@ public partial class StatechartBuildTest : Node
 {
     public override void _Ready()
     {
+        // Create statechart
         Statechart statechart = new()
         {
             Name = "Statechart",
             IsWaitParentReady = true,
             EventFlag = EventFlagEnum.Process
         };
+
+        // Build some states
         State root = new() { Name = "Root", StateMode = StateModeEnum.Parallel };
         State stateA = new() { Name = "A" };
         State stateB = new() { Name = "B" };
@@ -19,6 +22,7 @@ public partial class StatechartBuildTest : Node
         State stateAY = new() { Name = "Y" };
         State stateBX = new() { Name = "X" };
         State stateBY = new() { Name = "Y" };
+
         statechart.Append(
             root.Append(
                 stateA.Append(
@@ -27,13 +31,21 @@ public partial class StatechartBuildTest : Node
                 stateB.Append(
                     stateBX).Append(
                     stateBY)));
+        
+        // Add transition and promoter
         Transition transition = new()
         {
             Name = "A/X->A/Y+B/X->B/Y",
             TargetStatesArray = { stateAY, stateBY }
         };
+
         transition.Invoke += TransitionInvoke;
-        stateAX.Append(transition);
+
+        stateA.Append(
+            transition.Append(
+                new TransitionPromoter()));
+
+        // Ship our statechart
         AddChild(statechart);
     }
 

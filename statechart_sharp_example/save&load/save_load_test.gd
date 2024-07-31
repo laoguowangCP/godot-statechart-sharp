@@ -1,5 +1,3 @@
-class_name StatechartSaveLoadTest
-
 extends Node
 
 

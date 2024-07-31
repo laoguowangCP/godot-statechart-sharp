@@ -14,7 +14,7 @@ public enum StateModeEnum : int
 [Tool]
 [GlobalClass]
 [Icon("res://addons/statechart_sharp/icon/State.svg")]
-public partial class State : StatechartComposition<State>
+public partial class State : StatechartComposition
 {
 	#region signals
 	

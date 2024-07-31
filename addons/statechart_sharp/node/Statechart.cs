@@ -8,7 +8,7 @@ namespace LGWCP.StatechartSharp;
 [Tool]
 [GlobalClass]
 [Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
-public partial class Statechart : StatechartComposition<Statechart>
+public partial class Statechart : StatechartComposition
 {
 	#region properties
 
