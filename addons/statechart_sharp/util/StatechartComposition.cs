@@ -1,6 +1,8 @@
 using Godot;
 
+
 namespace LGWCP.StatechartSharp;
+
 
 [Tool]
 public partial class StatechartComposition<T> : Node
@@ -29,10 +31,10 @@ public partial class StatechartComposition<T> : Node
         return x.HostStatechart == y.HostStatechart;
     }
 
-    public T Append<U>(U CompositionNode)
+    public T Append<U>(U compositionNode)
         where U : StatechartComposition<U>
     {
-        AddChild(CompositionNode);
+        AddChild(compositionNode);
         return (T)this;
     }
 }

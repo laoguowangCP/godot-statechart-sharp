@@ -84,7 +84,7 @@ public partial class Statechart : StatechartComposition<Statechart>
 		{
 			Node parentNode = GetParentOrNull<Node>();
 			if (parentNode is not null
-				&& parentNode.IsNodeReady())
+				&& !parentNode.IsNodeReady())
 			{
 				await ToSignal(parentNode, Node.SignalName.Ready);
 			}
@@ -110,7 +110,7 @@ public partial class Statechart : StatechartComposition<Statechart>
 		}
 		
 		OrderId = 0;
-		if (RootState != null)
+		if (RootState is not null)
 		{
 			int parentOrderId = 0;
 			RootState.Setup(this, ref parentOrderId);
@@ -120,7 +120,7 @@ public partial class Statechart : StatechartComposition<Statechart>
 	public override void PostSetup()
 	{
 		// Get and enter active states
-		if (RootState != null)
+		if (RootState is not null)
 		{
 			RootState.RegisterActiveState(ActiveStates);
 			RootState.PostSetup();
