@@ -5,7 +5,8 @@ using Godot;
 
 namespace LGWCP.StatechartSharp;
 
-public class CompoundComponent : StateComponent
+
+public class CompoundImpl : StateImpl
 {
 	private State CurrentState
 	{
@@ -18,14 +19,14 @@ public class CompoundComponent : StateComponent
 		set { HostState.InitialState = value; }
 	}
 	
-	public CompoundComponent(State state) : base(state) {}
+	public CompoundImpl(State state) : base(state) {}
 
-	internal override bool IsAvailableRootState()
+	public override bool IsAvailableRootState()
 	{
 		return true;
 	}
 
-	internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+	public override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
 		base.Setup(hostStateChart, ref parentOrderId, substateIdx);
 
@@ -141,7 +142,7 @@ public class CompoundComponent : StateComponent
 		CurrentState = InitialState;
 	}
 
-	internal override void PostSetup()
+	public override void PostSetup()
 	{
 		foreach (State state in Substates)
 		{
@@ -171,7 +172,7 @@ public class CompoundComponent : StateComponent
 		}
 	}
 
-	internal override bool IsConflictToEnterRegion(
+	public override bool IsConflictToEnterRegion(
 		State substateToPend,
 		SortedSet<State> enterRegionUnextended)
 	{
@@ -180,7 +181,7 @@ public class CompoundComponent : StateComponent
 			state => HostState.IsAncestorStateOf(state));
 	}
 
-	internal override void ExtendEnterRegion(
+	public override void ExtendEnterRegion(
 		SortedSet<State> enterRegion,
 		SortedSet<State> enterRegionEdge,
 		SortedSet<State> extraEnterRegion,
@@ -225,7 +226,7 @@ public class CompoundComponent : StateComponent
 		}
 	}
 
-	internal override bool GetPromoteStates(List<State> states)
+	public override bool GetPromoteStates(List<State> states)
 	{
 		bool isPromote = true;
 		foreach (Node child in HostState.GetChildren())
@@ -249,13 +250,13 @@ public class CompoundComponent : StateComponent
 		return true;
 	}
 	
-	internal override void RegisterActiveState(SortedSet<State> activeStates)
+	public override void RegisterActiveState(SortedSet<State> activeStates)
 	{
 		activeStates.Add(HostState);
 		CurrentState?.RegisterActiveState(activeStates);
 	}
 
-	internal override int SelectTransitions(
+	public override int SelectTransitions(
 		SortedSet<Transition> enabledTransitions, StringName eventName)
 	{
 		int handleInfo = -1;
@@ -313,7 +314,7 @@ public class CompoundComponent : StateComponent
 		return handleInfo;
 	}
 
-	internal override void DeduceDescendants(
+	public override void DeduceDescendants(
 		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
 	{
 		/* 
@@ -341,12 +342,12 @@ public class CompoundComponent : StateComponent
 		}
 	}
 
-	internal override void HandleSubstateEnter(State substate)
+	public override void HandleSubstateEnter(State substate)
 	{
 		HostState.CurrentState = substate;
 	}
 
-	internal override void SaveAllStateConfig(ref List<int> snapshot)
+	public override void SaveAllStateConfig(ref List<int> snapshot)
 	{
 		// Breadth first for better load order
 		if (CurrentState is null)
@@ -360,7 +361,7 @@ public class CompoundComponent : StateComponent
 		}
 	}
 
-	internal override void SaveActiveStateConfig(ref List<int> snapshot)
+	public override void SaveActiveStateConfig(ref List<int> snapshot)
 	{
 		// Breadth first for better load order
 		if (CurrentState is null)
@@ -371,11 +372,10 @@ public class CompoundComponent : StateComponent
 		CurrentState.SaveActiveStateConfig(ref snapshot);
 	}
 
-	internal override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+	public override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
 	{
 		if (configIdx >= config.Length)
 		{
-			GD.Print(HostState.GetPath());
 			return false;
 		}
 
@@ -400,7 +400,7 @@ public class CompoundComponent : StateComponent
 		return true;
 	}
 
-	internal override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+	public override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
 	{
 		if (configIdx > config.Length)
 		{
@@ -419,7 +419,7 @@ public class CompoundComponent : StateComponent
 	}
 
 	#if TOOLS
-	internal override void GetConfigurationWarnings(List<string> warnings)
+	public override void GetConfigurationWarnings(List<string> warnings)
 	{
 		// Check parent
 		base.GetConfigurationWarnings(warnings);

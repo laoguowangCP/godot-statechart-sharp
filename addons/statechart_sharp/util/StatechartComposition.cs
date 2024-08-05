@@ -1,32 +1,36 @@
 using Godot;
 
+
 namespace LGWCP.StatechartSharp;
+
 
 [Tool]
 public partial class StatechartComposition : Node
 {
-    internal int OrderId;
-    internal Statechart HostStatechart { get; set; }
+    public int OrderId;
+    public Statechart HostStatechart { get; set; }
 
-    internal virtual void Setup() {}
-    internal virtual void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public virtual void Setup() {}
+    public virtual void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         HostStatechart = hostStatechart;
-        ++parentOrderId;
         OrderId = parentOrderId;
-        
-        if (HostStatechart != this)
-        {
-            ProcessMode = ProcessModeEnum.Disabled;
-        }
+        ++parentOrderId;
+        ProcessMode = ProcessModeEnum.Disabled;
     }
-    internal virtual void PostSetup() {}
-    internal static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
+    public virtual void PostSetup() {}
+    public static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
     {
         if (x == null || y == null)
         {
             return false;
         }
         return x.HostStatechart == y.HostStatechart;
-    } 
+    }
+
+    public StatechartComposition Append(StatechartComposition compositionNode)
+    {
+        AddChild(compositionNode);
+        return this;
+    }
 }

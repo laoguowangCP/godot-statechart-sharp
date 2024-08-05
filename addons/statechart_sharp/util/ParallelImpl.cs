@@ -5,17 +5,18 @@ using System.Linq;
 
 namespace LGWCP.StatechartSharp;
 
-public class ParallelComponent : StateComponent
+
+public class ParallelImpl : StateImpl
 {
     protected int NonHistorySubstateCnt = 0;
-    public ParallelComponent(State state) : base(state) {}
+    public ParallelImpl(State state) : base(state) {}
 
-    internal override bool IsAvailableRootState()
+    public override bool IsAvailableRootState()
     {
         return true;
     }
 
-    internal override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    public override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         base.Setup(hostStateChart, ref parentOrderId, substateIdx);
 
@@ -105,7 +106,7 @@ public class ParallelComponent : StateComponent
         // Else state is atomic, lower and upper are null
     }
 
-    internal override void PostSetup()
+    public override void PostSetup()
     {
         foreach (State state in Substates)
         {
@@ -135,7 +136,7 @@ public class ParallelComponent : StateComponent
 		}
     }
 
-    internal override bool GetPromoteStates(List<State> states)
+    public override bool GetPromoteStates(List<State> states)
     {
         bool isPromote = true;
         foreach (Node child in HostState.GetChildren())
@@ -160,7 +161,7 @@ public class ParallelComponent : StateComponent
         return true;
     }
 
-    internal override bool IsConflictToEnterRegion(
+    public override bool IsConflictToEnterRegion(
         State substateToPend,
         SortedSet<State> enterRegionUnextended)
     {
@@ -192,7 +193,7 @@ public class ParallelComponent : StateComponent
         return false;
     }
     
-    internal override void ExtendEnterRegion(
+    public override void ExtendEnterRegion(
         SortedSet<State> enterRegion,
         SortedSet<State> enterRegionEdge,
         SortedSet<State> extraEnterRegion,
@@ -251,7 +252,7 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override void RegisterActiveState(SortedSet<State> activeStates)
+    public override void RegisterActiveState(SortedSet<State> activeStates)
     {
         activeStates.Add(HostState);
         foreach (State substate in HostState.Substates)
@@ -260,7 +261,7 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+    public override int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         int handleInfo = -1;
         if (NonHistorySubstateCnt > 0)
@@ -347,7 +348,7 @@ public class ParallelComponent : StateComponent
         return handleInfo;
     }
 
-    internal override void DeduceDescendants(
+    public override void DeduceDescendants(
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /* 
@@ -371,7 +372,7 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override void SaveAllStateConfig(ref List<int> snapshot)
+    public override void SaveAllStateConfig(ref List<int> snapshot)
     {
         foreach (State substate in Substates)
         {
@@ -379,7 +380,7 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override void SaveActiveStateConfig(ref List<int> snapshot)
+    public override void SaveActiveStateConfig(ref List<int> snapshot)
     {
         foreach (State substate in Substates)
         {
@@ -387,7 +388,7 @@ public class ParallelComponent : StateComponent
         }
     }
 
-    internal override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+    public override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
     {
         bool isLoadSuccess;
         foreach (State substate in Substates)
@@ -402,7 +403,7 @@ public class ParallelComponent : StateComponent
         return true;
     }
 
-    internal override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+    public override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
     {
         bool isLoadSuccess;
         foreach (State substate in Substates)
