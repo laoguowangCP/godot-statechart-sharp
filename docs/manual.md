@@ -87,7 +87,7 @@ func handle(event):
 
 ## State
 
-> **Inherits**: [StatechartComposition](#statechartcompositiont) < Node
+> **Inherits**: [StatechartComposition](#statechartcomposition) < Node
 
 Base composition of statechart. Only if a state is **active**, its [transition](#transition)(s) and [reaction](#reaction)(s) will be used during a step. Setting a state **active**/**inactive** is called to **enter**/**exit** a state. When happened, state will emit `Enter`/`Exit` signal.
 
@@ -134,7 +134,7 @@ Similar to hierarchy state machine, states can be arranged in a tree structure (
 
 ## Transition
 
-> **Inherits**: [StatechartComposition](#statechartcompositiont) < Node
+> **Inherits**: [StatechartComposition](#statechartcomposition) < Node
 
 Transition is used as child of a non-history state, to represent transition from parented state (called **source state**) to state(s) expected to be entered (known as **target state**(s)).
 
@@ -224,7 +224,7 @@ An invalid transition won't be checked and its signals won't be emitted. Transit
 
 ## Reaction
 
-> **Inherits**: [StatechartComposition](#statechartcompositiont) < Node
+> **Inherits**: [StatechartComposition](#statechartcomposition) < Node
 
 Reaction node is used as child node of a non-history state, to represent what state do during a step.
 
@@ -249,7 +249,7 @@ Reactions of active states, if event matches, will be invoked in document order 
 
 ## TransitionPromoter
 
-> **Inherits**: [StatechartComposition](#statechartcompositiont) < Node
+> **Inherits**: [StatechartComposition](#statechartcomposition) < Node
 
 TransitionPromoter node is used as child node of a transition. When parented transition is ready, the promoter will:
 
@@ -265,7 +265,7 @@ TransitionPromoter is useful if you need to "prioritize" a transition, meaning y
 
 <br/>
 
-## StatechartComposition>
+## StatechartComposition
 
 > **Inherits**: Node
 
