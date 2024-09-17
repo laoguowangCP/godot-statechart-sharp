@@ -508,10 +508,19 @@ public partial class Statechart : StatechartComposition
     public override void _ExitTree()
     {
 		// Free statechart duct
-        Duct.Free();
+		#if TOOLS
+		if (!Engine.IsEditorHint())
+		{
+		#endif
+			
+		Duct?.Free();
+
+		#if TOOLS
+		}
+		#endif
     }
 
-#if TOOLS
+	#if TOOLS
     public override string[] _GetConfigurationWarnings()
 	{
 		var warnings = new List<string>();
