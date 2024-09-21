@@ -505,21 +505,6 @@ public partial class Statechart : StatechartComposition
 		Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
 	}
 
-    public override void _ExitTree()
-    {
-		// Free statechart duct
-		#if TOOLS
-		if (!Engine.IsEditorHint())
-		{
-		#endif
-			
-		Duct?.Free();
-
-		#if TOOLS
-		}
-		#endif
-    }
-
 	#if TOOLS
     public override string[] _GetConfigurationWarnings()
 	{
