@@ -1,0 +1,38 @@
+[gd_scene load_steps=7 format=3 uid="uid://dkafdn2aawpfg"]
+
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="1_3vdg1"]
+[ext_resource type="Script" path="res://statechart_sharp_example/disconnet/TestSignalDisconnect.cs" id="1_817yx"]
+[ext_resource type="Script" path="res://statechart_sharp_example/disconnet/NodeToBeFreed.cs" id="1_ml8bx"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="2_64uax"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="3_f42sr"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="4_c3g8e"]
+
+[node name="Disconnect" type="Node"]
+script = ExtResource("1_817yx")
+
+[node name="NodeToBeFreed" type="Node" parent="."]
+script = ExtResource("1_ml8bx")
+
+[node name="Statechart" type="Node" parent="."]
+script = ExtResource("1_3vdg1")
+EventFlag = 63
+
+[node name="Root" type="Node" parent="Statechart"]
+script = ExtResource("2_64uax")
+StateMode = 1
+
+[node name="State" type="Node" parent="Statechart/Root"]
+script = ExtResource("2_64uax")
+
+[node name="Transition" type="Node" parent="Statechart/Root/State"]
+script = ExtResource("3_f42sr")
+CustomEventName = &""
+
+[node name="Reaction" type="Node" parent="Statechart/Root/State"]
+script = ExtResource("4_c3g8e")
+CustomEventName = &""
+
+[connection signal="Enter" from="Statechart/Root/State" to="NodeToBeFreed" method="Foo"]
+[connection signal="Guard" from="Statechart/Root/State/Transition" to="NodeToBeFreed" method="Foo"]
+[connection signal="Invoke" from="Statechart/Root/State/Transition" to="NodeToBeFreed" method="Foo"]
+[connection signal="Invoke" from="Statechart/Root/State/Reaction" to="NodeToBeFreed" method="Foo"]

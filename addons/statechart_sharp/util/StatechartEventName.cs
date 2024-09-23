@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 [Flags]
 public enum EventFlagEnum

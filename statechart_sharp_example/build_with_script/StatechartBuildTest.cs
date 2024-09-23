@@ -1,5 +1,5 @@
 using Godot;
-using LGWCP.StatechartSharp;
+using LGWCP.Godot.StatechartSharp;
 
 
 public partial class StatechartBuildTest : Node
@@ -39,7 +39,12 @@ public partial class StatechartBuildTest : Node
             TargetStatesArray = { stateAY, stateBY }
         };
 
+        /*
         transition.Invoke += TransitionInvoke;
+        += expression is not managed,
+        -= is needed when statechart node is freed
+        */
+        transition.Connect(Transition.SignalName.Invoke, Callable.From<StatechartDuct>(TransitionInvoke));
 
         stateA.Append(
             transition.Append(

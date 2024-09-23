@@ -1,7 +1,7 @@
 using Godot;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 [Tool]
 [GlobalClass]

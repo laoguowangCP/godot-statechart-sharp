@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 
 public class ParallelImpl : StateImpl
