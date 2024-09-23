@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using LGWCP.StatechartSharp;
+using LGWCP.Godot.StatechartSharp;
 using System.Collections.Generic;
 
 
@@ -212,7 +212,7 @@ public partial class ImPlayer : CharacterBody3D
 		Vector2 inputDir = Input.GetVector("Leftward", "Rightward", "Forward", "Backward");
 		inputDir /= Mathf.Max(1.0f, inputDir.Length());
 		inputDir *= MaxSpeedMultipler(inputDir, ForwardRatio,BackwardRatio);
-		Vector3 direction = Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y);
+		Vector3 direction = Basis * new Vector3(inputDir.X, 0, inputDir.Y);
 
 		// Target vel is clamped under max speed
 		Vector3 targetVel = direction * MoveMaxSpeed;

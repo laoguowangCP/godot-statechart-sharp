@@ -13,7 +13,6 @@ config_version=5
 config/name="godot-statechart-sharp"
 run/main_scene="res://statechart_sharp_example/immersive_controller/im_field.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
-run/max_fps=72
 boot_splash/show_image=false
 
 [display]
@@ -78,6 +77,4 @@ Space={
 
 [physics]
 
-common/physics_ticks_per_second=150
-common/max_physics_steps_per_frame=12
 3d/default_gravity=17.15

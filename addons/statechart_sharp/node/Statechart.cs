@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 [Tool]
 [GlobalClass]
@@ -506,7 +506,7 @@ public partial class Statechart : StatechartComposition
 	}
 
 	#if TOOLS
-	public override string[] _GetConfigurationWarnings()
+    public override string[] _GetConfigurationWarnings()
 	{
 		var warnings = new List<string>();
 

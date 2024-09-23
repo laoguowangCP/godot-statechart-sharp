@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 [Tool]
 [GlobalClass]

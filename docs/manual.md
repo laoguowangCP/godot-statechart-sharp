@@ -279,13 +279,11 @@ Base composition node for statechart.
 
 ## StatechartDuct
 
-> **Inherits**: GodotObject
+> **Inherits**: RefCounted
 
-Conducting object parsed through signals, derived from `GodotObject` . It is used to access "context" from statechart, like delta time or input, when handling node loop events (process, input, etc.).
+Conducting "context" from statechart when handling node loop events (process, input, etc.), including deltatime, input, etc.
 
-Beware, the variants it packs changes insistently. Ideally, you may use them only in connected method.
-
-For state's enter signals, `StatechartDuct` should be handled carefully. It is because that enter signal is also emitted from active states during statechart's initialization. You can tell whether it is initial enter with `IsRunning` parameter, since statechart is not yet running during initialization.
+For state's enter signals, `StatechartDuct` should be handled carefully, as enter signal is emitted during statechart's initialization. You can tell whether it is initial enter with `IsRunning` parameter, `IsRunning == false` indicates statechart is not yet running.
 
 ### Properties of StatechartDuct
 

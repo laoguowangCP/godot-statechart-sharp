@@ -1,11 +1,11 @@
 using Godot;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 [Tool]
 [GlobalClass]
-public partial class StatechartDuct : GodotObject
+public partial class StatechartDuct : RefCounted
 {
     public Statechart HostStatechart { private get; set; } = null;
     public double Delta { get; set; } = 0.0;

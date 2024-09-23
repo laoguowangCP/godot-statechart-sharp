@@ -3,7 +3,7 @@ using System.Linq;
 using Godot;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 
 public class CompoundImpl : StateImpl

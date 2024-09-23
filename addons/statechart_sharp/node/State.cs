@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 public enum StateModeEnum : int
 {
@@ -242,8 +242,8 @@ public partial class State : StatechartComposition
 		return StateComponent.LoadActiveStateConfig(ref config, ref configIdx);
 	}
 
-	#if TOOLS
-	public override string[] _GetConfigurationWarnings()
+#if TOOLS
+    public override string[] _GetConfigurationWarnings()
 	{
 		List<string> warnings = new List<string>();
 		StateComponent?.GetConfigurationWarnings(warnings);

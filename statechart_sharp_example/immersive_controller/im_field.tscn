@@ -17,7 +17,6 @@ sky_custom_fov = 60.0
 ambient_light_source = 3
 ambient_light_color = Color(0.891456, 0.891456, 0.891456, 1)
 reflected_light_source = 2
-sdfgi_enabled = true
 
 [node name="Node3D" type="Node3D"]
 

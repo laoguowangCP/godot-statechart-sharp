@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 
 
-namespace LGWCP.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp;
 
 
 public class HistoryImpl : StateImpl

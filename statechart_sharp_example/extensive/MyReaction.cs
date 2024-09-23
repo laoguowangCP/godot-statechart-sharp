@@ -1,5 +1,5 @@
 using Godot;
-using LGWCP.StatechartSharp;
+using LGWCP.Godot.StatechartSharp;
 
 // Use Tool attribute so editor can check configuration
 [Tool]
