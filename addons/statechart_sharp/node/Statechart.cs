@@ -196,11 +196,11 @@ public partial class Statechart : StatechartComposition
 		
 		if (isAllStateConfiguration)
 		{
-			RootState.SaveAllStateConfig(ref SnapshotConfiguration);
+			RootState.SaveAllStateConfig(SnapshotConfiguration);
 		}
 		else
 		{
-			RootState.SaveActiveStateConfig(ref SnapshotConfiguration);
+			RootState.SaveActiveStateConfig(SnapshotConfiguration);
 		}
 		snapshot.Configuration = SnapshotConfiguration.ToArray();
 		SnapshotConfiguration.Clear();
@@ -252,12 +252,12 @@ public partial class Statechart : StatechartComposition
 		if (snapshot.IsAllStateConfiguration)
 		{
 			isLoadSuccess = RootState.LoadAllStateConfig(
-				ref config, ref configIdx);
+				config, ref configIdx);
 		}
 		else
 		{
 			isLoadSuccess = RootState.LoadActiveStateConfig(
-				ref config, ref configIdx);
+				config, ref configIdx);
 		}
 
 		if (!isLoadSuccess)

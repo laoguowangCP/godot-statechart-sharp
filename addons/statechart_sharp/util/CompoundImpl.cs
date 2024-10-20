@@ -347,7 +347,7 @@ public class CompoundImpl : StateImpl
 		HostState.CurrentState = substate;
 	}
 
-	public override void SaveAllStateConfig(ref List<int> snapshot)
+	public override void SaveAllStateConfig(List<int> snapshot)
 	{
 		// Breadth first for better load order
 		if (CurrentState is null)
@@ -357,11 +357,11 @@ public class CompoundImpl : StateImpl
 		snapshot.Add(CurrentState.SubstateIdx);
 		foreach (State substate in Substates)
 		{
-			substate.SaveActiveStateConfig(ref snapshot);
+			substate.SaveActiveStateConfig(snapshot);
 		}
 	}
 
-	public override void SaveActiveStateConfig(ref List<int> snapshot)
+	public override void SaveActiveStateConfig(List<int> snapshot)
 	{
 		// Breadth first for better load order
 		if (CurrentState is null)
@@ -369,10 +369,10 @@ public class CompoundImpl : StateImpl
 			return;
 		}
 		snapshot.Add(CurrentState.SubstateIdx);
-		CurrentState.SaveActiveStateConfig(ref snapshot);
+		CurrentState.SaveActiveStateConfig(snapshot);
 	}
 
-	public override bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+	public override bool LoadAllStateConfig(int[] config, ref int configIdx)
 	{
 		if (configIdx >= config.Length)
 		{
@@ -390,7 +390,7 @@ public class CompoundImpl : StateImpl
 		bool isLoadSuccess;
 		foreach (State substate in Substates)
 		{
-			isLoadSuccess = substate.LoadAllStateConfig(ref config, ref configIdx);
+			isLoadSuccess = substate.LoadAllStateConfig(config, ref configIdx);
 			if (!isLoadSuccess)
 			{
 				return false;
@@ -400,7 +400,7 @@ public class CompoundImpl : StateImpl
 		return true;
 	}
 
-	public override bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+	public override bool LoadActiveStateConfig(int[] config, ref int configIdx)
 	{
 		if (configIdx > config.Length)
 		{
@@ -415,7 +415,7 @@ public class CompoundImpl : StateImpl
 		CurrentState = Substates[config[configIdx]];
 		++configIdx;
 
-		return CurrentState.LoadActiveStateConfig(ref config, ref configIdx);
+		return CurrentState.LoadActiveStateConfig(config, ref configIdx);
 	}
 
 	#if TOOLS

@@ -73,13 +73,13 @@ public class StateImpl
 
     public virtual void HandleSubstateEnter(State substate) {}
 
-    public virtual void SaveAllStateConfig(ref List<int> snapshot) {}
+    public virtual void SaveAllStateConfig(List<int> snapshot) {}
 
-    public virtual void SaveActiveStateConfig(ref List<int> snapshot) {}
+    public virtual void SaveActiveStateConfig(List<int> snapshot) {}
 
-    public virtual bool LoadAllStateConfig(ref int[] config, ref int configIdx) { return true; }
+    public virtual bool LoadAllStateConfig(int[] config, ref int configIdx) { return true; }
     
-    public virtual bool LoadActiveStateConfig(ref int[] config, ref int configIdx) { return true; }
+    public virtual bool LoadActiveStateConfig(int[] config, ref int configIdx) { return true; }
 
     #if TOOLS
     public virtual void GetConfigurationWarnings(List<string> warnings)

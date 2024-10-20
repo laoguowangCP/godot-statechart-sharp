@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 
@@ -222,27 +223,38 @@ public partial class State : StatechartComposition
 		}
 	}
 
-	public void SaveAllStateConfig(ref List<int> config)
+	public void SaveAllStateConfig(List<int> config)
 	{
-		StateComponent.SaveAllStateConfig(ref config);
+		StateComponent.SaveAllStateConfig(config);
 	}
 
-	public void SaveActiveStateConfig(ref List<int> config)
+	public void SaveActiveStateConfig(List<int> config)
 	{
-		StateComponent.SaveActiveStateConfig(ref config);
+		StateComponent.SaveActiveStateConfig(config);
 	}
 
-	public bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+	public bool LoadAllStateConfig(int[] config, ref int configIdx)
 	{
-		return StateComponent.LoadAllStateConfig(ref config, ref configIdx);
+		return StateComponent.LoadAllStateConfig(config, ref configIdx);
 	}
 
-	public bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+	public bool LoadActiveStateConfig(int[] config, ref int configIdx)
 	{
-		return StateComponent.LoadActiveStateConfig(ref config, ref configIdx);
+		return StateComponent.LoadActiveStateConfig(config, ref configIdx);
 	}
 
-#if TOOLS
+	public Func<List<State>, bool> F_GetPromoteStates;
+	public Func<bool> F_IsAvailableRootState;
+	public Action<SortedSet<State>> F_RegisterActiveState;
+	public Func<State, SortedSet<State>, bool> F_IsConflictToEnterRegion;
+	public Action<SortedSet<State>, SortedSet<State>> F_ExtendEnterRegion;
+	public Func<SortedSet<Transition>, StringName, int> F_SelectTransitions;
+	public Action<SortedSet<State>, bool, bool> F_DeduceDescendants;
+	public Action<State> F_HandleSubstateEnter;
+	public Action<SortedSet<Reaction>, StringName> F_SelectReactions;
+
+
+	#if TOOLS
     public override string[] _GetConfigurationWarnings()
 	{
 		List<string> warnings = new List<string>();
