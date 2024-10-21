@@ -267,7 +267,7 @@ public partial class Transition : StatechartComposition
 
         // Extend enter region under LCA
         SortedSet<State> extraEnterRegion = new(new StatechartComparer<State>());
-        LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
+        LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion, true);
         EnterRegion.UnionWith(extraEnterRegion);
 
         // Remove states from root to LCA (include LCA)
@@ -326,7 +326,7 @@ public partial class Transition : StatechartComposition
         DeducedEnterStates.Clear();
         foreach (State edgeState in EnterRegionEdge)
         {
-            edgeState.DeduceDescendants(DeducedEnterStates, isEdgeState: true);
+            edgeState.DeduceDescendants(DeducedEnterStates, false, true);
         }
         return DeducedEnterStates;
     }

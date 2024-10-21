@@ -212,7 +212,7 @@ public class CompoundImpl : StateImpl
 				if (enterRegion.Contains(substate))
 				{
 					substate.ExtendEnterRegion(
-						enterRegion, enterRegionEdge, extraEnterRegion);
+						enterRegion, enterRegionEdge, extraEnterRegion, true);
 					return;
 				}
 			}
@@ -327,7 +327,7 @@ public class CompoundImpl : StateImpl
 			if (CurrentState != null)
 			{
 				bool isDeepHistory = isHistory;
-				CurrentState.DeduceDescendants(deducedSet, isDeepHistory);
+				CurrentState.DeduceDescendants(deducedSet, isDeepHistory, false);
 			}
 			return;
 		}
@@ -338,7 +338,7 @@ public class CompoundImpl : StateImpl
 
 		if (deducedSubstate != null)
 		{
-			deducedSubstate.DeduceDescendants(deducedSet, isHistory);
+			deducedSubstate.DeduceDescendants(deducedSet, isHistory, false);
 		}
 	}
 

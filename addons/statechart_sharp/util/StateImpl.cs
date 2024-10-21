@@ -8,13 +8,9 @@ namespace LGWCP.Godot.StatechartSharp;
 public class StateImpl
 {
     protected State HostState;
-    protected Statechart HostStatechart { get => HostState.HostStatechart; }
-    protected State ParentState
-    {
-        get => HostState.ParentState;
-        set => HostState.ParentState = value;
-    }
-    protected List<State> Substates { get => HostState.Substates; }
+    protected Statechart HostStatechart;
+    protected State ParentState;
+    protected List<State> Substates;
     protected State LowerState
     {
         get => HostState.LowerState;
@@ -25,9 +21,9 @@ public class StateImpl
         get => HostState.UpperState;
         set => HostState.UpperState = value;
     }
-    protected Dictionary<StringName, List<Transition>> Transitions { get => HostState.Transitions; }
-    protected List<Transition> AutoTransitions { get => HostState.AutoTransitions; }
-    protected Dictionary<StringName, List<Reaction>> Reactions { get => HostState.Reactions; }
+    protected Dictionary<StringName, List<Transition>> Transitions;
+    protected List<Transition> AutoTransitions;
+    protected Dictionary<StringName, List<Reaction>> Reactions;
 
     public StateImpl(State state)
     {
@@ -43,12 +39,19 @@ public class StateImpl
     {
         // Get parent state
         Node parent = HostState.GetParentOrNull<Node>();
-        if (parent != null && parent is State)
+        if (parent != null && parent is State parentState)
         {
-            ParentState = parent as State;
+            ParentState = parentState;
         }
 
         HostState.SubstateIdx = substateIdx;
+
+        // Cache property
+        HostStatechart = HostState.HostStatechart;
+        Substates = HostState.Substates;
+        Transitions = HostState.Transitions;
+        AutoTransitions = HostState.AutoTransitions;
+        Reactions = HostState.Reactions;
     }
 
     public virtual void PostSetup() {}
@@ -72,6 +75,20 @@ public class StateImpl
     public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
 
     public virtual void HandleSubstateEnter(State substate) {}
+
+    public virtual void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
+	{
+		bool hasEventName = Reactions.TryGetValue(eventName, out var matchedReactions);
+		if (!hasEventName)
+		{
+			return;
+		}
+
+		foreach (Reaction reaction in matchedReactions)
+		{
+			enabledReactions.Add(reaction);
+		}
+	}
 
     public virtual void SaveAllStateConfig(List<int> snapshot) {}
 

@@ -322,7 +322,7 @@ public partial class Statechart : StatechartComposition
 		// 3. Select and do automatic transitions
 		for (int i = 1; i <= MaxAutoTransitionRound; ++i)
 		{
-			RootState.SelectTransitions(EnabledTransitions);
+			RootState.SelectTransitions(EnabledTransitions, null);
 
 			// Stop if active states are stable
 			if (EnabledTransitions.Count == 0)

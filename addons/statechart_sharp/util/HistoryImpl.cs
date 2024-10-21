@@ -44,7 +44,7 @@ public class HistoryImpl : StateImpl
         */
         if (isEdgeState)
         {
-            ParentState.DeduceDescendants(deducedSet, IsDeepHistory, isEdgeState: true);
+            ParentState.DeduceDescendants(deducedSet, IsDeepHistory, true);
         }
     }
     

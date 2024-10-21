@@ -230,7 +230,7 @@ public class ParallelImpl : StateImpl
 				if (substate.IsHistory && enterRegion.Contains(substate))
 				{
 					substate.ExtendEnterRegion(
-						enterRegion, enterRegionEdge, extraEnterRegion);
+						enterRegion, enterRegionEdge, extraEnterRegion, true);
 					return;
 				}
 			}
@@ -368,7 +368,7 @@ public class ParallelImpl : StateImpl
 			{
 				continue;
 			}
-			substate.DeduceDescendants(deducedSet, isHistory);
+			substate.DeduceDescendants(deducedSet, isHistory, false);
 		}
 	}
 
