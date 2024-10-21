@@ -79,8 +79,8 @@ public partial class State : StatechartComposition
 	/// The index of this state exists in parent state.
 	/// </summary>
 	public int SubstateIdx;
-	protected StatechartDuct Duct { get => HostStatechart.Duct; }
-	public bool IsHistory { get => StateMode == StateModeEnum.History; }
+	protected StatechartDuct Duct;
+	public bool IsHistory;
 	
 	#endregion
 
@@ -96,6 +96,9 @@ public partial class State : StatechartComposition
 
 		StateImpl = GetStateImpl(StateMode);
 
+		IsHistory = StateMode == StateModeEnum.History;
+		Duct = HostStatechart.Duct;
+
 		// Cache methods
 		GetPromoteStates = StateImpl.GetPromoteStates;
 		IsAvailableRootState = StateImpl.IsAvailableRootState;
@@ -106,6 +109,11 @@ public partial class State : StatechartComposition
 		DeduceDescendants = StateImpl.DeduceDescendants;
 		HandleSubstateEnter = StateImpl.HandleSubstateEnter;
 		SelectReactions = StateImpl.SelectReactions;
+
+		SaveAllStateConfig = StateImpl.SaveAllStateConfig;
+		SaveActiveStateConfig = StateImpl.SaveActiveStateConfig;
+		LoadAllStateConfig = StateImpl.LoadAllStateConfig;
+		LoadActiveStateConfig = StateImpl.LoadActiveStateConfig;
 
 		#if TOOLS
 		if (Engine.IsEditorHint())
@@ -122,18 +130,6 @@ public partial class State : StatechartComposition
 		StateModeEnum.History => new HistoryImpl(this),
 		_ => null
 	};
-
-	/*
-	public bool GetPromoteStates(List<State> states)
-	{
-		return StateComponent.GetPromoteStates(states);
-	}
-
-	public bool IsAvailableRootState()
-	{
-		return StateImpl.IsAvailableRootState();
-	}
-	*/
 
 	public override void Setup(Statechart hostStateChart, ref int parentOrderId)
 	{
@@ -178,18 +174,6 @@ public partial class State : StatechartComposition
 		EmitSignal(SignalName.Exit, duct);
 	}
 
-	/*
-	public void RegisterActiveState(SortedSet<State> activeStates)
-	{
-		StateImpl.RegisterActiveState(activeStates);
-	}
-
-	public bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
-	{
-		return StateImpl.IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
-	}
-	*/
-
 	public bool IsAncestorStateOf(State state)
 	{
 		int id = state.OrderId;
@@ -203,62 +187,6 @@ public partial class State : StatechartComposition
 		return id >= LowerState.OrderId
 			&& id <= UpperState.OrderId;
 	}
-	
-	/*
-	public void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain)
-	{
-		StateImpl.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
-	}
-
-	public int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
-	{
-		return StateImpl.SelectTransitions(enabledTransitions, eventName);
-	}
-
-	public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
-	{
-		StateImpl.DeduceDescendants(deducedSet, isHistory, isEdgeState);
-	}
-
-	public void HandleSubstateEnter(State substate)
-	{
-		StateImpl.HandleSubstateEnter(substate);
-	}
-
-	public void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
-	{
-		bool hasEventName = Reactions.TryGetValue(eventName, out var matchedReactions);
-		if (!hasEventName)
-		{
-			return;
-		}
-
-		foreach (Reaction reaction in matchedReactions)
-		{
-			enabledReactions.Add(reaction);
-		}
-	}
-	*/
-
-	public void SaveAllStateConfig(List<int> config)
-	{
-		StateImpl.SaveAllStateConfig(config);
-	}
-
-	public void SaveActiveStateConfig(List<int> config)
-	{
-		StateImpl.SaveActiveStateConfig(config);
-	}
-
-	public bool LoadAllStateConfig(int[] config, ref int configIdx)
-	{
-		return StateImpl.LoadAllStateConfig(config, ref configIdx);
-	}
-
-	public bool LoadActiveStateConfig(int[] config, ref int configIdx)
-	{
-		return StateImpl.LoadActiveStateConfig(config, ref configIdx);
-	}
 
 	public Func<List<State>, bool> GetPromoteStates;
 	public Func<bool> IsAvailableRootState;
@@ -269,7 +197,10 @@ public partial class State : StatechartComposition
 	public Action<SortedSet<State>, bool, bool> DeduceDescendants;
 	public Action<State> HandleSubstateEnter;
 	public Action<SortedSet<Reaction>, StringName> SelectReactions;
-
+	public Action<List<int>> SaveAllStateConfig;
+	public Action<List<int>> SaveActiveStateConfig;
+	public Func<int[], IntParser, bool> LoadAllStateConfig;
+	public Func<int[], IntParser, bool> LoadActiveStateConfig;
 
 	#if TOOLS
     public override string[] _GetConfigurationWarnings()

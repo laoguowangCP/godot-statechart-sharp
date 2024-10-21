@@ -248,16 +248,16 @@ public partial class Statechart : StatechartComposition
 		}
 
 		bool isLoadSuccess;
-		int configIdx = 0;
+		IntParser configIdx = new(0);
 		if (snapshot.IsAllStateConfiguration)
 		{
 			isLoadSuccess = RootState.LoadAllStateConfig(
-				config, ref configIdx);
+				config, configIdx);
 		}
 		else
 		{
 			isLoadSuccess = RootState.LoadActiveStateConfig(
-				config, ref configIdx);
+				config, configIdx);
 		}
 
 		if (!isLoadSuccess)

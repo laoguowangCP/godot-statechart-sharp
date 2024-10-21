@@ -91,10 +91,10 @@ continuous_cd = true
 shape = SubResource("SphereShape3D_h5ltx")
 
 [node name="BobCam" type="Camera3D" parent="Head/RigidBody3D"]
-current = true
 fov = 45.0
 
 [node name="SteadyCam" type="Camera3D" parent="Head"]
+current = true
 fov = 45.0
 
 [node name="CollisionHead1" type="CollisionShape3D" parent="."]

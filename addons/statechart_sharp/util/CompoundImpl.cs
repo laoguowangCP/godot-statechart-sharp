@@ -372,9 +372,9 @@ public class CompoundImpl : StateImpl
 		CurrentState.SaveActiveStateConfig(snapshot);
 	}
 
-	public override bool LoadAllStateConfig(int[] config, ref int configIdx)
+	public override bool LoadAllStateConfig(int[] config, IntParser configIdx)
 	{
-		if (configIdx >= config.Length)
+		if (configIdx.X >= config.Length)
 		{
 			return false;
 		}
@@ -384,13 +384,13 @@ public class CompoundImpl : StateImpl
 			return true;
 		}
 
-		CurrentState = Substates[config[configIdx]];
+		CurrentState = Substates[config[configIdx.X]];
 		++configIdx;
 
 		bool isLoadSuccess;
 		foreach (State substate in Substates)
 		{
-			isLoadSuccess = substate.LoadAllStateConfig(config, ref configIdx);
+			isLoadSuccess = substate.LoadAllStateConfig(config, configIdx);
 			if (!isLoadSuccess)
 			{
 				return false;
@@ -400,9 +400,9 @@ public class CompoundImpl : StateImpl
 		return true;
 	}
 
-	public override bool LoadActiveStateConfig(int[] config, ref int configIdx)
+	public override bool LoadActiveStateConfig(int[] config, IntParser configIdx)
 	{
-		if (configIdx > config.Length)
+		if (configIdx.X > config.Length)
 		{
 			return false;
 		}
@@ -412,10 +412,10 @@ public class CompoundImpl : StateImpl
 			return true;
 		}
 
-		CurrentState = Substates[config[configIdx]];
+		CurrentState = Substates[config[configIdx.X]];
 		++configIdx;
 
-		return CurrentState.LoadActiveStateConfig(config, ref configIdx);
+		return CurrentState.LoadActiveStateConfig(config, configIdx);
 	}
 
 	#if TOOLS

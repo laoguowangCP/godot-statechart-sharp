@@ -38,15 +38,16 @@ public class StateImpl
     public virtual void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         // Get parent state
-        Node parent = HostState.GetParentOrNull<Node>();
-        if (parent != null && parent is State parentState)
+        State parentState = HostState.GetParentOrNull<State>();
+        if (parentState != null)
         {
-            ParentState = parentState;
+            HostState.ParentState = parentState;
         }
 
         HostState.SubstateIdx = substateIdx;
 
         // Cache property
+        ParentState = HostState.ParentState;
         HostStatechart = HostState.HostStatechart;
         Substates = HostState.Substates;
         Transitions = HostState.Transitions;
@@ -94,9 +95,9 @@ public class StateImpl
 
     public virtual void SaveActiveStateConfig(List<int> snapshot) {}
 
-    public virtual bool LoadAllStateConfig(int[] config, ref int configIdx) { return true; }
+    public virtual bool LoadAllStateConfig(int[] config, IntParser configIdx) { return true; }
     
-    public virtual bool LoadActiveStateConfig(int[] config, ref int configIdx) { return true; }
+    public virtual bool LoadActiveStateConfig(int[] config, IntParser configIdx) { return true; }
 
     #if TOOLS
     public virtual void GetConfigurationWarnings(List<string> warnings)
