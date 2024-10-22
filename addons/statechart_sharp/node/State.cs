@@ -95,24 +95,26 @@ public partial class State : StatechartComposition
 		Reactions = new Dictionary<StringName, List<Reaction>>();
 
 		StateImpl = GetStateImpl(StateMode);
-
 		IsHistory = StateMode == StateModeEnum.History;
 
 		// Cache methods
-		GetPromoteStates = StateImpl.GetPromoteStates;
-		IsAvailableRootState = StateImpl.IsAvailableRootState;
-		RegisterActiveState = StateImpl.RegisterActiveState;
-		IsConflictToEnterRegion = StateImpl.IsConflictToEnterRegion;
-		ExtendEnterRegion = StateImpl.ExtendEnterRegion;
-		SelectTransitions = StateImpl.SelectTransitions;
-		DeduceDescendants = StateImpl.DeduceDescendants;
-		HandleSubstateEnter = StateImpl.HandleSubstateEnter;
-		SelectReactions = StateImpl.SelectReactions;
+		if (StateImpl is not null)
+		{
+			GetPromoteStates = StateImpl.GetPromoteStates;
+			IsAvailableRootState = StateImpl.IsAvailableRootState;
+			RegisterActiveState = StateImpl.RegisterActiveState;
+			IsConflictToEnterRegion = StateImpl.IsConflictToEnterRegion;
+			ExtendEnterRegion = StateImpl.ExtendEnterRegion;
+			SelectTransitions = StateImpl.SelectTransitions;
+			DeduceDescendants = StateImpl.DeduceDescendants;
+			HandleSubstateEnter = StateImpl.HandleSubstateEnter;
+			SelectReactions = StateImpl.SelectReactions;
 
-		SaveAllStateConfig = StateImpl.SaveAllStateConfig;
-		SaveActiveStateConfig = StateImpl.SaveActiveStateConfig;
-		LoadAllStateConfig = StateImpl.LoadAllStateConfig;
-		LoadActiveStateConfig = StateImpl.LoadActiveStateConfig;
+			SaveAllStateConfig = StateImpl.SaveAllStateConfig;
+			SaveActiveStateConfig = StateImpl.SaveActiveStateConfig;
+			LoadAllStateConfig = StateImpl.LoadAllStateConfig;
+			LoadActiveStateConfig = StateImpl.LoadActiveStateConfig;
+		}
 
 		#if TOOLS
 		if (Engine.IsEditorHint())
@@ -127,12 +129,14 @@ public partial class State : StatechartComposition
 		StateModeEnum.Compound => new CompoundImpl(this),
 		StateModeEnum.Parallel => new ParallelImpl(this),
 		StateModeEnum.History => new HistoryImpl(this),
-		_ => null
+		_ => new CompoundImpl(this)
 	};
 
 	public override void Setup(Statechart hostStateChart, ref int parentOrderId)
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
+		Duct = HostStatechart.Duct;
+
 		// Called from statechart node, root state substate index is 0
 		StateImpl.Setup(hostStateChart, ref parentOrderId, 0);
 	}
@@ -141,6 +145,7 @@ public partial class State : StatechartComposition
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
 		Duct = HostStatechart.Duct;
+
 		StateImpl.Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
 

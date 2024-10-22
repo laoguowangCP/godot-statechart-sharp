@@ -62,6 +62,7 @@ public partial class TransitionPromoter : StatechartComposition
         foreach(var child in HostTransition.GetChildren())
         {
             HostTransition.RemoveChild(child);
+            child.QueueFree();
         }
 
         // Get promote state(s)

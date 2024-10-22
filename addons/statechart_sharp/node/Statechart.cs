@@ -32,6 +32,7 @@ public partial class Statechart : StatechartComposition
 	protected SortedSet<Transition> EnabledFilteredTransitions { get; set; }
 	protected SortedSet<State> ExitSet { get; set; }
 	protected SortedSet<State> EnterSet { get; set; }
+	protected SortedSet<State> ExitStates;
 	protected SortedSet<Reaction> EnabledReactions { get; set; }
 	public StatechartDuct Duct { get; private set; }
 	protected List<int> SnapshotConfiguration;
@@ -385,9 +386,9 @@ public partial class Statechart : StatechartComposition
 
 			EnabledFilteredTransitions.Add(transition);
 
-			SortedSet<State> exitStates = ActiveStates.GetViewBetween(
+			ExitStates = ActiveStates.GetViewBetween(
 				transition.LcaState.LowerState, transition.LcaState.UpperState);
-			ExitSet.UnionWith(exitStates);
+			ExitSet.UnionWith(ExitStates);
 		}
 
 		ActiveStates.ExceptWith(ExitSet);
@@ -462,8 +463,11 @@ public partial class Statechart : StatechartComposition
 		}
 		#endif
 		
-		Duct.Input = @event;
-		Step(StatechartEventName.EVENT_INPUT);
+		using(@event)
+		{
+			Duct.Input = @event;
+			Step(StatechartEventName.EVENT_INPUT);
+		}
 	}
 
 	public override void _ShortcutInput(InputEvent @event)
@@ -475,8 +479,11 @@ public partial class Statechart : StatechartComposition
 		}
 		#endif
 		
-		Duct.ShortcutInput = @event;
-		Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
+		using(@event)
+		{
+			Duct.ShortcutInput = @event;
+			Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
+		}
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)
@@ -488,8 +495,11 @@ public partial class Statechart : StatechartComposition
 		}
 		#endif
 		
-		Duct.UnhandledKeyInput = @event;
-		Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
+		using(@event)
+		{
+			Duct.UnhandledKeyInput = @event;
+			Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
+		}
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -501,8 +511,12 @@ public partial class Statechart : StatechartComposition
 		}
 		#endif
 		
-		Duct.UnhandledInput = @event;
-		Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
+		
+		using(@event)
+		{
+			Duct.UnhandledInput = @event;
+			Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
+		}
 	}
 
 	#if TOOLS

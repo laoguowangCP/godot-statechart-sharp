@@ -147,11 +147,11 @@ collision_mask = 7
 
 [node name="CoyoteTimer" type="Timer" parent="Timers"]
 process_callback = 0
-wait_time = 0.012
+wait_time = 0.02
 
 [node name="PrejumpTimer" type="Timer" parent="Timers"]
 process_callback = 0
-wait_time = 0.01
+wait_time = 0.02
 
 [node name="Statechart" type="Node" parent="."]
 script = ExtResource("3_8sun5")
@@ -178,7 +178,7 @@ script = ExtResource("4_hrigw")
 [node name="StandWalk" type="Node" parent="Statechart/Root/Move/Ground/Walk"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
 
 [node name="->Crouch" type="Node" parent="Statechart/Root/Move/Ground/Walk" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("6_ap661")
@@ -198,7 +198,7 @@ script = ExtResource("4_hrigw")
 [node name="StandSprint" type="Node" parent="Statechart/Root/Move/Ground/Sprint"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
 
 [node name="->Walk" type="Node" parent="Statechart/Root/Move/Ground/Sprint" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("6_ap661")
@@ -218,7 +218,7 @@ script = ExtResource("4_hrigw")
 [node name="CrouchWalk" type="Node" parent="Statechart/Root/Move/Ground/Crouch"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
 
 [node name="->Walk" type="Node" parent="Statechart/Root/Move/Ground/Crouch" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("6_ap661")
@@ -318,7 +318,7 @@ CustomEventName = &""
 [node name="Impulse" type="Node" parent="Statechart/Root/Move"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
 
 [connection signal="Invoke" from="Statechart/Root/Move/ViewRotate" to="." method="RI_ViewRotate"]
 [connection signal="Enter" from="Statechart/Root/Move/Ground/Walk" to="." method="Enter_Walk"]

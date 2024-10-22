@@ -186,6 +186,11 @@ public partial class ImPlayer : CharacterBody3D
 				-CamMaxPitch, CamMaxPitch);
 			Head.Rotation = headRotation;
 		}
+
+		if (@event is InputEventMouseButton _)
+		{
+			PrintOrphanNodes();
+		}
     }
 	
     public void RI_StandWalk(StatechartDuct duct)
