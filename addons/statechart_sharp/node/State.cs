@@ -97,7 +97,6 @@ public partial class State : StatechartComposition
 		StateImpl = GetStateImpl(StateMode);
 
 		IsHistory = StateMode == StateModeEnum.History;
-		Duct = HostStatechart.Duct;
 
 		// Cache methods
 		GetPromoteStates = StateImpl.GetPromoteStates;
@@ -141,6 +140,7 @@ public partial class State : StatechartComposition
 	public void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
+		Duct = HostStatechart.Duct;
 		StateImpl.Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
 

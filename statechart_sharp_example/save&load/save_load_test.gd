@@ -13,6 +13,7 @@ var _save_path: String = "res://statechart_sharp_example/save&load/statechart.tr
 func _ready() -> void:
 	_statechart = get_node_or_null("Statechart") as Statechart
 	connect_to_test(_statechart)
+	print(%BoxContainer.name)
 
 
 func connect_to_test(node: Node) -> void:
