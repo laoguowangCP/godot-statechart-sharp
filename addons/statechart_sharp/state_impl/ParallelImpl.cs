@@ -1,25 +1,15 @@
+using Godot;
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
 
 
 namespace LGWCP.Godot.StatechartSharp;
 
 
-public class CompoundImpl : StateImpl
+public class ParallelImpl : StateImpl
 {
-	private State CurrentState
-	{
-		get => HostState.CurrentState;
-		set { HostState.CurrentState = value; }
-	}
-	private State InitialState
-	{
-		get => HostState.InitialState;
-		set { HostState.InitialState = value; }
-	}
-	
-	public CompoundImpl(State state) : base(state) {}
+	protected int NonHistorySubstateCnt = 0;
+	public ParallelImpl(State state) : base(state) {}
 
 	public override bool IsAvailableRootState()
 	{
@@ -31,7 +21,7 @@ public class CompoundImpl : StateImpl
 		base.Setup(hostStateChart, ref parentOrderId, substateIdx);
 
 		// Init & collect states, transitions, actions
-		// Get lower state and upper state
+		// Get lower-state and upper-state
 		State lastSubstate = null;
 		foreach (Node child in HostState.GetChildren())
 		{
@@ -46,11 +36,16 @@ public class CompoundImpl : StateImpl
 				Substates.Add(s);
 
 				// First substate is lower-state
-				if (LowerState is null)
+				if (LowerState == null)
 				{
 					LowerState = s;
 				}
 				lastSubstate = s;
+
+				if (!s.IsHistory)
+				{
+					NonHistorySubstateCnt += 1;
+				}
 			}
 			else if (child is Transition t)
 			{
@@ -108,38 +103,7 @@ public class CompoundImpl : StateImpl
 				UpperState = lastSubstate;
 			}
 		}
-		// Else state is atomic, lower and upper are both null.
-
-		// Set initial state
-		if (InitialState != null)
-		{
-			// Check selected initial-state is non-history substate
-			if (InitialState.ParentState != HostState || InitialState.IsHistory)
-			{
-				#if DEBUG
-				GD.PushWarning(
-					HostState.GetPath(),
-					": initial-state should be a non-history substate.");
-				#endif
-				InitialState = null;
-			}
-		}
-
-		// No assigned initial state, use first non-history substate
-		if (InitialState == null)
-		{
-			foreach (State substate in Substates)
-			{
-				if (substate.StateMode != StateModeEnum.History)
-				{
-					InitialState = substate;
-					break;
-				}
-			}
-		}
-
-		// Set current state
-		CurrentState = InitialState;
+		// Else state is atomic, lower and upper are null
 	}
 
 	public override void PostSetup()
@@ -157,7 +121,7 @@ public class CompoundImpl : StateImpl
 				t.PostSetup();
 			}
 		}
-
+		
 		foreach (var t in AutoTransitions)
 		{
 			t.PostSetup();
@@ -170,60 +134,8 @@ public class CompoundImpl : StateImpl
 				a.PostSetup();
 			}
 		}
-	}
 
-	public override bool IsConflictToEnterRegion(
-		State substateToPend,
-		SortedSet<State> enterRegionUnextended)
-	{
-		// Conflicts if any substate is already exist in region
-		return enterRegionUnextended.Any<State>(
-			state => HostState.IsAncestorStateOf(state));
-	}
-
-	public override void ExtendEnterRegion(
-		SortedSet<State> enterRegion,
-		SortedSet<State> enterRegionEdge,
-		SortedSet<State> extraEnterRegion,
-		bool needCheckContain)
-	{
-		/*
-		if need check (state is in region, checked by parent):
-			if any substate in region:
-				extend this substate, still need check
-			else (no substate in region)
-				extend initial state, need no check
-		else (need no check)
-			add state to extra-region
-			extend initial state, need no check
-		*/
-
-		// Need no check, add to extra
-		if (!needCheckContain)
-		{
-			extraEnterRegion.Add(HostState);
-		}
-
-		// Need check
-		if (needCheckContain)
-		{
-			foreach (State substate in Substates)
-			{
-				if (enterRegion.Contains(substate))
-				{
-					substate.ExtendEnterRegion(
-						enterRegion, enterRegionEdge, extraEnterRegion, true);
-					return;
-				}
-			}
-		}
-
-		// Need no check, or need check but no substate in region
-		if (InitialState != null)
-		{
-			InitialState.ExtendEnterRegion(
-				enterRegion, enterRegionEdge, extraEnterRegion, false);
-		}
+		base.PostSetup();
 	}
 
 	public override bool GetPromoteStates(List<State> states)
@@ -237,6 +149,7 @@ public class CompoundImpl : StateImpl
 				if (isChildPromoted)
 				{
 					isPromote = false;
+					break;
 				}
 			}
 		}
@@ -249,28 +162,152 @@ public class CompoundImpl : StateImpl
 		// Make sure promoted
 		return true;
 	}
+
+	public override bool IsConflictToEnterRegion(
+		State substateToPend,
+		SortedSet<State> enterRegionUnextended)
+	{
+		/*
+		Deals history cases:
+			1. Pending substate is history, conflicts if any descendant in region.
+			2. Any history substate in enter region, conflicts.
+		*/
+		// At this point history is not excluded from enter region
+
+		// Pending substate is history
+		if (substateToPend.IsHistory)
+		{
+			return enterRegionUnextended.Any<State>(
+				state => HostState.IsAncestorStateOf(state));
+		}
+
+		// Any history substate in region, conflicts.
+		foreach (State substate in Substates)
+		{
+			if (substate.IsHistory
+				&& enterRegionUnextended.Contains(substate))
+			{
+				return true;
+			}
+		}
+
+		// No conflicts.
+		return false;
+	}
 	
+	public override void ExtendEnterRegion(
+		SortedSet<State> enterRegion,
+		SortedSet<State> enterRegionEdge,
+		SortedSet<State> extraEnterRegion,
+		bool needCheckContain)
+	{
+		/*
+		if need check (state in region, checked by parent):
+			if any history substate in region:
+				extend this history
+				return
+			else (no history substate in region)
+				foreach substate:
+					if substate in region:
+						extend, still need check
+					else (substate not in region)
+						extend, need no check
+		else (state not in region)
+			add state to extra-region
+			foreach substate:
+				extend, need no check
+		*/
+
+		// Need no check, add to extra
+		if (!needCheckContain)
+		{
+			extraEnterRegion.Add(HostState);
+		}
+
+		// Need check
+		if (needCheckContain)
+		{
+			foreach (State substate in Substates)
+			{
+				if (substate.IsHistory && enterRegion.Contains(substate))
+				{
+					substate.ExtendEnterRegion(
+						enterRegion, enterRegionEdge, extraEnterRegion, true);
+					return;
+				}
+			}
+		}
+
+		// No history substate in region
+		foreach (State substate in Substates)
+		{
+			if (substate.IsHistory)
+			{
+				continue;
+			}
+
+			// Need check && substate in region => still need check
+			bool stillNeedCheck =
+				needCheckContain && enterRegion.Contains(substate);
+			substate.ExtendEnterRegion(
+				enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
+		}
+	}
+
 	public override void RegisterActiveState(SortedSet<State> activeStates)
 	{
 		activeStates.Add(HostState);
-		CurrentState?.RegisterActiveState(activeStates);
+		foreach (State substate in HostState.Substates)
+		{
+			substate.RegisterActiveState(activeStates);
+		}
 	}
 
-	public override int SelectTransitions(
-		SortedSet<Transition> enabledTransitions, StringName eventName)
+	public override int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
 	{
 		int handleInfo = -1;
-		if (HostState.CurrentState != null)
+		if (NonHistorySubstateCnt > 0)
 		{
-			handleInfo = CurrentState.SelectTransitions(
-				enabledTransitions, eventName);
+			int negCnt = 0;
+			int posCnt = 0;
+			foreach (State substate in Substates)
+			{
+				if (substate.IsHistory)
+				{
+					continue;
+				}
+
+				int substateHandleInfo = substate.SelectTransitions(
+					enabledTransitions, eventName);
+				if (substateHandleInfo < 0)
+				{
+					negCnt += 1;
+				}
+				else if (substateHandleInfo > 0)
+				{
+					posCnt += 1;
+				}
+			}
+
+			if (negCnt == NonHistorySubstateCnt) // No selected
+			{
+				handleInfo = -1;
+			}
+			else if (posCnt == NonHistorySubstateCnt) // All done
+			{
+				handleInfo = 1;
+			}
+			else // Selected but not all done
+			{
+				handleInfo = 0;
+			}
 		}
 
 		/*
 		Check source's transitions:
-			- < 0, check any
-			- == 0, only check targetless
-			- > 0, do nothing
+			a) < 0, check any
+			b) == 0, check targetless
+			c) > 0, check none
 		*/
 		if (handleInfo > 0)
 		{
@@ -284,8 +321,19 @@ public class CompoundImpl : StateImpl
 		}
 		else
 		{
+			/*
 			bool hasEvent = Transitions.TryGetValue(eventName, out matched);
 			if (!hasEvent)
+			{
+				return handleInfo;
+			}*/
+			
+			if (CurrentTAMap is null)
+			{
+				return handleInfo;
+			}
+			matched = CurrentTAMap[StateId].Transitions;
+			if (matched is null)
 			{
 				return handleInfo;
 			}
@@ -293,7 +341,6 @@ public class CompoundImpl : StateImpl
 
 		foreach (Transition t in matched)
 		{
-			// If == 0, only check targetless
 			if (handleInfo == 0)
 			{
 				if (!t.IsTargetless)
@@ -318,43 +365,28 @@ public class CompoundImpl : StateImpl
 		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
 	{
 		/* 
-		If is edge state:
-			1. It is called from history substate
+		If is edge-state:
+			1. Called from history substate.
 			2. IsHistory arg represents IsDeepHistory
 		*/
-		if (isEdgeState)
+		if (!isEdgeState)
 		{
-			if (CurrentState != null)
+			deducedSet.Add(HostState);
+		}
+
+		foreach (State substate in Substates)
+		{
+			// Ignore history states
+			if (substate.IsHistory)
 			{
-				bool isDeepHistory = isHistory;
-				CurrentState.DeduceDescendants(deducedSet, isDeepHistory, false);
+				continue;
 			}
-			return;
+			substate.DeduceDescendants(deducedSet, isHistory, false);
 		}
-
-		// Not edge state
-		deducedSet.Add(HostState);
-		State deducedSubstate = isHistory ? CurrentState : InitialState;
-
-		if (deducedSubstate != null)
-		{
-			deducedSubstate.DeduceDescendants(deducedSet, isHistory, false);
-		}
-	}
-
-	public override void HandleSubstateEnter(State substate)
-	{
-		HostState.CurrentState = substate;
 	}
 
 	public override void SaveAllStateConfig(List<int> snapshot)
 	{
-		// Breadth first for better load order
-		if (CurrentState is null)
-		{
-			return;
-		}
-		snapshot.Add(CurrentState.SubstateIdx);
 		foreach (State substate in Substates)
 		{
 			substate.SaveActiveStateConfig(snapshot);
@@ -363,30 +395,14 @@ public class CompoundImpl : StateImpl
 
 	public override void SaveActiveStateConfig(List<int> snapshot)
 	{
-		// Breadth first for better load order
-		if (CurrentState is null)
+		foreach (State substate in Substates)
 		{
-			return;
+			substate.SaveActiveStateConfig(snapshot);
 		}
-		snapshot.Add(CurrentState.SubstateIdx);
-		CurrentState.SaveActiveStateConfig(snapshot);
 	}
 
 	public override bool LoadAllStateConfig(int[] config, IntParser configIdx)
 	{
-		if (configIdx.X >= config.Length)
-		{
-			return false;
-		}
-
-		if (Substates.Count == 0)
-		{
-			return true;
-		}
-
-		CurrentState = Substates[config[configIdx.X]];
-		++configIdx;
-
 		bool isLoadSuccess;
 		foreach (State substate in Substates)
 		{
@@ -402,39 +418,16 @@ public class CompoundImpl : StateImpl
 
 	public override bool LoadActiveStateConfig(int[] config, IntParser configIdx)
 	{
-		if (configIdx.X > config.Length)
+		bool isLoadSuccess;
+		foreach (State substate in Substates)
 		{
-			return false;
-		}
-
-		if (Substates.Count == 0)
-		{
-			return true;
-		}
-
-		CurrentState = Substates[config[configIdx.X]];
-		++configIdx;
-
-		return CurrentState.LoadActiveStateConfig(config, configIdx);
-	}
-
-	#if TOOLS
-	public override void GetConfigurationWarnings(List<string> warnings)
-	{
-		// Check parent
-		base.GetConfigurationWarnings(warnings);
-
-		// Check child
-		if (InitialState != null)
-		{
-			var initialStateParent = InitialState.GetParentOrNull<Node>();
-			if (initialStateParent is null
-				|| initialStateParent != HostState
-				|| InitialState.IsHistory)
+			isLoadSuccess = substate.LoadAllStateConfig(config, configIdx);
+			if (!isLoadSuccess)
 			{
-				warnings.Add("Initial state should be a non-history substate.");
+				return false;
 			}
 		}
+
+		return true;
 	}
-	#endif
 }

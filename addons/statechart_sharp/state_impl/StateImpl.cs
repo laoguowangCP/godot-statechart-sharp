@@ -21,9 +21,14 @@ public class StateImpl
         get => HostState.UpperState;
         set => HostState.UpperState = value;
     }
+    public int StateId;
     protected Dictionary<StringName, List<Transition>> Transitions;
     protected List<Transition> AutoTransitions;
     protected Dictionary<StringName, List<Reaction>> Reactions;
+    protected (List<Transition> Transitions, List<Reaction> Reactions)[] CurrentTAMap
+    {
+        get => HostStatechart.CurrentTAMap;
+    }
 
     public StateImpl(State state)
     {
@@ -55,7 +60,11 @@ public class StateImpl
         Reactions = HostState.Reactions;
     }
 
-    public virtual void PostSetup() {}
+    public virtual void PostSetup()
+    {
+        HostStatechart.SubmitGlobalTransitions(StateId, Transitions);
+        HostStatechart.SubmitGlobalReactions(StateId, Reactions);
+    }
 
     public virtual bool GetPromoteStates(List<State> states) { return false; }
 
@@ -79,13 +88,26 @@ public class StateImpl
 
     public virtual void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
 	{
-		bool hasEventName = Reactions.TryGetValue(eventName, out var matchedReactions);
+        /*
+		bool hasEventName = Reactions.TryGetValue(eventName, out var matched);
 		if (!hasEventName)
 		{
 			return;
 		}
+        */
+        
+        if (CurrentTAMap is null)
+        {
+            return;
+        }
 
-		foreach (Reaction reaction in matchedReactions)
+        var matched = CurrentTAMap[StateId].Reactions;
+        if (matched is null)
+        {
+            return;
+        }
+
+		foreach (Reaction reaction in matched)
 		{
 			enabledReactions.Add(reaction);
 		}

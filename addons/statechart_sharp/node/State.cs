@@ -79,6 +79,13 @@ public partial class State : StatechartComposition
 	/// The index of this state exists in parent state.
 	/// </summary>
 	public int SubstateIdx;
+	/// <summary>
+	/// The ID of this state in statechart.
+	/// </summary>
+	public int StateId
+	{
+        set => StateImpl.StateId = value;
+    }
 	protected StatechartDuct Duct;
 	public bool IsHistory;
 	
@@ -136,6 +143,7 @@ public partial class State : StatechartComposition
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
 		Duct = HostStatechart.Duct;
+		StateId = HostStatechart.GetStateId();
 
 		// Called from statechart node, root state substate index is 0
 		StateImpl.Setup(hostStateChart, ref parentOrderId, 0);
@@ -145,6 +153,7 @@ public partial class State : StatechartComposition
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
 		Duct = HostStatechart.Duct;
+		StateId = HostStatechart.GetStateId();
 
 		StateImpl.Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://b4dys3gs5yv55"]
+[gd_scene load_steps=20 format=3 uid="uid://b4dys3gs5yv55"]
 
 [ext_resource type="Shape3D" uid="uid://daw26slb52ktb" path="res://statechart_sharp_example/immersive_controller/resource/shape/shape_player_stand.tres" id="1_6ql00"]
 [ext_resource type="Script" path="res://statechart_sharp_example/immersive_controller/script/ImPlayer.cs" id="1_nsgnp"]
@@ -12,6 +12,7 @@
 [ext_resource type="Resource" uid="uid://cpgaoymw2mjfb" path="res://statechart_sharp_example/immersive_controller/resource/player_move_prop/air_top_prop.tres" id="5_sw2pr"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="6_ap661"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/TransitionPromoter.cs" id="12_nwm3j"]
+[ext_resource type="Script" path="res://statechart_sharp_example/immersive_controller/script/ImPlayerImpulse.gd" id="13_thp3s"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pnide"]
 
@@ -320,6 +321,9 @@ script = ExtResource("5_e50wk")
 ReactionEvent = 1
 CustomEventName = &"disabled"
 
+[node name="Impulse" type="Node" parent="."]
+script = ExtResource("13_thp3s")
+
 [connection signal="Invoke" from="Statechart/Root/Move/ViewRotate" to="." method="RI_ViewRotate"]
 [connection signal="Enter" from="Statechart/Root/Move/Ground/Walk" to="." method="Enter_Walk"]
 [connection signal="Invoke" from="Statechart/Root/Move/Ground/Walk/StandWalk" to="." method="RI_StandWalk"]
@@ -350,4 +354,4 @@ CustomEventName = &"disabled"
 [connection signal="Enter" from="Statechart/Root/Move/Air/Top" to="." method="Enter_AirTop"]
 [connection signal="Guard" from="Statechart/Root/Move/Air/Top/->Descend" to="." method="TG_AirIsDescend"]
 [connection signal="Invoke" from="Statechart/Root/Move/Air/AirMove" to="." method="RI_AirMove"]
-[connection signal="Invoke" from="Statechart/Root/Move/Impulse" to="." method="RI_MoveWithImpulse"]
+[connection signal="Invoke" from="Statechart/Root/Move/Impulse" to="Impulse" method="_ri_player_impulse"]

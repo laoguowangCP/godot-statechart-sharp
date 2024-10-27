@@ -37,6 +37,18 @@ public partial class Statechart : StatechartComposition
 	public StatechartDuct Duct { get; private set; }
 	protected List<int> SnapshotConfiguration;
 
+	// Global transition/reaction hashmap
+	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> GlobalEventTAMap;
+	public (List<Transition>, List<Reaction>)[] CurrentTAMap;
+	public StringName LastStepEventName = "_";
+
+
+	// Max order id of statechart compositions
+	// protected int StatechartLength = 0;
+
+	// Total count of states in statechart
+	protected int StateLength = 0;
+
 	#endregion
 
 
@@ -59,6 +71,8 @@ public partial class Statechart : StatechartComposition
 		ExitSet = new SortedSet<State>(new StatechartReversedComparer<State>());
 		EnterSet = new SortedSet<State>(new StatechartComparer<State>());
 		EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
+
+		GlobalEventTAMap = new Dictionary<StringName, (List<Transition>, List<Reaction>)[]>();
 		
 		SnapshotConfiguration = new List<int>();
 
@@ -110,16 +124,17 @@ public partial class Statechart : StatechartComposition
 			}
 		}
 		
-		OrderId = 0;
+		OrderId = -1; // Statechart has -1 order id
 		if (RootState is not null)
 		{
 			int parentOrderId = 0;
 			RootState.Setup(this, ref parentOrderId);
+			// StatechartLength = parentOrderId;
 		}
 	}
 
 	public override void PostSetup()
-	{
+	{	
 		// Get and enter active states
 		if (RootState is not null)
 		{
@@ -147,9 +162,54 @@ public partial class Statechart : StatechartComposition
 			EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
 	}
 
+	public int GetStateId()
+	{
+		int id = StateLength;
+		++StateLength;
+		return id;
+	}
+
+	public void SubmitGlobalTransitions(int stateId, Dictionary<StringName, List<Transition>> transitions)
+	{
+		foreach ((StringName eventName, List<Transition> eventTrans) in transitions)
+		{
+			(List<Transition> GlobalEventTrans, List<Reaction> _)[] globalEventTA;
+			bool isEventSubmitted = GlobalEventTAMap.TryGetValue(eventName, out globalEventTA);
+			if (isEventSubmitted)
+			{
+				globalEventTA[stateId].GlobalEventTrans = eventTrans;
+			}
+			else
+			{
+				globalEventTA = new (List<Transition> GlobalEventTrans, List<Reaction> _)[StateLength];
+				globalEventTA[stateId].GlobalEventTrans = eventTrans;
+				GlobalEventTAMap.Add(eventName, globalEventTA);
+			}
+		}
+	}
+
+	public void SubmitGlobalReactions(int stateId, Dictionary<StringName, List<Reaction>> reactions)
+	{
+		foreach ((StringName eventName, List<Reaction> eventReact) in reactions)
+		{
+			(List<Transition> _, List<Reaction> GlobalEventReact)[] globalEventTA;
+			bool isEventSubmitted = GlobalEventTAMap.TryGetValue(eventName, out globalEventTA);
+			if (isEventSubmitted)
+			{
+				globalEventTA[stateId].GlobalEventReact = eventReact;
+			}
+			else
+			{
+				globalEventTA = new (List<Transition> _, List<Reaction> GlobalEventReact)[StateLength];
+				globalEventTA[stateId].GlobalEventReact = eventReact;
+				GlobalEventTAMap.Add(eventName, globalEventTA);
+			}
+		}
+	}
+
 	public void Step(StringName eventName)
 	{
-		if (eventName == null || eventName == "")
+		if (eventName == null) // Empty StringName is not constructed
 		{
 			return;
 		}
@@ -313,6 +373,15 @@ public partial class Statechart : StatechartComposition
 			- Break if no queued auto-transition
 		4. Do reactions
 		*/
+
+		// Set global transitions/reactions, null if no matched event
+		if (LastStepEventName != eventName)
+		{
+			GlobalEventTAMap.TryGetValue(eventName, out CurrentTAMap);
+			LastStepEventName = eventName;
+		}
+		// Use last query in GlobalEventTAMap if eventname not changed
+		// GlobalEventTAMap.TryGetValue(eventName, out CurrentTAMap);
 
 		// 1. Select transitions
 		RootState.SelectTransitions(EnabledTransitions, eventName);
