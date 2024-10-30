@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 public partial class Benchmark : Node
 {
+    public int TransCnt = 0;
     protected Statechart Statechart;
     public override void _Ready()
     {
@@ -20,5 +21,12 @@ public partial class Benchmark : Node
         sw.Stop();
         GD.Print("Step ", iterCnt, " times cost:");
         GD.Print(sw.ElapsedMilliseconds);
+        GD.Print(TransCnt);
+    }
+
+    public void TI_AddTransCnt(StatechartDuct duct)
+    {
+        ++TransCnt;
     }
 }
+

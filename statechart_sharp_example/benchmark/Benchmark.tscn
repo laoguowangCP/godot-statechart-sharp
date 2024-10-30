@@ -27,6 +27,12 @@ StateMode = 1
 [node name="1" type="Node" parent="Statechart/Root/A/X"]
 script = ExtResource("2_oxlqo")
 
+[node name="AX1->FZ5" type="Node" parent="Statechart/Root/A/X/1" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("3_4a54w")
+TransitionEvent = 6
+CustomEventName = &"go"
+TargetStatesArray = [NodePath("../../../../F/Z/5")]
+
 [node name="Transition1" type="Node" parent="Statechart/Root/A/X/1"]
 script = ExtResource("3_4a54w")
 TransitionEvent = 6
@@ -166,12 +172,6 @@ CustomEventName = &"bar9"
 script = ExtResource("4_agdue")
 ReactionEvent = 6
 CustomEventName = &"bar10"
-
-[node name="AX1->FZ5" type="Node" parent="Statechart/Root/A/X/1" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("3_4a54w")
-TransitionEvent = 6
-CustomEventName = &"go"
-TargetStatesArray = [NodePath("../../../../F/Z/5")]
 
 [node name="2" type="Node" parent="Statechart/Root/A/X"]
 script = ExtResource("2_oxlqo")
@@ -12843,6 +12843,12 @@ CustomEventName = &"bar10"
 [node name="5" type="Node" parent="Statechart/Root/F/Z"]
 script = ExtResource("2_oxlqo")
 
+[node name="FZ5->AX1" type="Node" parent="Statechart/Root/F/Z/5" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("3_4a54w")
+TransitionEvent = 6
+CustomEventName = &"go"
+TargetStatesArray = [NodePath("../../../../A/X/1")]
+
 [node name="Transition1" type="Node" parent="Statechart/Root/F/Z/5"]
 script = ExtResource("3_4a54w")
 TransitionEvent = 6
@@ -12983,8 +12989,5 @@ script = ExtResource("4_agdue")
 ReactionEvent = 6
 CustomEventName = &"bar10"
 
-[node name="FZ5->AX1" type="Node" parent="Statechart/Root/F/Z/5" node_paths=PackedStringArray("TargetStatesArray")]
-script = ExtResource("3_4a54w")
-TransitionEvent = 6
-CustomEventName = &"go"
-TargetStatesArray = [NodePath("../../../../A/X/1")]
+[connection signal="Invoke" from="Statechart/Root/A/X/1/AX1->FZ5" to="." method="TI_AddTransCnt"]
+[connection signal="Invoke" from="Statechart/Root/F/Z/5/FZ5->AX1" to="." method="TI_AddTransCnt"]
