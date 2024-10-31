@@ -66,15 +66,15 @@ public partial class State : StatechartComposition
 		}
 	}
 	private State _initialState;
-	public State ParentState { get; set; }
-	public State CurrentState { get; set; }
-	public List<State> Substates { get; set; }
-	public Dictionary<StringName, List<Transition>> Transitions { get; set; }
-	public List<Transition> AutoTransitions { get; set; }
-	public Dictionary<StringName, List<Reaction>> Reactions { get; set; }
-	protected StateImpl StateImpl { get; set; }
-	public State LowerState { get; set; }
-	public State UpperState { get; set; }
+	public State ParentState;
+	public State CurrentState;
+	public List<State> Substates;
+	public Dictionary<StringName, List<Transition>> Transitions;
+	public List<Transition> AutoTransitions;
+	public Dictionary<StringName, List<Reaction>> Reactions;
+	protected StateImpl StateImpl;
+	public State LowerState;
+	public State UpperState;
 	/// <summary>
 	/// The index of this state exists in parent state.
 	/// </summary>

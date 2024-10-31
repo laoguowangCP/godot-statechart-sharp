@@ -25,15 +25,15 @@ public partial class Statechart : StatechartComposition
 	public bool IsWaitParentReady = true;
 	public bool IsRunning { get; private set; }
 	protected int EventCount;
-	protected State RootState { get; set; }
-	protected SortedSet<State> ActiveStates { get; set; }
-	protected Queue<StringName> QueuedEvents { get; set; }
-	protected SortedSet<Transition> EnabledTransitions { get; set; }
-	protected SortedSet<Transition> EnabledFilteredTransitions { get; set; }
-	protected SortedSet<State> ExitSet { get; set; }
-	protected SortedSet<State> EnterSet { get; set; }
+	protected State RootState;
+	protected SortedSet<State> ActiveStates;
+	protected Queue<StringName> QueuedEvents;
+	protected SortedSet<Transition> EnabledTransitions;
+	protected SortedSet<Transition> EnabledFilteredTransitions;
+	protected SortedSet<State> ExitSet;
+	protected SortedSet<State> EnterSet;
 	protected SortedSet<State> ExitStates;
-	protected SortedSet<Reaction> EnabledReactions { get; set; }
+	protected SortedSet<Reaction> EnabledReactions;
 	public StatechartDuct Duct { get; private set; }
 	protected List<int> SnapshotConfiguration;
 
