@@ -263,7 +263,8 @@ public class ParallelImpl : StateImpl
 		}
 	}
 
-	public override int SelectTransitions(SortedSet<Transition> enabledTransitions)
+	public override int SelectTransitions(
+		SortedSet<Transition> enabledTransitions, bool isAuto)
 	{
 		int handleInfo = -1;
 		if (NonHistorySubstateCnt > 0)
@@ -277,7 +278,8 @@ public class ParallelImpl : StateImpl
 					continue;
 				}
 
-				int substateHandleInfo = substate.SelectTransitions(enabledTransitions);
+				int substateHandleInfo = substate.SelectTransitions(
+					enabledTransitions, isAuto);
 				if (substateHandleInfo < 0)
 				{
 					negCnt += 1;
@@ -313,91 +315,23 @@ public class ParallelImpl : StateImpl
 			return handleInfo;
 		}
 
-		if (CurrentTAMap is null)
+		List<Transition> matched;
+		if (isAuto)
 		{
-			return handleInfo;
+			matched = AutoTransitions;
 		}
-
-		List<Transition> matched = CurrentTAMap[StateId].Transitions;
-		if (matched is null)
-		{
-			return handleInfo;
-		}
-
-		foreach (Transition t in matched)
-		{
-			if (handleInfo == 0)
+		else
+		{	
+			if (CurrentTAMap is null)
 			{
-				if (!t.IsTargetless)
-				{
-					continue;
-				}
+				return handleInfo;
 			}
-
-			bool isEnabled = t.Check();
-			if (isEnabled)
+			matched = CurrentTAMap[StateId].Transitions;
+			if (matched is null)
 			{
-				enabledTransitions.Add(t);
-				handleInfo = 1;
-				break;
+				return handleInfo;
 			}
 		}
-
-		return handleInfo;
-	}
-
-
-	public override int SelectAutoTransitions(SortedSet<Transition> enabledTransitions)
-	{
-		int handleInfo = -1;
-		if (NonHistorySubstateCnt > 0)
-		{
-			int negCnt = 0;
-			int posCnt = 0;
-			foreach (State substate in Substates)
-			{
-				if (substate.IsHistory)
-				{
-					continue;
-				}
-
-				int substateHandleInfo = substate.SelectAutoTransitions(enabledTransitions);
-				if (substateHandleInfo < 0)
-				{
-					negCnt += 1;
-				}
-				else if (substateHandleInfo > 0)
-				{
-					posCnt += 1;
-				}
-			}
-
-			if (negCnt == NonHistorySubstateCnt) // No selected
-			{
-				handleInfo = -1;
-			}
-			else if (posCnt == NonHistorySubstateCnt) // All done
-			{
-				handleInfo = 1;
-			}
-			else // Selected but not all done
-			{
-				handleInfo = 0;
-			}
-		}
-
-		/*
-		Check source's transitions:
-			a) < 0, check any
-			b) == 0, check targetless
-			c) > 0, check none
-		*/
-		if (handleInfo > 0)
-		{
-			return handleInfo;
-		}
-
-		List<Transition> matched = AutoTransitions;
 
 		foreach (Transition t in matched)
 		{

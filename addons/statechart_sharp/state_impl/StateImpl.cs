@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 
 
 namespace LGWCP.Godot.StatechartSharp;
@@ -75,12 +76,7 @@ public class StateImpl
         return false;
     }
 
-    public virtual int SelectTransitions(SortedSet<Transition> enabledTransitions)
-    {
-        return 1;
-    }
-
-    public virtual int SelectAutoTransitions(SortedSet<Transition> enabledTransitions)
+    public virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, bool isAuto)
     {
         return 1;
     }

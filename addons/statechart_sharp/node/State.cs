@@ -113,7 +113,6 @@ public partial class State : StatechartComposition
 			IsConflictToEnterRegion = StateImpl.IsConflictToEnterRegion;
 			ExtendEnterRegion = StateImpl.ExtendEnterRegion;
 			SelectTransitions = StateImpl.SelectTransitions;
-			SelectAutoTransitions = StateImpl.SelectAutoTransitions;
 			DeduceDescendants = StateImpl.DeduceDescendants;
 			HandleSubstateEnter = StateImpl.HandleSubstateEnter;
 			SelectReactions = StateImpl.SelectReactions;
@@ -208,8 +207,7 @@ public partial class State : StatechartComposition
 	public Action<SortedSet<State>> RegisterActiveState;
 	public Func<State, SortedSet<State>, bool> IsConflictToEnterRegion;
 	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> ExtendEnterRegion;
-	public Func<SortedSet<Transition>, int> SelectTransitions;
-	public Func<SortedSet<Transition>, int> SelectAutoTransitions;
+	public Func<SortedSet<Transition>, bool, int> SelectTransitions;
 	public Action<SortedSet<State>, bool, bool> DeduceDescendants;
 	public Action<State> HandleSubstateEnter;
 	public Action<SortedSet<Reaction>, StringName> SelectReactions;

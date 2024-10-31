@@ -259,12 +259,12 @@ public class CompoundImpl : StateImpl
 	}
 
 	public override int SelectTransitions(
-		SortedSet<Transition> enabledTransitions)
+		SortedSet<Transition> enabledTransitions, bool isAuto)
 	{
 		int handleInfo = -1;
 		if (HostState.CurrentState != null)
 		{
-			handleInfo = CurrentState.SelectTransitions(enabledTransitions);
+			handleInfo = CurrentState.SelectTransitions(enabledTransitions, isAuto);
 		}
 
 		/*
@@ -278,60 +278,30 @@ public class CompoundImpl : StateImpl
 			return handleInfo;
 		}
 
-		if (CurrentTAMap is null)
+		List<Transition> matched;
+		if (isAuto)
 		{
-			return handleInfo;
+			matched = AutoTransitions;
 		}
-
-		List<Transition> matched = CurrentTAMap[StateId].Transitions;
-		if (matched is null)
+		else
 		{
-			return handleInfo;
-		}
-
-		foreach (Transition t in matched)
-		{
-			// If == 0, only check targetless
-			if (handleInfo == 0)
+			/*
+			bool hasEvent = Transitions.TryGetValue(eventName, out matched);
+			if (!hasEvent)
 			{
-				if (!t.IsTargetless)
-				{
-					continue;
-				}
+				return handleInfo;
 			}
-
-			bool isEnabled = t.Check();
-			if (isEnabled)
+			*/
+			if (CurrentTAMap is null)
 			{
-				enabledTransitions.Add(t);
-				handleInfo = 1;
-				break;
+				return handleInfo;
+			}
+			matched = CurrentTAMap[StateId].Transitions;
+			if (matched is null)
+			{
+				return handleInfo;
 			}
 		}
-
-		return handleInfo;
-	}
-
-	public override int SelectAutoTransitions(SortedSet<Transition> enabledTransitions)
-	{
-		int handleInfo = -1;
-		if (HostState.CurrentState != null)
-		{
-			handleInfo = CurrentState.SelectAutoTransitions(enabledTransitions);
-		}
-
-		/*
-		Check source's transitions:
-			- < 0, check any
-			- == 0, only check targetless
-			- > 0, do nothing
-		*/
-		if (handleInfo > 0)
-		{
-			return handleInfo;
-		}
-
-		List<Transition> matched = AutoTransitions;
 
 		foreach (Transition t in matched)
 		{
