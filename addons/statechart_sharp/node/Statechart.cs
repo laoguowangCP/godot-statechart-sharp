@@ -384,7 +384,7 @@ public partial class Statechart : StatechartComposition
 		// GlobalEventTAMap.TryGetValue(eventName, out CurrentTAMap);
 
 		// 1. Select transitions
-		RootState.SelectTransitions(EnabledTransitions, eventName);
+		RootState.SelectTransitions(EnabledTransitions);
 
 		// 2. Do transitions
 		DoTransitions();
@@ -392,7 +392,7 @@ public partial class Statechart : StatechartComposition
 		// 3. Select and do automatic transitions
 		for (int i = 1; i <= MaxAutoTransitionRound; ++i)
 		{
-			RootState.SelectTransitions(EnabledTransitions, null);
+			RootState.SelectAutoTransitions(EnabledTransitions);
 
 			// Stop if active states are stable
 			if (EnabledTransitions.Count == 0)

@@ -19,9 +19,8 @@ public partial class Benchmark : Node
             Statechart.Step(goEvent);
         }
         sw.Stop();
-        GD.Print("Step ", iterCnt, " times cost:");
-        GD.Print(sw.ElapsedMilliseconds);
-        GD.Print(TransCnt);
+        GD.Print("Step ", iterCnt, " times cost: ", sw.ElapsedMilliseconds, "ms");
+        GD.Print(TransCnt, " transitions invoked.");
     }
 
     public void TI_AddTransCnt(StatechartDuct duct)

@@ -75,7 +75,12 @@ public class StateImpl
         return false;
     }
 
-    public virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+    public virtual int SelectTransitions(SortedSet<Transition> enabledTransitions)
+    {
+        return 1;
+    }
+
+    public virtual int SelectAutoTransitions(SortedSet<Transition> enabledTransitions)
     {
         return 1;
     }
