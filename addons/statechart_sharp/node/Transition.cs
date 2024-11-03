@@ -10,17 +10,18 @@ namespace LGWCP.Godot.StatechartSharp;
 [Icon("res://addons/statechart_sharp/icon/Transition.svg")]
 public partial class Transition : StatechartComposition
 {
-    #region signals
+
+#region signal
 
     [Signal]
     public delegate void GuardEventHandler(StatechartDuct duct);
     [Signal]
     public delegate void InvokeEventHandler(StatechartDuct duct);
 
-    #endregion
+#endregion
 
 
-    #region properties
+#region property
 
     [Export]
     public TransitionEventNameEnum TransitionEvent
@@ -41,43 +42,51 @@ public partial class Transition : StatechartComposition
     private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.Process;
     [Export]
     public StringName CustomEventName
+#if DEBUG
     {
         get => _customEventName;
         set
         {
             _customEventName = value;
 
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private StringName _customEventName;
+    private StringName _customEventName
+#endif
+        ;
+
     [Export]
     public Array<State> TargetStatesArray
+#if DEBUG
     {
         get => _targetStatesArray;
         set
         {
             _targetStatesArray = value;
 
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private Array<State> _targetStatesArray = new();
+    private Array<State> _targetStatesArray
+#endif
+        = new();
+
     public StringName EventName;
     private List<State> TargetStates;
     public State SourceState;
     public State LcaState { get; private set; }
-    public SortedSet<State> EnterRegion  { get; private set; }
+    public SortedSet<State> EnterRegion { get; private set; }
     private SortedSet<State> EnterRegionEdge;
     private SortedSet<State> DeducedEnterStates;
     protected StatechartDuct Duct;
@@ -85,10 +94,10 @@ public partial class Transition : StatechartComposition
     public bool IsAuto { get; private set; }
     private bool IsValid;
 
-    #endregion
+#endregion
 
 
-    #region methods
+#region method
 
     public override void _Ready()
     {
@@ -102,12 +111,12 @@ public partial class Transition : StatechartComposition
 
         IsValid = true;
 
-        #if TOOLS
+#if TOOLS
         if (Engine.IsEditorHint())
         {
             UpdateConfigurationWarnings();
         }
-        #endif
+#endif
     }
 
     public override void Setup(Statechart hostStatechart, ref int parentOrderId)
@@ -126,9 +135,9 @@ public partial class Transition : StatechartComposition
         if (TransitionEvent == TransitionEventNameEnum.Custom
             &&  (CustomEventName == null || CustomEventName == ""))
         {
-            #if DEBUG
+#if DEBUG
             GD.PushError(GetPath(), ": no event name for custom event.");
-            #endif
+#endif
             IsValid = false;
         }
         EventName = StatechartEventName.GetTransitionEventName(TransitionEvent, CustomEventName);
@@ -141,10 +150,10 @@ public partial class Transition : StatechartComposition
         {
             IsValid = false;
 
-            #if DEBUG
+#if DEBUG
             GD.PushWarning(GetPath(),
                 ": targetless auto transition is invalid. This may cause loop transition.");
-            #endif
+#endif
         }
     }
 
@@ -181,10 +190,10 @@ public partial class Transition : StatechartComposition
             // Check under same statechart
             if (!IsCommonHost(target, SourceState))
             {
-                #if DEBUG
+#if DEBUG
                 GD.PushWarning(
                     GetPath(), ": target ", target.GetPath(), " is not under same statechart as source state.");
-                #endif
+#endif
 
                 continue;
             }
@@ -221,10 +230,10 @@ public partial class Transition : StatechartComposition
             // Target conflicts, disposed from enter region.
             if (isConflict)
             {
-                #if DEBUG
+#if DEBUG
                 GD.PushWarning(
                     GetPath(), ": target ", target.GetPath(), " conflicts with previous target(s).");
-                #endif
+#endif
 
                 continue;
             }
@@ -282,12 +291,12 @@ public partial class Transition : StatechartComposition
         {
             IsValid = false;
 
-            #if DEBUG
+#if DEBUG
             GD.PushWarning(
                 GetPath(),
                 ": auto transition's enter region contains source state ",
                 "causes transition invalid, this may cause loop transition.");
-            #endif
+#endif
         }
     }
 
@@ -332,7 +341,7 @@ public partial class Transition : StatechartComposition
         return DeducedEnterStates;
     }
 
-    #if TOOLS
+#if TOOLS
     public override string[] _GetConfigurationWarnings()
     {
         var warnings = new List<string>();
@@ -389,7 +398,8 @@ public partial class Transition : StatechartComposition
 
         return warnings.ToArray();
     }
-    #endif
+#endif
 
-    #endregion
+#endregion
+
 }

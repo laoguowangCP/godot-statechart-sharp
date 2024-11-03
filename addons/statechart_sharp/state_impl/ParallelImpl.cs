@@ -395,33 +395,31 @@ public class ParallelImpl : StateImpl
 		}
 	}
 
-	public override bool LoadAllStateConfig(int[] config, IntParser configIdx)
+	public override int LoadAllStateConfig(int[] config, int configIdx)
 	{
-		bool isLoadSuccess;
 		foreach (State substate in Substates)
 		{
-			isLoadSuccess = substate.LoadAllStateConfig(config, configIdx);
-			if (!isLoadSuccess)
+			configIdx = substate.LoadAllStateConfig(config, configIdx);
+			if (configIdx == -1)
 			{
-				return false;
+				return -1;
 			}
 		}
 
-		return true;
+		return configIdx;
 	}
 
-	public override bool LoadActiveStateConfig(int[] config, IntParser configIdx)
+	public override int LoadActiveStateConfig(int[] config, int configIdx)
 	{
-		bool isLoadSuccess;
 		foreach (State substate in Substates)
 		{
-			isLoadSuccess = substate.LoadAllStateConfig(config, configIdx);
-			if (!isLoadSuccess)
+			configIdx = substate.LoadAllStateConfig(config, configIdx);
+			if (configIdx == -1)
 			{
-				return false;
+				return -1;
 			}
 		}
 
-		return true;
+		return configIdx;
 	}
 }

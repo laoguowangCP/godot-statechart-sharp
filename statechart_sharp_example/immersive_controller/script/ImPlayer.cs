@@ -4,6 +4,7 @@ using LGWCP.Godot.StatechartSharp;
 using System.Collections.Generic;
 
 
+// TODO: separation ray change phase according to velocity
 [GlobalClass]
 public partial class ImPlayer : CharacterBody3D
 {

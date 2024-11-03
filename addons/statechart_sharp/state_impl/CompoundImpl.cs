@@ -285,13 +285,6 @@ public class CompoundImpl : StateImpl
 		}
 		else
 		{
-			/*
-			bool hasEvent = Transitions.TryGetValue(eventName, out matched);
-			if (!hasEvent)
-			{
-				return handleInfo;
-			}
-			*/
 			if (CurrentTAMap is null)
 			{
 				return handleInfo;
@@ -384,47 +377,45 @@ public class CompoundImpl : StateImpl
 		CurrentState.SaveActiveStateConfig(snapshot);
 	}
 
-	public override bool LoadAllStateConfig(int[] config, IntParser configIdx)
+	public override int LoadAllStateConfig(int[] config, int configIdx)
 	{
-		if (configIdx.X >= config.Length)
-		{
-			return false;
-		}
-
 		if (Substates.Count == 0)
 		{
-			return true;
+			return configIdx;
 		}
 
-		CurrentState = Substates[config[configIdx.X]];
-		++configIdx;
+		if (configIdx >= config.Length)
+		{
+			return -1;
+		}
 
-		bool isLoadSuccess;
+		CurrentState = Substates[config[configIdx]];
+		++configIdx;
 		foreach (State substate in Substates)
 		{
-			isLoadSuccess = substate.LoadAllStateConfig(config, configIdx);
-			if (!isLoadSuccess)
+			configIdx = substate.LoadAllStateConfig(config, configIdx);
+			if (configIdx == -1)
 			{
-				return false;
+				return -1;
 			}
 		}
 
-		return true;
+		return configIdx;
 	}
 
-	public override bool LoadActiveStateConfig(int[] config, IntParser configIdx)
+	public override int LoadActiveStateConfig(int[] config, int configIdx)
 	{
-		if (configIdx.X > config.Length)
-		{
-			return false;
-		}
-
 		if (Substates.Count == 0)
 		{
-			return true;
+			return configIdx;
 		}
 
-		CurrentState = Substates[config[configIdx.X]];
+		if (configIdx > config.Length)
+		{
+			return -1;
+		}
+
+		CurrentState = Substates[config[configIdx]];
 		++configIdx;
 
 		return CurrentState.LoadActiveStateConfig(config, configIdx);

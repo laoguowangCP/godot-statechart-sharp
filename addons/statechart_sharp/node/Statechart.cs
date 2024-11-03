@@ -10,7 +10,8 @@ namespace LGWCP.Godot.StatechartSharp;
 [Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
-	#region properties
+
+#region properties
 
 	/// <summary>
 	/// MaxInternalEventCount
@@ -32,9 +33,8 @@ public partial class Statechart : StatechartComposition
 	protected SortedSet<Transition> EnabledFilteredTransitions;
 	protected SortedSet<State> ExitSet;
 	protected SortedSet<State> EnterSet;
-	protected SortedSet<State> ExitStates;
 	protected SortedSet<Reaction> EnabledReactions;
-	public StatechartDuct Duct { get; private set; }
+	public StatechartDuct Duct;
 	protected List<int> SnapshotConfiguration;
 
 	// Global transition/reaction hashmap
@@ -49,10 +49,10 @@ public partial class Statechart : StatechartComposition
 	// Total count of states in statechart
 	protected int StateLength = 0;
 
-	#endregion
+#endregion
 
 
-	#region methods
+#region methods
 
 	public override void _Ready()
 	{
@@ -76,21 +76,21 @@ public partial class Statechart : StatechartComposition
 		
 		SnapshotConfiguration = new List<int>();
 
-		#if TOOLS
+#if TOOLS
 		if (!Engine.IsEditorHint())
 		{
-		#endif
+#endif
 
 		// Statechart setup async
 		StartSetUp();
 
-		#if TOOLS
+#if TOOLS
 		}
 		else
 		{
 			UpdateConfigurationWarnings();
 		}
-		#endif
+#endif
 	}
 
 	protected async void StartSetUp()
@@ -244,9 +244,9 @@ public partial class Statechart : StatechartComposition
 	{
 		if (IsRunning)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Statechart is running, abort save.");
-			#endif
+#endif
 			return null;
 		}
 
@@ -272,17 +272,17 @@ public partial class Statechart : StatechartComposition
 	{
 		if (IsRunning)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Statechart is running, abort load.");
-			#endif
+#endif
 			return false;
 		}
 
 		if (snapshot is null)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Snapshot is null, abort load.");
-			#endif
+#endif
 			return false;
 		}
 
@@ -299,36 +299,30 @@ public partial class Statechart : StatechartComposition
 		*/
 		
 		List<State> statesToLoad = new();
-		int[] config = snapshot.Configuration;
+		var config = snapshot.Configuration;
 		if (config.Length == 0)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Configuration is null, abort load.");
-			#endif
+#endif
 			return false;
 		}
 
-		bool isLoadSuccess;
-		IntParser configIdx = new(0);
+		int loadIdxResult;
 		if (snapshot.IsAllStateConfiguration)
 		{
-			isLoadSuccess = RootState.LoadAllStateConfig(
-				config, configIdx);
+			loadIdxResult = RootState.LoadAllStateConfig(config, 0);
 		}
 		else
 		{
-			isLoadSuccess = RootState.LoadActiveStateConfig(
-				config, configIdx);
+			loadIdxResult = RootState.LoadActiveStateConfig(config, 0);
 		}
 
-		if (!isLoadSuccess)
+		if (loadIdxResult == -1)
 		{
-			#if DEBUG
-			GD.PushWarning(
-				GetPath(),
-				"Load failed, configuration not aligned."
-			);
-			#endif
+#if DEBUG
+			GD.PushWarning(GetPath(), "Load failed, configuration not aligned.");
+#endif
 
 			return false;
 		}
@@ -405,7 +399,7 @@ public partial class Statechart : StatechartComposition
 		// 4. Select and do reactions
 		foreach (State state in ActiveStates)
 		{
-			state.SelectReactions(EnabledReactions, eventName);
+			state.SelectReactions(EnabledReactions);
 		}
 
 		foreach (Reaction reaction in EnabledReactions)
@@ -455,9 +449,9 @@ public partial class Statechart : StatechartComposition
 
 			EnabledFilteredTransitions.Add(transition);
 
-			ExitStates = ActiveStates.GetViewBetween(
+			var exitStates = ActiveStates.GetViewBetween(
 				transition.LcaState.LowerState, transition.LcaState.UpperState);
-			ExitSet.UnionWith(ExitStates);
+			ExitSet.UnionWith(exitStates);
 		}
 
 		ActiveStates.ExceptWith(ExitSet);
@@ -499,12 +493,12 @@ public partial class Statechart : StatechartComposition
 
 	public override void _Process(double delta)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
+#endif
 
 		Duct.Delta = delta;
 		Step(StatechartEventName.EVENT_PROCESS);
@@ -512,12 +506,12 @@ public partial class Statechart : StatechartComposition
 
 	public override void _PhysicsProcess(double delta)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
+#endif
 		
 		Duct.PhysicsDelta = delta;
 		Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
@@ -525,12 +519,12 @@ public partial class Statechart : StatechartComposition
 
 	public override void _Input(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
+#endif
 		
 		using(@event)
 		{
@@ -541,12 +535,12 @@ public partial class Statechart : StatechartComposition
 
 	public override void _ShortcutInput(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
+#endif
 		
 		using(@event)
 		{
@@ -557,12 +551,12 @@ public partial class Statechart : StatechartComposition
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
+#endif
 		
 		using(@event)
 		{
@@ -573,12 +567,12 @@ public partial class Statechart : StatechartComposition
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
+#endif
 		
 		
 		using(@event)
@@ -588,7 +582,7 @@ public partial class Statechart : StatechartComposition
 		}
 	}
 
-	#if TOOLS
+#if TOOLS
     public override string[] _GetConfigurationWarnings()
 	{
 		var warnings = new List<string>();
@@ -623,7 +617,8 @@ public partial class Statechart : StatechartComposition
 
 		return warnings.ToArray();
 	}
-	#endif
+#endif
 
-	#endregion
+#endregion
+
 }

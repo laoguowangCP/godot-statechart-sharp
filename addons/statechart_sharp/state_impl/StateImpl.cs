@@ -87,16 +87,8 @@ public class StateImpl
 
     public virtual void HandleSubstateEnter(State substate) {}
 
-    public virtual void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
+    public virtual void SelectReactions(SortedSet<Reaction> enabledReactions)
 	{
-        /*
-		bool hasEventName = Reactions.TryGetValue(eventName, out var matched);
-		if (!hasEventName)
-		{
-			return;
-		}
-        */
-        
         if (CurrentTAMap is null)
         {
             return;
@@ -118,11 +110,11 @@ public class StateImpl
 
     public virtual void SaveActiveStateConfig(List<int> snapshot) {}
 
-    public virtual bool LoadAllStateConfig(int[] config, IntParser configIdx) { return true; }
+    public virtual int LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
     
-    public virtual bool LoadActiveStateConfig(int[] config, IntParser configIdx) { return true; }
+    public virtual int LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
 
-    #if TOOLS
+#if TOOLS
     public virtual void GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
@@ -160,5 +152,5 @@ public class StateImpl
             warnings.Add("State should be child to statechart or non-history state.");
         }
     }
-    #endif
+#endif
 }

@@ -17,55 +17,64 @@ public enum StateModeEnum : int
 [Icon("res://addons/statechart_sharp/icon/State.svg")]
 public partial class State : StatechartComposition
 {
-	#region signals
+
+
+#region signal
 	
 	[Signal]
 	public delegate void EnterEventHandler(StatechartDuct duct);
 	[Signal]
 	public delegate void ExitEventHandler(StatechartDuct duct);
 	
-	#endregion
+#endregion
 
 
-	#region properties
+#region property
 
 	[Export]
 	public StateModeEnum StateMode
+#if DEBUG
 	{
 		get => _stateMode;
 		set
 		{
 			_stateMode = value;
-
-			#if TOOLS
+#if TOOLS
 			if (Engine.IsEditorHint())
 			{
 				StateImpl = GetStateImpl(value);
 				UpdateConfigurationWarnings();
 			}
-			#endif
+#endif
 		}
 	}
-	private StateModeEnum _stateMode = StateModeEnum.Compound;
+	private StateModeEnum _stateMode
+#endif
+		= StateModeEnum.Compound;
+
 	[Export]
 	public bool IsDeepHistory { get; private set; }
 	[Export]
 	public State InitialState
+#if DEBUG
 	{
-		get { return _initialState; }
+		get => _initialState;
 		set
 		{
 			_initialState = value;
 
-			#if TOOLS
+#if TOOLS
 			if (Engine.IsEditorHint())
 			{
 				UpdateConfigurationWarnings();
 			}
-			#endif
+#endif
 		}
 	}
-	private State _initialState;
+	private State _initialState
+#endif
+		;
+
 	public State ParentState;
 	public State CurrentState;
 	public List<State> Substates;
@@ -89,10 +98,28 @@ public partial class State : StatechartComposition
 	protected StatechartDuct Duct;
 	public bool IsHistory;
 	
-	#endregion
+#endregion
 
 
-	#region methods
+#region func cache
+	public Func<List<State>, bool> GetPromoteStates;
+	public Func<bool> IsAvailableRootState;
+	public Action<SortedSet<State>> RegisterActiveState;
+	public Func<State, SortedSet<State>, bool> IsConflictToEnterRegion;
+	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> ExtendEnterRegion;
+	public Func<SortedSet<Transition>, bool, int> SelectTransitions;
+	public Action<SortedSet<State>, bool, bool> DeduceDescendants;
+	public Action<State> HandleSubstateEnter;
+	public Action<SortedSet<Reaction>> SelectReactions;
+	public Action<List<int>> SaveAllStateConfig;
+	public Action<List<int>> SaveActiveStateConfig;
+	public Func<int[], int, int> LoadAllStateConfig;
+	public Func<int[], int, int> LoadActiveStateConfig;
+
+#endregion
+
+
+#region method
 
 	public override void _Ready()
 	{
@@ -123,12 +150,12 @@ public partial class State : StatechartComposition
 			LoadActiveStateConfig = StateImpl.LoadActiveStateConfig;
 		}
 
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			UpdateConfigurationWarnings();
 		}
-		#endif
+#endif
 	}
 
 	protected StateImpl GetStateImpl(StateModeEnum mode) => mode switch
@@ -202,28 +229,15 @@ public partial class State : StatechartComposition
 			&& id <= UpperState.OrderId;
 	}
 
-	public Func<List<State>, bool> GetPromoteStates;
-	public Func<bool> IsAvailableRootState;
-	public Action<SortedSet<State>> RegisterActiveState;
-	public Func<State, SortedSet<State>, bool> IsConflictToEnterRegion;
-	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> ExtendEnterRegion;
-	public Func<SortedSet<Transition>, bool, int> SelectTransitions;
-	public Action<SortedSet<State>, bool, bool> DeduceDescendants;
-	public Action<State> HandleSubstateEnter;
-	public Action<SortedSet<Reaction>, StringName> SelectReactions;
-	public Action<List<int>> SaveAllStateConfig;
-	public Action<List<int>> SaveActiveStateConfig;
-	public Func<int[], IntParser, bool> LoadAllStateConfig;
-	public Func<int[], IntParser, bool> LoadActiveStateConfig;
-
-	#if TOOLS
+#if TOOLS
     public override string[] _GetConfigurationWarnings()
 	{
 		List<string> warnings = new List<string>();
 		StateImpl?.GetConfigurationWarnings(warnings);
 		return warnings.ToArray();
 	}
-	#endif
+#endif
 
-	#endregion
+#endregion
+
 }
