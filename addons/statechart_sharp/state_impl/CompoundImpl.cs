@@ -116,11 +116,11 @@ public class CompoundImpl : StateImpl
 			// Check selected initial-state is non-history substate
 			if (InitialState.ParentState != HostState || InitialState.IsHistory)
 			{
-				#if DEBUG
+#if DEBUG
 				GD.PushWarning(
 					HostState.GetPath(),
 					": initial-state should be a non-history substate.");
-				#endif
+#endif
 				InitialState = null;
 			}
 		}
@@ -421,7 +421,7 @@ public class CompoundImpl : StateImpl
 		return CurrentState.LoadActiveStateConfig(config, configIdx);
 	}
 
-	#if TOOLS
+#if TOOLS
 	public override void GetConfigurationWarnings(List<string> warnings)
 	{
 		// Check parent
@@ -439,5 +439,5 @@ public class CompoundImpl : StateImpl
 			}
 		}
 	}
-	#endif
+#endif
 }

@@ -48,7 +48,7 @@ public class HistoryImpl : StateImpl
         }
     }
     
-    #if TOOLS
+#if TOOLS
     public override void GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
@@ -80,5 +80,5 @@ public class HistoryImpl : StateImpl
             warnings.Add("History state should not have child.");
         }
     }
-    #endif
+#endif
 }

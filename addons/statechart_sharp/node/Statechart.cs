@@ -11,7 +11,7 @@ namespace LGWCP.Godot.StatechartSharp;
 public partial class Statechart : StatechartComposition
 {
 
-#region properties
+#region property
 
 	/// <summary>
 	/// MaxInternalEventCount
@@ -52,7 +52,7 @@ public partial class Statechart : StatechartComposition
 #endregion
 
 
-#region methods
+#region method
 
 	public override void _Ready()
 	{

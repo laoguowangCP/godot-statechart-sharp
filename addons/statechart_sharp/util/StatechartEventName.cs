@@ -53,7 +53,7 @@ public enum ReactionEventNameEnum : int
 
 public partial class StatechartEventName
 {
-    #region Preset EventName
+#region Preset EventName
 
     public static readonly StringName EVENT_PROCESS = "_process";
     public static readonly StringName EVENT_PHYSICS_PROCESS = "_physics_process";
@@ -67,7 +67,7 @@ public partial class StatechartEventName
         protected static readonly StringName MY_EVENT = "_my_event";  
     */
 
-    #endregion
+#endregion
     
     public static StringName GetTransitionEventName(TransitionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {

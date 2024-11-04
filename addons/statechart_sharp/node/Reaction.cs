@@ -9,14 +9,14 @@ namespace LGWCP.Godot.StatechartSharp;
 [Icon("res://addons/statechart_sharp/icon/Reaction.svg")]
 public partial class Reaction : StatechartComposition
 {
-    #region signals
+#region signal
 
     [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
     
-    #endregion
+#endregion
 
 
-    #region properties
+#region property
 
     [Export]
     public ReactionEventNameEnum ReactionEvent
@@ -26,12 +26,12 @@ public partial class Reaction : StatechartComposition
         {
             _reactionEvent = value;
 
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
     private ReactionEventNameEnum _reactionEvent = ReactionEventNameEnum.Process;
@@ -43,43 +43,43 @@ public partial class Reaction : StatechartComposition
         {
             _customEventName = value;
 
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
     private StringName _customEventName;
     public StringName EventName { get; protected set; }
     protected StatechartDuct Duct { get => HostStatechart.Duct; }
 
-    #endregion
+#endregion
 
 
-    #region methods
+#region method
 
     public override void _Ready()
     {
-        #if TOOLS
+#if TOOLS
         if (Engine.IsEditorHint())
         {
             UpdateConfigurationWarnings();
         }
-        #endif
+#endif
     }
 
     public override void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         base.Setup(hostStatechart, ref parentOrderId);
 
-        #if DEBUG
+#if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)
         {
             GD.PushError(GetPath(), ": no event name for custom-event.");
         }
-        #endif
+#endif
 
         EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
     }
@@ -101,7 +101,7 @@ public partial class Reaction : StatechartComposition
         EmitSignal(SignalName.Invoke, duct);
     }
 
-    #if TOOLS
+#if TOOLS
     public override string[] _GetConfigurationWarnings()
     {
         var warnings = new List<string>();
@@ -135,7 +135,8 @@ public partial class Reaction : StatechartComposition
 
         return warnings.ToArray();
     }
-    #endif
+#endif
 
-    #endregion
+#endregion
+
 }

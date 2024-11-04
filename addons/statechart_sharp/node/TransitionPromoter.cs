@@ -15,13 +15,13 @@ public partial class TransitionPromoter : StatechartComposition
 
     public override void _Ready()
     {
-        #if TOOLS
+#if TOOLS
         if (Engine.IsEditorHint())
         {
             UpdateConfigurationWarnings();
             return;
         }
-        #endif
+#endif
 
         HostTransition = GetParentOrNull<Transition>();
 
