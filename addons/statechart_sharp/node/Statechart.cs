@@ -188,6 +188,52 @@ public partial class Statechart : StatechartComposition
 		}
 	}
 
+	public void SubmitGlobalTransition(int stateId, StringName eventName, Transition trans)
+	{
+		(List<Transition> Transitions, List<Reaction> _)[] globalTA;
+		bool isEventSubmitted = GlobalEventTAMap.TryGetValue(eventName, out globalTA);
+		if (isEventSubmitted)
+		{
+			if (globalTA[stateId].Transitions is null)
+			{
+				globalTA[stateId].Transitions = new() { trans };
+			}
+			else
+			{
+				globalTA[stateId].Transitions.Add(trans);
+			}
+		}
+		else
+		{
+			globalTA = new (List<Transition>, List<Reaction>)[StateLength];
+			globalTA[stateId].Transitions = new() { trans };
+			GlobalEventTAMap.Add(eventName, globalTA);
+		}
+	}
+
+	public void SubmitGlobalReaction(int stateId, StringName eventName, Reaction react)
+	{
+		(List<Transition> _, List<Reaction> Reactions)[] globalTA;
+		bool isEventSubmitted = GlobalEventTAMap.TryGetValue(eventName, out globalTA);
+		if (isEventSubmitted)
+		{
+			if (globalTA[stateId].Reactions is null)
+			{
+				globalTA[stateId].Reactions = new() { react };
+			}
+			else
+			{
+				globalTA[stateId].Reactions.Add(react);
+			}
+		}
+		else
+		{
+			globalTA = new (List<Transition>, List<Reaction>)[StateLength];
+			globalTA[stateId].Reactions = new() { react };
+			GlobalEventTAMap.Add(eventName, globalTA);
+		}
+	}
+
 	public void SubmitGlobalReactions(int stateId, Dictionary<StringName, List<Reaction>> reactions)
 	{
 		foreach ((StringName eventName, List<Reaction> eventReact) in reactions)

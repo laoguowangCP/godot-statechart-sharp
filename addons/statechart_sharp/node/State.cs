@@ -78,9 +78,7 @@ public partial class State : StatechartComposition
 	public State ParentState;
 	public State CurrentState;
 	public List<State> Substates;
-	public Dictionary<StringName, List<Transition>> Transitions;
 	public List<Transition> AutoTransitions;
-	public Dictionary<StringName, List<Reaction>> Reactions;
 	protected StateImpl StateImpl;
 	public State LowerState;
 	public State UpperState;
@@ -124,9 +122,7 @@ public partial class State : StatechartComposition
 	public override void _Ready()
 	{
 		Substates = new List<State>();
-		Transitions = new Dictionary<StringName, List<Transition>>();
 		AutoTransitions = new List<Transition>();
-		Reactions = new Dictionary<StringName, List<Reaction>>();
 
 		StateImpl = GetStateImpl(StateMode);
 		IsHistory = StateMode == StateModeEnum.History;

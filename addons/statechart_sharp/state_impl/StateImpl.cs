@@ -23,9 +23,9 @@ public class StateImpl
         set => HostState.UpperState = value;
     }
     public int StateId;
-    protected Dictionary<StringName, List<Transition>> Transitions;
+    // protected Dictionary<StringName, List<Transition>> Transitions;
     protected List<Transition> AutoTransitions;
-    protected Dictionary<StringName, List<Reaction>> Reactions;
+    // protected Dictionary<StringName, List<Reaction>> Reactions;
     protected (List<Transition> Transitions, List<Reaction> Reactions)[] CurrentTAMap
     {
         get => HostStatechart.CurrentTAMap;
@@ -56,16 +56,10 @@ public class StateImpl
         ParentState = HostState.ParentState;
         HostStatechart = HostState.HostStatechart;
         Substates = HostState.Substates;
-        Transitions = HostState.Transitions;
         AutoTransitions = HostState.AutoTransitions;
-        Reactions = HostState.Reactions;
     }
 
-    public virtual void PostSetup()
-    {
-        HostStatechart.SubmitGlobalTransitions(StateId, Transitions);
-        HostStatechart.SubmitGlobalReactions(StateId, Reactions);
-    }
+    public virtual void PostSetup() {}
 
     public virtual bool GetPromoteStates(List<State> states) { return false; }
 

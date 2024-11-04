@@ -59,39 +59,11 @@ public class CompoundImpl : StateImpl
 				{
 					continue;
 				}
-
 				t.Setup(hostStateChart, ref parentOrderId);
-
-				if (t.IsAuto)
-				{
-					AutoTransitions.Add(t);
-					continue;
-				}
-
-				bool hasEvent = Transitions.TryGetValue(t.EventName, out var matched);
-				if (hasEvent)
-				{
-					matched.Add(t);
-				}
-				else
-				{
-					List<Transition> transitions = new() { t };
-					Transitions.Add(t.EventName, transitions);
-				}
 			}
 			else if (child is Reaction a)
 			{
 				a.Setup(hostStateChart, ref parentOrderId);
-				bool hasEvent = Reactions.TryGetValue(a.EventName, out var matched);
-				if (hasEvent)
-				{
-					matched.Add(a);
-				}
-				else
-				{
-					List<Reaction> reactions = new() { a };
-					Reactions.Add(a.EventName, reactions);
-				}
 			}
 		}
 
@@ -144,30 +116,37 @@ public class CompoundImpl : StateImpl
 
 	public override void PostSetup()
 	{
-		foreach (State state in Substates)
+		foreach (Node child in HostState.GetChildren())
 		{
-			state.PostSetup();
-		}
-
-		// Post process is order unconcerned
-		foreach (var pair in Transitions)
-		{
-			foreach(var t in pair.Value)
+			if (child.IsQueuedForDeletion())
 			{
-				t.PostSetup();
+				continue;
 			}
-		}
+			
+			if (child is State s)
+			{
+				s.PostSetup();
+			}
+			else if (child is Transition t)
+			{
+				// Root state should not have transition
+				if (ParentState is null)
+				{
+					continue;
+				}
 
-		foreach (var t in AutoTransitions)
-		{
-			t.PostSetup();
-		}
-
-		foreach (var pair in Reactions)
-		{
-			foreach(var a in pair.Value)
+				t.PostSetup();
+				if (t.IsAuto)
+				{
+					AutoTransitions.Add(t);
+					continue;
+				}
+				HostStatechart.SubmitGlobalTransition(StateId, t.EventName, t);
+			}
+			else if (child is Reaction a)
 			{
 				a.PostSetup();
+				HostStatechart.SubmitGlobalReaction(StateId, a.EventName, a);
 			}
 		}
 
