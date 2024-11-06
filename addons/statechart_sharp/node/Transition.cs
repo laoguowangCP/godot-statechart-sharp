@@ -25,21 +25,25 @@ public partial class Transition : StatechartComposition
 
     [Export]
     public TransitionEventNameEnum TransitionEvent
+#if DEBUG
     {
         get => _transitionEvent;
         set
         {
             _transitionEvent = value;
 
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.Process;
+    private TransitionEventNameEnum _transitionEvent
+#endif
+        = TransitionEventNameEnum.Process;
+
     [Export]
     public StringName CustomEventName
 #if DEBUG
@@ -48,7 +52,6 @@ public partial class Transition : StatechartComposition
         set
         {
             _customEventName = value;
-
 #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -69,7 +72,6 @@ public partial class Transition : StatechartComposition
         set
         {
             _targetStatesArray = value;
-
 #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -85,13 +87,13 @@ public partial class Transition : StatechartComposition
     public StringName EventName;
     private List<State> TargetStates;
     public State SourceState;
-    public State LcaState { get; private set; }
-    public SortedSet<State> EnterRegion { get; private set; }
-    private SortedSet<State> EnterRegionEdge;
-    private SortedSet<State> DeducedEnterStates;
+    public State LcaState;
+    public SortedSet<State> EnterRegion;
+    protected SortedSet<State> EnterRegionEdge;
+    protected SortedSet<State> DeducedEnterStates;
     protected StatechartDuct Duct;
-    public bool IsTargetless { get; private set; }
-    public bool IsAuto { get; private set; }
+    public bool IsTargetless;
+    public bool IsAuto;
     private bool IsValid;
 
 #endregion
@@ -132,8 +134,7 @@ public partial class Transition : StatechartComposition
         }
 
         // Handle event name
-        if (TransitionEvent == TransitionEventNameEnum.Custom
-            &&  (CustomEventName == null || CustomEventName == ""))
+        if (TransitionEvent == TransitionEventNameEnum.Custom &&  CustomEventName == null)
         {
 #if DEBUG
             GD.PushError(GetPath(), ": no event name for custom event.");
