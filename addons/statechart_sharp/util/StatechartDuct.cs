@@ -7,14 +7,17 @@ namespace LGWCP.Godot.StatechartSharp;
 [GlobalClass]
 public partial class StatechartDuct : RefCounted
 {
-    public Statechart HostStatechart { private get; set; } = null;
-    public double Delta { get; set; } = 0.0;
-    public double PhysicsDelta { get; set; } = 0.0;
-    public InputEvent Input { get; set; }
-    public InputEvent ShortcutInput { get; set; }
-    public InputEvent UnhandledKeyInput { get; set; }
-    public InputEvent UnhandledInput { get; set; }
-    public bool IsTransitionEnabled { get; set; } = false;
-    public Node CompositionNode { get; set; }
-    public bool IsRunning { get => HostStatechart is not null && HostStatechart.IsRunning; }
+    public StatechartDuct(Statechart statechart)
+    {
+        HostStatechart = statechart;
+    }
+    protected Statechart HostStatechart;
+    public double Delta = 0.0;
+    public double PhysicsDelta = 0.0;
+    public InputEvent Input;
+    public InputEvent ShortcutInput;
+    public InputEvent UnhandledKeyInput;
+    public InputEvent UnhandledInput;
+    public bool IsTransitionEnabled = false;
+    public Node CompositionNode;
 }

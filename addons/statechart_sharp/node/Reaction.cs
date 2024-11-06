@@ -59,7 +59,7 @@ public partial class Reaction : StatechartComposition
 #endif
         ;
 
-    public StringName EventName { get; protected set; }
+    public StringName EventName;
     protected StatechartDuct Duct;
 
 #endregion

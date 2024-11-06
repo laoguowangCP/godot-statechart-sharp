@@ -53,7 +53,7 @@ public partial class State : StatechartComposition
 		= StateModeEnum.Compound;
 
 	[Export]
-	public bool IsDeepHistory { get; private set; }
+	public bool IsDeepHistory;
 	[Export]
 	public State InitialState
 #if DEBUG

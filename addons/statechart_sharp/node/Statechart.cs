@@ -21,10 +21,10 @@ public partial class Statechart : StatechartComposition
 	[Export(PropertyHint.Range, "0,32,")]
 	public int MaxAutoTransitionRound = 8;
 	[Export(PropertyHint.Flags, "Process,Physics Process,Input,Shortcut Input,UnhandledKey Input,Unhandled Input")]
-	public EventFlagEnum EventFlag { get; set; } = 0;
+	public EventFlagEnum EventFlag = 0;
 	[Export]
 	public bool IsWaitParentReady = true;
-	public bool IsRunning { get; private set; }
+	protected bool IsRunning;
 	protected int EventCount;
 	protected State RootState;
 	protected SortedSet<State> ActiveStates;
@@ -40,11 +40,7 @@ public partial class Statechart : StatechartComposition
 	// Global transition/reaction hashmap
 	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> GlobalEventTAMap;
 	public (List<Transition>, List<Reaction>)[] CurrentTAMap;
-	public StringName LastStepEventName = "_";
-
-
-	// Max order id of statechart compositions
-	// protected int StatechartLength = 0;
+	protected StringName LastStepEventName = "_";
 
 	// Total count of states in statechart
 	protected int StateLength = 0;
@@ -56,10 +52,7 @@ public partial class Statechart : StatechartComposition
 
 	public override void _Ready()
 	{
-		Duct = new StatechartDuct
-		{
-			HostStatechart = this
-		};
+		Duct = new StatechartDuct(this);
 
 		IsRunning = false;
 		EventCount = 0;
@@ -124,12 +117,13 @@ public partial class Statechart : StatechartComposition
 			}
 		}
 		
-		OrderId = -1; // Statechart has -1 order id
+		// Statechart node order id = -1
+		OrderId = -1;
 		if (RootState is not null)
 		{
-			int parentOrderId = 0;
-			RootState.Setup(this, ref parentOrderId);
-			// StatechartLength = parentOrderId;
+			// Root state node order id = 0
+			int orderId = 0;
+			RootState.Setup(this, ref orderId);
 		}
 	}
 
