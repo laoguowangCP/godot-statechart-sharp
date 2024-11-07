@@ -7,6 +7,7 @@ namespace LGWCP.Godot.StatechartSharp;
 [GlobalClass]
 public partial class StatechartDuct : RefCounted
 {
+    public StatechartDuct() { /* Placeholder constructor so editor won't crash. */ }
     public StatechartDuct(Statechart statechart)
     {
         HostStatechart = statechart;
