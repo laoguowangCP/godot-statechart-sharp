@@ -4,7 +4,6 @@ using LGWCP.Godot.StatechartSharp;
 using System.Collections.Generic;
 
 
-// TODO: separation ray change phase according to velocity
 [GlobalClass]
 public partial class ImPlayer : CharacterBody3D
 {
@@ -70,6 +69,13 @@ public partial class ImPlayer : CharacterBody3D
 
 		Statechart = GetNodeOrNull<Statechart>("Statechart");
 		RootState = Statechart.GetNodeOrNull<State>("Root");
+
+		GD.PrintT
+		(
+			"This is a junky controller, not supposed to be used in your game. ",
+			"You may need refactor the head/feet ray (make them aligned to your moving direction) ",
+			"so characterbody may handle the head/feet situation correctly."
+		);
     }
 
     public override void _Process(double delta)
