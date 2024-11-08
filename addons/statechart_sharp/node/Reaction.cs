@@ -46,7 +46,6 @@ public partial class Reaction : StatechartComposition
         set
         {
             _customEventName = value;
-
 #if TOOLS
             if (Engine.IsEditorHint())
             {
@@ -88,7 +87,6 @@ public partial class Reaction : StatechartComposition
             GD.PushError(GetPath(), ": no event name for custom-event.");
         }
 #endif
-
         EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 

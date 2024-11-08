@@ -150,7 +150,6 @@ public partial class Transition : StatechartComposition
         if (IsTargetless && IsAuto)
         {
             IsValid = false;
-
 #if DEBUG
             GD.PushWarning(GetPath(),
                 ": targetless auto transition is invalid. This may cause loop transition.");
@@ -195,7 +194,6 @@ public partial class Transition : StatechartComposition
                 GD.PushWarning(
                     GetPath(), ": target ", target.GetPath(), " is not under same statechart as source state.");
 #endif
-
                 continue;
             }
 
@@ -235,7 +233,6 @@ public partial class Transition : StatechartComposition
                 GD.PushWarning(
                     GetPath(), ": target ", target.GetPath(), " conflicts with previous target(s).");
 #endif
-
                 continue;
             }
 
@@ -291,7 +288,6 @@ public partial class Transition : StatechartComposition
         if (IsAuto && EnterRegion.Contains(SourceState))
         {
             IsValid = false;
-
 #if DEBUG
             GD.PushWarning(
                 GetPath(),
@@ -307,7 +303,6 @@ public partial class Transition : StatechartComposition
         {
             return false;
         }
-
         return CustomTransitionGuard(Duct);
     }
 
