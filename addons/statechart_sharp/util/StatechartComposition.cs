@@ -10,7 +10,7 @@ public partial class StatechartComposition : Node
     public int OrderId;
     public Statechart HostStatechart;
 
-    public virtual void Setup() {}
+    public virtual void _Setup() {}
     public virtual void Setup(Statechart hostStatechart, ref int orderId)
     {
         HostStatechart = hostStatechart;
@@ -18,7 +18,7 @@ public partial class StatechartComposition : Node
         ++orderId;
         ProcessMode = ProcessModeEnum.Disabled;
     }
-    public virtual void PostSetup() {}
+    public virtual void _SetupPost() {}
     
     public static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
     {

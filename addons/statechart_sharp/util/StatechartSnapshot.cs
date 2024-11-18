@@ -8,6 +8,6 @@ namespace LGWCP.Godot.StatechartSharp;
 [GlobalClass]
 public partial class StatechartSnapshot : Resource
 {
-    [Export] public bool IsAllStateConfiguration;
-    [Export] public int[] Configuration;
+    [Export] public bool IsAllStateConfig;
+    [Export] public int[] Config;
 }

@@ -79,7 +79,7 @@ public partial class Reaction : StatechartComposition
     public override void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         base.Setup(hostStatechart, ref parentOrderId);
-        Duct = HostStatechart.Duct;
+        Duct = HostStatechart._Duct;
 
 #if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)

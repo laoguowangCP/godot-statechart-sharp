@@ -85,7 +85,7 @@ public partial class Transition : StatechartComposition
         = new();
 
     public StringName EventName;
-    private List<State> TargetStates;
+    protected List<State> TargetStates;
     public State SourceState;
     public State LcaState;
     public SortedSet<State> EnterRegion;
@@ -94,7 +94,7 @@ public partial class Transition : StatechartComposition
     protected StatechartDuct Duct;
     public bool IsTargetless;
     public bool IsAuto;
-    private bool IsValid;
+    protected bool IsValid;
 
 #endregion
 
@@ -124,7 +124,7 @@ public partial class Transition : StatechartComposition
     public override void Setup(Statechart hostStatechart, ref int parentOrderId)
     {
         base.Setup(hostStatechart, ref parentOrderId);
-		Duct = HostStatechart.Duct;
+		Duct = HostStatechart._Duct;
 
         // Get source state
         Node parent = GetParentOrNull<Node>();
@@ -157,7 +157,7 @@ public partial class Transition : StatechartComposition
         }
     }
 
-    public override void PostSetup()
+    public override void _SetupPost()
     {
         /*
         Post setup:

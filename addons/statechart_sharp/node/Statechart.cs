@@ -13,9 +13,6 @@ public partial class Statechart : StatechartComposition
 
 #region property
 
-	/// <summary>
-	/// MaxInternalEventCount
-	/// </summary>
 	[Export(PropertyHint.Range, "0,32,")]
 	public int MaxInternalEventCount = 8;
 	[Export(PropertyHint.Range, "0,32,")]
@@ -34,16 +31,17 @@ public partial class Statechart : StatechartComposition
 	protected SortedSet<State> ExitSet;
 	protected SortedSet<State> EnterSet;
 	protected SortedSet<Reaction> EnabledReactions;
-	public StatechartDuct Duct;
-	protected List<int> SnapshotConfiguration;
-
-	// Global transition/reaction hashmap
-	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> GlobalEventTAMap;
-	public (List<Transition>, List<Reaction>)[] CurrentTAMap;
+	protected List<int> SnapshotConfig;
 	protected StringName LastStepEventName = "_";
 
 	// Total count of states in statechart
 	protected int StateLength = 0;
+
+	public StatechartDuct _Duct;
+	
+	// Global transition/reaction hashmap
+	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> _GlobalEventTAMap;
+	public (List<Transition>, List<Reaction>)[] _CurrentTAMap;
 
 #endregion
 
@@ -52,7 +50,7 @@ public partial class Statechart : StatechartComposition
 
 	public override void _Ready()
 	{
-		Duct = new StatechartDuct(this);
+		_Duct = new StatechartDuct(this);
 
 		IsRunning = false;
 		EventCount = 0;
@@ -65,9 +63,9 @@ public partial class Statechart : StatechartComposition
 		EnterSet = new SortedSet<State>(new StatechartComparer<State>());
 		EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
 
-		GlobalEventTAMap = new Dictionary<StringName, (List<Transition>, List<Reaction>)[]>();
+		_GlobalEventTAMap = new Dictionary<StringName, (List<Transition>, List<Reaction>)[]>();
 		
-		SnapshotConfiguration = new List<int>();
+		SnapshotConfig = new List<int>();
 
 #if TOOLS
 		if (!Engine.IsEditorHint())
@@ -98,11 +96,11 @@ public partial class Statechart : StatechartComposition
 			}
 		}
 
-		Setup();
-		PostSetup();
+		_Setup();
+		_SetupPost();
 	}
 
-	public override void Setup()
+	public override void _Setup()
 	{
 		HostStatechart = this;
 		foreach (Node child in GetChildren())
@@ -127,13 +125,13 @@ public partial class Statechart : StatechartComposition
 		}
 	}
 
-	public override void PostSetup()
+	public override void _SetupPost()
 	{	
 		// Get and enter active states
 		if (RootState is not null)
 		{
-			RootState.RegisterActiveState(ActiveStates);
-			RootState.PostSetup();
+			RootState.SubmitActiveState(ActiveStates);
+			RootState._SetupPost();
 		}
 
 		foreach (State state in ActiveStates)
@@ -163,11 +161,11 @@ public partial class Statechart : StatechartComposition
 		return id;
 	}
 
-	public void SubmitGlobalTransition(int stateId, StringName eventName, Transition trans)
+	public void RegistGlobalTransition(int stateId, StringName eventName, Transition trans)
 	{
 		(List<Transition> Transitions, List<Reaction> _)[] globalTA;
-		bool isEventSubmitted = GlobalEventTAMap.TryGetValue(eventName, out globalTA);
-		if (isEventSubmitted)
+		bool isEventInTable = _GlobalEventTAMap.TryGetValue(eventName, out globalTA);
+		if (isEventInTable)
 		{
 			if (globalTA[stateId].Transitions is null)
 			{
@@ -182,15 +180,15 @@ public partial class Statechart : StatechartComposition
 		{
 			globalTA = new (List<Transition>, List<Reaction>)[StateLength];
 			globalTA[stateId].Transitions = new() { trans };
-			GlobalEventTAMap.Add(eventName, globalTA);
+			_GlobalEventTAMap.Add(eventName, globalTA);
 		}
 	}
 
-	public void SubmitGlobalReaction(int stateId, StringName eventName, Reaction react)
+	public void RegistGlobalReaction(int stateId, StringName eventName, Reaction react)
 	{
 		(List<Transition> _, List<Reaction> Reactions)[] globalTA;
-		bool isEventSubmitted = GlobalEventTAMap.TryGetValue(eventName, out globalTA);
-		if (isEventSubmitted)
+		bool isEventInTable = _GlobalEventTAMap.TryGetValue(eventName, out globalTA);
+		if (isEventInTable)
 		{
 			if (globalTA[stateId].Reactions is null)
 			{
@@ -205,7 +203,7 @@ public partial class Statechart : StatechartComposition
 		{
 			globalTA = new (List<Transition>, List<Reaction>)[StateLength];
 			globalTA[stateId].Reactions = new() { react };
-			GlobalEventTAMap.Add(eventName, globalTA);
+			_GlobalEventTAMap.Add(eventName, globalTA);
 		}
 	}
 
@@ -242,7 +240,7 @@ public partial class Statechart : StatechartComposition
 		EventCount = 0;
 	}
 
-	public StatechartSnapshot Save(bool isAllStateConfiguration = false)
+	public StatechartSnapshot Save(bool isAllStateConfig = false)
 	{
 		if (IsRunning)
 		{
@@ -254,19 +252,19 @@ public partial class Statechart : StatechartComposition
 
 		StatechartSnapshot snapshot = new()
 		{
-			IsAllStateConfiguration = isAllStateConfiguration
+			IsAllStateConfig = isAllStateConfig
 		};
 		
-		if (isAllStateConfiguration)
+		if (isAllStateConfig)
 		{
-			RootState.SaveAllStateConfig(SnapshotConfiguration);
+			RootState.SaveAllStateConfig(SnapshotConfig);
 		}
 		else
 		{
-			RootState.SaveActiveStateConfig(SnapshotConfiguration);
+			RootState.SaveActiveStateConfig(SnapshotConfig);
 		}
-		snapshot.Configuration = SnapshotConfiguration.ToArray();
-		SnapshotConfiguration.Clear();
+		snapshot.Config = SnapshotConfig.ToArray();
+		SnapshotConfig.Clear();
 		return snapshot;
 	}
 
@@ -301,7 +299,7 @@ public partial class Statechart : StatechartComposition
 		*/
 		
 		List<State> statesToLoad = new();
-		var config = snapshot.Configuration;
+		var config = snapshot.Config;
 		if (config.Length == 0)
 		{
 #if DEBUG
@@ -311,7 +309,7 @@ public partial class Statechart : StatechartComposition
 		}
 
 		int loadIdxResult;
-		if (snapshot.IsAllStateConfiguration)
+		if (snapshot.IsAllStateConfig)
 		{
 			loadIdxResult = RootState.LoadAllStateConfig(config, 0);
 		}
@@ -325,7 +323,6 @@ public partial class Statechart : StatechartComposition
 #if DEBUG
 			GD.PushWarning(GetPath(), "Load failed, configuration not aligned.");
 #endif
-
 			return false;
 		}
 
@@ -339,7 +336,7 @@ public partial class Statechart : StatechartComposition
 		}
 
 		ActiveStates.Clear();
-		RootState.RegisterActiveState(ActiveStates);
+		RootState.SubmitActiveState(ActiveStates);
 
 		// Enter on load
 		if (isEnterOnLoad)
@@ -373,7 +370,7 @@ public partial class Statechart : StatechartComposition
 		// Set global transitions/reactions, null if no matched event
 		if (LastStepEventName != eventName)
 		{
-			GlobalEventTAMap.TryGetValue(eventName, out CurrentTAMap);
+			_GlobalEventTAMap.TryGetValue(eventName, out _CurrentTAMap);
 			LastStepEventName = eventName;
 		}
 		// Use last query in GlobalEventTAMap if eventname not changed
@@ -502,7 +499,7 @@ public partial class Statechart : StatechartComposition
 		}
 #endif
 
-		Duct.Delta = delta;
+		_Duct.Delta = delta;
 		Step(StatechartEventName.EVENT_PROCESS);
 	}
 
@@ -515,7 +512,7 @@ public partial class Statechart : StatechartComposition
 		}
 #endif
 		
-		Duct.PhysicsDelta = delta;
+		_Duct.PhysicsDelta = delta;
 		Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
 	}
 
@@ -530,7 +527,7 @@ public partial class Statechart : StatechartComposition
 		
 		using(@event)
 		{
-			Duct.Input = @event;
+			_Duct.Input = @event;
 			Step(StatechartEventName.EVENT_INPUT);
 		}
 	}
@@ -546,7 +543,7 @@ public partial class Statechart : StatechartComposition
 		
 		using(@event)
 		{
-			Duct.ShortcutInput = @event;
+			_Duct.ShortcutInput = @event;
 			Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
 		}
 	}
@@ -562,7 +559,7 @@ public partial class Statechart : StatechartComposition
 		
 		using(@event)
 		{
-			Duct.UnhandledKeyInput = @event;
+			_Duct.UnhandledKeyInput = @event;
 			Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
 		}
 	}
@@ -579,7 +576,7 @@ public partial class Statechart : StatechartComposition
 		
 		using(@event)
 		{
-			Duct.UnhandledInput = @event;
+			_Duct.UnhandledInput = @event;
 			Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
 		}
 	}

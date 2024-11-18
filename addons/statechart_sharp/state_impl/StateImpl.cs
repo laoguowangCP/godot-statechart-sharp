@@ -28,7 +28,7 @@ public class StateImpl
     // protected Dictionary<StringName, List<Reaction>> Reactions;
     protected (List<Transition> Transitions, List<Reaction> Reactions)[] CurrentTAMap
     {
-        get => HostStatechart.CurrentTAMap;
+        get => HostStatechart._CurrentTAMap;
     }
 
     public StateImpl(State state)
@@ -59,11 +59,11 @@ public class StateImpl
         AutoTransitions = HostState.AutoTransitions;
     }
 
-    public virtual void PostSetup() {}
+    public virtual void SetupPost() {}
 
     public virtual bool GetPromoteStates(List<State> states) { return false; }
 
-    public virtual void RegisterActiveState(SortedSet<State> activeStates) {}
+    public virtual void SubmitActiveState(SortedSet<State> activeStates) {}
 
     public virtual bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
     {

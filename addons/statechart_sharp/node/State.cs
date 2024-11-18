@@ -102,7 +102,7 @@ public partial class State : StatechartComposition
 #region func cache
 	public Func<List<State>, bool> GetPromoteStates;
 	public Func<bool> IsAvailableRootState;
-	public Action<SortedSet<State>> RegisterActiveState;
+	public Action<SortedSet<State>> SubmitActiveState;
 	public Func<State, SortedSet<State>, bool> IsConflictToEnterRegion;
 	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> ExtendEnterRegion;
 	public Func<SortedSet<Transition>, bool, int> SelectTransitions;
@@ -132,7 +132,7 @@ public partial class State : StatechartComposition
 		{
 			GetPromoteStates = StateImpl.GetPromoteStates;
 			IsAvailableRootState = StateImpl.IsAvailableRootState;
-			RegisterActiveState = StateImpl.RegisterActiveState;
+			SubmitActiveState = StateImpl.SubmitActiveState;
 			IsConflictToEnterRegion = StateImpl.IsConflictToEnterRegion;
 			ExtendEnterRegion = StateImpl.ExtendEnterRegion;
 			SelectTransitions = StateImpl.SelectTransitions;
@@ -165,7 +165,7 @@ public partial class State : StatechartComposition
 	public override void Setup(Statechart hostStateChart, ref int parentOrderId)
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
-		Duct = HostStatechart.Duct;
+		Duct = HostStatechart._Duct;
 		StateId = HostStatechart.GetStateId();
 
 		// Called from statechart node, root state substate index is 0
@@ -175,15 +175,15 @@ public partial class State : StatechartComposition
 	public void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
 		base.Setup(hostStateChart, ref parentOrderId);
-		Duct = HostStatechart.Duct;
+		Duct = HostStatechart._Duct;
 		StateId = HostStatechart.GetStateId();
 
 		StateImpl.Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
 
-	public override void PostSetup()
+	public override void _SetupPost()
 	{
-		StateImpl.PostSetup();
+		StateImpl.SetupPost();
 	}
 
 	public void StateEnter()

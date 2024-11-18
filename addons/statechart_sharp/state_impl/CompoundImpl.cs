@@ -114,7 +114,7 @@ public class CompoundImpl : StateImpl
 		CurrentState = InitialState;
 	}
 
-	public override void PostSetup()
+	public override void SetupPost()
 	{
 		foreach (Node child in HostState.GetChildren())
 		{
@@ -125,7 +125,7 @@ public class CompoundImpl : StateImpl
 			
 			if (child is State s)
 			{
-				s.PostSetup();
+				s._SetupPost();
 			}
 			else if (child is Transition t)
 			{
@@ -135,22 +135,22 @@ public class CompoundImpl : StateImpl
 					continue;
 				}
 
-				t.PostSetup();
+				t._SetupPost();
 				if (t.IsAuto)
 				{
 					AutoTransitions.Add(t);
 					continue;
 				}
-				HostStatechart.SubmitGlobalTransition(StateId, t.EventName, t);
+				HostStatechart.RegistGlobalTransition(StateId, t.EventName, t);
 			}
 			else if (child is Reaction a)
 			{
-				a.PostSetup();
-				HostStatechart.SubmitGlobalReaction(StateId, a.EventName, a);
+				a._SetupPost();
+				HostStatechart.RegistGlobalReaction(StateId, a.EventName, a);
 			}
 		}
 
-		base.PostSetup();
+		base.SetupPost();
 	}
 
 	public override bool IsConflictToEnterRegion(
@@ -231,10 +231,10 @@ public class CompoundImpl : StateImpl
 		return true;
 	}
 	
-	public override void RegisterActiveState(SortedSet<State> activeStates)
+	public override void SubmitActiveState(SortedSet<State> activeStates)
 	{
 		activeStates.Add(HostState);
-		CurrentState?.RegisterActiveState(activeStates);
+		CurrentState?.SubmitActiveState(activeStates);
 	}
 
 	public override int SelectTransitions(
