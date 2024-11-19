@@ -7,26 +7,28 @@ namespace LGWCP.Godot.StatechartSharp;
 [Tool]
 public partial class StatechartComposition : Node
 {
-    public int OrderId;
-    public Statechart HostStatechart;
+    public int _OrderId;
+    public Statechart _HostStatechart;
 
     public virtual void _Setup() {}
-    public virtual void Setup(Statechart hostStatechart, ref int orderId)
+
+    public virtual void _Setup(Statechart hostStatechart, ref int orderId)
     {
-        HostStatechart = hostStatechart;
-        OrderId = orderId;
+        _HostStatechart = hostStatechart;
+        _OrderId = orderId;
         ++orderId;
         ProcessMode = ProcessModeEnum.Disabled;
     }
+
     public virtual void _SetupPost() {}
-    
-    public static bool IsCommonHost(StatechartComposition x, StatechartComposition y)
+
+    public static bool _IsCommonHost(StatechartComposition x, StatechartComposition y)
     {
         if (x == null || y == null)
         {
             return false;
         }
-        return x.HostStatechart == y.HostStatechart;
+        return x._HostStatechart == y._HostStatechart;
     }
 
     public StatechartComposition Append(StatechartComposition compositionNode)

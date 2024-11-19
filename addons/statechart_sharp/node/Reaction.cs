@@ -12,7 +12,7 @@ public partial class Reaction : StatechartComposition
 #region signal
 
     [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
-    
+
 #endregion
 
 
@@ -76,10 +76,10 @@ public partial class Reaction : StatechartComposition
 #endif
     }
 
-    public override void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public override void _Setup(Statechart hostStatechart, ref int parentOrderId)
     {
-        base.Setup(hostStatechart, ref parentOrderId);
-        Duct = HostStatechart._Duct;
+        base._Setup(hostStatechart, ref parentOrderId);
+        Duct = _HostStatechart._Duct;
 
 #if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)
@@ -113,7 +113,7 @@ public partial class Reaction : StatechartComposition
 
         if (parent != null && parent is State state)
         {
-            isParentWarning = state.IsHistory;
+            isParentWarning = state._IsHistory;
         }
 
         if (isParentWarning)

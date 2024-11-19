@@ -20,12 +20,12 @@ public partial class State : StatechartComposition
 
 
 #region signal
-	
+
 	[Signal]
 	public delegate void EnterEventHandler(StatechartDuct duct);
 	[Signal]
 	public delegate void ExitEventHandler(StatechartDuct duct);
-	
+
 #endregion
 
 
@@ -75,27 +75,27 @@ public partial class State : StatechartComposition
 #endif
 		;
 
-	public State ParentState;
-	public State CurrentState;
-	public List<State> Substates;
-	public List<Transition> AutoTransitions;
+	public State _ParentState;
+	public State _CurrentState;
+	public List<State> _Substates;
+	public List<Transition> _AutoTransitions;
 	protected StateImpl StateImpl;
-	public State LowerState;
-	public State UpperState;
+	public State _LowerState;
+	public State _UpperState;
 	/// <summary>
-	/// The index of this state exists in parent state.
+	/// The index of this state enlisted in parent state.
 	/// </summary>
-	public int SubstateIdx;
+	public int _SubstateIdx;
 	/// <summary>
 	/// The ID of this state in statechart.
 	/// </summary>
-	public int StateId
+	public int _StateId
 	{
         set => StateImpl.StateId = value;
     }
 	protected StatechartDuct Duct;
-	public bool IsHistory;
-	
+	public bool _IsHistory;
+
 #endregion
 
 
@@ -121,11 +121,11 @@ public partial class State : StatechartComposition
 
 	public override void _Ready()
 	{
-		Substates = new List<State>();
-		AutoTransitions = new List<Transition>();
+		_Substates = new List<State>();
+		_AutoTransitions = new List<Transition>();
 
 		StateImpl = GetStateImpl(StateMode);
-		IsHistory = StateMode == StateModeEnum.History;
+		_IsHistory = StateMode == StateModeEnum.History;
 
 		// Cache methods
 		if (StateImpl is not null)
@@ -162,11 +162,11 @@ public partial class State : StatechartComposition
 		_ => new CompoundImpl(this)
 	};
 
-	public override void Setup(Statechart hostStateChart, ref int parentOrderId)
+	public override void _Setup(Statechart hostStateChart, ref int parentOrderId)
 	{
-		base.Setup(hostStateChart, ref parentOrderId);
-		Duct = HostStatechart._Duct;
-		StateId = HostStatechart.GetStateId();
+		base._Setup(hostStateChart, ref parentOrderId);
+		Duct = _HostStatechart._Duct;
+		_StateId = _HostStatechart.GetStateId();
 
 		// Called from statechart node, root state substate index is 0
 		StateImpl.Setup(hostStateChart, ref parentOrderId, 0);
@@ -174,9 +174,9 @@ public partial class State : StatechartComposition
 
 	public void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
-		base.Setup(hostStateChart, ref parentOrderId);
-		Duct = HostStatechart._Duct;
-		StateId = HostStatechart.GetStateId();
+		base._Setup(hostStateChart, ref parentOrderId);
+		Duct = _HostStatechart._Duct;
+		_StateId = _HostStatechart.GetStateId();
 
 		StateImpl.Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
@@ -188,7 +188,7 @@ public partial class State : StatechartComposition
 
 	public void StateEnter()
 	{
-		ParentState?.HandleSubstateEnter(this);
+		_ParentState?.HandleSubstateEnter(this);
 		CustomStateEnter(Duct);
 	}
 
@@ -213,16 +213,16 @@ public partial class State : StatechartComposition
 
 	public bool IsAncestorStateOf(State state)
 	{
-		int id = state.OrderId;
+		int id = state._OrderId;
 
 		// Leaf state
-		if (LowerState is null || UpperState is null)
+		if (_LowerState is null || _UpperState is null)
 		{
 			return false;
 		}
 
-		return id >= LowerState.OrderId
-			&& id <= UpperState.OrderId;
+		return id >= _LowerState._OrderId
+			&& id <= _UpperState._OrderId;
 	}
 
 #if TOOLS

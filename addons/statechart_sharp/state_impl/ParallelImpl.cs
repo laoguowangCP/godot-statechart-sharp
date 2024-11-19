@@ -29,7 +29,7 @@ public class ParallelImpl : StateImpl
 			{
 				continue;
 			}
-			
+
 			if (child is State s)
 			{
 				s.Setup(hostStateChart, ref parentOrderId, Substates.Count);
@@ -42,7 +42,7 @@ public class ParallelImpl : StateImpl
 				}
 				lastSubstate = s;
 
-				if (!s.IsHistory)
+				if (!s._IsHistory)
 				{
 					NonHistorySubstateCnt += 1;
 				}
@@ -55,20 +55,20 @@ public class ParallelImpl : StateImpl
 					continue;
 				}
 
-				t.Setup(hostStateChart, ref parentOrderId);
+				t._Setup(hostStateChart, ref parentOrderId);
 			}
 			else if (child is Reaction a)
 			{
-				a.Setup(hostStateChart, ref parentOrderId);
+				a._Setup(hostStateChart, ref parentOrderId);
 			}
 		}
 
 		if (lastSubstate != null)
 		{
-			if (lastSubstate.UpperState != null)
+			if (lastSubstate._UpperState != null)
 			{
 				// Last substate's upper is upper-state
-				UpperState = lastSubstate.UpperState;
+				UpperState = lastSubstate._UpperState;
 			}
 			else
 			{
@@ -81,14 +81,14 @@ public class ParallelImpl : StateImpl
 
 	public override void SetupPost()
 	{
-		
+
 		foreach (Node child in HostState.GetChildren())
 		{
 			if (child.IsQueuedForDeletion())
 			{
 				continue;
 			}
-			
+
 			if (child is State s)
 			{
 				s._SetupPost();
@@ -156,7 +156,7 @@ public class ParallelImpl : StateImpl
 		// At this point history is not excluded from enter region
 
 		// Pending substate is history
-		if (substateToPend.IsHistory)
+		if (substateToPend._IsHistory)
 		{
 			return enterRegionUnextended.Any<State>(
 				state => HostState.IsAncestorStateOf(state));
@@ -165,7 +165,7 @@ public class ParallelImpl : StateImpl
 		// Any history substate in region, conflicts.
 		foreach (State substate in Substates)
 		{
-			if (substate.IsHistory
+			if (substate._IsHistory
 				&& enterRegionUnextended.Contains(substate))
 			{
 				return true;
@@ -175,7 +175,7 @@ public class ParallelImpl : StateImpl
 		// No conflicts.
 		return false;
 	}
-	
+
 	public override void ExtendEnterRegion(
 		SortedSet<State> enterRegion,
 		SortedSet<State> enterRegionEdge,
@@ -210,7 +210,7 @@ public class ParallelImpl : StateImpl
 		{
 			foreach (State substate in Substates)
 			{
-				if (substate.IsHistory && enterRegion.Contains(substate))
+				if (substate._IsHistory && enterRegion.Contains(substate))
 				{
 					substate.ExtendEnterRegion(
 						enterRegion, enterRegionEdge, extraEnterRegion, true);
@@ -222,7 +222,7 @@ public class ParallelImpl : StateImpl
 		// No history substate in region
 		foreach (State substate in Substates)
 		{
-			if (substate.IsHistory)
+			if (substate._IsHistory)
 			{
 				continue;
 			}
@@ -238,7 +238,7 @@ public class ParallelImpl : StateImpl
 	public override void SubmitActiveState(SortedSet<State> activeStates)
 	{
 		activeStates.Add(HostState);
-		foreach (State substate in HostState.Substates)
+		foreach (State substate in HostState._Substates)
 		{
 			substate.SubmitActiveState(activeStates);
 		}
@@ -254,7 +254,7 @@ public class ParallelImpl : StateImpl
 			int posCnt = 0;
 			foreach (State substate in Substates)
 			{
-				if (substate.IsHistory)
+				if (substate._IsHistory)
 				{
 					continue;
 				}
@@ -302,7 +302,7 @@ public class ParallelImpl : StateImpl
 			matched = AutoTransitions;
 		}
 		else
-		{	
+		{
 			if (CurrentTAMap is null)
 			{
 				return handleInfo;
@@ -339,7 +339,7 @@ public class ParallelImpl : StateImpl
 	public override void DeduceDescendants(
 		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
 	{
-		/* 
+		/*
 		If is edge-state:
 			1. Called from history substate.
 			2. IsHistory arg represents IsDeepHistory
@@ -352,7 +352,7 @@ public class ParallelImpl : StateImpl
 		foreach (State substate in Substates)
 		{
 			// Ignore history states
-			if (substate.IsHistory)
+			if (substate._IsHistory)
 			{
 				continue;
 			}

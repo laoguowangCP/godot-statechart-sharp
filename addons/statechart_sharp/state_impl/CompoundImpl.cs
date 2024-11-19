@@ -10,15 +10,15 @@ public class CompoundImpl : StateImpl
 {
 	private State CurrentState
 	{
-		get => HostState.CurrentState;
-		set { HostState.CurrentState = value; }
+		get => HostState._CurrentState;
+		set { HostState._CurrentState = value; }
 	}
 	private State InitialState
 	{
 		get => HostState.InitialState;
 		set { HostState.InitialState = value; }
 	}
-	
+
 	public CompoundImpl(State state) : base(state) {}
 
 	public override bool IsAvailableRootState()
@@ -39,7 +39,7 @@ public class CompoundImpl : StateImpl
 			{
 				continue;
 			}
-			
+
 			if (child is State s)
 			{
 				s.Setup(hostStateChart, ref parentOrderId, Substates.Count);
@@ -59,20 +59,20 @@ public class CompoundImpl : StateImpl
 				{
 					continue;
 				}
-				t.Setup(hostStateChart, ref parentOrderId);
+				t._Setup(hostStateChart, ref parentOrderId);
 			}
 			else if (child is Reaction a)
 			{
-				a.Setup(hostStateChart, ref parentOrderId);
+				a._Setup(hostStateChart, ref parentOrderId);
 			}
 		}
 
 		if (lastSubstate != null)
 		{
-			if (lastSubstate.UpperState != null)
+			if (lastSubstate._UpperState != null)
 			{
 				// Last substate's upper is upper-state
-				UpperState = lastSubstate.UpperState;
+				UpperState = lastSubstate._UpperState;
 			}
 			else
 			{
@@ -86,7 +86,7 @@ public class CompoundImpl : StateImpl
 		if (InitialState != null)
 		{
 			// Check selected initial-state is non-history substate
-			if (InitialState.ParentState != HostState || InitialState.IsHistory)
+			if (InitialState._ParentState != HostState || InitialState._IsHistory)
 			{
 #if DEBUG
 				GD.PushWarning(
@@ -122,7 +122,7 @@ public class CompoundImpl : StateImpl
 			{
 				continue;
 			}
-			
+
 			if (child is State s)
 			{
 				s._SetupPost();
@@ -230,7 +230,7 @@ public class CompoundImpl : StateImpl
 		// Make sure promoted
 		return true;
 	}
-	
+
 	public override void SubmitActiveState(SortedSet<State> activeStates)
 	{
 		activeStates.Add(HostState);
@@ -241,7 +241,7 @@ public class CompoundImpl : StateImpl
 		SortedSet<Transition> enabledTransitions, bool isAuto)
 	{
 		int handleInfo = -1;
-		if (HostState.CurrentState != null)
+		if (HostState._CurrentState != null)
 		{
 			handleInfo = CurrentState.SelectTransitions(enabledTransitions, isAuto);
 		}
@@ -301,7 +301,7 @@ public class CompoundImpl : StateImpl
 	public override void DeduceDescendants(
 		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
 	{
-		/* 
+		/*
 		If is edge state:
 			1. It is called from history substate
 			2. IsHistory arg represents IsDeepHistory
@@ -328,7 +328,7 @@ public class CompoundImpl : StateImpl
 
 	public override void HandleSubstateEnter(State substate)
 	{
-		HostState.CurrentState = substate;
+		HostState._CurrentState = substate;
 	}
 
 	public override void SaveAllStateConfig(List<int> snapshot)
@@ -338,7 +338,7 @@ public class CompoundImpl : StateImpl
 		{
 			return;
 		}
-		snapshot.Add(CurrentState.SubstateIdx);
+		snapshot.Add(CurrentState._SubstateIdx);
 		foreach (State substate in Substates)
 		{
 			substate.SaveActiveStateConfig(snapshot);
@@ -352,7 +352,7 @@ public class CompoundImpl : StateImpl
 		{
 			return;
 		}
-		snapshot.Add(CurrentState.SubstateIdx);
+		snapshot.Add(CurrentState._SubstateIdx);
 		CurrentState.SaveActiveStateConfig(snapshot);
 	}
 
@@ -412,7 +412,7 @@ public class CompoundImpl : StateImpl
 			var initialStateParent = InitialState.GetParentOrNull<Node>();
 			if (initialStateParent is null
 				|| initialStateParent != HostState
-				|| InitialState.IsHistory)
+				|| InitialState._IsHistory)
 			{
 				warnings.Add("Initial state should be a non-history substate.");
 			}

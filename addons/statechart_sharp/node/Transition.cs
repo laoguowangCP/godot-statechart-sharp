@@ -121,10 +121,10 @@ public partial class Transition : StatechartComposition
 #endif
     }
 
-    public override void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public override void _Setup(Statechart hostStatechart, ref int parentOrderId)
     {
-        base.Setup(hostStatechart, ref parentOrderId);
-		Duct = HostStatechart._Duct;
+        base._Setup(hostStatechart, ref parentOrderId);
+		Duct = _HostStatechart._Duct;
 
         // Get source state
         Node parent = GetParentOrNull<Node>();
@@ -169,7 +169,7 @@ public partial class Transition : StatechartComposition
         // Targetless transition's LCA is source's parent state as defined
         if (IsTargetless)
         {
-            LcaState = SourceState.ParentState;
+            LcaState = SourceState._ParentState;
             return;
         }
 
@@ -179,7 +179,7 @@ public partial class Transition : StatechartComposition
         while (iterState != null)
         {
             srcToRoot.Add(iterState);
-            iterState = iterState.ParentState;
+            iterState = iterState._ParentState;
         }
 
         // Init LCA as source state, the first state in srcToRoot
@@ -188,7 +188,7 @@ public partial class Transition : StatechartComposition
         foreach (State target in TargetStates)
         {
             // Check under same statechart
-            if (!IsCommonHost(target, SourceState))
+            if (!_IsCommonHost(target, SourceState))
             {
 #if DEBUG
                 GD.PushWarning(
@@ -210,7 +210,7 @@ public partial class Transition : StatechartComposition
             while (!isConflict && iterState != null)
             {
                 // Check target conflicts
-                State iterParent = iterState.ParentState;
+                State iterParent = iterState._ParentState;
 
                 if (!isReachEnterRegion && iterParent != null)
                 {
@@ -341,14 +341,14 @@ public partial class Transition : StatechartComposition
     public override string[] _GetConfigurationWarnings()
     {
         var warnings = new List<string>();
-        
+
         // Check parent
         bool isParentWarning = true;
         Node parent = GetParentOrNull<Node>();
 
         if (parent != null && parent is State state)
         {
-            isParentWarning = state.IsHistory;
+            isParentWarning = state._IsHistory;
         }
 
         if (isParentWarning)

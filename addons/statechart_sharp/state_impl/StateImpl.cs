@@ -14,13 +14,13 @@ public class StateImpl
     protected List<State> Substates;
     protected State LowerState
     {
-        get => HostState.LowerState;
-        set => HostState.LowerState = value;
+        get => HostState._LowerState;
+        set => HostState._LowerState = value;
     }
     protected State UpperState
     {
-        get => HostState.UpperState;
-        set => HostState.UpperState = value;
+        get => HostState._UpperState;
+        set => HostState._UpperState = value;
     }
     public int StateId;
     // protected Dictionary<StringName, List<Transition>> Transitions;
@@ -47,16 +47,16 @@ public class StateImpl
         State parentState = HostState.GetParentOrNull<State>();
         if (parentState != null)
         {
-            HostState.ParentState = parentState;
+            HostState._ParentState = parentState;
         }
 
-        HostState.SubstateIdx = substateIdx;
+        HostState._SubstateIdx = substateIdx;
 
         // Cache property
-        ParentState = HostState.ParentState;
-        HostStatechart = HostState.HostStatechart;
-        Substates = HostState.Substates;
-        AutoTransitions = HostState.AutoTransitions;
+        ParentState = HostState._ParentState;
+        HostStatechart = HostState._HostStatechart;
+        Substates = HostState._Substates;
+        AutoTransitions = HostState._AutoTransitions;
     }
 
     public virtual void SetupPost() {}
@@ -74,7 +74,7 @@ public class StateImpl
     {
         return 1;
     }
-    
+
     public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
     public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
@@ -105,7 +105,7 @@ public class StateImpl
     public virtual void SaveActiveStateConfig(List<int> snapshot) {}
 
     public virtual int LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
-    
+
     public virtual int LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
 
 #if TOOLS
@@ -124,7 +124,7 @@ public class StateImpl
             }
             else if (parent is State state)
             {
-                isParentWarning = state.IsHistory;
+                isParentWarning = state._IsHistory;
             }
         }
 

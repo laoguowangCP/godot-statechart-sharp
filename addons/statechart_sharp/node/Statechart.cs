@@ -38,7 +38,7 @@ public partial class Statechart : StatechartComposition
 	protected int StateLength = 0;
 
 	public StatechartDuct _Duct;
-	
+
 	// Global transition/reaction hashmap
 	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> _GlobalEventTAMap;
 	public (List<Transition>, List<Reaction>)[] _CurrentTAMap;
@@ -64,7 +64,7 @@ public partial class Statechart : StatechartComposition
 		EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
 
 		_GlobalEventTAMap = new Dictionary<StringName, (List<Transition>, List<Reaction>)[]>();
-		
+
 		SnapshotConfig = new List<int>();
 
 #if TOOLS
@@ -102,7 +102,7 @@ public partial class Statechart : StatechartComposition
 
 	public override void _Setup()
 	{
-		HostStatechart = this;
+		_HostStatechart = this;
 		foreach (Node child in GetChildren())
 		{
 			if (child is State state)
@@ -114,19 +114,19 @@ public partial class Statechart : StatechartComposition
 				}
 			}
 		}
-		
+
 		// Statechart node order id = -1
-		OrderId = -1;
+		_OrderId = -1;
 		if (RootState is not null)
 		{
 			// Root state node order id = 0
 			int orderId = 0;
-			RootState.Setup(this, ref orderId);
+			RootState._Setup(this, ref orderId);
 		}
 	}
 
 	public override void _SetupPost()
-	{	
+	{
 		// Get and enter active states
 		if (RootState is not null)
 		{
@@ -227,7 +227,7 @@ public partial class Statechart : StatechartComposition
 		// Else is not running
 		++EventCount;
 		QueuedEvents.Enqueue(eventName);
-		
+
 		IsRunning = true;
 
 		while (QueuedEvents.Count > 0)
@@ -254,7 +254,7 @@ public partial class Statechart : StatechartComposition
 		{
 			IsAllStateConfig = isAllStateConfig
 		};
-		
+
 		if (isAllStateConfig)
 		{
 			RootState.SaveAllStateConfig(SnapshotConfig);
@@ -297,7 +297,7 @@ public partial class Statechart : StatechartComposition
 		  - Enter new states
 		3. Update active states
 		*/
-		
+
 		List<State> statesToLoad = new();
 		var config = snapshot.Config;
 		if (config.Length == 0)
@@ -392,7 +392,7 @@ public partial class Statechart : StatechartComposition
 			{
 				break;
 			}
-			DoTransitions(); 
+			DoTransitions();
 		}
 
 		// 4. Select and do reactions
@@ -449,7 +449,7 @@ public partial class Statechart : StatechartComposition
 			EnabledFilteredTransitions.Add(transition);
 
 			var exitStates = ActiveStates.GetViewBetween(
-				transition.LcaState.LowerState, transition.LcaState.UpperState);
+				transition.LcaState._LowerState, transition.LcaState._UpperState);
 			ExitSet.UnionWith(exitStates);
 		}
 
@@ -464,7 +464,7 @@ public partial class Statechart : StatechartComposition
 		foreach (Transition transition in EnabledFilteredTransitions)
 		{
 			transition.TransitionInvoke();
-			
+
 			// If transition is targetless, enter-region is null.
 			if (transition.IsTargetless)
 			{
@@ -511,7 +511,7 @@ public partial class Statechart : StatechartComposition
 			return;
 		}
 #endif
-		
+
 		_Duct.PhysicsDelta = delta;
 		Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
 	}
@@ -524,7 +524,7 @@ public partial class Statechart : StatechartComposition
 			return;
 		}
 #endif
-		
+
 		using(@event)
 		{
 			_Duct.Input = @event;
@@ -540,7 +540,7 @@ public partial class Statechart : StatechartComposition
 			return;
 		}
 #endif
-		
+
 		using(@event)
 		{
 			_Duct.ShortcutInput = @event;
@@ -556,7 +556,7 @@ public partial class Statechart : StatechartComposition
 			return;
 		}
 #endif
-		
+
 		using(@event)
 		{
 			_Duct.UnhandledKeyInput = @event;
@@ -572,8 +572,8 @@ public partial class Statechart : StatechartComposition
 			return;
 		}
 #endif
-		
-		
+
+
 		using(@event)
 		{
 			_Duct.UnhandledInput = @event;
@@ -592,7 +592,7 @@ public partial class Statechart : StatechartComposition
 		{
 			if (child is State state)
 			{
-				if (state.IsHistory)
+				if (state._IsHistory)
 				{
 					hasOtherChild = true;
 					continue;

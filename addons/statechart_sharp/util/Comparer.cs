@@ -8,7 +8,7 @@ class StatechartComparer<T> : IComparer<T>
 {
     public int Compare(T x, T y)
     {
-        return x.OrderId - y.OrderId;
+        return x._OrderId - y._OrderId;
     }
 }
 
@@ -17,6 +17,6 @@ class StatechartReversedComparer<T> : IComparer<T>
 {
     public int Compare(T x, T y)
     {
-        return y.OrderId - x.OrderId;
+        return y._OrderId - x._OrderId;
     }
 }

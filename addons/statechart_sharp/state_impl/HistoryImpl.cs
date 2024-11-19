@@ -48,7 +48,7 @@ public class HistoryImpl : StateImpl
             ParentState.DeduceDescendants(deducedSet, IsDeepHistory, true);
         }
     }
-    
+
 #if TOOLS
     public override void GetConfigurationWarnings(List<string> warnings)
     {
@@ -60,7 +60,7 @@ public class HistoryImpl : StateImpl
         {
             if (parent is State state)
             {
-                isParentWarning = state.IsHistory;
+                isParentWarning = state._IsHistory;
                 isParentParallel = state.StateMode == StateModeEnum.Parallel;
             }
         }
