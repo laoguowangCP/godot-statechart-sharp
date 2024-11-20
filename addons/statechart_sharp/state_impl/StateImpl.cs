@@ -22,10 +22,8 @@ public class StateImpl
         get => HostState._UpperState;
         set => HostState._UpperState = value;
     }
-    public int StateId;
-    // protected Dictionary<StringName, List<Transition>> Transitions;
+    public int _StateId;
     protected List<Transition> AutoTransitions;
-    // protected Dictionary<StringName, List<Reaction>> Reactions;
     protected (List<Transition> Transitions, List<Reaction> Reactions)[] CurrentTAMap
     {
         get => HostStatechart._CurrentTAMap;
@@ -36,12 +34,12 @@ public class StateImpl
         HostState = state;
     }
 
-    public virtual bool IsAvailableRootState()
+    public virtual bool _IsAvailableRootState()
     {
         return false;
     }
 
-    public virtual void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    public virtual void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         // Get parent state
         State parentState = HostState.GetParentOrNull<State>();
@@ -57,38 +55,40 @@ public class StateImpl
         HostStatechart = HostState._HostStatechart;
         Substates = HostState._Substates;
         AutoTransitions = HostState._AutoTransitions;
+
+        _StateId = HostStatechart._GetStateId();
     }
 
-    public virtual void SetupPost() {}
+    public virtual void _SetupPost() {}
 
-    public virtual bool GetPromoteStates(List<State> states) { return false; }
+    public virtual bool _GetPromoteStates(List<State> states) { return false; }
 
-    public virtual void SubmitActiveState(SortedSet<State> activeStates) {}
+    public virtual void _SubmitActiveState(SortedSet<State> activeStates) {}
 
-    public virtual bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
+    public virtual bool _IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
     {
         return false;
     }
 
-    public virtual int SelectTransitions(SortedSet<Transition> enabledTransitions, bool isAuto)
+    public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, bool isAuto)
     {
         return 1;
     }
 
-    public virtual void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
+    public virtual void _ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
-    public virtual void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
+    public virtual void _DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
 
-    public virtual void HandleSubstateEnter(State substate) {}
+    public virtual void _HandleSubstateEnter(State substate) {}
 
-    public virtual void SelectReactions(SortedSet<Reaction> enabledReactions)
+    public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions)
 	{
         if (CurrentTAMap is null)
         {
             return;
         }
 
-        var matched = CurrentTAMap[StateId].Reactions;
+        var matched = CurrentTAMap[_StateId].Reactions;
         if (matched is null)
         {
             return;
@@ -100,16 +100,16 @@ public class StateImpl
 		}
 	}
 
-    public virtual void SaveAllStateConfig(List<int> snapshot) {}
+    public virtual void _SaveAllStateConfig(List<int> snapshot) {}
 
-    public virtual void SaveActiveStateConfig(List<int> snapshot) {}
+    public virtual void _SaveActiveStateConfig(List<int> snapshot) {}
 
-    public virtual int LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
+    public virtual int _LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
 
-    public virtual int LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
+    public virtual int _LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
 
 #if TOOLS
-    public virtual void GetConfigurationWarnings(List<string> warnings)
+    public virtual void _GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
         bool isParentWarning = true;

@@ -76,7 +76,6 @@ public partial class State : StatechartComposition
 		;
 
 	public State _ParentState;
-	public State _CurrentState;
 	public List<State> _Substates;
 	public List<Transition> _AutoTransitions;
 	protected StateImpl StateImpl;
@@ -91,7 +90,7 @@ public partial class State : StatechartComposition
 	/// </summary>
 	public int _StateId
 	{
-        set => StateImpl.StateId = value;
+        set => StateImpl._StateId = value;
     }
 	protected StatechartDuct Duct;
 	public bool _IsHistory;
@@ -100,19 +99,19 @@ public partial class State : StatechartComposition
 
 
 #region func cache
-	public Func<List<State>, bool> GetPromoteStates;
-	public Func<bool> IsAvailableRootState;
-	public Action<SortedSet<State>> SubmitActiveState;
-	public Func<State, SortedSet<State>, bool> IsConflictToEnterRegion;
-	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> ExtendEnterRegion;
-	public Func<SortedSet<Transition>, bool, int> SelectTransitions;
-	public Action<SortedSet<State>, bool, bool> DeduceDescendants;
-	public Action<State> HandleSubstateEnter;
-	public Action<SortedSet<Reaction>> SelectReactions;
-	public Action<List<int>> SaveAllStateConfig;
-	public Action<List<int>> SaveActiveStateConfig;
-	public Func<int[], int, int> LoadAllStateConfig;
-	public Func<int[], int, int> LoadActiveStateConfig;
+	public Func<List<State>, bool> _GetPromoteStates;
+	public Func<bool> _IsAvailableRootState;
+	public Action<SortedSet<State>> _SubmitActiveState;
+	public Func<State, SortedSet<State>, bool> _IsConflictToEnterRegion;
+	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> _ExtendEnterRegion;
+	public Func<SortedSet<Transition>, bool, int> _SelectTransitions;
+	public Action<SortedSet<State>, bool, bool> _DeduceDescendants;
+	public Action<State> _HandleSubstateEnter;
+	public Action<SortedSet<Reaction>> _SelectReactions;
+	public Action<List<int>> _SaveAllStateConfig;
+	public Action<List<int>> _SaveActiveStateConfig;
+	public Func<int[], int, int> _LoadAllStateConfig;
+	public Func<int[], int, int> _LoadActiveStateConfig;
 
 #endregion
 
@@ -130,20 +129,20 @@ public partial class State : StatechartComposition
 		// Cache methods
 		if (StateImpl is not null)
 		{
-			GetPromoteStates = StateImpl.GetPromoteStates;
-			IsAvailableRootState = StateImpl.IsAvailableRootState;
-			SubmitActiveState = StateImpl.SubmitActiveState;
-			IsConflictToEnterRegion = StateImpl.IsConflictToEnterRegion;
-			ExtendEnterRegion = StateImpl.ExtendEnterRegion;
-			SelectTransitions = StateImpl.SelectTransitions;
-			DeduceDescendants = StateImpl.DeduceDescendants;
-			HandleSubstateEnter = StateImpl.HandleSubstateEnter;
-			SelectReactions = StateImpl.SelectReactions;
+			_GetPromoteStates = StateImpl._GetPromoteStates;
+			_IsAvailableRootState = StateImpl._IsAvailableRootState;
+			_SubmitActiveState = StateImpl._SubmitActiveState;
+			_IsConflictToEnterRegion = StateImpl._IsConflictToEnterRegion;
+			_ExtendEnterRegion = StateImpl._ExtendEnterRegion;
+			_SelectTransitions = StateImpl._SelectTransitions;
+			_DeduceDescendants = StateImpl._DeduceDescendants;
+			_HandleSubstateEnter = StateImpl._HandleSubstateEnter;
+			_SelectReactions = StateImpl._SelectReactions;
 
-			SaveAllStateConfig = StateImpl.SaveAllStateConfig;
-			SaveActiveStateConfig = StateImpl.SaveActiveStateConfig;
-			LoadAllStateConfig = StateImpl.LoadAllStateConfig;
-			LoadActiveStateConfig = StateImpl.LoadActiveStateConfig;
+			_SaveAllStateConfig = StateImpl._SaveAllStateConfig;
+			_SaveActiveStateConfig = StateImpl._SaveActiveStateConfig;
+			_LoadAllStateConfig = StateImpl._LoadAllStateConfig;
+			_LoadActiveStateConfig = StateImpl._LoadActiveStateConfig;
 		}
 
 #if TOOLS
@@ -166,29 +165,28 @@ public partial class State : StatechartComposition
 	{
 		base._Setup(hostStateChart, ref parentOrderId);
 		Duct = _HostStatechart._Duct;
-		_StateId = _HostStatechart.GetStateId();
 
 		// Called from statechart node, root state substate index is 0
-		StateImpl.Setup(hostStateChart, ref parentOrderId, 0);
+		StateImpl._Setup(hostStateChart, ref parentOrderId, 0);
 	}
 
-	public void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+	public void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
 		base._Setup(hostStateChart, ref parentOrderId);
 		Duct = _HostStatechart._Duct;
-		_StateId = _HostStatechart.GetStateId();
+		_StateId = _HostStatechart._GetStateId();
 
-		StateImpl.Setup(hostStateChart, ref parentOrderId, substateIdx);
+		StateImpl._Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
 
 	public override void _SetupPost()
 	{
-		StateImpl.SetupPost();
+		StateImpl._SetupPost();
 	}
 
-	public void StateEnter()
+	public void _StateEnter()
 	{
-		_ParentState?.HandleSubstateEnter(this);
+		_ParentState?._HandleSubstateEnter(this);
 		CustomStateEnter(Duct);
 	}
 
@@ -199,7 +197,7 @@ public partial class State : StatechartComposition
 		EmitSignal(SignalName.Enter, duct);
 	}
 
-	public void StateExit()
+	public void _StateExit()
 	{
 		CustomStateExit(Duct);
 	}
@@ -211,7 +209,7 @@ public partial class State : StatechartComposition
 		EmitSignal(SignalName.Exit, duct);
 	}
 
-	public bool IsAncestorStateOf(State state)
+	public bool _IsAncestorStateOf(State state)
 	{
 		int id = state._OrderId;
 
@@ -229,7 +227,7 @@ public partial class State : StatechartComposition
     public override string[] _GetConfigurationWarnings()
 	{
 		List<string> warnings = new List<string>();
-		StateImpl?.GetConfigurationWarnings(warnings);
+		StateImpl?._GetConfigurationWarnings(warnings);
 		return warnings.ToArray();
 	}
 #endif

@@ -8,6 +8,7 @@ indent_style = space
 indent_size = 4
 
 [*.cs]
+// Hide public field with underscore prefix
 dotnet_naming_symbols.public_field.applicable_kinds = property, event, method, field
 dotnet_naming_symbols.public_field.applicable_accessibilities = public
 

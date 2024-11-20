@@ -58,7 +58,7 @@ public partial class Reaction : StatechartComposition
 #endif
         ;
 
-    public StringName EventName;
+    public StringName _EventName;
     protected StatechartDuct Duct;
 
 #endregion
@@ -87,10 +87,10 @@ public partial class Reaction : StatechartComposition
             GD.PushError(GetPath(), ": no event name for custom-event.");
         }
 #endif
-        EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
+        _EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 
-    public void ReactionInvoke()
+    public void _ReactionInvoke()
     {
         CustomReactionInvoke(Duct);
     }

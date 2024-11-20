@@ -67,7 +67,7 @@ public partial class TransitionPromoter : StatechartComposition
 
         // Get promote state(s)
         List<State> leafStates = new();
-        ParentState.GetPromoteStates(leafStates);
+        ParentState._GetPromoteStates(leafStates);
 
         // Duplicate
         foreach (State leafState in leafStates)

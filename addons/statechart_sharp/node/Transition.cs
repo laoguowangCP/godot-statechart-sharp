@@ -84,16 +84,16 @@ public partial class Transition : StatechartComposition
 #endif
         = new();
 
-    public StringName EventName;
+    public StringName _EventName;
     protected List<State> TargetStates;
-    public State SourceState;
-    public State LcaState;
-    public SortedSet<State> EnterRegion;
+    public State _SourceState;
+    public State _LcaState;
+    public SortedSet<State> _EnterRegion;
     protected SortedSet<State> EnterRegionEdge;
     protected SortedSet<State> DeducedEnterStates;
     protected StatechartDuct Duct;
-    public bool IsTargetless;
-    public bool IsAuto;
+    public bool _IsTargetless;
+    public bool _IsAuto;
     protected bool IsValid;
 
 #endregion
@@ -107,7 +107,7 @@ public partial class Transition : StatechartComposition
         TargetStates = new List<State>(TargetStatesArray);
 
         // Init Sets
-        EnterRegion = new SortedSet<State>(new StatechartComparer<State>());
+        _EnterRegion = new SortedSet<State>(new StatechartComparer<State>());
         EnterRegionEdge = new SortedSet<State>(new StatechartComparer<State>());
         DeducedEnterStates = new SortedSet<State>(new StatechartComparer<State>());
 
@@ -130,7 +130,7 @@ public partial class Transition : StatechartComposition
         Node parent = GetParentOrNull<Node>();
         if (parent != null && parent is State)
         {
-            SourceState = parent as State;
+            _SourceState = parent as State;
         }
 
         // Handle event name
@@ -141,13 +141,13 @@ public partial class Transition : StatechartComposition
 #endif
             IsValid = false;
         }
-        EventName = StatechartEventName.GetTransitionEventName(TransitionEvent, CustomEventName);
-        IsAuto = TransitionEvent == TransitionEventNameEnum.Auto;
+        _EventName = StatechartEventName.GetTransitionEventName(TransitionEvent, CustomEventName);
+        _IsAuto = TransitionEvent == TransitionEventNameEnum.Auto;
 
         // Set targetless
-        IsTargetless = TargetStates.Count == 0;
+        _IsTargetless = TargetStates.Count == 0;
 
-        if (IsTargetless && IsAuto)
+        if (_IsTargetless && _IsAuto)
         {
             IsValid = false;
 #if DEBUG
@@ -167,14 +167,14 @@ public partial class Transition : StatechartComposition
         */
 
         // Targetless transition's LCA is source's parent state as defined
-        if (IsTargetless)
+        if (_IsTargetless)
         {
-            LcaState = SourceState._ParentState;
+            _LcaState = _SourceState._ParentState;
             return;
         }
 
         // Record source-to-root
-        State iterState = SourceState;
+        State iterState = _SourceState;
         List<State> srcToRoot = new();
         while (iterState != null)
         {
@@ -188,7 +188,7 @@ public partial class Transition : StatechartComposition
         foreach (State target in TargetStates)
         {
             // Check under same statechart
-            if (!_IsCommonHost(target, SourceState))
+            if (!_IsCommonHost(target, _SourceState))
             {
 #if DEBUG
                 GD.PushWarning(
@@ -203,7 +203,7 @@ public partial class Transition : StatechartComposition
             2. If target is already in enter region, conflicts
             */
             tgtToRoot.Clear();
-            bool isConflict = EnterRegion.Contains(target);
+            bool isConflict = _EnterRegion.Contains(target);
 
             iterState = target;
             bool isReachEnterRegion = false;
@@ -214,11 +214,11 @@ public partial class Transition : StatechartComposition
 
                 if (!isReachEnterRegion && iterParent != null)
                 {
-                    isReachEnterRegion = EnterRegion.Contains(iterParent);
+                    isReachEnterRegion = _EnterRegion.Contains(iterParent);
                     if (isReachEnterRegion)
                     {
-                        isConflict = iterParent.IsConflictToEnterRegion(
-                            iterState, EnterRegion);
+                        isConflict = iterParent._IsConflictToEnterRegion(
+                            iterState, _EnterRegion);
                     }
                 }
 
@@ -266,26 +266,26 @@ public partial class Transition : StatechartComposition
             */
             for (int i = 1; i <= tgtToRoot.Count; ++i)
             {
-                EnterRegion.Add(tgtToRoot[^i]);
+                _EnterRegion.Add(tgtToRoot[^i]);
             }
         }
 
         // LCA
-        LcaState = srcToRoot[^reversedLcaIdx];
+        _LcaState = srcToRoot[^reversedLcaIdx];
 
         // Extend enter region under LCA
         SortedSet<State> extraEnterRegion = new(new StatechartComparer<State>());
-        LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion, true);
-        EnterRegion.UnionWith(extraEnterRegion);
+        _LcaState._ExtendEnterRegion(_EnterRegion, EnterRegionEdge, extraEnterRegion, true);
+        _EnterRegion.UnionWith(extraEnterRegion);
 
         // Remove states from root to LCA (include LCA)
         for (int i = 1; i <= reversedLcaIdx; ++i)
         {
-            EnterRegion.Remove(srcToRoot[^i]);
+            _EnterRegion.Remove(srcToRoot[^i]);
         }
 
         // Check auto-transition loop case
-        if (IsAuto && EnterRegion.Contains(SourceState))
+        if (_IsAuto && _EnterRegion.Contains(_SourceState))
         {
             IsValid = false;
 #if DEBUG
@@ -297,7 +297,7 @@ public partial class Transition : StatechartComposition
         }
     }
 
-    public bool Check()
+    public bool _Check()
     {
         if (!IsValid)
         {
@@ -315,7 +315,7 @@ public partial class Transition : StatechartComposition
         return duct.IsTransitionEnabled;
     }
 
-    public void TransitionInvoke()
+    public void _TransitionInvoke()
     {
         CustomTransitionInvoke(Duct);
     }
@@ -327,12 +327,12 @@ public partial class Transition : StatechartComposition
         EmitSignal(SignalName.Invoke, duct);
     }
 
-    public SortedSet<State> GetDeducedEnterStates()
+    public SortedSet<State> _GetDeducedEnterStates()
     {
         DeducedEnterStates.Clear();
         foreach (State edgeState in EnterRegionEdge)
         {
-            edgeState.DeduceDescendants(DeducedEnterStates, false, true);
+            edgeState._DeduceDescendants(DeducedEnterStates, false, true);
         }
         return DeducedEnterStates;
     }

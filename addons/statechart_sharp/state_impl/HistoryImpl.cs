@@ -11,19 +11,19 @@ public class HistoryImpl : StateImpl
 
     public HistoryImpl(State state) : base(state) {}
 
-    public override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
-        base.Setup(hostStateChart, ref parentOrderId, substateIdx);
+        base._Setup(hostStateChart, ref parentOrderId, substateIdx);
         IsDeepHistory = HostState.IsDeepHistory;
     }
 
-    public override bool GetPromoteStates(List<State> states)
+    public override bool _GetPromoteStates(List<State> states)
     {
         // History do not promote
         return false;
     }
 
-    public override void ExtendEnterRegion(
+    public override void _ExtendEnterRegion(
         SortedSet<State> enterRegion,
         SortedSet<State> enterRegionEdge,
         SortedSet<State> extraEnterRegion,
@@ -33,7 +33,7 @@ public class HistoryImpl : StateImpl
         enterRegionEdge.Add(HostState);
     }
 
-    public override void DeduceDescendants(
+    public override void _DeduceDescendants(
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /*
@@ -45,12 +45,12 @@ public class HistoryImpl : StateImpl
         */
         if (isEdgeState)
         {
-            ParentState.DeduceDescendants(deducedSet, IsDeepHistory, true);
+            ParentState._DeduceDescendants(deducedSet, IsDeepHistory, true);
         }
     }
 
 #if TOOLS
-    public override void GetConfigurationWarnings(List<string> warnings)
+    public override void _GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
         bool isParentWarning = true;

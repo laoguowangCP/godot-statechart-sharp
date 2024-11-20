@@ -8,27 +8,19 @@ namespace LGWCP.Godot.StatechartSharp;
 
 public class CompoundImpl : StateImpl
 {
-	private State CurrentState
-	{
-		get => HostState._CurrentState;
-		set { HostState._CurrentState = value; }
-	}
-	private State InitialState
-	{
-		get => HostState.InitialState;
-		set { HostState.InitialState = value; }
-	}
+	private State CurrentState;
+	private State InitialState;
 
 	public CompoundImpl(State state) : base(state) {}
 
-	public override bool IsAvailableRootState()
+	public override bool _IsAvailableRootState()
 	{
 		return true;
 	}
 
-	public override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+	public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
-		base.Setup(hostStateChart, ref parentOrderId, substateIdx);
+		base._Setup(hostStateChart, ref parentOrderId, substateIdx);
 
 		// Init & collect states, transitions, actions
 		// Get lower state and upper state
@@ -42,7 +34,7 @@ public class CompoundImpl : StateImpl
 
 			if (child is State s)
 			{
-				s.Setup(hostStateChart, ref parentOrderId, Substates.Count);
+				s._Setup(hostStateChart, ref parentOrderId, Substates.Count);
 				Substates.Add(s);
 
 				// First substate is lower-state
@@ -83,6 +75,7 @@ public class CompoundImpl : StateImpl
 		// Else state is atomic, lower and upper are both null.
 
 		// Set initial state
+		InitialState = HostState.InitialState;
 		if (InitialState != null)
 		{
 			// Check selected initial-state is non-history substate
@@ -114,7 +107,7 @@ public class CompoundImpl : StateImpl
 		CurrentState = InitialState;
 	}
 
-	public override void SetupPost()
+	public override void _SetupPost()
 	{
 		foreach (Node child in HostState.GetChildren())
 		{
@@ -136,33 +129,33 @@ public class CompoundImpl : StateImpl
 				}
 
 				t._SetupPost();
-				if (t.IsAuto)
+				if (t._IsAuto)
 				{
 					AutoTransitions.Add(t);
 					continue;
 				}
-				HostStatechart.RegistGlobalTransition(StateId, t.EventName, t);
+				HostStatechart._RegistGlobalTransition(_StateId, t._EventName, t);
 			}
 			else if (child is Reaction a)
 			{
 				a._SetupPost();
-				HostStatechart.RegistGlobalReaction(StateId, a.EventName, a);
+				HostStatechart._RegistGlobalReaction(_StateId, a._EventName, a);
 			}
 		}
 
-		base.SetupPost();
+		base._SetupPost();
 	}
 
-	public override bool IsConflictToEnterRegion(
+	public override bool _IsConflictToEnterRegion(
 		State substateToPend,
 		SortedSet<State> enterRegionUnextended)
 	{
 		// Conflicts if any substate is already exist in region
 		return enterRegionUnextended.Any<State>(
-			state => HostState.IsAncestorStateOf(state));
+			state => HostState._IsAncestorStateOf(state));
 	}
 
-	public override void ExtendEnterRegion(
+	public override void _ExtendEnterRegion(
 		SortedSet<State> enterRegion,
 		SortedSet<State> enterRegionEdge,
 		SortedSet<State> extraEnterRegion,
@@ -192,7 +185,7 @@ public class CompoundImpl : StateImpl
 			{
 				if (enterRegion.Contains(substate))
 				{
-					substate.ExtendEnterRegion(
+					substate._ExtendEnterRegion(
 						enterRegion, enterRegionEdge, extraEnterRegion, true);
 					return;
 				}
@@ -202,19 +195,19 @@ public class CompoundImpl : StateImpl
 		// Need no check, or need check but no substate in region
 		if (InitialState != null)
 		{
-			InitialState.ExtendEnterRegion(
+			InitialState._ExtendEnterRegion(
 				enterRegion, enterRegionEdge, extraEnterRegion, false);
 		}
 	}
 
-	public override bool GetPromoteStates(List<State> states)
+	public override bool _GetPromoteStates(List<State> states)
 	{
 		bool isPromote = true;
 		foreach (Node child in HostState.GetChildren())
 		{
 			if (child is State state)
 			{
-				bool isChildPromoted = state.GetPromoteStates(states);
+				bool isChildPromoted = state._GetPromoteStates(states);
 				if (isChildPromoted)
 				{
 					isPromote = false;
@@ -231,19 +224,20 @@ public class CompoundImpl : StateImpl
 		return true;
 	}
 
-	public override void SubmitActiveState(SortedSet<State> activeStates)
+	public override void _SubmitActiveState(SortedSet<State> activeStates)
 	{
 		activeStates.Add(HostState);
-		CurrentState?.SubmitActiveState(activeStates);
+		CurrentState?._SubmitActiveState(activeStates);
 	}
 
-	public override int SelectTransitions(
+	public override int _SelectTransitions(
 		SortedSet<Transition> enabledTransitions, bool isAuto)
 	{
 		int handleInfo = -1;
-		if (HostState._CurrentState != null)
+		// if (HostState._CurrentState != null)
+		if (CurrentState != null)
 		{
-			handleInfo = CurrentState.SelectTransitions(enabledTransitions, isAuto);
+			handleInfo = CurrentState._SelectTransitions(enabledTransitions, isAuto);
 		}
 
 		/*
@@ -268,7 +262,7 @@ public class CompoundImpl : StateImpl
 			{
 				return handleInfo;
 			}
-			matched = CurrentTAMap[StateId].Transitions;
+			matched = CurrentTAMap[_StateId].Transitions;
 			if (matched is null)
 			{
 				return handleInfo;
@@ -280,13 +274,13 @@ public class CompoundImpl : StateImpl
 			// If == 0, only check targetless
 			if (handleInfo == 0)
 			{
-				if (!t.IsTargetless)
+				if (!t._IsTargetless)
 				{
 					continue;
 				}
 			}
 
-			bool isEnabled = t.Check();
+			bool isEnabled = t._Check();
 			if (isEnabled)
 			{
 				enabledTransitions.Add(t);
@@ -298,7 +292,7 @@ public class CompoundImpl : StateImpl
 		return handleInfo;
 	}
 
-	public override void DeduceDescendants(
+	public override void _DeduceDescendants(
 		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
 	{
 		/*
@@ -311,7 +305,7 @@ public class CompoundImpl : StateImpl
 			if (CurrentState != null)
 			{
 				bool isDeepHistory = isHistory;
-				CurrentState.DeduceDescendants(deducedSet, isDeepHistory, false);
+				CurrentState._DeduceDescendants(deducedSet, isDeepHistory, false);
 			}
 			return;
 		}
@@ -322,16 +316,16 @@ public class CompoundImpl : StateImpl
 
 		if (deducedSubstate != null)
 		{
-			deducedSubstate.DeduceDescendants(deducedSet, isHistory, false);
+			deducedSubstate._DeduceDescendants(deducedSet, isHistory, false);
 		}
 	}
 
-	public override void HandleSubstateEnter(State substate)
+	public override void _HandleSubstateEnter(State substate)
 	{
-		HostState._CurrentState = substate;
+		CurrentState = substate;
 	}
 
-	public override void SaveAllStateConfig(List<int> snapshot)
+	public override void _SaveAllStateConfig(List<int> snapshot)
 	{
 		// Breadth first for better load order
 		if (CurrentState is null)
@@ -341,11 +335,11 @@ public class CompoundImpl : StateImpl
 		snapshot.Add(CurrentState._SubstateIdx);
 		foreach (State substate in Substates)
 		{
-			substate.SaveActiveStateConfig(snapshot);
+			substate._SaveActiveStateConfig(snapshot);
 		}
 	}
 
-	public override void SaveActiveStateConfig(List<int> snapshot)
+	public override void _SaveActiveStateConfig(List<int> snapshot)
 	{
 		// Breadth first for better load order
 		if (CurrentState is null)
@@ -353,10 +347,10 @@ public class CompoundImpl : StateImpl
 			return;
 		}
 		snapshot.Add(CurrentState._SubstateIdx);
-		CurrentState.SaveActiveStateConfig(snapshot);
+		CurrentState._SaveActiveStateConfig(snapshot);
 	}
 
-	public override int LoadAllStateConfig(int[] config, int configIdx)
+	public override int _LoadAllStateConfig(int[] config, int configIdx)
 	{
 		if (Substates.Count == 0)
 		{
@@ -372,7 +366,7 @@ public class CompoundImpl : StateImpl
 		++configIdx;
 		foreach (State substate in Substates)
 		{
-			configIdx = substate.LoadAllStateConfig(config, configIdx);
+			configIdx = substate._LoadAllStateConfig(config, configIdx);
 			if (configIdx == -1)
 			{
 				return -1;
@@ -382,7 +376,7 @@ public class CompoundImpl : StateImpl
 		return configIdx;
 	}
 
-	public override int LoadActiveStateConfig(int[] config, int configIdx)
+	public override int _LoadActiveStateConfig(int[] config, int configIdx)
 	{
 		if (Substates.Count == 0)
 		{
@@ -397,14 +391,14 @@ public class CompoundImpl : StateImpl
 		CurrentState = Substates[config[configIdx]];
 		++configIdx;
 
-		return CurrentState.LoadActiveStateConfig(config, configIdx);
+		return CurrentState._LoadActiveStateConfig(config, configIdx);
 	}
 
 #if TOOLS
-	public override void GetConfigurationWarnings(List<string> warnings)
+	public override void _GetConfigurationWarnings(List<string> warnings)
 	{
 		// Check parent
-		base.GetConfigurationWarnings(warnings);
+		base._GetConfigurationWarnings(warnings);
 
 		// Check child
 		if (InitialState != null)

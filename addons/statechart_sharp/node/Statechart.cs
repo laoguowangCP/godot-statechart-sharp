@@ -107,7 +107,7 @@ public partial class Statechart : StatechartComposition
 		{
 			if (child is State state)
 			{
-				if (state.IsAvailableRootState())
+				if (state._IsAvailableRootState())
 				{
 					RootState = state;
 					break;
@@ -130,13 +130,13 @@ public partial class Statechart : StatechartComposition
 		// Get and enter active states
 		if (RootState is not null)
 		{
-			RootState.SubmitActiveState(ActiveStates);
+			RootState._SubmitActiveState(ActiveStates);
 			RootState._SetupPost();
 		}
 
 		foreach (State state in ActiveStates)
 		{
-			state.StateEnter();
+			state._StateEnter();
 		}
 
 		// Set node process according to flags
@@ -154,14 +154,14 @@ public partial class Statechart : StatechartComposition
 			EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
 	}
 
-	public int GetStateId()
+	public int _GetStateId()
 	{
 		int id = StateLength;
 		++StateLength;
 		return id;
 	}
 
-	public void RegistGlobalTransition(int stateId, StringName eventName, Transition trans)
+	public void _RegistGlobalTransition(int stateId, StringName eventName, Transition trans)
 	{
 		(List<Transition> Transitions, List<Reaction> _)[] globalTA;
 		bool isEventInTable = _GlobalEventTAMap.TryGetValue(eventName, out globalTA);
@@ -184,7 +184,7 @@ public partial class Statechart : StatechartComposition
 		}
 	}
 
-	public void RegistGlobalReaction(int stateId, StringName eventName, Reaction react)
+	public void _RegistGlobalReaction(int stateId, StringName eventName, Reaction react)
 	{
 		(List<Transition> _, List<Reaction> Reactions)[] globalTA;
 		bool isEventInTable = _GlobalEventTAMap.TryGetValue(eventName, out globalTA);
@@ -257,11 +257,11 @@ public partial class Statechart : StatechartComposition
 
 		if (isAllStateConfig)
 		{
-			RootState.SaveAllStateConfig(SnapshotConfig);
+			RootState._SaveAllStateConfig(SnapshotConfig);
 		}
 		else
 		{
-			RootState.SaveActiveStateConfig(SnapshotConfig);
+			RootState._SaveActiveStateConfig(SnapshotConfig);
 		}
 		snapshot.Config = SnapshotConfig.ToArray();
 		SnapshotConfig.Clear();
@@ -311,11 +311,11 @@ public partial class Statechart : StatechartComposition
 		int loadIdxResult;
 		if (snapshot.IsAllStateConfig)
 		{
-			loadIdxResult = RootState.LoadAllStateConfig(config, 0);
+			loadIdxResult = RootState._LoadAllStateConfig(config, 0);
 		}
 		else
 		{
-			loadIdxResult = RootState.LoadActiveStateConfig(config, 0);
+			loadIdxResult = RootState._LoadActiveStateConfig(config, 0);
 		}
 
 		if (loadIdxResult == -1)
@@ -331,19 +331,19 @@ public partial class Statechart : StatechartComposition
 		{
 			foreach (State state in ActiveStates.Reverse())
 			{
-				state.StateExit();
+				state._StateExit();
 			}
 		}
 
 		ActiveStates.Clear();
-		RootState.SubmitActiveState(ActiveStates);
+		RootState._SubmitActiveState(ActiveStates);
 
 		// Enter on load
 		if (isEnterOnLoad)
 		{
 			foreach (State state in ActiveStates)
 			{
-				state.StateEnter();
+				state._StateEnter();
 			}
 		}
 
@@ -377,7 +377,7 @@ public partial class Statechart : StatechartComposition
 		// GlobalEventTAMap.TryGetValue(eventName, out CurrentTAMap);
 
 		// 1. Select transitions
-		RootState.SelectTransitions(EnabledTransitions, false);
+		RootState._SelectTransitions(EnabledTransitions, false);
 
 		// 2. Do transitions
 		DoTransitions();
@@ -385,7 +385,7 @@ public partial class Statechart : StatechartComposition
 		// 3. Select and do automatic transitions
 		for (int i = 1; i <= MaxAutoTransitionRound; ++i)
 		{
-			RootState.SelectTransitions(EnabledTransitions, true);
+			RootState._SelectTransitions(EnabledTransitions, true);
 
 			// Stop if active states are stable
 			if (EnabledTransitions.Count == 0)
@@ -398,12 +398,12 @@ public partial class Statechart : StatechartComposition
 		// 4. Select and do reactions
 		foreach (State state in ActiveStates)
 		{
-			state.SelectReactions(EnabledReactions);
+			state._SelectReactions(EnabledReactions);
 		}
 
 		foreach (Reaction reaction in EnabledReactions)
 		{
-			reaction.ReactionInvoke();
+			reaction._ReactionInvoke();
 		}
 
 		EnabledReactions.Clear();
@@ -431,15 +431,15 @@ public partial class Statechart : StatechartComposition
 			*/
 
 			// Targetless has no confliction
-			if (transition.IsTargetless)
+			if (transition._IsTargetless)
 			{
 				EnabledFilteredTransitions.Add(transition);
 				continue;
 			}
 
-			bool hasConfliction = ExitSet.Contains(transition.SourceState)
+			bool hasConfliction = ExitSet.Contains(transition._SourceState)
 				|| ExitSet.Any<State>(
-					state => transition.LcaState.IsAncestorStateOf(state));
+					state => transition._LcaState._IsAncestorStateOf(state));
 
 			if (hasConfliction)
 			{
@@ -449,30 +449,30 @@ public partial class Statechart : StatechartComposition
 			EnabledFilteredTransitions.Add(transition);
 
 			var exitStates = ActiveStates.GetViewBetween(
-				transition.LcaState._LowerState, transition.LcaState._UpperState);
+				transition._LcaState._LowerState, transition._LcaState._UpperState);
 			ExitSet.UnionWith(exitStates);
 		}
 
 		ActiveStates.ExceptWith(ExitSet);
 		foreach (State state in ExitSet)
 		{
-			state.StateExit();
+			state._StateExit();
 		}
 
 		// 2. Invoke transitions
 		// 3. Deduce and merge enter set
 		foreach (Transition transition in EnabledFilteredTransitions)
 		{
-			transition.TransitionInvoke();
+			transition._TransitionInvoke();
 
 			// If transition is targetless, enter-region is null.
-			if (transition.IsTargetless)
+			if (transition._IsTargetless)
 			{
 				continue;
 			}
 
-			SortedSet<State> enterRegion = transition.EnterRegion;
-			SortedSet<State> deducedEnterStates = transition.GetDeducedEnterStates();
+			SortedSet<State> enterRegion = transition._EnterRegion;
+			SortedSet<State> deducedEnterStates = transition._GetDeducedEnterStates();
 			EnterSet.UnionWith(enterRegion);
 			EnterSet.UnionWith(deducedEnterStates);
 		}
@@ -480,7 +480,7 @@ public partial class Statechart : StatechartComposition
 		ActiveStates.UnionWith(EnterSet);
 		foreach (State state in EnterSet)
 		{
-			state.StateEnter();
+			state._StateEnter();
 		}
 
 		// 4. Clear

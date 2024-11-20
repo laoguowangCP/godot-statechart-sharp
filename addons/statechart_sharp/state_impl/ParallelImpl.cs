@@ -11,14 +11,14 @@ public class ParallelImpl : StateImpl
 	protected int NonHistorySubstateCnt = 0;
 	public ParallelImpl(State state) : base(state) {}
 
-	public override bool IsAvailableRootState()
+	public override bool _IsAvailableRootState()
 	{
 		return true;
 	}
 
-	public override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+	public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
-		base.Setup(hostStateChart, ref parentOrderId, substateIdx);
+		base._Setup(hostStateChart, ref parentOrderId, substateIdx);
 
 		// Init & collect states, transitions, actions
 		// Get lower-state and upper-state
@@ -32,7 +32,7 @@ public class ParallelImpl : StateImpl
 
 			if (child is State s)
 			{
-				s.Setup(hostStateChart, ref parentOrderId, Substates.Count);
+				s._Setup(hostStateChart, ref parentOrderId, Substates.Count);
 				Substates.Add(s);
 
 				// First substate is lower-state
@@ -79,7 +79,7 @@ public class ParallelImpl : StateImpl
 		// Else state is atomic, lower and upper are null
 	}
 
-	public override void SetupPost()
+	public override void _SetupPost()
 	{
 
 		foreach (Node child in HostState.GetChildren())
@@ -102,31 +102,31 @@ public class ParallelImpl : StateImpl
 				}
 
 				t._SetupPost();
-				if (t.IsAuto)
+				if (t._IsAuto)
 				{
 					AutoTransitions.Add(t);
 					continue;
 				}
-				HostStatechart.RegistGlobalTransition(StateId, t.EventName, t);
+				HostStatechart._RegistGlobalTransition(_StateId, t._EventName, t);
 			}
 			else if (child is Reaction a)
 			{
 				a._SetupPost();
-				HostStatechart.RegistGlobalReaction(StateId, a.EventName, a);
+				HostStatechart._RegistGlobalReaction(_StateId, a._EventName, a);
 			}
 		}
 
-		base.SetupPost();
+		base._SetupPost();
 	}
 
-	public override bool GetPromoteStates(List<State> states)
+	public override bool _GetPromoteStates(List<State> states)
 	{
 		bool isPromote = true;
 		foreach (Node child in HostState.GetChildren())
 		{
 			if (child is State state)
 			{
-				bool isChildPromoted = state.GetPromoteStates(states);
+				bool isChildPromoted = state._GetPromoteStates(states);
 				if (isChildPromoted)
 				{
 					isPromote = false;
@@ -144,7 +144,7 @@ public class ParallelImpl : StateImpl
 		return true;
 	}
 
-	public override bool IsConflictToEnterRegion(
+	public override bool _IsConflictToEnterRegion(
 		State substateToPend,
 		SortedSet<State> enterRegionUnextended)
 	{
@@ -159,7 +159,7 @@ public class ParallelImpl : StateImpl
 		if (substateToPend._IsHistory)
 		{
 			return enterRegionUnextended.Any<State>(
-				state => HostState.IsAncestorStateOf(state));
+				state => HostState._IsAncestorStateOf(state));
 		}
 
 		// Any history substate in region, conflicts.
@@ -176,7 +176,7 @@ public class ParallelImpl : StateImpl
 		return false;
 	}
 
-	public override void ExtendEnterRegion(
+	public override void _ExtendEnterRegion(
 		SortedSet<State> enterRegion,
 		SortedSet<State> enterRegionEdge,
 		SortedSet<State> extraEnterRegion,
@@ -212,7 +212,7 @@ public class ParallelImpl : StateImpl
 			{
 				if (substate._IsHistory && enterRegion.Contains(substate))
 				{
-					substate.ExtendEnterRegion(
+					substate._ExtendEnterRegion(
 						enterRegion, enterRegionEdge, extraEnterRegion, true);
 					return;
 				}
@@ -230,21 +230,21 @@ public class ParallelImpl : StateImpl
 			// Need check && substate in region => still need check
 			bool stillNeedCheck =
 				needCheckContain && enterRegion.Contains(substate);
-			substate.ExtendEnterRegion(
+			substate._ExtendEnterRegion(
 				enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
 		}
 	}
 
-	public override void SubmitActiveState(SortedSet<State> activeStates)
+	public override void _SubmitActiveState(SortedSet<State> activeStates)
 	{
 		activeStates.Add(HostState);
 		foreach (State substate in HostState._Substates)
 		{
-			substate.SubmitActiveState(activeStates);
+			substate._SubmitActiveState(activeStates);
 		}
 	}
 
-	public override int SelectTransitions(
+	public override int _SelectTransitions(
 		SortedSet<Transition> enabledTransitions, bool isAuto)
 	{
 		int handleInfo = -1;
@@ -259,7 +259,7 @@ public class ParallelImpl : StateImpl
 					continue;
 				}
 
-				int substateHandleInfo = substate.SelectTransitions(
+				int substateHandleInfo = substate._SelectTransitions(
 					enabledTransitions, isAuto);
 				if (substateHandleInfo < 0)
 				{
@@ -307,7 +307,7 @@ public class ParallelImpl : StateImpl
 			{
 				return handleInfo;
 			}
-			matched = CurrentTAMap[StateId].Transitions;
+			matched = CurrentTAMap[_StateId].Transitions;
 			if (matched is null)
 			{
 				return handleInfo;
@@ -318,13 +318,13 @@ public class ParallelImpl : StateImpl
 		{
 			if (handleInfo == 0)
 			{
-				if (!t.IsTargetless)
+				if (!t._IsTargetless)
 				{
 					continue;
 				}
 			}
 
-			bool isEnabled = t.Check();
+			bool isEnabled = t._Check();
 			if (isEnabled)
 			{
 				enabledTransitions.Add(t);
@@ -336,7 +336,7 @@ public class ParallelImpl : StateImpl
 		return handleInfo;
 	}
 
-	public override void DeduceDescendants(
+	public override void _DeduceDescendants(
 		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
 	{
 		/*
@@ -356,31 +356,31 @@ public class ParallelImpl : StateImpl
 			{
 				continue;
 			}
-			substate.DeduceDescendants(deducedSet, isHistory, false);
+			substate._DeduceDescendants(deducedSet, isHistory, false);
 		}
 	}
 
-	public override void SaveAllStateConfig(List<int> snapshot)
+	public override void _SaveAllStateConfig(List<int> snapshot)
 	{
 		foreach (State substate in Substates)
 		{
-			substate.SaveActiveStateConfig(snapshot);
+			substate._SaveActiveStateConfig(snapshot);
 		}
 	}
 
-	public override void SaveActiveStateConfig(List<int> snapshot)
+	public override void _SaveActiveStateConfig(List<int> snapshot)
 	{
 		foreach (State substate in Substates)
 		{
-			substate.SaveActiveStateConfig(snapshot);
+			substate._SaveActiveStateConfig(snapshot);
 		}
 	}
 
-	public override int LoadAllStateConfig(int[] config, int configIdx)
+	public override int _LoadAllStateConfig(int[] config, int configIdx)
 	{
 		foreach (State substate in Substates)
 		{
-			configIdx = substate.LoadAllStateConfig(config, configIdx);
+			configIdx = substate._LoadAllStateConfig(config, configIdx);
 			if (configIdx == -1)
 			{
 				return -1;
@@ -390,11 +390,11 @@ public class ParallelImpl : StateImpl
 		return configIdx;
 	}
 
-	public override int LoadActiveStateConfig(int[] config, int configIdx)
+	public override int _LoadActiveStateConfig(int[] config, int configIdx)
 	{
 		foreach (State substate in Substates)
 		{
-			configIdx = substate.LoadAllStateConfig(config, configIdx);
+			configIdx = substate._LoadAllStateConfig(config, configIdx);
 			if (configIdx == -1)
 			{
 				return -1;
