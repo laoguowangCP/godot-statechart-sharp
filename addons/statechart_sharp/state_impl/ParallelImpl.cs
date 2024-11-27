@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace LGWCP.Godot.StatechartSharp;
 
-
 public class ParallelImpl : StateImpl
 {
 	protected int NonHistorySubstateCnt = 0;

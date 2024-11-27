@@ -5,7 +5,6 @@ using Godot;
 
 namespace LGWCP.Godot.StatechartSharp;
 
-
 public class CompoundImpl : StateImpl
 {
 	private State CurrentState;

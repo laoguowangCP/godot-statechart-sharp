@@ -1,10 +1,8 @@
 using Godot;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 
 
 namespace LGWCP.Godot.StatechartSharp;
-
 
 public class StateImpl
 {
