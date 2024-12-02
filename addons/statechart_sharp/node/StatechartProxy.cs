@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 
@@ -44,6 +45,7 @@ public partial class StatechartProxy : Node
     [Export]
     public Statechart Statechart;
     public StatechartDuct Duct;
+    protected Dictionary<StringName, List<StatechartMonitor>> EventMoniterMap;
 
 #endregion
 
@@ -55,6 +57,7 @@ public partial class StatechartProxy : Node
         // Disable statechart, proxy node loop events
         if (Statechart is null)
         {
+            GD.PushWarning("No proxied statechart.");
             ProcessMode = ProcessModeEnum.Disabled;
             return;
         }
@@ -62,6 +65,8 @@ public partial class StatechartProxy : Node
         if (Statechart.IsNodeReady())
         {
             GD.PushWarning("Proxied statechart is not ready, proxy wont work properly.");
+            ProcessMode = ProcessModeEnum.Disabled;
+            return;
         }
 
         Statechart.ProcessMode = ProcessModeEnum.Disabled;
@@ -80,6 +85,11 @@ public partial class StatechartProxy : Node
     {
         // Plain step, proxied so you may custom upon it
         Statechart.Step(eventName);
+    }
+
+    public void RegistMonitor(StatechartMonitor monitor)
+    {
+        
     }
 
 	public override void _Process(double delta)

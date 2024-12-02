@@ -1,12 +1,19 @@
+using System.Collections.Generic;
+using Godot;
+
 namespace LGWCP.Godot.StatechartSharp;
 
-public class StatechartMonitor
+public partial class StatechartMonitor
 {
     protected Statechart Statechart;
     public StatechartMonitor(Statechart statechart)
     {
         Statechart = statechart;
     }
+
+    public StringName EventName;
+    public List<Asserter> BeforeStepAsserters;
+    public List<Asserter> AfterStepAsserters;
 
     public abstract class Asserter
     {
