@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Schema;
 using Godot;
 
 
@@ -45,7 +47,7 @@ public partial class StatechartProxy : Node
     [Export]
     public Statechart Statechart;
     public StatechartDuct Duct;
-    protected Dictionary<StringName, List<StatechartMonitor>> EventMoniterMap;
+    protected Dictionary<StringName, LinkedList<StatechartMonitor>> EventMoniterMap = new();
 
 #endregion
 
@@ -83,20 +85,29 @@ public partial class StatechartProxy : Node
 
     public virtual void Step(StringName eventName)
     {
-        // Plain step, proxied so you may custom upon it
+        // TODO: before step assert
         Statechart.Step(eventName);
+        // TODO: after step assert
+        // TODO: monitor retrieve assert result
     }
 
-    public void RegistMonitor(StatechartMonitor monitor)
+    // TODO: may not be used?
+    public void AddMonitor(StatechartMonitor monitor)
     {
-        
+        LinkedList<StatechartMonitor> monitors;
+        if (!EventMoniterMap.TryGetValue(monitor.EventName, out monitors))
+        {
+            monitors = new();
+            EventMoniterMap.Add(monitor.EventName, monitors);
+        }
+        _ = monitors.Append(monitor);
     }
 
 	public override void _Process(double delta)
 	{
         EmitSignal(SignalName.BeforeStepProcess);
 		Duct.Delta = delta;
-		Statechart.Step(StatechartEventName.EVENT_PROCESS);
+		Step(StatechartEventName.EVENT_PROCESS);
         EmitSignal(SignalName.AfterStepProcess);
 	}
 
@@ -104,7 +115,7 @@ public partial class StatechartProxy : Node
 	{
         EmitSignal(SignalName.BeforeStepPhysicsProcess);
 		Duct.PhysicsDelta = delta;
-		Statechart.Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
+		Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
         EmitSignal(SignalName.AfterStepPhysicsProcess);
 	}
 
@@ -114,7 +125,7 @@ public partial class StatechartProxy : Node
 		{
             EmitSignal(SignalName.BeforeStepInput);
 			Duct.Input = @event;
-			Statechart.Step(StatechartEventName.EVENT_INPUT);
+			Step(StatechartEventName.EVENT_INPUT);
             EmitSignal(SignalName.AfterStepInput);
 		}
 	}
@@ -125,7 +136,7 @@ public partial class StatechartProxy : Node
 		{
             EmitSignal(SignalName.BeforeStepShortcutInput);
 			Duct.ShortcutInput = @event;
-			Statechart.Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
+			Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
             EmitSignal(SignalName.AfterStepShortcutInput);
 		}
 	}
