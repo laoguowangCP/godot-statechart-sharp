@@ -92,15 +92,57 @@ public partial class Statechart
 
         public override bool Assert()
         {
+            // Make sure all asserters checked
+            bool isSuccess = true;
             foreach (var asserter in Asserters)
             {
                 if (!asserter.Assert())
                 {
-                    return false;
+                    isSuccess = false;
                 }
             }
 
-            return true;
+            return isSuccess;
+        }
+    }
+
+    public class AnyAsserter : StatechartAsserter
+    {
+        protected List<StatechartAsserter> Asserters;
+
+        public AnyAsserter(Statechart statechart) : base(statechart)
+        {
+            Asserters = new List<StatechartAsserter>();
+        }
+
+        public AnyAsserter(Statechart statechart, StatechartAsserter[] asserters) : base(statechart)
+        {
+            Asserters = new List<StatechartAsserter>(asserters);
+        }
+
+        public void Add(StatechartAsserter asserter)
+        {
+            Asserters.Add(asserter);
+        }
+
+        public void Clear()
+        {
+            Asserters.Clear();
+        }
+
+        public override bool Assert()
+        {
+            // Make sure all asserters checked
+            bool isSuccess = false;
+            foreach (var asserter in Asserters)
+            {
+                if (asserter.Assert())
+                {
+                    isSuccess = true;
+                }
+            }
+
+            return isSuccess;
         }
     }
 }
