@@ -92,6 +92,7 @@ public partial class StatechartProxy : Node
     }
 
     // TODO: may not be used?
+    /*
     public void AddMonitor(StatechartMonitor monitor)
     {
         LinkedList<StatechartMonitor> monitors;
@@ -101,7 +102,7 @@ public partial class StatechartProxy : Node
             EventMoniterMap.Add(monitor.EventName, monitors);
         }
         _ = monitors.Append(monitor);
-    }
+    }*/
 
 	public override void _Process(double delta)
 	{

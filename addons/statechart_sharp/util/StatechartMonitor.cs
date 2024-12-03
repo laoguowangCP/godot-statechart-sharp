@@ -12,30 +12,60 @@ public partial class StatechartMonitor
     }
 
     public StringName EventName;
-    public List<Asserter> BeforeStepAsserters;
-    public List<Asserter> AfterStepAsserters;
 
-    public abstract class Asserter
+}
+
+
+#region Asserter
+
+public partial class Statechart
+{
+
+public abstract class StatechartAsserter
+{
+    protected Statechart Statechart;
+    public StatechartAsserter(Statechart statechart)
     {
-        public virtual bool Assert()
-        {
-            return false;
-        }
+        Statechart = statechart;
     }
-
-    // Holds a snapshot, check if consistent with not-running statechart
-    public class SnapshotAsserter : Asserter
+    public virtual bool Assert()
     {
-        protected StatechartSnapshot Snapshot;
-
-        public SnapshotAsserter(StatechartSnapshot snapshot)
-        {
-            Snapshot = snapshot;
-        }
-
-        public override bool Assert()
-        {
-            return false;
-        }
+        return false;
     }
 }
+
+// Holds a snapshot, check if consistent with not-running statechart
+public class SnapshotAsserter : StatechartAsserter
+{
+    protected StatechartSnapshot Snapshot;
+
+    public SnapshotAsserter(Statechart statechart, StatechartSnapshot snapshot) : base(statechart)
+    {
+        Snapshot = snapshot;
+    }
+
+    public override bool Assert()
+    {
+        var currSnapshot = Statechart.Save(Snapshot.IsAllStateConfig);
+        return currSnapshot.Equals(Snapshot);
+    }
+}
+
+public class HasStateAsserter : StatechartAsserter
+{
+    protected State State;
+
+    public HasStateAsserter(Statechart statechart, State state) : base(statechart)
+    {
+        State = state;
+    }
+
+    public override bool Assert()
+    {
+        return Statechart.IsRunning && Statechart.ActiveStates.Contains(State);
+    }
+}
+
+}
+
+#endregion
