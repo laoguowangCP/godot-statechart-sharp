@@ -51,11 +51,11 @@ public partial class Statechart
         }
     }
 
-    public class HasStateAsserter : StatechartAsserter
+    public class HasActiveStateAsserter : StatechartAsserter
     {
         protected State State;
 
-        public HasStateAsserter(Statechart statechart, State state) : base(statechart)
+        public HasActiveStateAsserter(Statechart statechart, State state) : base(statechart)
         {
             State = state;
         }
