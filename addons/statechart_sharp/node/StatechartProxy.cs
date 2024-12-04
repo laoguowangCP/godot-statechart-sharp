@@ -47,7 +47,6 @@ public partial class StatechartProxy : Node
     [Export]
     public Statechart Statechart;
     public StatechartDuct Duct;
-    protected Dictionary<StringName, LinkedList<StatechartMonitor>> EventMoniterMap = new();
 
 #endregion
 
@@ -85,24 +84,8 @@ public partial class StatechartProxy : Node
 
     public virtual void Step(StringName eventName)
     {
-        // TODO: before step assert
         Statechart.Step(eventName);
-        // TODO: after step assert
-        // TODO: monitor retrieve assert result
     }
-
-    // TODO: may not be used?
-    /*
-    public void AddMonitor(StatechartMonitor monitor)
-    {
-        LinkedList<StatechartMonitor> monitors;
-        if (!EventMoniterMap.TryGetValue(monitor.EventName, out monitors))
-        {
-            monitors = new();
-            EventMoniterMap.Add(monitor.EventName, monitors);
-        }
-        _ = monitors.Append(monitor);
-    }*/
 
 	public override void _Process(double delta)
 	{

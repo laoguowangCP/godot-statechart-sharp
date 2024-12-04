@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://cuefhfbjmrkjk"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartStepAsserter.cs" id="1_d4mu7"]
+
+[node name="TestSetUseAsserter" type="Node"]
+
+[node name="StepAsserter" type="Node" parent="." node_paths=PackedStringArray("Step00Snapshot", "Step01Snapshot", "Step02Snapshot", "Step03Snapshot", "Step04Snapshot", "Step05Snapshot", "Step06Snapshot", "Step07Snapshot", "Step08Snapshot")]
+script = ExtResource("1_d4mu7")
+Snapshots = Array[Object]([])
+Step00Snapshot = Array[Object]([])
+Step01Snapshot = Array[Object]([])
+Step02Snapshot = Array[Object]([])
+Step03Snapshot = Array[Object]([])
+Step04Snapshot = Array[Object]([])
+Step05Snapshot = Array[Object]([])
+Step06Snapshot = Array[Object]([])
+Step07Snapshot = Array[Object]([])
+Step08Snapshot = Array[Object]([])

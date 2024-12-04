@@ -1,26 +1,12 @@
 using System.Collections.Generic;
-using Godot;
 
 namespace LGWCP.Godot.StatechartSharp;
-
-public partial class StatechartMonitor
-{
-    protected Statechart Statechart;
-    public StatechartMonitor(Statechart statechart)
-    {
-        Statechart = statechart;
-    }
-
-    public StringName EventName;
-
-}
 
 
 #region Asserter
 
 public partial class Statechart
 {
-
     public abstract class StatechartAsserter
     {
         protected Statechart Statechart;
@@ -51,18 +37,31 @@ public partial class Statechart
         }
     }
 
-    public class HasActiveStateAsserter : StatechartAsserter
+    public class ActiveStatesAsserter : StatechartAsserter
     {
-        protected State State;
+        protected List<State> States;
 
-        public HasActiveStateAsserter(Statechart statechart, State state) : base(statechart)
+        public ActiveStatesAsserter(Statechart statechart, State[] states) : base(statechart)
         {
-            State = state;
+            States = new List<State>(states);
         }
 
         public override bool Assert()
         {
-            return Statechart.IsRunning && Statechart.ActiveStates.Contains(State);
+            if (Statechart.IsRunning)
+            {
+                return false;
+            }
+
+            foreach (var state in States)
+            {
+                if (!Statechart.ActiveStates.Contains(state))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 

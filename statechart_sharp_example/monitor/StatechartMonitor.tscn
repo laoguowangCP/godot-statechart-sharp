@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://ehlln6s7ufm6"]
-
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/StatechartProxy.cs" id="1_miwlb"]
-
-[node name="StatechartMonitor" type="Node"]
-
-[node name="StatechartProxy" type="Node" parent="."]
-script = ExtResource("1_miwlb")
