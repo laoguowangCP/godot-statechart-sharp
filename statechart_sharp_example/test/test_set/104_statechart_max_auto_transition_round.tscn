@@ -69,6 +69,7 @@ StepName = &"test"
 
 [node name="Statechart" type="Node" parent="Tester"]
 script = ExtResource("2_8ujbo")
+MaxAutoTransitionRound = 1
 
 [node name="Root" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_gifu4")

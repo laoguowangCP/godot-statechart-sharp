@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace LGWCP.Godot.StatechartSharp;
@@ -73,7 +74,7 @@ public partial class Statechart : StatechartComposition
 #endif
 
 		// Statechart setup async
-		StartSetUp();
+		_ = StartSetUpAsync();
 
 #if TOOLS
 		}
@@ -84,7 +85,7 @@ public partial class Statechart : StatechartComposition
 #endif
 	}
 
-	protected async void StartSetUp()
+	protected async Task StartSetUpAsync()
 	{
 		if (IsWaitParentReady)
 		{

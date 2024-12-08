@@ -24,6 +24,7 @@ public partial class Statechart
     public class SnapshotAsserter : StatechartAsserter
     {
         protected StatechartSnapshot Snapshot;
+        public StatechartSnapshot CurrSnapshot; // For further inspect
 
         public SnapshotAsserter(Statechart statechart, StatechartSnapshot snapshot) : base(statechart)
         {
@@ -32,8 +33,8 @@ public partial class Statechart
 
         public override bool Assert()
         {
-            var currSnapshot = Statechart.Save(Snapshot.IsAllStateConfig);
-            return currSnapshot.Equals(Snapshot);
+            CurrSnapshot = Statechart.Save(Snapshot.IsAllStateConfig);
+            return CurrSnapshot.Equals(Snapshot);
         }
     }
 

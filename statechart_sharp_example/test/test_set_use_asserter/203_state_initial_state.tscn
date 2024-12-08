@@ -1,0 +1,69 @@
+[gd_scene load_steps=9 format=3 uid="uid://bgpvvkgtcp5c3"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartStepAsserter.cs" id="1_3f172"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/util/StatechartSnapshot.cs" id="2_o240m"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/StatechartProxy.cs" id="3_jmc1f"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="4_j6luh"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="5_tnorh"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="6_i2mn7"]
+
+[sub_resource type="Resource" id="Resource_af7x7"]
+script = ExtResource("2_o240m")
+IsAllStateConfig = true
+Config = PackedInt32Array(1, 1, 0)
+
+[sub_resource type="Resource" id="Resource_4u1m2"]
+script = ExtResource("2_o240m")
+IsAllStateConfig = true
+Config = PackedInt32Array(2, 1, 0)
+
+[node name="StepAsserter" type="Node" node_paths=PackedStringArray("StatechartProxy")]
+script = ExtResource("1_3f172")
+TestName = &"203 State Initial State"
+StatechartProxy = NodePath("StatechartProxy")
+SnapshotBeforeSteps = Array[Object]([SubResource("Resource_af7x7"), SubResource("Resource_4u1m2")])
+
+[node name="StatechartProxy" type="Node" parent="." node_paths=PackedStringArray("Statechart")]
+script = ExtResource("3_jmc1f")
+Statechart = NodePath("Statechart")
+
+[node name="Statechart" type="Node" parent="StatechartProxy"]
+script = ExtResource("4_j6luh")
+IsWaitParentReady = false
+
+[node name="Root" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("5_tnorh")
+
+[node name="Hisotry" type="Node" parent="StatechartProxy/Statechart/Root"]
+script = ExtResource("5_tnorh")
+StateMode = 2
+
+[node name="Init" type="Node" parent="StatechartProxy/Statechart/Root"]
+script = ExtResource("5_tnorh")
+
+[node name="Init->Test" type="Node" parent="StatechartProxy/Statechart/Root/Init" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_i2mn7")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../Test")]
+
+[node name="Test" type="Node" parent="StatechartProxy/Statechart/Root" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("5_tnorh")
+InitialState = NodePath("B")
+
+[node name="A" type="Node" parent="StatechartProxy/Statechart/Root/Test"]
+script = ExtResource("5_tnorh")
+
+[node name="B" type="Node" parent="StatechartProxy/Statechart/Root/Test" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("5_tnorh")
+InitialState = NodePath("History")
+
+[node name="X" type="Node" parent="StatechartProxy/Statechart/Root/Test/B"]
+script = ExtResource("5_tnorh")
+
+[node name="Y" type="Node" parent="StatechartProxy/Statechart/Root/Test/B"]
+script = ExtResource("5_tnorh")
+
+[node name="History" type="Node" parent="StatechartProxy/Statechart/Root/Test/B"]
+script = ExtResource("5_tnorh")
+StateMode = 2

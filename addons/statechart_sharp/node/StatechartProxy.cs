@@ -60,7 +60,7 @@ public partial class StatechartProxy : Node
             return;
         }
 
-        if (Statechart.IsNodeReady())
+        if (!Statechart.IsNodeReady())
         {
             GD.PushWarning("Proxied statechart is not ready, proxy wont work properly.");
             ProcessMode = ProcessModeEnum.Disabled;

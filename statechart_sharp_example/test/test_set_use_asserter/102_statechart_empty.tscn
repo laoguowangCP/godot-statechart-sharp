@@ -1,0 +1,56 @@
+[gd_scene load_steps=9 format=3 uid="uid://icew583620o7"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartStepAsserter.cs" id="1_tp2uo"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/util/StatechartSnapshot.cs" id="2_y518l"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/StatechartProxy.cs" id="3_4a611"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="4_rsoof"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="5_4g4iq"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Reaction.cs" id="6_w8j14"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="7_mstcy"]
+
+[sub_resource type="Resource" id="Resource_af7x7"]
+script = ExtResource("2_y518l")
+IsAllStateConfig = true
+Config = PackedInt32Array()
+
+[node name="StepAsserter" type="Node" node_paths=PackedStringArray("StatechartProxy")]
+script = ExtResource("1_tp2uo")
+TestName = &"102 Statechart Empty"
+StatechartProxy = NodePath("StatechartProxy")
+SnapshotBeforeSteps = Array[Object]([SubResource("Resource_af7x7")])
+
+[node name="StatechartProxy" type="Node" parent="." node_paths=PackedStringArray("Statechart")]
+script = ExtResource("3_4a611")
+Statechart = NodePath("Statechart")
+
+[node name="Statechart" type="Node" parent="StatechartProxy"]
+script = ExtResource("4_rsoof")
+IsWaitParentReady = false
+
+[node name="Transition" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("5_4g4iq")
+CustomEventName = &""
+
+[node name="Reaction" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("6_w8j14")
+CustomEventName = &""
+
+[node name="HistoryState" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("7_mstcy")
+StateMode = 2
+
+[node name="Root1" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("7_mstcy")
+
+[node name="Reaction" type="Node" parent="StatechartProxy/Statechart/Root1"]
+script = ExtResource("6_w8j14")
+ReactionEvent = 6
+CustomEventName = &"test"
+
+[node name="Root2" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("7_mstcy")
+
+[node name="Reaction" type="Node" parent="StatechartProxy/Statechart/Root2"]
+script = ExtResource("6_w8j14")
+ReactionEvent = 6
+CustomEventName = &"test"

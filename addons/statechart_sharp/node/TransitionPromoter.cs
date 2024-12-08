@@ -33,7 +33,7 @@ public partial class TransitionPromoter : StatechartComposition
                 && transitionParent is State parentState)
             {
                 ParentState = parentState;
-                PromoteTransition();
+                _ = PromoteAsync();
                 return;
             }
         }
@@ -41,7 +41,7 @@ public partial class TransitionPromoter : StatechartComposition
         QueueFree();
     }
     
-    protected async void PromoteTransition()
+    protected async Task PromoteAsync()
     {
         // Wait transition is ready
         await ToSignal(ParentState, State.SignalName.Ready);
