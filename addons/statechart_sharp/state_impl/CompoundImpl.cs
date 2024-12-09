@@ -326,7 +326,6 @@ public class CompoundImpl : StateImpl
 
 	public override void _SaveAllStateConfig(List<int> snapshot)
 	{
-		// Breadth first for better load order
 		if (CurrentState is null)
 		{
 			return;
@@ -334,13 +333,12 @@ public class CompoundImpl : StateImpl
 		snapshot.Add(CurrentState._SubstateIdx);
 		foreach (State substate in Substates)
 		{
-			substate._SaveActiveStateConfig(snapshot);
+			substate._SaveAllStateConfig(snapshot);
 		}
 	}
 
 	public override void _SaveActiveStateConfig(List<int> snapshot)
 	{
-		// Breadth first for better load order
 		if (CurrentState is null)
 		{
 			return;

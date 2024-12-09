@@ -1,0 +1,108 @@
+[gd_scene load_steps=11 format=3 uid="uid://binkbheiv8csu"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartStepAsserter.cs" id="1_vn488"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/util/StatechartSnapshot.cs" id="2_dghym"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/StatechartProxy.cs" id="3_b2f4v"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="4_1sbgg"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="5_mbhcw"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="6_1u7wh"]
+
+[sub_resource type="Resource" id="Resource_af7x7"]
+script = ExtResource("2_dghym")
+IsAllStateConfig = true
+Config = PackedInt32Array(0, 0, 0, 1, 1)
+
+[sub_resource type="Resource" id="Resource_n6kgs"]
+script = ExtResource("2_dghym")
+IsAllStateConfig = true
+Config = PackedInt32Array(1, 1, 1, 1, 1)
+
+[sub_resource type="Resource" id="Resource_guv5q"]
+script = ExtResource("2_dghym")
+IsAllStateConfig = true
+Config = PackedInt32Array(2, 1, 1, 1, 1)
+
+[sub_resource type="Resource" id="Resource_nth3o"]
+script = ExtResource("2_dghym")
+IsAllStateConfig = true
+Config = PackedInt32Array(1, 1, 1, 1, 1)
+
+[node name="StepAsserter" type="Node" node_paths=PackedStringArray("StatechartProxy")]
+script = ExtResource("1_vn488")
+TestName = &"207 State Deep Hsitory 1"
+StatechartProxy = NodePath("StatechartProxy")
+SnapshotBeforeSteps = Array[Object]([SubResource("Resource_af7x7"), SubResource("Resource_n6kgs"), SubResource("Resource_guv5q"), SubResource("Resource_nth3o")])
+
+[node name="StatechartProxy" type="Node" parent="." node_paths=PackedStringArray("Statechart")]
+script = ExtResource("3_b2f4v")
+Statechart = NodePath("Statechart")
+
+[node name="Statechart" type="Node" parent="StatechartProxy"]
+script = ExtResource("4_1sbgg")
+IsWaitParentReady = false
+
+[node name="Root" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("5_mbhcw")
+
+[node name="Init" type="Node" parent="StatechartProxy/Statechart/Root"]
+script = ExtResource("5_mbhcw")
+
+[node name="->A-Y-2" type="Node" parent="StatechartProxy/Statechart/Root/Init" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_1u7wh")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../A/Y/2")]
+
+[node name="A" type="Node" parent="StatechartProxy/Statechart/Root"]
+script = ExtResource("5_mbhcw")
+
+[node name="X" type="Node" parent="StatechartProxy/Statechart/Root/A"]
+script = ExtResource("5_mbhcw")
+
+[node name="Y" type="Node" parent="StatechartProxy/Statechart/Root/A"]
+script = ExtResource("5_mbhcw")
+
+[node name="1" type="Node" parent="StatechartProxy/Statechart/Root/A/Y"]
+script = ExtResource("5_mbhcw")
+
+[node name="2" type="Node" parent="StatechartProxy/Statechart/Root/A/Y"]
+script = ExtResource("5_mbhcw")
+
+[node name="DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/A"]
+script = ExtResource("5_mbhcw")
+StateMode = 2
+IsDeepHistory = true
+
+[node name="->B-DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_1u7wh")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B/DeepHistory")]
+
+[node name="B" type="Node" parent="StatechartProxy/Statechart/Root" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("5_mbhcw")
+InitialState = NodePath("Y")
+
+[node name="X" type="Node" parent="StatechartProxy/Statechart/Root/B"]
+script = ExtResource("5_mbhcw")
+
+[node name="Y" type="Node" parent="StatechartProxy/Statechart/Root/B" node_paths=PackedStringArray("InitialState")]
+script = ExtResource("5_mbhcw")
+InitialState = NodePath("2")
+
+[node name="1" type="Node" parent="StatechartProxy/Statechart/Root/B/Y"]
+script = ExtResource("5_mbhcw")
+
+[node name="2" type="Node" parent="StatechartProxy/Statechart/Root/B/Y"]
+script = ExtResource("5_mbhcw")
+
+[node name="B->A-DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/B/Y/2" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_1u7wh")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../../../A/DeepHistory")]
+
+[node name="DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/B"]
+script = ExtResource("5_mbhcw")
+StateMode = 2
+IsDeepHistory = true

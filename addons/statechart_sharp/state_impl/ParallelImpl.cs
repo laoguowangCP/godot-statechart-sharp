@@ -363,7 +363,7 @@ public class ParallelImpl : StateImpl
 	{
 		foreach (State substate in Substates)
 		{
-			substate._SaveActiveStateConfig(snapshot);
+			substate._SaveAllStateConfig(snapshot);
 		}
 	}
 
