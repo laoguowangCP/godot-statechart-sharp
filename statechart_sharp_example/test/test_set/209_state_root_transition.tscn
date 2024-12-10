@@ -61,8 +61,15 @@ script = ExtResource("2_ncaye")
 [node name="Root" type="Node" parent="Tester/Statechart"]
 script = ExtResource("3_jep7v")
 
-[node name="Transition" type="Node" parent="Tester/Statechart/Root"]
+[node name="Transition" type="Node" parent="Tester/Statechart/Root" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_0jm7g")
 CustomEventName = &""
+TargetStatesArray = [NodePath("../B")]
+
+[node name="A" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_jep7v")
+
+[node name="B" type="Node" parent="Tester/Statechart/Root"]
+script = ExtResource("3_jep7v")
 
 [connection signal="pressed" from="Button" to="Tester" method="OnTestButtonPressed"]

@@ -74,7 +74,7 @@ script = ExtResource("3_q662f")
 [node name="A" type="Node" parent="Tester/Statechart/Root"]
 script = ExtResource("3_q662f")
 
-[node name="->A(Auto)" type="Node" parent="Tester/Statechart/Root/A"]
+[node name="->(Auto)" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("4_5kh01")
 TransitionEvent = 7
 CustomEventName = &""

@@ -70,7 +70,7 @@ public class HistoryImpl : StateImpl
             warnings.Add("History state should be child to a non-history state.");
         }
 
-        if (isParentParallel && !IsDeepHistory)
+        if (isParentParallel && !HostState.IsDeepHistory)
         {
             warnings.Add("Parallel's shallow history is not recommended.");
         }
