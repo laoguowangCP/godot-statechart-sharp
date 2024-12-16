@@ -19,23 +19,23 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
     where TEvent : IEquatable<TEvent>
 {
 #region property
-    
+
     protected int MaxInternalEventCount = 8;
     protected int MaxAutoTransitionRound = 8;
     protected bool IsRunning;
     protected int EventCount;
-    protected State RootState;
-    protected SortedSet<State> ActiveStates;
+    protected StateInternal RootState;
+    protected SortedSet<StateInternal> ActiveStates;
     protected Queue<string> QueuedEvents;
-    protected SortedSet<Transition> EnabledTransitions;
-    protected SortedSet<Transition> EnabledFilteredTransitions;
-    protected SortedSet<State> ExitSet;
-    protected SortedSet<State> EnterSet;
-    protected SortedSet<Reaction> EnabledReactions;
+    protected SortedSet<TransitionInternal> EnabledTransitions;
+    protected SortedSet<TransitionInternal> EnabledFilteredTransitions;
+    protected SortedSet<StateInternal> ExitSet;
+    protected SortedSet<StateInternal> EnterSet;
+    protected SortedSet<ReactionInternal> EnabledReactions;
     protected List<int> SnapshotConfig;
     protected string LastStepEventName = "_";
     protected int StateLength = 0;
-    public TDuct Duct { get; protected set; }
+    protected TDuct Duct { get; set; }
 
 #endregion
 
@@ -49,16 +49,29 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
 #region state
 
-    public class State : StatechartComposition<State>
+    protected class StateInternal : StatechartComposition<StateInternal>
     {
         #region delegate
         public delegate void Enter(TDuct duct);
         #endregion
 
+        #region property
+        #endregion
+
+
         protected TDuct Duct;
-        public void Foo(BaseStatechartDuct duct)
+        protected void Foo(TransitionInternal t)
         {
-            duct.SetTransitionEnabled();
+            var bar = t.Bar;
+        }
+    }
+
+    public class State
+    {
+        private StateInternal _state;
+        public State(StateModeEnum mode, bool isDeepHistory)
+        {
+            _state = new();
         }
     }
 
@@ -66,23 +79,30 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
 #region transition
 
-    public class Transition : StatechartComposition<Transition>
+    protected class TransitionInternal : StatechartComposition<TransitionInternal>
     {
-        
+        public int Bar;
+    }
+
+    public class Transition
+    {
+        public Transition(TEvent @event, State[] targets=null, bool isAuto=false, Action<TDuct>[] guards=null, Action<TDuct>[] invokes = null)
+        {
+
+        }
     }
 
 #endregion
 
 #region reaction
-    public class Reaction : StatechartComposition<Reaction>
+    protected class ReactionInternal : StatechartComposition<ReactionInternal>
     {
-        
+
     }
 #endregion
 
     public class StatechartBuilder
     {
-        
+
     }
 }
-
