@@ -13,6 +13,29 @@ public abstract class StatechartComposition<T> : IStatechartComposition
 {
     // protected abstract void Setup();
     protected int OrderId;
+    protected Statechart HostStatechart;
+
+    protected virtual void SetupPre() {} // Handle stuffs in ready
+
+    protected virtual void Setup() {}
+    
+    protected virtual void Setup(Statechart hostStatechart, ref int orderId)
+    {
+        HostStatechart = hostStatechart;
+        OrderId = orderId;
+        ++orderId;
+    }
+
+    protected virtual void SetupPost() {}
+
+    protected static bool IsCommonHost(T x, T y)
+    {
+        if (x == null || y == null)
+        {
+            return false;
+        }
+        return x.HostStatechart == y.HostStatechart;
+    }
 
     protected class StatechartComparer<TComposition> : IComparer<TComposition>
         where TComposition : StatechartComposition<TComposition>
@@ -65,19 +88,25 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
     {
         Duct = new TDuct();
         IsRunning = false;
-		EventCount = 0;
+        EventCount = 0;
 
-		ActiveStates = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
-		QueuedEvents = new Queue<TEvent>();
-		EnabledTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
-		EnabledFilteredTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
-		ExitSet = new SortedSet<StateInt>(new StatechartReversedComparer<StateInt>());
-		EnterSet = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
-		EnabledReactions = new SortedSet<ReactionInt>(new StatechartComparer<ReactionInt>());
+        ActiveStates = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
+        QueuedEvents = new Queue<TEvent>();
+        EnabledTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
+        EnabledFilteredTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
+        ExitSet = new SortedSet<StateInt>(new StatechartReversedComparer<StateInt>());
+        EnterSet = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
+        EnabledReactions = new SortedSet<ReactionInt>(new StatechartComparer<ReactionInt>());
 
-		GlobalEventTAMap = new Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]>();
+        GlobalEventTAMap = new Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]>();
 
-		SnapshotConfig = new List<int>();
+        SnapshotConfig = new List<int>();
+    }
+
+    public void Ready()
+    {
+        Setup();
+		SetupPost();
     }
 
 #region method
@@ -110,7 +139,7 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
     public class State
     {
         private StateInt _state;
-        public State(StateModeEnum mode, bool isDeepHistory)
+        public State(StateModeEnum mode, bool isDeepHistory, Action<TDuct>[] enters, Action<TDuct>[] exits)
         {
             _state = new();
         }
