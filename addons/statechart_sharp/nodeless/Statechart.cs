@@ -12,6 +12,25 @@ public abstract class StatechartComposition<T> : IStatechartComposition
     where T : StatechartComposition<T>
 {
     // protected abstract void Setup();
+    protected int OrderId;
+
+    protected class StatechartComparer<TComposition> : IComparer<TComposition>
+        where TComposition : StatechartComposition<TComposition>
+    {
+        public int Compare(TComposition x, TComposition y)
+        {
+            return x.OrderId - y.OrderId;
+        }
+    }
+
+    protected class StatechartReversedComparer<TComposition> : IComparer<TComposition>
+        where TComposition : StatechartComposition<TComposition>
+    {
+        public int Compare(TComposition x, TComposition y)
+        {
+            return y.OrderId - x.OrderId;
+        }
+    }
 }
 
 public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechart<TDuct, TEvent>>
@@ -24,24 +43,41 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
     protected int MaxAutoTransitionRound = 8;
     protected bool IsRunning;
     protected int EventCount;
-    protected StateInternal RootState;
-    protected SortedSet<StateInternal> ActiveStates;
-    protected Queue<string> QueuedEvents;
-    protected SortedSet<TransitionInternal> EnabledTransitions;
-    protected SortedSet<TransitionInternal> EnabledFilteredTransitions;
-    protected SortedSet<StateInternal> ExitSet;
-    protected SortedSet<StateInternal> EnterSet;
-    protected SortedSet<ReactionInternal> EnabledReactions;
+    protected StateInt RootState;
+    protected SortedSet<StateInt> ActiveStates;
+    protected Queue<TEvent> QueuedEvents;
+    protected SortedSet<TransitionInt> EnabledTransitions;
+    protected SortedSet<TransitionInt> EnabledFilteredTransitions;
+    protected SortedSet<StateInt> ExitSet;
+    protected SortedSet<StateInt> EnterSet;
+    protected SortedSet<ReactionInt> EnabledReactions;
     protected List<int> SnapshotConfig;
     protected string LastStepEventName = "_";
     protected int StateLength = 0;
-    protected TDuct Duct { get; set; }
+    protected TDuct Duct;
+
+    protected Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]> GlobalEventTAMap;
+    protected (List<TransitionInt>, List<ReactionInt>)[] CurrentTAMap;
 
 #endregion
 
     public Statechart()
     {
         Duct = new TDuct();
+        IsRunning = false;
+		EventCount = 0;
+
+		ActiveStates = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
+		QueuedEvents = new Queue<TEvent>();
+		EnabledTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
+		EnabledFilteredTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
+		ExitSet = new SortedSet<StateInt>(new StatechartReversedComparer<StateInt>());
+		EnterSet = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
+		EnabledReactions = new SortedSet<ReactionInt>(new StatechartComparer<ReactionInt>());
+
+		GlobalEventTAMap = new Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]>();
+
+		SnapshotConfig = new List<int>();
     }
 
 #region method
@@ -49,7 +85,7 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
 #region state
 
-    protected class StateInternal : StatechartComposition<StateInternal>
+    protected class StateInt : StatechartComposition<StateInt>
     {
         #region delegate
         public delegate void Enter(TDuct duct);
@@ -60,15 +96,20 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
 
         protected TDuct Duct;
-        protected void Foo(TransitionInternal t)
+
+        protected void Foo(TransitionInt t)
         {
             var bar = t.Bar;
+        }
+        protected void Foo(Statechart<TDuct, TEvent> sc)
+        {
+            var globalMap = sc.CurrentTAMap;
         }
     }
 
     public class State
     {
-        private StateInternal _state;
+        private StateInt _state;
         public State(StateModeEnum mode, bool isDeepHistory)
         {
             _state = new();
@@ -79,7 +120,7 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
 #region transition
 
-    protected class TransitionInternal : StatechartComposition<TransitionInternal>
+    protected class TransitionInt : StatechartComposition<TransitionInt>
     {
         public int Bar;
     }
@@ -95,7 +136,7 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 #endregion
 
 #region reaction
-    protected class ReactionInternal : StatechartComposition<ReactionInternal>
+    protected class ReactionInt : StatechartComposition<ReactionInt>
     {
 
     }
@@ -106,3 +147,6 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
     }
 }
+
+
+

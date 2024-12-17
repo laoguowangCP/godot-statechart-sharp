@@ -37,7 +37,7 @@ public class HistoryImpl : StateImpl
         SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
     {
         /*
-        History state(s) in region nedge start the deduction:
+        History state(s) in region edge start the deduction:
             1. Parent can be compound or parallel
             2. Let parent handles sibling(s) of this history state
             3. Should not be called recursively by other states
