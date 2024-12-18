@@ -1,41 +1,53 @@
-
-
 using System;
 using System.Collections.Generic;
+using Godot;
+
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
-
-public interface IStatechartComposition {}
-
-public abstract class StatechartComposition<T> : IStatechartComposition
-    where T : StatechartComposition<T>
+public partial class Statechart<TDuct, TEvent>
+    where TDuct : IStatechartDuct, new()
+    where TEvent : IEquatable<TEvent>
 {
-    // protected abstract void Setup();
-    protected int OrderId;
-    protected Statechart HostStatechart;
 
-    protected virtual void SetupPre() {} // Handle stuffs in ready
+#region composition
 
-    protected virtual void Setup() {}
-    
-    protected virtual void Setup(Statechart hostStatechart, ref int orderId)
+    protected interface IStatechartComposition {}
+
+    protected abstract class StatechartComposition<T> : IStatechartComposition
+        where T : StatechartComposition<T>
     {
-        HostStatechart = hostStatechart;
-        OrderId = orderId;
-        ++orderId;
-    }
+        // protected abstract void Setup();
+        public int OrderId;
+        protected Statechart<TDuct, TEvent> HostStatechart;
 
-    protected virtual void SetupPost() {}
+        public virtual void SetupPre() {}
 
-    protected static bool IsCommonHost(T x, T y)
-    {
-        if (x == null || y == null)
+        public virtual void Setup() {}
+
+        public virtual void Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId)
         {
-            return false;
+            HostStatechart = hostStatechart;
+            OrderId = orderId;
+            ++orderId;
         }
-        return x.HostStatechart == y.HostStatechart;
+
+        public virtual void SetupPost() {}
+
+        public static bool IsCommonHost(T x, T y)
+        {
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            return x.HostStatechart == y.HostStatechart;
+        }
     }
+
+#endregion
+
+
+#region comparer
 
     protected class StatechartComparer<TComposition> : IComparer<TComposition>
         where TComposition : StatechartComposition<TComposition>
@@ -54,13 +66,11 @@ public abstract class StatechartComposition<T> : IStatechartComposition
             return y.OrderId - x.OrderId;
         }
     }
-}
 
-public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechart<TDuct, TEvent>>
-    where TDuct : IStatechartDuct, new()
-    where TEvent : IEquatable<TEvent>
-{
-#region property
+#endregion
+
+
+#region statechart
 
     protected int MaxInternalEventCount = 8;
     protected int MaxAutoTransitionRound = 8;
@@ -78,11 +88,8 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
     protected string LastStepEventName = "_";
     protected int StateLength = 0;
     protected TDuct Duct;
-
     protected Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]> GlobalEventTAMap;
     protected (List<TransitionInt>, List<ReactionInt>)[] CurrentTAMap;
-
-#endregion
 
     public Statechart()
     {
@@ -97,34 +104,57 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
         ExitSet = new SortedSet<StateInt>(new StatechartReversedComparer<StateInt>());
         EnterSet = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
         EnabledReactions = new SortedSet<ReactionInt>(new StatechartComparer<ReactionInt>());
-
         GlobalEventTAMap = new Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]>();
-
         SnapshotConfig = new List<int>();
     }
 
-    public void Ready()
+    public void Init()
     {
-        Setup();
-		SetupPost();
+        if (RootState is null)
+        {
+            return;
+        }
+
+        RootState.SetupPre();
+
+        int orderId = -1;
+        RootState.Setup(this, ref orderId);
+
+        RootState.SubmitActiveState(ActiveStates);
+        RootState.SetupPost();
+        foreach (var state in ActiveStates)
+		{
+			state.StateEnter();
+		}
     }
 
-#region method
 #endregion
+
 
 #region state
 
     protected class StateInt : StatechartComposition<StateInt>
     {
-        #region delegate
-        public delegate void Enter(TDuct duct);
-        #endregion
-
-        #region property
-        #endregion
-
-
+        public delegate void EnterEvent(TDuct duct);
+        protected event EnterEvent Enter;
+        public Action<SortedSet<StateInt>> SubmitActiveState;
+        public Action<StateInt> HandleSubstateEnter;
         protected TDuct Duct;
+        public StateInt ParentState;
+
+        public StateInt() {}
+
+        public void StateEnter()
+        {
+            ParentState?.HandleSubstateEnter(this);
+            CustomStateEnter(Duct);
+        }
+
+        protected virtual void CustomStateEnter(TDuct duct)
+        {
+            // Use signal by default
+            Enter.Invoke(duct);
+        }
 
         protected void Foo(TransitionInt t)
         {
@@ -147,6 +177,7 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
 #endregion
 
+
 #region transition
 
     protected class TransitionInt : StatechartComposition<TransitionInt>
@@ -164,11 +195,14 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 
 #endregion
 
+
 #region reaction
+
     protected class ReactionInt : StatechartComposition<ReactionInt>
     {
 
     }
+
 #endregion
 
     public class StatechartBuilder
@@ -178,4 +212,11 @@ public partial class Statechart<TDuct, TEvent> : StatechartComposition<Statechar
 }
 
 
+public class TestStatechartBuild
+{
+    public void Build()
+    {
+        var sc = new Statechart<BaseStatechartDuct, string>();
+    }
+}
 
