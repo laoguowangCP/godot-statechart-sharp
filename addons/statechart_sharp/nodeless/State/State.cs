@@ -15,13 +15,18 @@ public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public class State
+    public class State : BuildComposition<State>
     {
         private StateInt _s;
         public State(StateModeEnum mode, Action<TDuct>[] enters, Action<TDuct>[] exits)
         {
             // TODO: move deep history to a state mode
             _s = GetStateInt(mode);
+        }
+
+        public void SetAsRootState(Statechart<TDuct, TEvent> statechart)
+        {
+            statechart.RootState = _s;
         }
 
         private StateInt GetStateInt(StateModeEnum mode) => mode switch
@@ -33,7 +38,7 @@ public partial class Statechart<TDuct, TEvent>
         };
     }
 
-    protected abstract class StateInt : StatechartComposition<StateInt>
+    protected abstract class StateInt : Composition<StateInt>
     {
         protected delegate void EnterEvent(TDuct duct);
         protected event EnterEvent Enter;
@@ -61,6 +66,7 @@ public partial class Statechart<TDuct, TEvent>
 
         public virtual void Setup(int substateIdx)
         {
+            SubstateIdx = substateIdx;
             OrderId = HostStatechart.GetOrderId();
             StateId = HostStatechart.GetStateId();
         }

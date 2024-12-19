@@ -6,10 +6,10 @@ public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    protected interface IStatechartComposition {}
+    protected interface IComposition {}
 
-    protected abstract class StatechartComposition<T> : IStatechartComposition
-        where T : StatechartComposition<T>
+    protected abstract class Composition<T> : IComposition
+        where T : Composition<T>
     {
         // protected abstract void Setup();
         public int OrderId;

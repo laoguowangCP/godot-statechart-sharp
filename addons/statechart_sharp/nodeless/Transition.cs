@@ -7,7 +7,7 @@ public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    protected class TransitionInt : StatechartComposition<TransitionInt>
+    protected class TransitionInt : Composition<TransitionInt>
     {
         protected delegate void GuardEvent(TDuct duct);
         protected event GuardEvent Guard;
@@ -39,7 +39,7 @@ public partial class Statechart<TDuct, TEvent>
         }
     }
 
-    public class Transition
+    public class Transition : BuildComposition<Transition>
     {
         private TransitionInt _t;
 

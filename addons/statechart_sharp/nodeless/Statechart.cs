@@ -294,13 +294,3 @@ public partial class Statechart<TDuct, TEvent>
         EnterSet.Clear();
     }
 }
-
-
-public class TestStatechartBuild
-{
-    public void Build()
-    {
-        var sc = new Statechart<BaseStatechartDuct, string>();
-    }
-}
-

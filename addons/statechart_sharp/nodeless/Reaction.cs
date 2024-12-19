@@ -7,7 +7,7 @@ public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    protected class ReactionInt : StatechartComposition<ReactionInt>
+    protected class ReactionInt : Composition<ReactionInt>
     {
         protected delegate void InvokeEvent(TDuct duct);
         protected event InvokeEvent Invoke;
@@ -18,7 +18,7 @@ public partial class Statechart<TDuct, TEvent>
         }
     }
 
-    public class Reaction
+    public class Reaction : BuildComposition<Reaction>
     {
         private ReactionInt _a;
         public Reaction()
