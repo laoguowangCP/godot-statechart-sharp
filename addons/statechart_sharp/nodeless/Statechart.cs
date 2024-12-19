@@ -9,68 +9,6 @@ public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-
-#region composition
-
-    protected interface IStatechartComposition {}
-
-    protected abstract class StatechartComposition<T> : IStatechartComposition
-        where T : StatechartComposition<T>
-    {
-        // protected abstract void Setup();
-        public int OrderId;
-        public Statechart<TDuct, TEvent> HostStatechart;
-
-        public virtual void SetupPre() {}
-
-        public virtual void Setup() {}
-
-        public virtual void Setup(Statechart<TDuct, TEvent> statechart, ref int orderId)
-        {
-            HostStatechart = statechart;
-            OrderId = HostStatechart.GetOrderId();
-        }
-
-        public virtual void SetupPost() {}
-
-        public static bool IsCommonHost(T x, T y)
-        {
-            if (x == null || y == null)
-            {
-                return false;
-            }
-            return x.HostStatechart == y.HostStatechart;
-        }
-    }
-
-#endregion
-
-
-#region comparer
-
-    protected class StatechartComparer<TComposition> : IComparer<TComposition>
-        where TComposition : StatechartComposition<TComposition>
-    {
-        public int Compare(TComposition x, TComposition y)
-        {
-            return x.OrderId - y.OrderId;
-        }
-    }
-
-    protected class StatechartReversedComparer<TComposition> : IComparer<TComposition>
-        where TComposition : StatechartComposition<TComposition>
-    {
-        public int Compare(TComposition x, TComposition y)
-        {
-            return y.OrderId - x.OrderId;
-        }
-    }
-
-#endregion
-
-
-#region statechart
-
     protected int MaxInternalEventCount = 8;
     protected int MaxAutoTransitionRound = 8;
     protected bool IsRunning;
@@ -89,7 +27,7 @@ public partial class Statechart<TDuct, TEvent>
     protected int StateLength = 0;
     protected TDuct Duct;
     protected Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]> GlobalEventTAMap;
-    protected (List<TransitionInt>, List<ReactionInt>)[] CurrentTAMap;
+    protected (List<TransitionInt>, List<ReactionInt>)[] CurrentTA;
 
     public Statechart()
     {
@@ -117,8 +55,7 @@ public partial class Statechart<TDuct, TEvent>
 
         RootState.SetupPre();
 
-        int orderId = -1;
-        RootState.Setup(this, ref orderId);
+        RootState.Setup();
 
         RootState.SubmitActiveState(ActiveStates);
         RootState.SetupPost();
@@ -237,7 +174,7 @@ public partial class Statechart<TDuct, TEvent>
         // Set global transitions/reactions, null if no matched event
         if (LastStepEvent.Equals(@event))
         {
-            GlobalEventTAMap.TryGetValue(@event, out CurrentTAMap);
+            GlobalEventTAMap.TryGetValue(@event, out CurrentTA);
             LastStepEvent = @event;
         }
         // Use last query in GlobalEventTAMap if eventname not changed
@@ -356,266 +293,6 @@ public partial class Statechart<TDuct, TEvent>
         ExitSet.Clear();
         EnterSet.Clear();
     }
-
-#endregion
-
-
-#region state
-
-    protected class StateInt : StatechartComposition<StateInt>
-    {
-        protected delegate void EnterEvent(TDuct duct);
-        protected event EnterEvent Enter;
-        protected delegate void ExitEvent(TDuct duct);
-        protected event ExitEvent Exit;
-
-        public Action<SortedSet<StateInt>> SubmitActiveState;
-        public Action<SortedSet<StateInt>, SortedSet<StateInt>, SortedSet<StateInt>, bool> ExtendEnterRegion;
-        public Func<SortedSet<TransitionInt>, bool, int> SelectTransitions;
-        public Action<SortedSet<StateInt>, bool, bool> DeduceDescendants;
-        public Action<StateInt> HandleSubstateEnter;
-        public Action<SortedSet<ReactionInt>> SelectReactions;
-        public Action<List<int>> SaveAllStateConfig;
-        public Action<List<int>> SaveActiveStateConfig;
-        public Func<int[], int, int> LoadAllStateConfig;
-        public Func<int[], int, int> LoadActiveStateConfig;
-
-
-        public StateModeEnum StateMode;
-        protected StateInt InitialState;
-        public StateInt ParentState;
-        public List<StateInt> Substates;
-        public List<TransitionInt> AutoTransitions;
-        protected StateImpl StateImpl;
-        public StateInt LowerState;
-        public StateInt UpperState;
-        public int SubstateIdx; // The index of this state enlisted in parent state.
-        public int StateId; // The ID of this state in statechart.
-        public bool _IsHistory;
-
-        public StateInt(StateModeEnum stateMode)
-        {
-            Substates = new();
-            AutoTransitions = new();
-
-            StateMode = stateMode;
-            StateImpl = GetStateImpl(stateMode);
-            IsHistory = StateMode == StateModeEnum.History;
-
-            // Cache methods
-            if (StateImpl is not null)
-            {
-                _GetPromoteStates = StateImpl._GetPromoteStates;
-                _IsAvailableRootState = StateImpl._IsAvailableRootState;
-                _SubmitActiveState = StateImpl._SubmitActiveState;
-                _IsConflictToEnterRegion = StateImpl._IsConflictToEnterRegion;
-                _ExtendEnterRegion = StateImpl._ExtendEnterRegion;
-                _SelectTransitions = StateImpl._SelectTransitions;
-                _DeduceDescendants = StateImpl._DeduceDescendants;
-                _HandleSubstateEnter = StateImpl._HandleSubstateEnter;
-                _SelectReactions = StateImpl._SelectReactions;
-
-                _SaveAllStateConfig = StateImpl._SaveAllStateConfig;
-                _SaveActiveStateConfig = StateImpl._SaveActiveStateConfig;
-                _LoadAllStateConfig = StateImpl._LoadAllStateConfig;
-                _LoadActiveStateConfig = StateImpl._LoadActiveStateConfig;
-            }
-        }
-
-        protected StateImpl GetStateImpl(StateModeEnum mode) => mode switch
-        {
-            StateModeEnum.Compound => new CompoundImpl(this),
-            StateModeEnum.Parallel => new ParallelImpl(this),
-            StateModeEnum.History => new HistoryImpl(this),
-            _ => new CompoundImpl(this)
-        };
-
-        public void StateEnter(TDuct duct)
-        {
-            ParentState?.HandleSubstateEnter(this);
-            Enter.Invoke(duct);
-        }
-
-        public void StateExit(TDuct duct)
-        {
-            Exit.Invoke(duct);
-        }
-
-        public bool IsAncestorStateOf(StateInt state)
-        {
-            int id = state.OrderId;
-
-            // Leaf state
-            if (LowerState is null || UpperState is null)
-            {
-                return false;
-            }
-
-            return id >= LowerState.OrderId
-                && id <= UpperState.OrderId;
-        }
-    }
-
-    public class State
-    {
-        private StateInt _s;
-        public State(StateModeEnum mode, bool isDeepHistory, Action<TDuct>[] enters, Action<TDuct>[] exits)
-        {
-            // TODO: move deep history to a state mode
-            _s = new(mode);
-        }
-    }
-
-#endregion
-
-
-#region transition
-
-    protected class TransitionInt : StatechartComposition<TransitionInt>
-    {
-        protected delegate void GuardEvent(TDuct duct);
-        protected event GuardEvent Guard;
-        protected delegate void InvokeEvent(TDuct duct);
-        protected event InvokeEvent Invoke;
-
-        public TEvent Event;
-        protected List<StateInt> TargetStates;
-        public StateInt SourceState;
-        public StateInt LcaState;
-        public SortedSet<StateInt> EnterRegion;
-        protected SortedSet<StateInt> EnterRegionEdge;
-        protected SortedSet<StateInt> DeducedEnterStates;
-        public bool IsTargetless;
-
-        public void TransitionInvoke(TDuct duct)
-        {
-            Invoke.Invoke(duct);
-        }
-
-        public SortedSet<StateInt> GetDeducedEnterStates()
-        {
-            DeducedEnterStates.Clear();
-            foreach (var edgeState in EnterRegionEdge)
-            {
-                edgeState.DeduceDescendants(DeducedEnterStates, false, true);
-            }
-            return DeducedEnterStates;
-        }
-    }
-
-    public class Transition
-    {
-        private TransitionInt _t;
-
-        public Transition(TEvent @event, State[] targets=null, bool isAuto=false, Action<TDuct>[] guards=null, Action<TDuct>[] invokes = null)
-        {
-        }
-    }
-
-#endregion
-
-
-#region reaction
-
-    protected class ReactionInt : StatechartComposition<ReactionInt>
-    {
-        protected delegate void InvokeEvent(TDuct duct);
-        protected event InvokeEvent Invoke;
-
-        public void ReactionInvoke(TDuct duct)
-        {
-            Invoke.Invoke(duct);
-        }
-    }
-
-    public class Reaction
-    {
-        private ReactionInt _a;
-        public Reaction()
-        {
-
-        }
-    }
-
-#endregion
-
-
-#region state impl
-
-    protected abstract class StateImpl
-    {
-        public virtual bool IsAvailableRootState()
-        {
-            return false;
-        }
-
-        public virtual void Setup(StateInt hostState, ref int parentOrderId, int substateIdx)
-        {
-            hostState.SubstateIdx = substateIdx;
-            hostState.StateId = hostState.HostStatechart.GetStateId();
-        }
-
-        public virtual void _SetupPost() {}
-
-        public virtual bool _GetPromoteStates(List<State> states) { return false; }
-
-        public virtual void _SubmitActiveState(SortedSet<State> activeStates) {}
-
-        public virtual bool _IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
-        {
-            return false;
-        }
-
-        public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, bool isAuto)
-        {
-            return 1;
-        }
-
-        public virtual void _ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
-
-        public virtual void _DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
-
-        public virtual void _HandleSubstateEnter(State substate) {}
-
-        public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions)
-        {
-            if (CurrentTAMap is null)
-            {
-                return;
-            }
-
-            var matched = CurrentTAMap[_StateId].Reactions;
-            if (matched is null)
-            {
-                return;
-            }
-
-            foreach (Reaction reaction in matched)
-            {
-                enabledReactions.Add(reaction);
-            }
-        }
-
-        public virtual void _SaveAllStateConfig(List<int> snapshot) {}
-
-        public virtual void _SaveActiveStateConfig(List<int> snapshot) {}
-
-        public virtual int _LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
-
-        public virtual int _LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
-
-    }
-
-#endregion
-
-}
-
-public enum StateModeEnum : int
-{
-    Compound,
-    Parallel,
-    History,
-    DeepHistory
 }
 
 
