@@ -8,8 +8,13 @@ namespace LGWCP.Godot.StatechartSharp;
 public class HistoryImpl : StateImpl
 {
     protected bool IsDeepHistory;
-
     public HistoryImpl(State state) : base(state) {}
+
+
+    public override bool _IsValidState()
+    {
+        return false;
+    }
 
     public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
@@ -60,7 +65,7 @@ public class HistoryImpl : StateImpl
         {
             if (parent is State state)
             {
-                isParentWarning = state._IsHistory;
+                isParentWarning = !state._IsValidState();
                 isParentParallel = state.StateMode == StateModeEnum.Parallel;
             }
         }
@@ -81,5 +86,6 @@ public class HistoryImpl : StateImpl
             warnings.Add("History state should not have child.");
         }
     }
+    
 #endif
 }

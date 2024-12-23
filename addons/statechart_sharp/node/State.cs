@@ -9,7 +9,8 @@ public enum StateModeEnum : int
 {
 	Compound,
 	Parallel,
-	History
+	History,
+	DeepHistory // TODO: use DeepHistoryImpl to replace IsDeepHistory
 }
 
 [Tool]
@@ -53,7 +54,7 @@ public partial class State : StatechartComposition
 		= StateModeEnum.Compound;
 
 	[Export]
-	public bool IsDeepHistory;
+	public bool IsDeepHistory; // TODO: use DeepHistoryImpl to replace IsDeepHistory
 	[Export]
 	public State InitialState
 #if DEBUG
@@ -93,14 +94,14 @@ public partial class State : StatechartComposition
         set => StateImpl._StateId = value;
     }
 	protected StatechartDuct Duct;
-	public bool _IsHistory;
+	public bool _IsHistory; // TODO: work around to eliminate this flag
 
 #endregion
 
 
 #region func cache
 	public Func<List<State>, bool> _GetPromoteStates;
-	public Func<bool> _IsAvailableRootState;
+	public Func<bool> _IsValidRootState;
 	public Action<SortedSet<State>> _SubmitActiveState;
 	public Func<State, SortedSet<State>, bool> _IsConflictToEnterRegion;
 	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> _ExtendEnterRegion;
@@ -130,7 +131,6 @@ public partial class State : StatechartComposition
 		if (StateImpl is not null)
 		{
 			_GetPromoteStates = StateImpl._GetPromoteStates;
-			_IsAvailableRootState = StateImpl._IsAvailableRootState;
 			_SubmitActiveState = StateImpl._SubmitActiveState;
 			_IsConflictToEnterRegion = StateImpl._IsConflictToEnterRegion;
 			_ExtendEnterRegion = StateImpl._ExtendEnterRegion;
@@ -221,6 +221,20 @@ public partial class State : StatechartComposition
 
 		return id >= _LowerState._OrderId
 			&& id <= _UpperState._OrderId;
+	}
+
+	public bool _IsValidState()
+	{
+		/*
+		Valid state is virtual concept to divide compound and parallel from history. Being valid, the state:
+
+		- Can have transition and reaction as child.
+		- Can be active state.
+		- Can be initial state.
+		- Can be root state.
+		- For now, non-history state.
+		*/
+		return StateImpl._IsValidState();
 	}
 
 #if TOOLS

@@ -7,13 +7,8 @@ namespace LGWCP.Godot.StatechartSharp;
 
 public class ParallelImpl : StateImpl
 {
-	protected int NonHistorySubstateCnt = 0;
+	protected int ValidSubstateCnt = 0; // Compound or parallel, not history
 	public ParallelImpl(State state) : base(state) {}
-
-	public override bool _IsAvailableRootState()
-	{
-		return true;
-	}
 
 	public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
@@ -41,9 +36,9 @@ public class ParallelImpl : StateImpl
 				}
 				lastSubstate = s;
 
-				if (!s._IsHistory)
+				if (s._IsValidState())
 				{
-					NonHistorySubstateCnt += 1;
+					ValidSubstateCnt += 1;
 				}
 			}
 			else if (child is Transition t)
@@ -247,13 +242,13 @@ public class ParallelImpl : StateImpl
 		SortedSet<Transition> enabledTransitions, bool isAuto)
 	{
 		int handleInfo = -1;
-		if (NonHistorySubstateCnt > 0)
+		if (ValidSubstateCnt > 0)
 		{
 			int negCnt = 0;
 			int posCnt = 0;
 			foreach (State substate in Substates)
 			{
-				if (substate._IsHistory)
+				if (!substate._IsValidState())
 				{
 					continue;
 				}
@@ -270,11 +265,11 @@ public class ParallelImpl : StateImpl
 				}
 			}
 
-			if (negCnt == NonHistorySubstateCnt) // No selected
+			if (negCnt == ValidSubstateCnt) // No selected
 			{
 				handleInfo = -1;
 			}
-			else if (posCnt == NonHistorySubstateCnt) // All done
+			else if (posCnt == ValidSubstateCnt) // All done
 			{
 				handleInfo = 1;
 			}
@@ -351,7 +346,7 @@ public class ParallelImpl : StateImpl
 		foreach (State substate in Substates)
 		{
 			// Ignore history states
-			if (substate._IsHistory)
+			if (!substate._IsValidState())
 			{
 				continue;
 			}

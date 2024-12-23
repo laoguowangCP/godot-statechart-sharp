@@ -348,7 +348,7 @@ public partial class Transition : StatechartComposition
 
         if (parent != null && parent is State state)
         {
-            isParentWarning = state._IsHistory;
+            isParentWarning = !state._IsValidState();
         }
 
         if (isParentWarning)

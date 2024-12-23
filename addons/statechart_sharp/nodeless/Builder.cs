@@ -8,8 +8,7 @@ public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    // TODO: necessary to give you typed composition
-
+    // TODO: builder is necessary to provide typed composition
     public static (Statechart<TDuct, TEvent>, Builder) GetStatechartAndBuilder()
     {
         var statechart = new Statechart<TDuct, TEvent>();
@@ -24,9 +23,10 @@ public partial class Statechart<TDuct, TEvent>
             HostStatechart = statechart;
         }
 
-        public State GetNewState()
+        /*
+        public State GetNewState(StateModeEnum mode)
         {
-            return new State();
+            return new State(mode);
         }
 
         public Transition GetNewTransition()
@@ -38,6 +38,7 @@ public partial class Statechart<TDuct, TEvent>
         {
             return new Reaction();
         }
+        */
     }
 
     public abstract class BuildComposition<T> : IComposition

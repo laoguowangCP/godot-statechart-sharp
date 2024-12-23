@@ -9,7 +9,7 @@ public class Test
     public Test()
     {
         var (sc, sb) = Statechart<BaseStatechartDuct, string>.GetStatechartAndBuilder();
-        sb.GetNewState().SetAsRootState(sc);
+        // sb.GetNewState().SetAsRootState(sc);
     }
 }
 

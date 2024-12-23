@@ -42,7 +42,6 @@ public partial class StatechartStepAsserter : Node
 
         GD.PrintRich("Test [b][u]", TestName, "[/u][/b] start:");
 
-        // TODO: step and consume all snapshots if IsStepAllOnReady
         if (IsStepAllOnReady)
         {
             StepAllAssert();

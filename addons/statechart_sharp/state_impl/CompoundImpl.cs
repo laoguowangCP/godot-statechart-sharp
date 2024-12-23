@@ -9,13 +9,7 @@ public class CompoundImpl : StateImpl
 {
 	private State CurrentState;
 	private State InitialState;
-
 	public CompoundImpl(State state) : base(state) {}
-
-	public override bool _IsAvailableRootState()
-	{
-		return true;
-	}
 
 	public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
@@ -78,7 +72,7 @@ public class CompoundImpl : StateImpl
 		if (InitialState != null)
 		{
 			// Check selected initial-state is non-history substate
-			if (InitialState._ParentState != HostState || InitialState._IsHistory)
+			if (InitialState._ParentState != HostState || !InitialState._IsValidState())
 			{
 #if DEBUG
 				GD.PushWarning(
@@ -403,7 +397,7 @@ public class CompoundImpl : StateImpl
 			var initialStateParent = InitialState.GetParentOrNull<Node>();
 			if (initialStateParent is null
 				|| initialStateParent != HostState
-				|| InitialState._IsHistory)
+				|| !InitialState._IsValidState())
 			{
 				warnings.Add("Initial state should be a non-history substate.");
 			}

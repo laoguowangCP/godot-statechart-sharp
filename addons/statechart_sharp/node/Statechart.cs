@@ -108,7 +108,7 @@ public partial class Statechart : StatechartComposition
 		{
 			if (child is State state)
 			{
-				if (state._IsAvailableRootState())
+				if (state._IsValidState())
 				{
 					RootState = state;
 					break;
@@ -593,7 +593,7 @@ public partial class Statechart : StatechartComposition
 		{
 			if (child is State state)
 			{
-				if (state._IsHistory)
+				if (!state._IsValidRootState())
 				{
 					hasOtherChild = true;
 					continue;

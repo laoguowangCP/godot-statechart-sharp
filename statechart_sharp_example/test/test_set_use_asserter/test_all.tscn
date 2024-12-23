@@ -1,0 +1,61 @@
+[gd_scene load_steps=20 format=3 uid="uid://b7g0ia3k6v8wn"]
+
+[ext_resource type="PackedScene" uid="uid://cuefhfbjmrkjk" path="res://statechart_sharp_example/test/test_set_use_asserter/000_no_test_here.tscn" id="1_v828j"]
+[ext_resource type="PackedScene" uid="uid://icew583620o7" path="res://statechart_sharp_example/test/test_set_use_asserter/102_statechart_empty.tscn" id="2_bcum0"]
+[ext_resource type="PackedScene" uid="uid://dh674jtc81kw3" path="res://statechart_sharp_example/test/test_set_use_asserter/104_statechart_max_auto_transition_round.tscn" id="3_wigg0"]
+[ext_resource type="PackedScene" uid="uid://c1r1gfq7v5meh" path="res://statechart_sharp_example/test/test_set_use_asserter/202_state_active_states.tscn" id="4_eva4a"]
+[ext_resource type="PackedScene" uid="uid://bgpvvkgtcp5c3" path="res://statechart_sharp_example/test/test_set_use_asserter/203_state_initial_state.tscn" id="5_mvrl5"]
+[ext_resource type="PackedScene" uid="uid://ch5jn5hio2k31" path="res://statechart_sharp_example/test/test_set_use_asserter/204_state_enter_&_exit.tscn" id="6_2mo5w"]
+[ext_resource type="PackedScene" uid="uid://ckx3nrjh4ajrx" path="res://statechart_sharp_example/test/test_set_use_asserter/205_state_history_1.tscn" id="7_p7gpy"]
+[ext_resource type="PackedScene" uid="uid://co3ifndbwag3q" path="res://statechart_sharp_example/test/test_set_use_asserter/206_state_history_2.tscn" id="8_gelrb"]
+[ext_resource type="PackedScene" uid="uid://binkbheiv8csu" path="res://statechart_sharp_example/test/test_set_use_asserter/207_state_deep_history_1.tscn" id="9_xd4ue"]
+[ext_resource type="PackedScene" uid="uid://k7pq45rpcq0v" path="res://statechart_sharp_example/test/test_set_use_asserter/208_state_deep_history_2.tscn" id="10_p5jb3"]
+[ext_resource type="PackedScene" uid="uid://blefs1w0amh5b" path="res://statechart_sharp_example/test/test_set_use_asserter/209_state_root_transition.tscn" id="11_svbg7"]
+[ext_resource type="PackedScene" uid="uid://kq245wklij3r" path="res://statechart_sharp_example/test/test_set_use_asserter/303_transition_automatic.tscn" id="12_xrejm"]
+[ext_resource type="PackedScene" uid="uid://rbagymydm84t" path="res://statechart_sharp_example/test/test_set_use_asserter/304_transition_targetless.tscn" id="13_5lsp0"]
+[ext_resource type="PackedScene" uid="uid://cgh44p5p384k0" path="res://statechart_sharp_example/test/test_set_use_asserter/305_transition_target_confliction.tscn" id="14_xkqi6"]
+[ext_resource type="PackedScene" uid="uid://ca6me80pc1vq3" path="res://statechart_sharp_example/test/test_set_use_asserter/306_transition_multiple_targets_1.tscn" id="15_ywjyd"]
+[ext_resource type="PackedScene" uid="uid://crd2t8wdwai4l" path="res://statechart_sharp_example/test/test_set_use_asserter/307_transition_multiple_targets_2.tscn" id="16_txse3"]
+[ext_resource type="PackedScene" uid="uid://my667rxj3u3v" path="res://statechart_sharp_example/test/test_set_use_asserter/308_transition_select_case.tscn" id="17_2u2af"]
+[ext_resource type="PackedScene" uid="uid://cie6qc7o6xlok" path="res://statechart_sharp_example/test/test_set_use_asserter/309_transition_filter.tscn" id="18_haj8g"]
+[ext_resource type="PackedScene" uid="uid://c1f5mcnk4oy4f" path="res://statechart_sharp_example/test/test_set_use_asserter/501_transition_promoter.tscn" id="19_6a2yw"]
+
+[node name="TestAll" type="Node"]
+
+[node name="StepAsserter" parent="." instance=ExtResource("1_v828j")]
+
+[node name="StepAsserter2" parent="." instance=ExtResource("2_bcum0")]
+
+[node name="StepAsserter3" parent="." instance=ExtResource("3_wigg0")]
+
+[node name="StepAsserter4" parent="." instance=ExtResource("4_eva4a")]
+
+[node name="StepAsserter5" parent="." instance=ExtResource("5_mvrl5")]
+
+[node name="StepAsserter6" parent="." instance=ExtResource("6_2mo5w")]
+
+[node name="StepAsserter7" parent="." instance=ExtResource("7_p7gpy")]
+
+[node name="StepAsserter8" parent="." instance=ExtResource("8_gelrb")]
+
+[node name="StepAsserter9" parent="." instance=ExtResource("9_xd4ue")]
+
+[node name="StepAsserter10" parent="." instance=ExtResource("10_p5jb3")]
+
+[node name="StepAsserter11" parent="." instance=ExtResource("11_svbg7")]
+
+[node name="StepAsserter12" parent="." instance=ExtResource("12_xrejm")]
+
+[node name="StepAsserter13" parent="." instance=ExtResource("13_5lsp0")]
+
+[node name="StepAsserter14" parent="." instance=ExtResource("14_xkqi6")]
+
+[node name="StepAsserter15" parent="." instance=ExtResource("15_ywjyd")]
+
+[node name="StepAsserter16" parent="." instance=ExtResource("16_txse3")]
+
+[node name="StepAsserter17" parent="." instance=ExtResource("17_2u2af")]
+
+[node name="StepAsserter18" parent="." instance=ExtResource("18_haj8g")]
+
+[node name="StepAsserter19" parent="." instance=ExtResource("19_6a2yw")]

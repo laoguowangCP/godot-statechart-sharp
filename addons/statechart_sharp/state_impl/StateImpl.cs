@@ -32,10 +32,11 @@ public class StateImpl
         HostState = state;
     }
 
-    public virtual bool _IsAvailableRootState()
+    public virtual bool _IsValidState()
     {
-        return false;
+        return true;
     }
+
 
     public virtual void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
@@ -122,7 +123,7 @@ public class StateImpl
             }
             else if (parent is State state)
             {
-                isParentWarning = state._IsHistory;
+                isParentWarning = state._IsValidState();
             }
         }
 
