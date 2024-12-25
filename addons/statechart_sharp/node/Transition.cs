@@ -332,7 +332,7 @@ public partial class Transition : StatechartComposition
         DeducedEnterStates.Clear();
         foreach (State edgeState in EnterRegionEdge)
         {
-            edgeState._DeduceDescendants(DeducedEnterStates, false, true);
+            edgeState._DeduceDescendants(DeducedEnterStates);
         }
         return DeducedEnterStates;
     }

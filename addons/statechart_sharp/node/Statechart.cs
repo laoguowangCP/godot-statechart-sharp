@@ -40,6 +40,7 @@ public partial class Statechart : StatechartComposition
 
 	public StatechartDuct _Duct;
 
+	// TODO: revert to state-wish hashmap (like google does!)
 	// Global transition/reaction hashmap
 	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> _GlobalEventTAMap;
 	public (List<Transition>, List<Reaction>)[] _CurrentTAMap;
@@ -593,7 +594,7 @@ public partial class Statechart : StatechartComposition
 		{
 			if (child is State state)
 			{
-				if (!state._IsValidRootState())
+				if (!state._IsValidState())
 				{
 					hasOtherChild = true;
 					continue;

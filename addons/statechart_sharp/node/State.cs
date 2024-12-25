@@ -13,6 +13,13 @@ public enum StateModeEnum : int
 	DeepHistory // TODO: use DeepHistoryImpl to replace IsDeepHistory
 }
 
+public enum DeduceDescendantsModeEnum : int
+{
+	Initial,
+	History,
+	DeepHistory
+}
+
 [Tool]
 [GlobalClass]
 [Icon("res://addons/statechart_sharp/icon/State.svg")]
@@ -94,19 +101,17 @@ public partial class State : StatechartComposition
         set => StateImpl._StateId = value;
     }
 	protected StatechartDuct Duct;
-	public bool _IsHistory; // TODO: work around to eliminate this flag
+	// public bool _IsHistory; // TODO: work around to eliminate this flag
 
 #endregion
 
 
 #region func cache
-	public Func<List<State>, bool> _GetPromoteStates;
-	public Func<bool> _IsValidRootState;
 	public Action<SortedSet<State>> _SubmitActiveState;
-	public Func<State, SortedSet<State>, bool> _IsConflictToEnterRegion;
 	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> _ExtendEnterRegion;
 	public Func<SortedSet<Transition>, bool, int> _SelectTransitions;
-	public Action<SortedSet<State>, bool, bool> _DeduceDescendants;
+	public Action<SortedSet<State>> _DeduceDescendants;
+	public Action<SortedSet<State>, DeduceDescendantsModeEnum> _DeduceDescendantsRecurr;
 	public Action<State> _HandleSubstateEnter;
 	public Action<SortedSet<Reaction>> _SelectReactions;
 	public Action<List<int>> _SaveAllStateConfig;
@@ -125,17 +130,15 @@ public partial class State : StatechartComposition
 		_AutoTransitions = new List<Transition>();
 
 		StateImpl = GetStateImpl(StateMode);
-		_IsHistory = StateMode == StateModeEnum.History;
 
 		// Cache methods
 		if (StateImpl is not null)
 		{
-			_GetPromoteStates = StateImpl._GetPromoteStates;
 			_SubmitActiveState = StateImpl._SubmitActiveState;
-			_IsConflictToEnterRegion = StateImpl._IsConflictToEnterRegion;
 			_ExtendEnterRegion = StateImpl._ExtendEnterRegion;
 			_SelectTransitions = StateImpl._SelectTransitions;
 			_DeduceDescendants = StateImpl._DeduceDescendants;
+			_DeduceDescendantsRecurr = StateImpl._DeduceDescendantsRecurr;
 			_HandleSubstateEnter = StateImpl._HandleSubstateEnter;
 			_SelectReactions = StateImpl._SelectReactions;
 
@@ -223,6 +226,16 @@ public partial class State : StatechartComposition
 			&& id <= _UpperState._OrderId;
 	}
 
+	public bool _IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
+	{
+		return StateImpl._IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
+	}
+
+	public bool _GetPromoteStates(List<State> states)
+	{
+		return StateImpl._GetPromoteStates(states);
+	}
+
 	public bool _IsValidState()
 	{
 		/*
@@ -232,6 +245,7 @@ public partial class State : StatechartComposition
 		- Can be active state.
 		- Can be initial state.
 		- Can be root state.
+		- Is stable, meaning if targeted in transition, enter region is determined.
 		- For now, non-history state.
 		*/
 		return StateImpl._IsValidState();

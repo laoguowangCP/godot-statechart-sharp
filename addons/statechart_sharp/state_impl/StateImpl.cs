@@ -76,7 +76,10 @@ public class StateImpl
 
     public virtual void _ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
-    public virtual void _DeduceDescendants(SortedSet<State> deducedSet, bool isHistory, bool isEdgeState) {}
+    public virtual void _DeduceDescendants(SortedSet<State> deducedSet) {}
+
+    // TODO: rework deduce desendant
+    public virtual void _DeduceDescendantsRecurr(SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode) {}
 
     public virtual void _HandleSubstateEnter(State substate) {}
 

@@ -150,7 +150,7 @@ public class ParallelImpl : StateImpl
 		// At this point history is not excluded from enter region
 
 		// Pending substate is history
-		if (substateToPend._IsHistory)
+		if (!substateToPend._IsValidState())
 		{
 			return enterRegionUnextended.Any<State>(
 				state => HostState._IsAncestorStateOf(state));
@@ -159,7 +159,7 @@ public class ParallelImpl : StateImpl
 		// Any history substate in region, conflicts.
 		foreach (State substate in Substates)
 		{
-			if (substate._IsHistory
+			if (!substate._IsValidState()
 				&& enterRegionUnextended.Contains(substate))
 			{
 				return true;
@@ -204,7 +204,8 @@ public class ParallelImpl : StateImpl
 		{
 			foreach (State substate in Substates)
 			{
-				if (substate._IsHistory && enterRegion.Contains(substate))
+				if (!substate._IsValidState()
+					&& enterRegion.Contains(substate))
 				{
 					substate._ExtendEnterRegion(
 						enterRegion, enterRegionEdge, extraEnterRegion, true);
@@ -216,7 +217,7 @@ public class ParallelImpl : StateImpl
 		// No history substate in region
 		foreach (State substate in Substates)
 		{
-			if (substate._IsHistory)
+			if (!substate._IsValidState())
 			{
 				continue;
 			}
@@ -330,14 +331,14 @@ public class ParallelImpl : StateImpl
 		return handleInfo;
 	}
 
-	public override void _DeduceDescendants(
-		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
+	public override void _DeduceDescendantsRecurr(
+		SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
 	{
 		/*
 		If is edge-state:
 			1. Called from history substate.
 			2. IsHistory arg represents IsDeepHistory
-		*/
+
 		if (!isEdgeState)
 		{
 			deducedSet.Add(HostState);
@@ -351,6 +352,35 @@ public class ParallelImpl : StateImpl
 				continue;
 			}
 			substate._DeduceDescendants(deducedSet, isHistory, false);
+		}
+		*/
+
+		DeduceDescendantsModeEnum substateDeduceMode;
+		switch (deduceMode)
+		{
+			case DeduceDescendantsModeEnum.Initial:
+				substateDeduceMode = DeduceDescendantsModeEnum.Initial;
+				break;
+			case DeduceDescendantsModeEnum.History:
+				substateDeduceMode = DeduceDescendantsModeEnum.Initial;
+				break;
+			case DeduceDescendantsModeEnum.DeepHistory:
+				substateDeduceMode = DeduceDescendantsModeEnum.DeepHistory;
+				break;
+			default:
+				substateDeduceMode = DeduceDescendantsModeEnum.Initial;
+				break;
+		}
+
+		foreach (State substate in Substates)
+		{
+			// Ignore history states
+			if (!substate._IsValidState())
+			{
+				continue;
+			}
+			deducedSet.Add(substate);
+			substate._DeduceDescendantsRecurr(deducedSet, substateDeduceMode);
 		}
 	}
 

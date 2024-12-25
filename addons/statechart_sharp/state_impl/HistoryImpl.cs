@@ -39,7 +39,7 @@ public class HistoryImpl : StateImpl
     }
 
     public override void _DeduceDescendants(
-        SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
+        SortedSet<State> deducedSet)
     {
         /*
         History state(s) in region edge start the deduction:
@@ -48,10 +48,13 @@ public class HistoryImpl : StateImpl
             3. Should not be called recursively by other states
             4. Parse IsDeepHistory in IsHistory arg
         */
-        if (isEdgeState)
-        {
-            ParentState._DeduceDescendants(deducedSet, IsDeepHistory, true);
-        }
+        ParentState._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.History);
+    }
+
+    public override void _DeduceDescendantsRecurr(
+        SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
+    {
+        ParentState._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.History);
     }
 
 #if TOOLS

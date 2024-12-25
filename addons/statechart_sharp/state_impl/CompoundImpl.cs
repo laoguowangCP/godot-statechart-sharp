@@ -285,14 +285,14 @@ public class CompoundImpl : StateImpl
 		return handleInfo;
 	}
 
-	public override void _DeduceDescendants(
-		SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
+	public override void _DeduceDescendantsRecurr(
+		SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
 	{
 		/*
 		If is edge state:
 			1. It is called from history substate
 			2. IsHistory arg represents IsDeepHistory
-		*/
+
 		if (isEdgeState)
 		{
 			if (CurrentState != null)
@@ -310,6 +310,25 @@ public class CompoundImpl : StateImpl
 		if (deducedSubstate != null)
 		{
 			deducedSubstate._DeduceDescendants(deducedSet, isHistory, false);
+		}
+		*/
+
+		switch (deduceMode)
+		{
+			case DeduceDescendantsModeEnum.Initial:
+				deducedSet.Add(InitialState);
+				InitialState?._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.Initial);
+				break;
+			case DeduceDescendantsModeEnum.History:
+				deducedSet.Add(CurrentState);
+				CurrentState?._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.Initial);
+				break;
+			case DeduceDescendantsModeEnum.DeepHistory:
+				deducedSet.Add(CurrentState);
+				CurrentState?._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.DeepHistory);
+				break;
+			default:
+				break;
 		}
 	}
 
