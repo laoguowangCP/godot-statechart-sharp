@@ -312,24 +312,35 @@ public class CompoundImpl : StateImpl
 			deducedSubstate._DeduceDescendants(deducedSet, isHistory, false);
 		}
 		*/
+		State substateToAdd;
+		DeduceDescendantsModeEnum substateDeduceMode;
 
 		switch (deduceMode)
 		{
 			case DeduceDescendantsModeEnum.Initial:
-				deducedSet.Add(InitialState);
-				InitialState?._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.Initial);
+				substateToAdd = InitialState;
+				substateDeduceMode = DeduceDescendantsModeEnum.Initial;
 				break;
 			case DeduceDescendantsModeEnum.History:
-				deducedSet.Add(CurrentState);
-				CurrentState?._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.Initial);
+				substateToAdd = CurrentState;
+				substateDeduceMode = DeduceDescendantsModeEnum.Initial;
 				break;
 			case DeduceDescendantsModeEnum.DeepHistory:
-				deducedSet.Add(CurrentState);
-				CurrentState?._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.DeepHistory);
+				substateToAdd = CurrentState;
+				substateDeduceMode = DeduceDescendantsModeEnum.DeepHistory;
 				break;
 			default:
+				substateToAdd = InitialState;
+				substateDeduceMode = DeduceDescendantsModeEnum.Initial;
 				break;
 		}
+
+		if (substateToAdd is null)
+		{
+			return;
+		}
+		deducedSet.Add(substateToAdd);
+		InitialState._DeduceDescendantsRecurr(deducedSet, substateDeduceMode);
 	}
 
 	public override void _HandleSubstateEnter(State substate)

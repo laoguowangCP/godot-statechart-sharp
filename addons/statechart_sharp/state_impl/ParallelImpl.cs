@@ -356,6 +356,7 @@ public class ParallelImpl : StateImpl
 		*/
 
 		DeduceDescendantsModeEnum substateDeduceMode;
+		
 		switch (deduceMode)
 		{
 			case DeduceDescendantsModeEnum.Initial:

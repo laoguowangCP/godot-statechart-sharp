@@ -60,8 +60,8 @@ public partial class State : StatechartComposition
 #endif
 		= StateModeEnum.Compound;
 
-	[Export]
-	public bool IsDeepHistory; // TODO: use DeepHistoryImpl to replace IsDeepHistory
+	// [Export]
+	// public bool IsDeepHistory; // TODO: use DeepHistoryImpl to replace IsDeepHistory
 	[Export]
 	public State InitialState
 #if DEBUG

@@ -126,7 +126,7 @@ public class StateImpl
             }
             else if (parent is State state)
             {
-                isParentWarning = state._IsValidState();
+                isParentWarning = !state._IsValidState();
             }
         }
 

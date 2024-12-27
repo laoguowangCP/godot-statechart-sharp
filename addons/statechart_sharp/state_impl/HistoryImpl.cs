@@ -7,7 +7,6 @@ namespace LGWCP.Godot.StatechartSharp;
 
 public class HistoryImpl : StateImpl
 {
-    protected bool IsDeepHistory;
     public HistoryImpl(State state) : base(state) {}
 
 
@@ -19,7 +18,6 @@ public class HistoryImpl : StateImpl
     public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
     {
         base._Setup(hostStateChart, ref parentOrderId, substateIdx);
-        IsDeepHistory = HostState.IsDeepHistory;
     }
 
     public override bool _GetPromoteStates(List<State> states)

@@ -70,8 +70,7 @@ script = ExtResource("5_mbhcw")
 
 [node name="DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/A"]
 script = ExtResource("5_mbhcw")
-StateMode = 2
-IsDeepHistory = true
+StateMode = 3
 
 [node name="->B-DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("6_1u7wh")
@@ -104,5 +103,4 @@ TargetStatesArray = [NodePath("../../../../A/DeepHistory")]
 
 [node name="DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/B"]
 script = ExtResource("5_mbhcw")
-StateMode = 2
-IsDeepHistory = true
+StateMode = 3

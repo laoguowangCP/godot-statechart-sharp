@@ -77,8 +77,7 @@ script = ExtResource("5_i42ee")
 
 [node name="DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/A"]
 script = ExtResource("5_i42ee")
-StateMode = 2
-IsDeepHistory = true
+StateMode = 3
 
 [node name="->B-DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("5_koc6q")
@@ -113,8 +112,7 @@ script = ExtResource("5_i42ee")
 
 [node name="DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/B"]
 script = ExtResource("5_i42ee")
-StateMode = 2
-IsDeepHistory = true
+StateMode = 3
 
 [node name="->A-DeepHistory" type="Node" parent="StatechartProxy/Statechart/Root/B" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("5_koc6q")
