@@ -68,7 +68,7 @@ public partial class Statechart<TDuct, TEvent>
     protected int GetOrderId()
     {
         int id = StatechartLength;
-        ++StateLength;
+        ++StatechartLength;
         return id;
     }
 

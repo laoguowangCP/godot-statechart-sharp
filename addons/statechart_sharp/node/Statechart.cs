@@ -40,7 +40,7 @@ public partial class Statechart : StatechartComposition
 
 	public StatechartDuct _Duct;
 
-	// TODO: revert to state-wish hashmap (like google does!)
+	// TODO: revert to state-wise hashmap (like google does!)
 	// Global transition/reaction hashmap
 	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> _GlobalEventTAMap;
 	public (List<Transition>, List<Reaction>)[] _CurrentTAMap;

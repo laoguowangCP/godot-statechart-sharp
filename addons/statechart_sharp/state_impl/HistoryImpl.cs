@@ -54,7 +54,7 @@ public class HistoryImpl : StateImpl
     public override void _DeduceDescendantsRecurr(
         SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
     {
-        ParentState._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.History);
+        return;
     }
 
 #if TOOLS
@@ -78,7 +78,7 @@ public class HistoryImpl : StateImpl
             warnings.Add("History state should be child to a non-history state.");
         }
 
-        if (isParentParallel && !HostState.IsDeepHistory)
+        if (isParentParallel)
         {
             warnings.Add("Parallel's shallow history is not recommended.");
         }
@@ -89,6 +89,6 @@ public class HistoryImpl : StateImpl
             warnings.Add("History state should not have child.");
         }
     }
-    
+
 #endif
 }

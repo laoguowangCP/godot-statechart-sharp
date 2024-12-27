@@ -161,6 +161,7 @@ public partial class State : StatechartComposition
 		StateModeEnum.Compound => new CompoundImpl(this),
 		StateModeEnum.Parallel => new ParallelImpl(this),
 		StateModeEnum.History => new HistoryImpl(this),
+		StateModeEnum.DeepHistory => new DeepHistoryImpl(this),
 		_ => new CompoundImpl(this)
 	};
 
