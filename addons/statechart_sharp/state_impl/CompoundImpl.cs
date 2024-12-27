@@ -340,7 +340,7 @@ public class CompoundImpl : StateImpl
 			return;
 		}
 		deducedSet.Add(substateToAdd);
-		InitialState._DeduceDescendantsRecurr(deducedSet, substateDeduceMode);
+		substateToAdd._DeduceDescendantsRecurr(deducedSet, substateDeduceMode);
 	}
 
 	public override void _HandleSubstateEnter(State substate)
