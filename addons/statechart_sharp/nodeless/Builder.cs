@@ -41,7 +41,7 @@ public partial class Statechart<TDuct, TEvent>
         */
     }
 
-    public abstract class BuildComposition<T> : IComposition
+    public abstract class BuildComposition<T> : IComposition, IDisposable
         where T : BuildComposition<T>
     {
         private LinkedList<IComposition> _comps;
@@ -55,5 +55,7 @@ public partial class Statechart<TDuct, TEvent>
         {
             _comps.AddLast(child);
         }
+
+        public void Dispose() {}
     }
 }

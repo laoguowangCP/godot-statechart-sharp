@@ -31,10 +31,10 @@ public partial class Statechart<TDuct, TEvent>
 
         private StateInt GetStateInt(StateModeEnum mode) => mode switch
         {
-            StateModeEnum.Compound => new CompoundInt(),
+            // StateModeEnum.Compound => new CompoundInt(),
             // StateModeEnum.Parallel => new ParallelInt(),
             // StateModeEnum.History => new HistoryInt(),
-            _ => new CompoundInt()
+            _ => null
         };
     }
 
