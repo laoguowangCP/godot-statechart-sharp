@@ -10,7 +10,7 @@ public enum StateModeEnum : int
 	Compound,
 	Parallel,
 	History,
-	DeepHistory // TODO: use DeepHistoryImpl to replace IsDeepHistory
+	DeepHistory
 }
 
 public enum DeduceDescendantsModeEnum : int
@@ -60,8 +60,6 @@ public partial class State : StatechartComposition
 #endif
 		= StateModeEnum.Compound;
 
-	// [Export]
-	// public bool IsDeepHistory; // TODO: use DeepHistoryImpl to replace IsDeepHistory
 	[Export]
 	public State InitialState
 #if DEBUG
@@ -101,7 +99,6 @@ public partial class State : StatechartComposition
         set => StateImpl._StateId = value;
     }
 	protected StatechartDuct Duct;
-	// public bool _IsHistory; // TODO: work around to eliminate this flag
 
 #endregion
 
