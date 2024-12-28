@@ -26,7 +26,7 @@ public partial class Statechart : StatechartComposition
 	protected int EventCount;
 	protected State RootState;
 	protected SortedSet<State> ActiveStates;
-	protected Queue<StringName> QueuedEvents;
+	protected Queue<string> QueuedEvents;
 	protected SortedSet<Transition> EnabledTransitions;
 	protected SortedSet<Transition> EnabledFilteredTransitions;
 	protected SortedSet<State> ExitSet;
@@ -49,7 +49,7 @@ public partial class Statechart : StatechartComposition
 		EventCount = 0;
 
 		ActiveStates = new SortedSet<State>(new StatechartComparer<State>());
-		QueuedEvents = new Queue<StringName>();
+		QueuedEvents = new Queue<string>();
 		EnabledTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
 		EnabledFilteredTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
 		ExitSet = new SortedSet<State>(new StatechartReversedComparer<State>());
@@ -152,6 +152,11 @@ public partial class Statechart : StatechartComposition
 			return;
 		}
 
+		_Step(eventName.ToString());
+	}
+
+	public void _Step(string eventName)
+	{
 		if (IsRunning)
 		{
 			if (EventCount <= MaxInternalEventCount)
@@ -170,8 +175,8 @@ public partial class Statechart : StatechartComposition
 
 		while (QueuedEvents.Count > 0)
 		{
-			StringName nextEvent = QueuedEvents.Dequeue();
-			HandleEvent(nextEvent.ToString());
+			string nextEvent = QueuedEvents.Dequeue();
+			HandleEvent(nextEvent);
 		}
 
 		IsRunning = false;
@@ -429,7 +434,7 @@ public partial class Statechart : StatechartComposition
 #endif
 
 		_Duct.Delta = delta;
-		Step(StatechartEventName.EVENT_PROCESS);
+		_Step(StatechartEventName.EVENT_PROCESS);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -442,7 +447,7 @@ public partial class Statechart : StatechartComposition
 #endif
 
 		_Duct.PhysicsDelta = delta;
-		Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
+		_Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
 	}
 
 	public override void _Input(InputEvent @event)
@@ -457,7 +462,7 @@ public partial class Statechart : StatechartComposition
 		using(@event)
 		{
 			_Duct.Input = @event;
-			Step(StatechartEventName.EVENT_INPUT);
+			_Step(StatechartEventName.EVENT_INPUT);
 		}
 	}
 
@@ -473,7 +478,7 @@ public partial class Statechart : StatechartComposition
 		using(@event)
 		{
 			_Duct.ShortcutInput = @event;
-			Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
+			_Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
 		}
 	}
 
@@ -489,7 +494,7 @@ public partial class Statechart : StatechartComposition
 		using(@event)
 		{
 			_Duct.UnhandledKeyInput = @event;
-			Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
+			_Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
 		}
 	}
 
@@ -506,7 +511,7 @@ public partial class Statechart : StatechartComposition
 		using(@event)
 		{
 			_Duct.UnhandledInput = @event;
-			Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
+			_Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
 		}
 	}
 

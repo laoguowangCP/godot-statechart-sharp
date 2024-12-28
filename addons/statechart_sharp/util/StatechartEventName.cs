@@ -55,21 +55,21 @@ public partial class StatechartEventName
 {
 #region Preset EventName
 
-    public static readonly StringName EVENT_PROCESS = "_process";
-    public static readonly StringName EVENT_PHYSICS_PROCESS = "_physics_process";
-    public static readonly StringName EVENT_INPUT = "_input";
-    public static readonly StringName EVENT_SHORTCUT_INPUT = "_shortcut_input";
-    public static readonly StringName EVENT_UNHANDLED_KEY_INPUT = "_unhandled_key_input";
-    public static readonly StringName EVENT_UNHANDLED_INPUT = "_unhandled_input";
+    public static readonly string EVENT_PROCESS = "_process";
+    public static readonly string EVENT_PHYSICS_PROCESS = "_physics_process";
+    public static readonly string EVENT_INPUT = "_input";
+    public static readonly string EVENT_SHORTCUT_INPUT = "_shortcut_input";
+    public static readonly string EVENT_UNHANDLED_KEY_INPUT = "_unhandled_key_input";
+    public static readonly string EVENT_UNHANDLED_INPUT = "_unhandled_input";
     
     // Extend event here:
     /*
-        protected static readonly StringName MY_EVENT = "_my_event";  
+        protected static readonly string MY_EVENT = "_my_event";  
     */
 
 #endregion
     
-    public static StringName GetTransitionEventName(TransitionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
+    public static string GetTransitionEventName(TransitionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
         TransitionEventNameEnum.Process => EVENT_PROCESS,
         TransitionEventNameEnum.PhysicsProcess => EVENT_PHYSICS_PROCESS,
@@ -83,11 +83,11 @@ public partial class StatechartEventName
             TransitionEventNameEnum.MyEvent => MY_EVENT,
         */
 
-        TransitionEventNameEnum.Custom => customEventName,
+        TransitionEventNameEnum.Custom => customEventName.ToString(),
         _ => null
     };
 
-    public static StringName GetReactionEventName(ReactionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
+    public static string GetReactionEventName(ReactionEventNameEnum transitionEvent, StringName customEventName) => transitionEvent switch
     {
         ReactionEventNameEnum.Process => EVENT_PROCESS,
         ReactionEventNameEnum.PhysicsProcess => EVENT_PHYSICS_PROCESS,
@@ -101,7 +101,7 @@ public partial class StatechartEventName
             ReactionEventNameEnum.MyEvent => MY_EVENT,
         */
         
-        ReactionEventNameEnum.Custom => customEventName,
+        ReactionEventNameEnum.Custom => customEventName.ToString(),
         _ => null
     };
 }
