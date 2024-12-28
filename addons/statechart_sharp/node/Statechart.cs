@@ -171,7 +171,7 @@ public partial class Statechart : StatechartComposition
 		while (QueuedEvents.Count > 0)
 		{
 			StringName nextEvent = QueuedEvents.Dequeue();
-			HandleEvent(nextEvent);
+			HandleEvent(nextEvent.ToString());
 		}
 
 		IsRunning = false;
@@ -288,7 +288,7 @@ public partial class Statechart : StatechartComposition
 		return true;
 	}
 
-	protected void HandleEvent(StringName eventName)
+	protected void HandleEvent(string eventName)
 	{
 		if (RootState == null)
 		{

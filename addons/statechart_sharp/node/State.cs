@@ -98,11 +98,11 @@ public partial class State : StatechartComposition
 #region func cache
 	public Action<SortedSet<State>> _SubmitActiveState;
 	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> _ExtendEnterRegion;
-	public Func<SortedSet<Transition>, StringName, int> _SelectTransitions;
+	public Func<SortedSet<Transition>, string, int> _SelectTransitions;
 	public Action<SortedSet<State>> _DeduceDescendants;
 	public Action<SortedSet<State>, DeduceDescendantsModeEnum> _DeduceDescendantsRecurr;
 	public Action<State> _HandleSubstateEnter;
-	public Action<SortedSet<Reaction>, StringName> _SelectReactions;
+	public Action<SortedSet<Reaction>, string> _SelectReactions;
 	public Action<List<int>> _SaveAllStateConfig;
 	public Action<List<int>> _SaveActiveStateConfig;
 	public Func<int[], int, int> _LoadAllStateConfig;

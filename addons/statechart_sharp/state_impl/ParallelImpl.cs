@@ -259,7 +259,7 @@ public class ParallelImpl : StateImpl
 	}
 
 	public override int _SelectTransitions(
-		SortedSet<Transition> enabledTransitions, StringName eventName)
+		SortedSet<Transition> enabledTransitions, string eventName)
 	{
 		int handleInfo = -1;
 		if (ValidSubstateCnt > 0)

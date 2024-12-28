@@ -243,7 +243,7 @@ public class CompoundImpl : StateImpl
 	}
 
 	public override int _SelectTransitions(
-		SortedSet<Transition> enabledTransitions, StringName eventName)
+		SortedSet<Transition> enabledTransitions, string eventName)
 	{
 		int handleInfo = -1;
 		// if (HostState._CurrentState != null)
