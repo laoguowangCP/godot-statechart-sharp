@@ -8,6 +8,7 @@ namespace LGWCP.Godot.StatechartSharp;
 public class ParallelImpl : StateImpl
 {
 	protected int ValidSubstateCnt = 0; // Compound or parallel, not history
+	
 	public ParallelImpl(State state) : base(state) {}
 
 	public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
@@ -101,12 +102,12 @@ public class ParallelImpl : StateImpl
 					AutoTransitions.Add(t);
 					continue;
 				}
-				HostStatechart._RegistGlobalTransition(_StateId, t._EventName, t);
+				Transitions.Add(t);
 			}
 			else if (child is Reaction a)
 			{
 				a._SetupPost();
-				HostStatechart._RegistGlobalReaction(_StateId, a._EventName, a);
+				Reactions.Add(a);
 			}
 		}
 
@@ -240,7 +241,7 @@ public class ParallelImpl : StateImpl
 	}
 
 	public override int _SelectTransitions(
-		SortedSet<Transition> enabledTransitions, bool isAuto)
+		SortedSet<Transition> enabledTransitions, StringName eventName)
 	{
 		int handleInfo = -1;
 		if (ValidSubstateCnt > 0)
@@ -254,8 +255,9 @@ public class ParallelImpl : StateImpl
 					continue;
 				}
 
-				int substateHandleInfo = substate._SelectTransitions(
-					enabledTransitions, isAuto);
+				// TODO: revert to state-wise TA list
+				// int substateHandleInfo = substate._SelectTransitions(enabledTransitions, isAuto);
+				int substateHandleInfo = substate._SelectTransitions(enabledTransitions, eventName);
 				if (substateHandleInfo < 0)
 				{
 					negCnt += 1;
@@ -291,40 +293,53 @@ public class ParallelImpl : StateImpl
 			return handleInfo;
 		}
 
-		List<Transition> matched;
-		if (isAuto)
+		if (eventName is null)
 		{
-			matched = AutoTransitions;
+			foreach (Transition t in AutoTransitions)
+			{
+				// If == 0, only check targetless
+				if (handleInfo == 0)
+				{
+					if (!t._IsTargetless)
+					{
+						continue;
+					}
+				}
+
+				bool isEnabled = t._Check();
+				if (isEnabled)
+				{
+					enabledTransitions.Add(t);
+					handleInfo = 1;
+					break;
+				}
+			}
 		}
 		else
 		{
-			if (CurrentTAMap is null)
+			foreach (Transition t in Transitions)
 			{
-				return handleInfo;
-			}
-			matched = CurrentTAMap[_StateId].Transitions;
-			if (matched is null)
-			{
-				return handleInfo;
-			}
-		}
+				// If == 0, only check targetless
+				if (handleInfo == 0)
+				{
+					if (!t._IsTargetless)
+					{
+						continue;
+					}
+				}
 
-		foreach (Transition t in matched)
-		{
-			if (handleInfo == 0)
-			{
-				if (!t._IsTargetless)
+				if (t._EventName != eventName)
 				{
 					continue;
 				}
-			}
 
-			bool isEnabled = t._Check();
-			if (isEnabled)
-			{
-				enabledTransitions.Add(t);
-				handleInfo = 1;
-				break;
+				bool isEnabled = t._Check();
+				if (isEnabled)
+				{
+					enabledTransitions.Add(t);
+					handleInfo = 1;
+					break;
+				}
 			}
 		}
 

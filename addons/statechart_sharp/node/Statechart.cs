@@ -33,17 +33,8 @@ public partial class Statechart : StatechartComposition
 	protected SortedSet<State> EnterSet;
 	protected SortedSet<Reaction> EnabledReactions;
 	protected List<int> SnapshotConfig;
-	protected StringName LastStepEventName = "_";
-
-	// Total count of states in statechart
-	protected int StateLength = 0;
-
 	public StatechartDuct _Duct;
 
-	// TODO: revert to state-wise hashmap (like google does!)
-	// Global transition/reaction hashmap
-	public Dictionary<StringName, (List<Transition>, List<Reaction>)[]> _GlobalEventTAMap;
-	public (List<Transition>, List<Reaction>)[] _CurrentTAMap;
 
 #endregion
 
@@ -64,8 +55,6 @@ public partial class Statechart : StatechartComposition
 		ExitSet = new SortedSet<State>(new StatechartReversedComparer<State>());
 		EnterSet = new SortedSet<State>(new StatechartComparer<State>());
 		EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
-
-		_GlobalEventTAMap = new Dictionary<StringName, (List<Transition>, List<Reaction>)[]>();
 
 		SnapshotConfig = new List<int>();
 
@@ -154,59 +143,6 @@ public partial class Statechart : StatechartComposition
 			EventFlag.HasFlag(EventFlagEnum.UnhandledKeyInput));
 		SetProcessUnhandledInput(
 			EventFlag.HasFlag(EventFlagEnum.UnhandledInput));
-	}
-
-	public int _GetStateId()
-	{
-		int id = StateLength;
-		++StateLength;
-		return id;
-	}
-
-	public void _RegistGlobalTransition(int stateId, StringName eventName, Transition trans)
-	{
-		(List<Transition> Transitions, List<Reaction> _)[] globalTA;
-		bool isEventInTable = _GlobalEventTAMap.TryGetValue(eventName, out globalTA);
-		if (isEventInTable)
-		{
-			if (globalTA[stateId].Transitions is null)
-			{
-				globalTA[stateId].Transitions = new() { trans };
-			}
-			else
-			{
-				globalTA[stateId].Transitions.Add(trans);
-			}
-		}
-		else
-		{
-			globalTA = new (List<Transition>, List<Reaction>)[StateLength];
-			globalTA[stateId].Transitions = new() { trans };
-			_GlobalEventTAMap.Add(eventName, globalTA);
-		}
-	}
-
-	public void _RegistGlobalReaction(int stateId, StringName eventName, Reaction react)
-	{
-		(List<Transition> _, List<Reaction> Reactions)[] globalTA;
-		bool isEventInTable = _GlobalEventTAMap.TryGetValue(eventName, out globalTA);
-		if (isEventInTable)
-		{
-			if (globalTA[stateId].Reactions is null)
-			{
-				globalTA[stateId].Reactions = new() { react };
-			}
-			else
-			{
-				globalTA[stateId].Reactions.Add(react);
-			}
-		}
-		else
-		{
-			globalTA = new (List<Transition>, List<Reaction>)[StateLength];
-			globalTA[stateId].Reactions = new() { react };
-			_GlobalEventTAMap.Add(eventName, globalTA);
-		}
 	}
 
 	public void Step(StringName eventName)
@@ -369,17 +305,8 @@ public partial class Statechart : StatechartComposition
 		4. Do reactions
 		*/
 
-		// Set global transitions/reactions, null if no matched event
-		if (LastStepEventName != eventName)
-		{
-			_GlobalEventTAMap.TryGetValue(eventName, out _CurrentTAMap);
-			LastStepEventName = eventName;
-		}
-		// Use last query in GlobalEventTAMap if eventname not changed
-		// GlobalEventTAMap.TryGetValue(eventName, out CurrentTAMap);
-
 		// 1. Select transitions
-		RootState._SelectTransitions(EnabledTransitions, false);
+		RootState._SelectTransitions(EnabledTransitions, eventName);
 
 		// 2. Do transitions
 		DoTransitions();
@@ -387,7 +314,7 @@ public partial class Statechart : StatechartComposition
 		// 3. Select and do automatic transitions
 		for (int i = 1; i <= MaxAutoTransitionRound; ++i)
 		{
-			RootState._SelectTransitions(EnabledTransitions, true);
+			RootState._SelectTransitions(EnabledTransitions, null);
 
 			// Stop if active states are stable
 			if (EnabledTransitions.Count == 0)
@@ -400,7 +327,7 @@ public partial class Statechart : StatechartComposition
 		// 4. Select and do reactions
 		foreach (State state in ActiveStates)
 		{
-			state._SelectReactions(EnabledReactions);
+			state._SelectReactions(EnabledReactions, eventName);
 		}
 
 		foreach (Reaction reaction in EnabledReactions)

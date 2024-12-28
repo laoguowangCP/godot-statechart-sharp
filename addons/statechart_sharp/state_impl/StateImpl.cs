@@ -20,12 +20,9 @@ public class StateImpl
         get => HostState._UpperState;
         set => HostState._UpperState = value;
     }
-    public int _StateId;
-    protected List<Transition> AutoTransitions;
-    protected (List<Transition> Transitions, List<Reaction> Reactions)[] CurrentTAMap
-    {
-        get => HostStatechart._CurrentTAMap;
-    }
+	protected List<Transition> Transitions = new();
+    protected List<Transition> AutoTransitions = new();
+	protected List<Reaction> Reactions = new();
 
     public StateImpl(State state)
     {
@@ -53,9 +50,6 @@ public class StateImpl
         ParentState = HostState._ParentState;
         HostStatechart = HostState._HostStatechart;
         Substates = HostState._Substates;
-        AutoTransitions = HostState._AutoTransitions;
-
-        _StateId = HostStatechart._GetStateId();
     }
 
     public virtual void _SetupPost() {}
@@ -69,7 +63,7 @@ public class StateImpl
         return false;
     }
 
-    public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, bool isAuto)
+    public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         return 1;
     }
@@ -82,24 +76,17 @@ public class StateImpl
 
     public virtual void _HandleSubstateEnter(State substate) {}
 
-    public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions)
-	{
-        if (CurrentTAMap is null)
+    public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
+    {
+        foreach (Reaction a in Reactions)
         {
-            return;
+            if (a._EventName != eventName)
+            {
+                continue;
+            }
+            enabledReactions.Add(a);
         }
-
-        var matched = CurrentTAMap[_StateId].Reactions;
-        if (matched is null)
-        {
-            return;
-        }
-
-		foreach (Reaction reaction in matched)
-		{
-			enabledReactions.Add(reaction);
-		}
-	}
+    }
 
     public virtual void _SaveAllStateConfig(List<int> snapshot) {}
 

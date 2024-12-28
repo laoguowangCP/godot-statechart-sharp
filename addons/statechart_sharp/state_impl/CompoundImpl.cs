@@ -9,6 +9,7 @@ public class CompoundImpl : StateImpl
 {
 	private State CurrentState;
 	private State InitialState;
+
 	public CompoundImpl(State state) : base(state) {}
 
 	public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
@@ -88,7 +89,7 @@ public class CompoundImpl : StateImpl
 		{
 			foreach (State substate in Substates)
 			{
-				if (substate.StateMode != StateModeEnum.History)
+				if (substate._IsValidState())
 				{
 					InitialState = substate;
 					break;
@@ -127,12 +128,15 @@ public class CompoundImpl : StateImpl
 					AutoTransitions.Add(t);
 					continue;
 				}
-				HostStatechart._RegistGlobalTransition(_StateId, t._EventName, t);
+
+				// TODO: revert to state-wise TA list
+				// HostStatechart._RegistGlobalTransition(_StateId, t._EventName, t);
+				Transitions.Add(t);
 			}
 			else if (child is Reaction a)
 			{
 				a._SetupPost();
-				HostStatechart._RegistGlobalReaction(_StateId, a._EventName, a);
+				Reactions.Add(a);
 			}
 		}
 
@@ -224,13 +228,13 @@ public class CompoundImpl : StateImpl
 	}
 
 	public override int _SelectTransitions(
-		SortedSet<Transition> enabledTransitions, bool isAuto)
+		SortedSet<Transition> enabledTransitions, StringName eventName)
 	{
 		int handleInfo = -1;
 		// if (HostState._CurrentState != null)
 		if (CurrentState != null)
 		{
-			handleInfo = CurrentState._SelectTransitions(enabledTransitions, isAuto);
+			handleInfo = CurrentState._SelectTransitions(enabledTransitions, eventName);
 		}
 
 		/*
@@ -244,6 +248,9 @@ public class CompoundImpl : StateImpl
 			return handleInfo;
 		}
 
+		
+		// TODO: revert to state-wise TA list
+		/*
 		List<Transition> matched;
 		if (isAuto)
 		{
@@ -279,6 +286,57 @@ public class CompoundImpl : StateImpl
 				enabledTransitions.Add(t);
 				handleInfo = 1;
 				break;
+			}
+		}
+		*/
+
+		if (eventName is null)
+		{
+			foreach (Transition t in AutoTransitions)
+			{
+				// If == 0, only check targetless
+				if (handleInfo == 0)
+				{
+					if (!t._IsTargetless)
+					{
+						continue;
+					}
+				}
+
+				bool isEnabled = t._Check();
+				if (isEnabled)
+				{
+					enabledTransitions.Add(t);
+					handleInfo = 1;
+					break;
+				}
+			}
+		}
+		else
+		{
+			foreach (Transition t in Transitions)
+			{
+				// If == 0, only check targetless
+				if (handleInfo == 0)
+				{
+					if (!t._IsTargetless)
+					{
+						continue;
+					}
+				}
+
+				if (t._EventName != eventName)
+				{
+					continue;
+				}
+
+				bool isEnabled = t._Check();
+				if (isEnabled)
+				{
+					enabledTransitions.Add(t);
+					handleInfo = 1;
+					break;
+				}
 			}
 		}
 

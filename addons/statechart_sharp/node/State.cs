@@ -83,7 +83,6 @@ public partial class State : StatechartComposition
 
 	public State _ParentState;
 	public List<State> _Substates;
-	public List<Transition> _AutoTransitions;
 	protected StateImpl StateImpl;
 	public State _LowerState;
 	public State _UpperState;
@@ -91,13 +90,6 @@ public partial class State : StatechartComposition
 	/// The index of this state enlisted in parent state.
 	/// </summary>
 	public int _SubstateIdx;
-	/// <summary>
-	/// The ID of this state in statechart.
-	/// </summary>
-	public int _StateId
-	{
-        set => StateImpl._StateId = value;
-    }
 	protected StatechartDuct Duct;
 
 #endregion
@@ -106,11 +98,11 @@ public partial class State : StatechartComposition
 #region func cache
 	public Action<SortedSet<State>> _SubmitActiveState;
 	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> _ExtendEnterRegion;
-	public Func<SortedSet<Transition>, bool, int> _SelectTransitions;
+	public Func<SortedSet<Transition>, StringName, int> _SelectTransitions;
 	public Action<SortedSet<State>> _DeduceDescendants;
 	public Action<SortedSet<State>, DeduceDescendantsModeEnum> _DeduceDescendantsRecurr;
 	public Action<State> _HandleSubstateEnter;
-	public Action<SortedSet<Reaction>> _SelectReactions;
+	public Action<SortedSet<Reaction>, StringName> _SelectReactions;
 	public Action<List<int>> _SaveAllStateConfig;
 	public Action<List<int>> _SaveActiveStateConfig;
 	public Func<int[], int, int> _LoadAllStateConfig;
@@ -124,7 +116,6 @@ public partial class State : StatechartComposition
 	public override void _Ready()
 	{
 		_Substates = new List<State>();
-		_AutoTransitions = new List<Transition>();
 
 		StateImpl = GetStateImpl(StateMode);
 
@@ -175,7 +166,6 @@ public partial class State : StatechartComposition
 	{
 		base._Setup(hostStateChart, ref parentOrderId);
 		Duct = _HostStatechart._Duct;
-		_StateId = _HostStatechart._GetStateId();
 
 		StateImpl._Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
