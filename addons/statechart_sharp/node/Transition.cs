@@ -84,7 +84,7 @@ public partial class Transition : StatechartComposition
 #endif
         = new();
 
-    public StringName _EventName;
+    public string _EventName;
     protected List<State> TargetStates;
     public State _SourceState;
     public State _LcaState;

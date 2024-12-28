@@ -102,12 +102,30 @@ public class ParallelImpl : StateImpl
 					AutoTransitions.Add(t);
 					continue;
 				}
-				Transitions.Add(t);
+				
+				// Add transition
+				if (Transitions.TryGetValue(t._EventName, out var eventTransitions))
+				{
+					eventTransitions.Add(t);
+				}
+				else
+				{
+					Transitions[t._EventName] = new() { t };
+				}
 			}
 			else if (child is Reaction a)
 			{
 				a._SetupPost();
-				Reactions.Add(a);
+				
+				// Add reaction
+				if (Reactions.TryGetValue(a._EventName, out var eventReactions))
+				{
+					eventReactions.Add(a);
+				}
+				else
+				{
+					Reactions[a._EventName] = new() { a };
+				}
 			}
 		}
 
@@ -317,28 +335,26 @@ public class ParallelImpl : StateImpl
 		}
 		else
 		{
-			foreach (Transition t in Transitions)
+			if (Transitions.TryGetValue(eventName, out var eventTransitions))
 			{
-				// If == 0, only check targetless
-				if (handleInfo == 0)
+				foreach (Transition t in eventTransitions)
 				{
-					if (!t._IsTargetless)
+					// If == 0, only check targetless
+					if (handleInfo == 0)
 					{
-						continue;
+						if (!t._IsTargetless)
+						{
+							continue;
+						}
 					}
-				}
 
-				if (t._EventName != eventName)
-				{
-					continue;
-				}
-
-				bool isEnabled = t._Check();
-				if (isEnabled)
-				{
-					enabledTransitions.Add(t);
-					handleInfo = 1;
-					break;
+					bool isEnabled = t._Check();
+					if (isEnabled)
+					{
+						enabledTransitions.Add(t);
+						handleInfo = 1;
+						break;
+					}
 				}
 			}
 		}

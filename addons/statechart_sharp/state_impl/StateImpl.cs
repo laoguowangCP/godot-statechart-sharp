@@ -20,9 +20,9 @@ public class StateImpl
         get => HostState._UpperState;
         set => HostState._UpperState = value;
     }
-	protected List<Transition> Transitions = new();
+	protected Dictionary<StringName, List<Transition>> Transitions = new();
     protected List<Transition> AutoTransitions = new();
-	protected List<Reaction> Reactions = new();
+	protected Dictionary<StringName, List<Reaction>> Reactions = new();
 
     public StateImpl(State state)
     {
@@ -78,13 +78,12 @@ public class StateImpl
 
     public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
     {
-        foreach (Reaction a in Reactions)
+        if (Reactions.TryGetValue(eventName, out var eventReactions))
         {
-            if (a._EventName != eventName)
+            foreach (Reaction a in eventReactions)
             {
-                continue;
+                enabledReactions.Add(a);
             }
-            enabledReactions.Add(a);
         }
     }
 
