@@ -72,7 +72,7 @@ public class StateImpl
 
     public virtual void _DeduceDescendants(SortedSet<State> deducedSet) {}
 
-    public virtual void _DeduceDescendantsRecurr(SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode) {}
+    public virtual void _DeduceDescendantsRecur(SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode) {}
 
     public virtual void _HandleSubstateEnter(State substate) {}
 

@@ -41,13 +41,18 @@ public partial class Statechart<TDuct, TEvent>
 
     public class Transition : BuildComposition<Transition>
     {
-        private TransitionInt _t;
 
         public Transition()
         {}
         
         public Transition(TEvent @event, State[] targets=null, bool isAuto=false, Action<TDuct>[] guards=null, Action<TDuct>[] invokes = null)
         {
+        }
+
+        public override object Clone()
+        {
+            // TODO: impl clone
+            return new Transition();
         }
     }
 }

@@ -24,29 +24,28 @@ public partial class Statechart<TDuct, TEvent>
 {
     public class State : BuildComposition<State>
     {
-        private StateInt _s;
-
         public State() {}
+        public StateModeEnum Mode;
 
         public State(StateModeEnum mode, Action<TDuct>[] enters, Action<TDuct>[] exits)
         {
-            // TODO: move deep history to a state mode
-            _s = GetStateInt(mode);
+            // TODO: store info
         }
 
-        public void SetAsRootState(Statechart<TDuct, TEvent> statechart)
+        public override object Clone()
         {
-            statechart.RootState = _s;
+            // TODO: impl clone
+            return new State();
         }
-
-        private StateInt GetStateInt(StateModeEnum mode) => mode switch
-        {
-            // StateModeEnum.Compound => new CompoundInt(),
-            // StateModeEnum.Parallel => new ParallelInt(),
-            // StateModeEnum.History => new HistoryInt(),
-            _ => null
-        };
     }
+
+    protected static StateInt GetStateInt(State state) => state.Mode switch
+    {
+        StateModeEnum.Compound => new CompoundInt(),
+        // StateModeEnum.Parallel => new ParallelInt(),
+        // StateModeEnum.History => new HistoryInt(),
+        _ => null
+    };
 
     protected abstract class StateInt : Composition<StateInt>
     {
@@ -117,16 +116,16 @@ public partial class Statechart<TDuct, TEvent>
 
         public virtual void HandleSubstateEnter(StateInt substate) {}
 
-    public virtual void SelectReactions(SortedSet<ReactionInt> enabledReactions, TEvent @event)
-    {
-        if (Reactions.TryGetValue(@event, out var eventReactions))
+        public virtual void SelectReactions(SortedSet<ReactionInt> enabledReactions, TEvent @event)
         {
-            foreach (ReactionInt a in eventReactions)
+            if (Reactions.TryGetValue(@event, out var eventReactions))
             {
-                enabledReactions.Add(a);
+                foreach (ReactionInt a in eventReactions)
+                {
+                    enabledReactions.Add(a);
+                }
             }
         }
-    }
 
         public virtual void SaveAllStateConfig(List<int> snapshot) {}
 

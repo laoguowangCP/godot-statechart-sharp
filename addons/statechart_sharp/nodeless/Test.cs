@@ -21,7 +21,13 @@ public class Test
             using var a1 = sb.NewReaction();
             using var a2 = sb.NewReaction();
 
-            rootState.Add(s1.Add(a1).Add(t1)).Add(s2.Add(t2).Add(a2));
+            rootState
+                .Add(s1
+                    .Add(a1)
+                    .Add(t1))
+                .Add(s2
+                    .Add(t2)
+                    .Add(a2));
         }
     }
 }

@@ -100,7 +100,7 @@ public partial class State : StatechartComposition
 	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> _ExtendEnterRegion;
 	public Func<SortedSet<Transition>, string, int> _SelectTransitions;
 	public Action<SortedSet<State>> _DeduceDescendants;
-	public Action<SortedSet<State>, DeduceDescendantsModeEnum> _DeduceDescendantsRecurr;
+	public Action<SortedSet<State>, DeduceDescendantsModeEnum> _DeduceDescendantsRecur;
 	public Action<State> _HandleSubstateEnter;
 	public Action<SortedSet<Reaction>, string> _SelectReactions;
 	public Action<List<int>> _SaveAllStateConfig;
@@ -126,7 +126,7 @@ public partial class State : StatechartComposition
 			_ExtendEnterRegion = StateImpl._ExtendEnterRegion;
 			_SelectTransitions = StateImpl._SelectTransitions;
 			_DeduceDescendants = StateImpl._DeduceDescendants;
-			_DeduceDescendantsRecurr = StateImpl._DeduceDescendantsRecurr;
+			_DeduceDescendantsRecur = StateImpl._DeduceDescendantsRecur;
 			_HandleSubstateEnter = StateImpl._HandleSubstateEnter;
 			_SelectReactions = StateImpl._SelectReactions;
 

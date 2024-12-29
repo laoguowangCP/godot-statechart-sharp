@@ -46,10 +46,10 @@ public class HistoryImpl : StateImpl
             3. Should not be called recursively by other states
             4. Parse IsDeepHistory in IsHistory arg
         */
-        ParentState._DeduceDescendantsRecurr(deducedSet, DeduceDescendantsModeEnum.History);
+        ParentState._DeduceDescendantsRecur(deducedSet, DeduceDescendantsModeEnum.History);
     }
 
-    public override void _DeduceDescendantsRecurr(
+    public override void _DeduceDescendantsRecur(
         SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
     {
         return;

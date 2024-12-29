@@ -356,7 +356,7 @@ public class CompoundImpl : StateImpl
 		return handleInfo;
 	}
 
-	public override void _DeduceDescendantsRecurr(
+	public override void _DeduceDescendantsRecur(
 		SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
 	{
 		/*
@@ -411,7 +411,7 @@ public class CompoundImpl : StateImpl
 			return;
 		}
 		deducedSet.Add(substateToAdd);
-		substateToAdd._DeduceDescendantsRecurr(deducedSet, substateDeduceMode);
+		substateToAdd._DeduceDescendantsRecur(deducedSet, substateDeduceMode);
 	}
 
 	public override void _HandleSubstateEnter(State substate)

@@ -362,7 +362,7 @@ public class ParallelImpl : StateImpl
 		return handleInfo;
 	}
 
-	public override void _DeduceDescendantsRecurr(
+	public override void _DeduceDescendantsRecur(
 		SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
 	{
 		/*
@@ -412,7 +412,7 @@ public class ParallelImpl : StateImpl
 				continue;
 			}
 			deducedSet.Add(substate);
-			substate._DeduceDescendantsRecurr(deducedSet, substateDeduceMode);
+			substate._DeduceDescendantsRecur(deducedSet, substateDeduceMode);
 		}
 	}
 

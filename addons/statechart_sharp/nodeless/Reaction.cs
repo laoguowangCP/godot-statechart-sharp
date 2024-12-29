@@ -20,7 +20,12 @@ public partial class Statechart<TDuct, TEvent>
 
     public class Reaction : BuildComposition<Reaction>
     {
-        private ReactionInt _a;
         public Reaction() {}
+
+        public override object Clone()
+        {
+            // TODO: impl clone
+            return new Reaction();
+        }
     }
 }

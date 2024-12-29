@@ -164,7 +164,7 @@ public partial class Statechart<TDuct, TEvent>
             }
 
             bool hasConfliction = ExitSet.Contains(t.SourceState)
-                || ExitSet.Any<StateInt>(
+                || ExitSet.Any(
                     state => t.LcaState.IsAncestorStateOf(state));
 
             if (hasConfliction)

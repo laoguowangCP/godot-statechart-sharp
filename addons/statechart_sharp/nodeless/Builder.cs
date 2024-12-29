@@ -39,28 +39,66 @@ public partial class Statechart<TDuct, TEvent>
         {
             return new Reaction();
         }
+
+        public bool Commit(Statechart<TDuct, TEvent> statechart, State rootState)
+        {
+            // TODO: commit comps to statechart
+
+            // TODO: process build comps (TransitionPromoter)
+            // rootState.Build(); // ?
+
+            var rootStateInt = GetStateInt(rootState);
+            statechart.RootState = rootStateInt;
+
+            // TODO: Setup comps
+            // CommitRecur(statechart, rootState, rootStateInt); // ?
+            // rootStateInt.Setup(rootState);
+            // rootStateInt.SetupPost();
+            return true;
+        }
+
+        private void CommitRecur<TBuildComp, TComp>(
+            Statechart<TDuct, TEvent> statechart,
+            BuildComposition<TBuildComp> pBuildComp,
+            Composition<TComp> pComp)
+            where TBuildComp : BuildComposition<TBuildComp>
+            where TComp : Composition<TComp>
+        {
+            // TODO: commit recursively
+            foreach (var comp in pBuildComp.Comps)
+            {
+                if (comp is State s)
+                {
+                    var sInt = GetStateInt(s);
+                }
+            }
+        }
     }
 
-    public abstract class BuildComposition<T> : IComposition, IDisposable
+    public interface IBuildComposition : IDisposable, ICloneable {}
+
+    public abstract class BuildComposition<T> : IBuildComposition
         where T : BuildComposition<T>
     {
         // Child nodes
-        private LinkedList<IComposition> _comps;
+        public LinkedList<IBuildComposition> Comps { get; protected set; }
         // LLN to parent _comps. If reparent, use it to delist from former parent.
-        private LinkedListNode<IComposition> _compIdx;
+        protected LinkedListNode<IBuildComposition> _compIdx;
 
         public BuildComposition()
         {
-            _comps = new();
+            Comps = new();
         }
 
         public T Add<TChild>(TChild child)
             where TChild : BuildComposition<TChild>
         {
-            _comps.AddLast(child);
+            Comps.AddLast(child);
             return (T)this;
         }
 
         public void Dispose() {}
+
+        public abstract object Clone();
     }
 }
