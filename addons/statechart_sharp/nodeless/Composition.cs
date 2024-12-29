@@ -15,11 +15,13 @@ public partial class Statechart<TDuct, TEvent>
         public int OrderId;
         public Statechart<TDuct, TEvent> HostStatechart;
 
-        public virtual void SetupPre() {}
+        public virtual void Setup() {}
 
-        public virtual void Setup()
+        public virtual void Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId)
         {
-            OrderId = HostStatechart.GetOrderId();
+            HostStatechart = hostStatechart;
+            OrderId = orderId;
+            ++orderId;
         }
 
         public virtual void SetupPost() {}

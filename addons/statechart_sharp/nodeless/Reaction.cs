@@ -21,9 +21,6 @@ public partial class Statechart<TDuct, TEvent>
     public class Reaction : BuildComposition<Reaction>
     {
         private ReactionInt _a;
-        public Reaction()
-        {
-
-        }
+        public Reaction() {}
     }
 }

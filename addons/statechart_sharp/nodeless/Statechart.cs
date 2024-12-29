@@ -22,12 +22,7 @@ public partial class Statechart<TDuct, TEvent>
     protected SortedSet<StateInt> EnterSet;
     protected SortedSet<ReactionInt> EnabledReactions;
     protected List<int> SnapshotConfig;
-    protected TEvent LastStepEvent = default;
-    protected int StatechartLength = 0;
-    protected int StateLength = 0;
     protected TDuct Duct;
-    protected Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]> GlobalEventTAMap;
-    protected (List<TransitionInt>, List<ReactionInt>)[] CurrentTA;
 
     public Statechart()
     {
@@ -42,7 +37,6 @@ public partial class Statechart<TDuct, TEvent>
         ExitSet = new SortedSet<StateInt>(new StatechartReversedComparer<StateInt>());
         EnterSet = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
         EnabledReactions = new SortedSet<ReactionInt>(new StatechartComparer<ReactionInt>());
-        GlobalEventTAMap = new Dictionary<TEvent, (List<TransitionInt>, List<ReactionInt>)[]>();
         SnapshotConfig = new List<int>();
     }
 
@@ -53,75 +47,12 @@ public partial class Statechart<TDuct, TEvent>
             return;
         }
 
-        RootState.SetupPre();
-
         RootState.Setup();
-
         RootState.SubmitActiveState(ActiveStates);
         RootState.SetupPost();
         foreach (var state in ActiveStates)
         {
             state.StateEnter(Duct);
-        }
-    }
-
-    protected int GetOrderId()
-    {
-        int id = StatechartLength;
-        ++StatechartLength;
-        return id;
-    }
-
-    protected int GetStateId()
-    {
-        int id = StateLength;
-        ++StateLength;
-        return id;
-    }
-
-    protected void RegistGlobalTransition(int stateId, TEvent @event, TransitionInt t)
-    {
-        (List<TransitionInt> Transitions, List<ReactionInt> _)[] globalTA;
-        bool isEventInTable = GlobalEventTAMap.TryGetValue(@event, out globalTA);
-        if (isEventInTable)
-        {
-            if (globalTA[stateId].Transitions is null)
-            {
-                globalTA[stateId].Transitions = new() { t };
-            }
-            else
-            {
-                globalTA[stateId].Transitions.Add(t);
-            }
-        }
-        else
-        {
-            globalTA = new (List<TransitionInt>, List<ReactionInt>)[StateLength];
-            globalTA[stateId].Transitions = new() { t };
-            GlobalEventTAMap.Add(@event, globalTA);
-        }
-    }
-
-    protected void RegistGlobalReaction(int stateId, TEvent @event, ReactionInt a)
-    {
-        (List<TransitionInt> _, List<ReactionInt> Reactions)[] globalTA;
-        bool isEventInTable = GlobalEventTAMap.TryGetValue(@event, out globalTA);
-        if (isEventInTable)
-        {
-            if (globalTA[stateId].Reactions is null)
-            {
-                globalTA[stateId].Reactions = new() { a };
-            }
-            else
-            {
-                globalTA[stateId].Reactions.Add(a);
-            }
-        }
-        else
-        {
-            globalTA = new (List<TransitionInt>, List<ReactionInt>)[StateLength];
-            globalTA[stateId].Reactions = new() { a };
-            GlobalEventTAMap.Add(@event, globalTA);
         }
     }
 
@@ -171,17 +102,8 @@ public partial class Statechart<TDuct, TEvent>
         4. Do reactions
         */
 
-        // Set global transitions/reactions, null if no matched event
-        if (LastStepEvent.Equals(@event))
-        {
-            GlobalEventTAMap.TryGetValue(@event, out CurrentTA);
-            LastStepEvent = @event;
-        }
-        // Use last query in GlobalEventTAMap if eventname not changed
-        // GlobalEventTAMap.TryGetValue(eventName, out CurrentTAMap);
-
         // 1. Select transitions
-        RootState.SelectTransitions(EnabledTransitions, false);
+        RootState.SelectTransitions(EnabledTransitions, @event);
 
         // 2. Do transitions
         DoTransitions();
@@ -189,7 +111,7 @@ public partial class Statechart<TDuct, TEvent>
         // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
-            RootState.SelectTransitions(EnabledTransitions, true);
+            RootState.SelectTransitions(EnabledTransitions, @event);
 
             // Stop if active states are stable
             if (EnabledTransitions.Count == 0)
@@ -202,7 +124,7 @@ public partial class Statechart<TDuct, TEvent>
         // 4. Select and do reactions
         foreach (var state in ActiveStates)
         {
-            state.SelectReactions(EnabledReactions);
+            state.SelectReactions(EnabledReactions, @event);
         }
 
         foreach (var react in EnabledReactions)

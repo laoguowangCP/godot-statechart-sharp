@@ -43,6 +43,9 @@ public partial class Statechart<TDuct, TEvent>
     {
         private TransitionInt _t;
 
+        public Transition()
+        {}
+        
         public Transition(TEvent @event, State[] targets=null, bool isAuto=false, Action<TDuct>[] guards=null, Action<TDuct>[] invokes = null)
         {
         }

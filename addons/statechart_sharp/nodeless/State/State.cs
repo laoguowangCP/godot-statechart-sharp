@@ -11,6 +11,13 @@ public enum StateModeEnum : int
     DeepHistory
 }
 
+public enum DeduceDescendantsModeEnum : int
+{
+	Initial,
+	History,
+	DeepHistory
+}
+
 public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
@@ -18,6 +25,9 @@ public partial class Statechart<TDuct, TEvent>
     public class State : BuildComposition<State>
     {
         private StateInt _s;
+
+        public State() {}
+
         public State(StateModeEnum mode, Action<TDuct>[] enters, Action<TDuct>[] exits)
         {
             // TODO: move deep history to a state mode
@@ -48,27 +58,18 @@ public partial class Statechart<TDuct, TEvent>
         protected StateInt InitialState;
         public StateInt ParentState;
         public List<StateInt> Substates;
-        public List<TransitionInt> AutoTransitions;
+        protected Dictionary<TEvent, List<TransitionInt>> Transitions = new();
+        protected List<TransitionInt> AutoTransitions = new();
+        protected Dictionary<TEvent, List<ReactionInt>> Reactions = new();
         public StateInt LowerState;
         public StateInt UpperState;
         public int SubstateIdx; // The index of this state enlisted in parent state.
-        public int StateId; // The ID of this state in statechart.
-        protected (List<TransitionInt> Transitions, List<ReactionInt> Reactions)[] CurrentTA
-        {
-            get => HostStatechart.CurrentTA;
-        }
 
-        public override void Setup()
-        {
-            OrderId = HostStatechart.GetOrderId();
-            StateId = HostStatechart.GetStateId();
-        }
+        public override void Setup() {}
 
-        public virtual void Setup(int substateIdx)
+        public virtual void Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId, int substateIdx)
         {
-            SubstateIdx = substateIdx;
-            OrderId = HostStatechart.GetOrderId();
-            StateId = HostStatechart.GetStateId();
+
         }
 
         public void StateEnter(TDuct duct)
@@ -105,7 +106,7 @@ public partial class Statechart<TDuct, TEvent>
             return false;
         }
 
-        public virtual int SelectTransitions(SortedSet<TransitionInt> enabledTransitions, bool isAuto)
+        public virtual int SelectTransitions(SortedSet<TransitionInt> enabledTransitions, TEvent @event)
         {
             return 1;
         }
@@ -116,24 +117,16 @@ public partial class Statechart<TDuct, TEvent>
 
         public virtual void HandleSubstateEnter(StateInt substate) {}
 
-        public virtual void SelectReactions(SortedSet<ReactionInt> enabledReactions)
+    public virtual void SelectReactions(SortedSet<ReactionInt> enabledReactions, TEvent @event)
+    {
+        if (Reactions.TryGetValue(@event, out var eventReactions))
         {
-            if (CurrentTA is null)
-            {
-                return;
-            }
-
-            var matched = CurrentTA[StateId].Reactions;
-            if (matched is null)
-            {
-                return;
-            }
-
-            foreach (var a in matched)
+            foreach (ReactionInt a in eventReactions)
             {
                 enabledReactions.Add(a);
             }
         }
+    }
 
         public virtual void SaveAllStateConfig(List<int> snapshot) {}
 
