@@ -263,48 +263,6 @@ public class CompoundImpl : StateImpl
 			return handleInfo;
 		}
 
-		
-		// TODO: revert to state-wise TA list
-		/*
-		List<Transition> matched;
-		if (isAuto)
-		{
-			matched = AutoTransitions;
-		}
-		else
-		{
-			if (CurrentTAMap is null)
-			{
-				return handleInfo;
-			}
-			matched = CurrentTAMap[_StateId].Transitions;
-			if (matched is null)
-			{
-				return handleInfo;
-			}
-		}
-
-		foreach (Transition t in matched)
-		{
-			// If == 0, only check targetless
-			if (handleInfo == 0)
-			{
-				if (!t._IsTargetless)
-				{
-					continue;
-				}
-			}
-
-			bool isEnabled = t._Check();
-			if (isEnabled)
-			{
-				enabledTransitions.Add(t);
-				handleInfo = 1;
-				break;
-			}
-		}
-		*/
-
 		if (eventName is null)
 		{
 			foreach (Transition t in AutoTransitions)

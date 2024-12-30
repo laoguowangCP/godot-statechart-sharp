@@ -41,5 +41,9 @@ var (sc, sb) = Statechart<BaseStatechartDuct, string>.GetStatechartAndBuilder();
 
 Statechart commit procedure:
 
-- Process build: transition promoter will change build comps
+- Process build: transition promoter will change build comps. Comps submit build action in depth-first order
 - Convert build comps to real comps
+
+## Annotation
+
+`// EXT:` note things need to be done if you want extend something.

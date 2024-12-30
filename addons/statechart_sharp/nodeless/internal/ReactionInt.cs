@@ -7,15 +7,14 @@ public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-
-    public class Reaction : BuildComposition<Reaction>
+    protected class ReactionInt : Composition<ReactionInt>
     {
-        public Reaction() {}
+        protected delegate void InvokeEvent(TDuct duct);
+        protected event InvokeEvent Invoke;
 
-        public override object Clone()
+        public void ReactionInvoke(TDuct duct)
         {
-            // TODO: impl clone
-            return new Reaction();
+            Invoke.Invoke(duct);
         }
     }
 }

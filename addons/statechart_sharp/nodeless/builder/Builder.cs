@@ -18,28 +18,29 @@ public partial class Statechart<TDuct, TEvent>
     public class Builder
     {
         protected Statechart<TDuct, TEvent> Statechart;
+        protected List<Action> BuildActions = new();
+
         public Builder(Statechart<TDuct, TEvent> statechart)
         {
             Statechart = statechart;
         }
 
-
         // TODO: fill params
         public State NewState()
         {
-            var comp = new State() { Statechart = Statechart };
+            var comp = new State() { _Statechart = Statechart };
             return comp;
         }
 
         public Transition NewTransition()
         {
-            var comp = new Transition() { Statechart = Statechart };
+            var comp = new Transition() { _Statechart = Statechart };
             return comp;
         }
 
         public Reaction NewReaction()
         {
-            var comp = new Reaction() { Statechart = Statechart };
+            var comp = new Reaction() { _Statechart = Statechart };
             return comp;
         }
 
@@ -58,6 +59,11 @@ public partial class Statechart<TDuct, TEvent>
 
             // TODO: process build comps (TransitionPromoter)
             // rootState.Build(); // ?
+            rootState.SubmitBuildAction(BuildActions.Add);
+            foreach (var buildAction in BuildActions)
+            {
+                buildAction();
+            }
 
             var rootStateInt = GetStateInt(rootState);
             statechart.RootState = rootStateInt;
@@ -79,13 +85,18 @@ public partial class Statechart<TDuct, TEvent>
             where TComp : Composition<TComp>
         {
             // TODO: commit recursively
-            foreach (var comp in pBuildComp.Comps)
+            foreach (var comp in pBuildComp._Comps)
             {
                 if (comp is State s)
                 {
                     var sInt = GetStateInt(s);
                 }
             }
+        }
+
+        protected void SubmitBuildAction(Action buildAction)
+        {
+            BuildActions.Add(buildAction);
         }
     }
 }

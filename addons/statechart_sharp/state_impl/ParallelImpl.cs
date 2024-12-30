@@ -273,8 +273,6 @@ public class ParallelImpl : StateImpl
 					continue;
 				}
 
-				// TODO: revert to state-wise TA list
-				// int substateHandleInfo = substate._SelectTransitions(enabledTransitions, isAuto);
 				int substateHandleInfo = substate._SelectTransitions(enabledTransitions, eventName);
 				if (substateHandleInfo < 0)
 				{
