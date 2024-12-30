@@ -4,11 +4,9 @@
 
 # Statechart Sharp Nodeless
 
-# TODO
+## TODO
 
-# Scratch
-
-## Initialization
+## Scratch
 
 ```csharp
 // Get statechart and builder
@@ -44,4 +42,4 @@ var (sc, sb) = Statechart<BaseStatechartDuct, string>.GetStatechartAndBuilder();
 Statechart commit procedure:
 
 - Process build: transition promoter will change build comps
-- Instance build comps to real comps
+- Convert build comps to real comps

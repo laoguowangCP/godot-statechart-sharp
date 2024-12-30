@@ -17,28 +17,40 @@ public partial class Statechart<TDuct, TEvent>
 
     public class Builder
     {
-        protected Statechart<TDuct, TEvent> HostStatechart;
+        protected Statechart<TDuct, TEvent> Statechart;
         public Builder(Statechart<TDuct, TEvent> statechart)
         {
-            HostStatechart = statechart;
+            Statechart = statechart;
         }
 
 
         // TODO: fill params
         public State NewState()
         {
-            return new State();
+            var comp = new State() { Statechart = Statechart };
+            return comp;
         }
 
         public Transition NewTransition()
         {
-            return new Transition();
+            var comp = new Transition() { Statechart = Statechart };
+            return comp;
         }
 
         public Reaction NewReaction()
         {
-            return new Reaction();
+            var comp = new Reaction() { Statechart = Statechart };
+            return comp;
         }
+
+        // TODO: impl TransitionPromoter
+        /*
+        public TransitionPromoter NewTransitionPromoter()
+        {
+            var comp = new TransitionPromoter() { Statechart = Statechart };
+            return comp;
+        }
+        */
 
         public bool Commit(Statechart<TDuct, TEvent> statechart, State rootState)
         {
@@ -57,6 +69,8 @@ public partial class Statechart<TDuct, TEvent>
             return true;
         }
 
+
+        // TODO: may not use it
         private void CommitRecur<TBuildComp, TComp>(
             Statechart<TDuct, TEvent> statechart,
             BuildComposition<TBuildComp> pBuildComp,
@@ -73,32 +87,5 @@ public partial class Statechart<TDuct, TEvent>
                 }
             }
         }
-    }
-
-    public interface IBuildComposition : IDisposable, ICloneable {}
-
-    public abstract class BuildComposition<T> : IBuildComposition
-        where T : BuildComposition<T>
-    {
-        // Child nodes
-        public LinkedList<IBuildComposition> Comps { get; protected set; }
-        // LLN to parent _comps. If reparent, use it to delist from former parent.
-        protected LinkedListNode<IBuildComposition> _compIdx;
-
-        public BuildComposition()
-        {
-            Comps = new();
-        }
-
-        public T Add<TChild>(TChild child)
-            where TChild : BuildComposition<TChild>
-        {
-            Comps.AddLast(child);
-            return (T)this;
-        }
-
-        public void Dispose() {}
-
-        public abstract object Clone();
     }
 }
