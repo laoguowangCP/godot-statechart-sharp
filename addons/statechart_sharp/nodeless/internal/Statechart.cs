@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace LGWCP.Godot.StatechartSharp.Nodeless;
+namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
@@ -13,7 +13,7 @@ public partial class Statechart<TDuct, TEvent>
     protected int MaxAutoTransitionRound = 8;
     protected bool IsRunning;
     protected int EventCount;
-    protected StateInt RootState;
+    public StateInt RootState;
     protected SortedSet<StateInt> ActiveStates;
     protected Queue<TEvent> QueuedEvents;
     protected SortedSet<TransitionInt> EnabledTransitions;
@@ -215,4 +215,12 @@ public partial class Statechart<TDuct, TEvent>
         ExitSet.Clear();
         EnterSet.Clear();
     }
+
+    public static StateInt GetStateInt(StatechartBuilder<TDuct, TEvent>.State state) => state.Mode switch
+    {
+        StateModeEnum.Compound => new CompoundInt(),
+        // StateModeEnum.Parallel => new ParallelInt(),
+        // StateModeEnum.History => new HistoryInt(),
+        _ => null
+    };
 }

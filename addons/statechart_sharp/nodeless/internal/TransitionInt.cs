@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace LGWCP.Godot.StatechartSharp.Nodeless;
+namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    protected class TransitionInt : Composition<TransitionInt>
+    public class TransitionInt : Composition
     {
         protected delegate void GuardEvent(TDuct duct);
         protected event GuardEvent Guard;

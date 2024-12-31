@@ -1,7 +1,7 @@
 using System;
 
 
-namespace LGWCP.Godot.StatechartSharp.Nodeless;
+namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()

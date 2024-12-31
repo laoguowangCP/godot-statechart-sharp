@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LGWCP.Godot.StatechartSharp.Nodeless;
+namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public enum DeduceDescendantsModeEnum : int
 {
@@ -15,7 +15,7 @@ public partial class Statechart<TDuct, TEvent>
     where TEvent : IEquatable<TEvent>
 {
 
-    protected abstract class StateInt : Composition<StateInt>
+    public abstract class StateInt : Composition
     {
         protected delegate void EnterEvent(TDuct duct);
         protected event EnterEvent Enter;

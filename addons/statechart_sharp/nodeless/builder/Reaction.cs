@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
-public partial class Statechart<TDuct, TEvent>
+public partial class StatechartBuilder<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
@@ -12,10 +13,10 @@ public partial class Statechart<TDuct, TEvent>
     {
         public Reaction() {}
 
-        public override object Clone()
+        public override Reaction Duplicate()
         {
             // TODO: impl clone
-            return new Reaction();
+            throw new NotImplementedException();
         }
     }
 }

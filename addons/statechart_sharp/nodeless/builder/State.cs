@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
@@ -11,7 +12,7 @@ public enum StateModeEnum : int
     DeepHistory
 }
 
-public partial class Statechart<TDuct, TEvent>
+public partial class StatechartBuilder<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
@@ -36,16 +37,9 @@ public partial class Statechart<TDuct, TEvent>
             Initial = initial;
         }
 
-        public override void SubmitBuildAction(Action<Action> submit)
-        {
-            foreach (var comp in _Comps)
-            {
-                comp.SubmitBuildAction(submit);
-            }
-        }
-
         public bool SubmitPromoteStates(Action<State> submit)
         {
+            // Used by transition promoter
             if (Mode is StateModeEnum.Compound)
             {
                 bool isPromote = true;
@@ -100,12 +94,4 @@ public partial class Statechart<TDuct, TEvent>
             throw new NotImplementedException();
         }
     }
-
-    protected static StateInt GetStateInt(State state) => state.Mode switch
-    {
-        StateModeEnum.Compound => new CompoundInt(),
-        // StateModeEnum.Parallel => new ParallelInt(),
-        // StateModeEnum.History => new HistoryInt(),
-        _ => null
-    };
 }

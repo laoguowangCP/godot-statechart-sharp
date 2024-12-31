@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 
-namespace LGWCP.Godot.StatechartSharp.Nodeless;
+namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
     protected class StatechartComparer<TComposition> : IComparer<TComposition>
-        where TComposition : Composition<TComposition>
+        where TComposition : Composition
     {
         public int Compare(TComposition x, TComposition y)
         {
@@ -17,7 +17,7 @@ public partial class Statechart<TDuct, TEvent>
     }
 
     protected class StatechartReversedComparer<TComposition> : IComparer<TComposition>
-        where TComposition : Composition<TComposition>
+        where TComposition : Composition
     {
         public int Compare(TComposition x, TComposition y)
         {

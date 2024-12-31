@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
-public partial class Statechart<TDuct, TEvent>
+public partial class StatechartBuilder<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
@@ -55,6 +55,10 @@ public partial class Statechart<TDuct, TEvent>
 
         public bool Commit(Statechart<TDuct, TEvent> statechart, State rootState)
         {
+            if (rootState is null)
+            {
+                return false;
+            }
             // TODO: commit comps to statechart
 
             // TODO: process build comps (TransitionPromoter)
@@ -65,7 +69,7 @@ public partial class Statechart<TDuct, TEvent>
                 buildAction();
             }
 
-            var rootStateInt = GetStateInt(rootState);
+            var rootStateInt = Statechart<TDuct, TEvent>.GetStateInt(rootState);
             statechart.RootState = rootStateInt;
 
             // TODO: Setup comps
@@ -73,25 +77,6 @@ public partial class Statechart<TDuct, TEvent>
             // rootStateInt.Setup(rootState);
             // rootStateInt.SetupPost();
             return true;
-        }
-
-
-        // TODO: may not use it
-        private void CommitRecur<TBuildComp, TComp>(
-            Statechart<TDuct, TEvent> statechart,
-            BuildComposition<TBuildComp> pBuildComp,
-            Composition<TComp> pComp)
-            where TBuildComp : BuildComposition<TBuildComp>
-            where TComp : Composition<TComp>
-        {
-            // TODO: commit recursively
-            foreach (var comp in pBuildComp._Comps)
-            {
-                if (comp is State s)
-                {
-                    var sInt = GetStateInt(s);
-                }
-            }
         }
 
         protected void SubmitBuildAction(Action buildAction)

@@ -1,6 +1,6 @@
 using System;
 
-namespace LGWCP.Godot.StatechartSharp.Nodeless;
+namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
@@ -8,8 +8,7 @@ public partial class Statechart<TDuct, TEvent>
 {
     protected interface IComposition {}
 
-    protected abstract class Composition<T> : IComposition
-        where T : Composition<T>
+    public abstract class Composition : IComposition
     {
         // protected abstract void Setup();
         public int OrderId;
@@ -26,7 +25,7 @@ public partial class Statechart<TDuct, TEvent>
 
         public virtual void SetupPost() {}
 
-        public static bool IsCommonHost(T x, T y)
+        public static bool IsCommonHost(Composition x, Composition y)
         {
             if (x == null || y == null)
             {
