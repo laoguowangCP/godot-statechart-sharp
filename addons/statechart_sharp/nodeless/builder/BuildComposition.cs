@@ -16,7 +16,7 @@ public partial class StatechartBuilder<TDuct, TEvent>
     public abstract class BuildComposition<TSelf> : IBuildComposition
         where TSelf : BuildComposition<TSelf>
     {
-        public Statechart<TDuct, TEvent> _Statechart;
+        public StatechartInt<TDuct, TEvent> _Statechart;
         // Child nodes
         public LinkedList<IBuildComposition> _Comps { get; protected set; } = new();
         // LLN of this comp in parent comps. If reparent, use it to delist from former parent.

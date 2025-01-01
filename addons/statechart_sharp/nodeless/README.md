@@ -6,6 +6,8 @@
 
 ## TODO
 
+- No nested class, use internal spacename
+
 ## Scratch
 
 ```csharp

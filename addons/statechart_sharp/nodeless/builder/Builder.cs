@@ -11,16 +11,16 @@ public partial class StatechartBuilder<TDuct, TEvent>
     // TODO: builder is necessary to provide typed composition
     public static (Statechart<TDuct, TEvent>, Builder) GetStatechartAndBuilder()
     {
-        var statechart = new Statechart<TDuct, TEvent>();
-        return (statechart, new Builder(statechart));
+        var statechartInt = new StatechartInt<TDuct, TEvent>();
+        return (new Statechart<TDuct, TEvent>(statechartInt), new Builder(statechartInt));
     }
 
     public class Builder
     {
-        protected Statechart<TDuct, TEvent> Statechart;
+        protected StatechartInt<TDuct, TEvent> Statechart;
         protected List<Action> BuildActions = new();
 
-        public Builder(Statechart<TDuct, TEvent> statechart)
+        public Builder(StatechartInt<TDuct, TEvent> statechart)
         {
             Statechart = statechart;
         }
@@ -53,7 +53,7 @@ public partial class StatechartBuilder<TDuct, TEvent>
         }
         */
 
-        public bool Commit(Statechart<TDuct, TEvent> statechart, State rootState)
+        public bool Commit(StatechartInt<TDuct, TEvent> statechart, State rootState)
         {
             if (rootState is null)
             {
@@ -69,7 +69,7 @@ public partial class StatechartBuilder<TDuct, TEvent>
                 buildAction();
             }
 
-            var rootStateInt = Statechart<TDuct, TEvent>.GetStateInt(rootState);
+            var rootStateInt = StatechartInt<TDuct, TEvent>.GetStateInt(rootState);
             statechart.RootState = rootStateInt;
 
             // TODO: Setup comps

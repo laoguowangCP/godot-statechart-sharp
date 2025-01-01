@@ -10,7 +10,7 @@ public enum DeduceDescendantsModeEnum : int
     DeepHistory
 }
 
-public partial class Statechart<TDuct, TEvent>
+public partial class StatechartInt<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
@@ -34,7 +34,7 @@ public partial class Statechart<TDuct, TEvent>
 
         public override void Setup() {}
 
-        public virtual void Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId, int substateIdx)
+        public virtual void Setup(StatechartInt<TDuct, TEvent> hostStatechart, ref int orderId, int substateIdx)
         {
 
         }

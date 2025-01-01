@@ -3,7 +3,7 @@ using System;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
-public partial class Statechart<TDuct, TEvent>
+public partial class StatechartInt<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {

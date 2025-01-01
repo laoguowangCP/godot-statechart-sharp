@@ -2,7 +2,7 @@ using System;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
-public partial class Statechart<TDuct, TEvent>
+public partial class StatechartInt<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
@@ -12,11 +12,11 @@ public partial class Statechart<TDuct, TEvent>
     {
         // protected abstract void Setup();
         public int OrderId;
-        public Statechart<TDuct, TEvent> HostStatechart;
+        public StatechartInt<TDuct, TEvent> HostStatechart;
 
         public virtual void Setup() {}
 
-        public virtual void Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId)
+        public virtual void Setup(StatechartInt<TDuct, TEvent> hostStatechart, ref int orderId)
         {
             HostStatechart = hostStatechart;
             OrderId = orderId;

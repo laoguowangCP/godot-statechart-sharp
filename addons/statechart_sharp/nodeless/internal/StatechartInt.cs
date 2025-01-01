@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
-public partial class Statechart<TDuct, TEvent>
+public partial class StatechartInt<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
@@ -24,7 +24,7 @@ public partial class Statechart<TDuct, TEvent>
     protected List<int> SnapshotConfig;
     protected TDuct Duct;
 
-    public Statechart()
+    public StatechartInt()
     {
         Duct = new TDuct();
         IsRunning = false;
