@@ -212,19 +212,16 @@ public class CompoundImpl : StateImpl
 		}
 	}
 
-	public override bool _GetPromoteStates(List<State> states)
+	public override bool _SubmitPromoteStates(List<State> states)
 	{
 		bool isPromote = true;
 		foreach (Node child in HostState.GetChildren())
 		{
-			if (child is State state)
-			{
-				bool isChildPromoted = state._GetPromoteStates(states);
-				if (isChildPromoted)
-				{
-					isPromote = false;
-				}
-			}
+			if (child is State state
+			    && state._SubmitPromoteStates(states))
+            {
+                isPromote = false;
+            }
 		}
 
 		if (isPromote)
@@ -276,8 +273,7 @@ public class CompoundImpl : StateImpl
 					}
 				}
 
-				bool isEnabled = t._Check();
-				if (isEnabled)
+				if (t._Check())
 				{
 					enabledTransitions.Add(t);
 					handleInfo = 1;
@@ -300,8 +296,7 @@ public class CompoundImpl : StateImpl
 						}
 					}
 
-					bool isEnabled = t._Check();
-					if (isEnabled)
+					if (t._Check())
 					{
 						enabledTransitions.Add(t);
 						handleInfo = 1;

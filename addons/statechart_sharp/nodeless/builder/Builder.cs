@@ -9,79 +9,68 @@ public partial class StatechartBuilder<TDuct, TEvent>
     where TEvent : IEquatable<TEvent>
 {
     // TODO: builder is necessary to provide typed composition
-    public static (Statechart<TDuct, TEvent>, Builder) GetStatechartAndBuilder()
+    // protected StatechartInt<TDuct, TEvent> Statechart;
+    protected List<Action> BuildActions = new();
+
+    public StatechartBuilder() {}
+
+    // TODO: fill params
+    public State NewState()
     {
-        var statechartInt = new StatechartInt<TDuct, TEvent>();
-        return (new Statechart<TDuct, TEvent>(statechartInt), new Builder(statechartInt));
+        var comp = new State();
+        return comp;
     }
 
-    public class Builder
+    public Transition NewTransition()
     {
-        protected StatechartInt<TDuct, TEvent> Statechart;
-        protected List<Action> BuildActions = new();
+        var comp = new Transition();
+        return comp;
+    }
 
-        public Builder(StatechartInt<TDuct, TEvent> statechart)
+    public Reaction NewReaction()
+    {
+        var comp = new Reaction();
+        return comp;
+    }
+
+    // TODO: impl TransitionPromoter
+    /*
+    public TransitionPromoter NewTransitionPromoter()
+    {
+        var comp = new TransitionPromoter() { Statechart = Statechart };
+        return comp;
+    }
+    */
+
+    public Statechart<TDuct, TEvent> Commit(State rootState)
+    {
+        var statechartInt = new StatechartInt<TDuct, TEvent>();
+        if (rootState is null)
         {
-            Statechart = statechart;
+            return null;
+        }
+        // TODO: commit comps to statechart
+
+        // TODO: process build comps (TransitionPromoter)
+        // rootState.Build(); // ?
+        rootState.SubmitBuildAction(BuildActions.Add);
+        foreach (var buildAction in BuildActions)
+        {
+            buildAction();
         }
 
-        // TODO: fill params
-        public State NewState()
-        {
-            var comp = new State() { _Statechart = Statechart };
-            return comp;
-        }
+        var rootStateInt = StatechartInt<TDuct, TEvent>.GetStateInt(rootState);
+        statechartInt.RootState = rootStateInt;
 
-        public Transition NewTransition()
-        {
-            var comp = new Transition() { _Statechart = Statechart };
-            return comp;
-        }
+        // TODO: Setup comps
+        // CommitRecur(statechart, rootState, rootStateInt); // ?
+        // rootStateInt.Setup(rootState);
+        // rootStateInt.SetupPost();
+        return new Statechart<TDuct, TEvent>(statechartInt);
+    }
 
-        public Reaction NewReaction()
-        {
-            var comp = new Reaction() { _Statechart = Statechart };
-            return comp;
-        }
-
-        // TODO: impl TransitionPromoter
-        /*
-        public TransitionPromoter NewTransitionPromoter()
-        {
-            var comp = new TransitionPromoter() { Statechart = Statechart };
-            return comp;
-        }
-        */
-
-        public bool Commit(StatechartInt<TDuct, TEvent> statechart, State rootState)
-        {
-            if (rootState is null)
-            {
-                return false;
-            }
-            // TODO: commit comps to statechart
-
-            // TODO: process build comps (TransitionPromoter)
-            // rootState.Build(); // ?
-            rootState.SubmitBuildAction(BuildActions.Add);
-            foreach (var buildAction in BuildActions)
-            {
-                buildAction();
-            }
-
-            var rootStateInt = StatechartInt<TDuct, TEvent>.GetStateInt(rootState);
-            statechart.RootState = rootStateInt;
-
-            // TODO: Setup comps
-            // CommitRecur(statechart, rootState, rootStateInt); // ?
-            // rootStateInt.Setup(rootState);
-            // rootStateInt.SetupPost();
-            return true;
-        }
-
-        protected void SubmitBuildAction(Action buildAction)
-        {
-            BuildActions.Add(buildAction);
-        }
+    protected void SubmitBuildAction(Action buildAction)
+    {
+        BuildActions.Add(buildAction);
     }
 }

@@ -37,7 +37,7 @@ public partial class StatechartBuilder<TDuct, TEvent>
             Initial = initial;
         }
 
-        public bool SubmitPromoteStates(Action<State> submit)
+        public virtual bool SubmitPromoteStates(Action<State> submit)
         {
             // Used by transition promoter
             if (Mode is StateModeEnum.Compound)
@@ -45,12 +45,10 @@ public partial class StatechartBuilder<TDuct, TEvent>
                 bool isPromote = true;
                 foreach (var comp in _Comps)
                 {
-                    if (comp is State state)
+                    if (comp is State state
+                        && state.SubmitPromoteStates(submit))
                     {
-                        if (state.SubmitPromoteStates(submit))
-                        {
-                            isPromote = false;
-                        }
+                        isPromote = false;
                     }
                 }
                 if (isPromote)

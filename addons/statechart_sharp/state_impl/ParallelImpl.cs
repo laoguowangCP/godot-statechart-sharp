@@ -8,7 +8,7 @@ namespace LGWCP.Godot.StatechartSharp;
 public class ParallelImpl : StateImpl
 {
 	protected int ValidSubstateCnt = 0; // Compound or parallel, not history
-	
+
 	public ParallelImpl(State state) : base(state) {}
 
 	public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
@@ -102,7 +102,7 @@ public class ParallelImpl : StateImpl
 					AutoTransitions.Add(t);
 					continue;
 				}
-				
+
 				// Add transition
 				if (Transitions.TryGetValue(t._EventName, out var eventTransitions))
 				{
@@ -116,7 +116,7 @@ public class ParallelImpl : StateImpl
 			else if (child is Reaction a)
 			{
 				a._SetupPost();
-				
+
 				// Add reaction
 				if (Reactions.TryGetValue(a._EventName, out var eventReactions))
 				{
@@ -132,20 +132,17 @@ public class ParallelImpl : StateImpl
 		base._SetupPost();
 	}
 
-	public override bool _GetPromoteStates(List<State> states)
+	public override bool _SubmitPromoteStates(List<State> states)
 	{
 		bool isPromote = true;
 		foreach (Node child in HostState.GetChildren())
 		{
-			if (child is State state)
-			{
-				bool isChildPromoted = state._GetPromoteStates(states);
-				if (isChildPromoted)
-				{
-					isPromote = false;
-					break;
-				}
-			}
+			if (child is State state
+                && state._SubmitPromoteStates(states))
+            {
+                isPromote = false;
+                break;
+            }
 		}
 
 		if (isPromote)
@@ -322,8 +319,7 @@ public class ParallelImpl : StateImpl
 					}
 				}
 
-				bool isEnabled = t._Check();
-				if (isEnabled)
+				if (t._Check())
 				{
 					enabledTransitions.Add(t);
 					handleInfo = 1;
@@ -346,8 +342,7 @@ public class ParallelImpl : StateImpl
 						}
 					}
 
-					bool isEnabled = t._Check();
-					if (isEnabled)
+					if (t._Check())
 					{
 						enabledTransitions.Add(t);
 						handleInfo = 1;
@@ -385,7 +380,7 @@ public class ParallelImpl : StateImpl
 		*/
 
 		DeduceDescendantsModeEnum substateDeduceMode;
-		
+
 		switch (deduceMode)
 		{
 			case DeduceDescendantsModeEnum.Initial:

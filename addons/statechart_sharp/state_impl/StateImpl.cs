@@ -54,7 +54,7 @@ public class StateImpl
 
     public virtual void _SetupPost() {}
 
-    public virtual bool _GetPromoteStates(List<State> states) { return false; }
+    public virtual bool _SubmitPromoteStates(List<State> states) { return false; }
 
     public virtual void _SubmitActiveState(SortedSet<State> activeStates) {}
 

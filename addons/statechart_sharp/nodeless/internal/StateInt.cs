@@ -64,8 +64,6 @@ public partial class StatechartInt<TDuct, TEvent>
                 && id <= UpperState.OrderId;
         }
 
-        public virtual bool GetPromoteStates(List<StateInt> states) { return false; }
-
         public virtual void SubmitActiveState(SortedSet<StateInt> activeStates) {}
 
         public virtual bool IsConflictToEnterRegion(StateInt substateToPend, SortedSet<StateInt> enterRegionUnextended)

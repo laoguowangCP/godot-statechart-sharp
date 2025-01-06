@@ -40,7 +40,7 @@ public partial class TransitionPromoter : StatechartComposition
 
         QueueFree();
     }
-    
+
     protected async Task PromoteAsync()
     {
         // Wait transition is ready
@@ -67,7 +67,7 @@ public partial class TransitionPromoter : StatechartComposition
 
         // Get promote state(s)
         List<State> leafStates = new();
-        ParentState._GetPromoteStates(leafStates);
+        ParentState._SubmitPromoteStates(leafStates);
 
         // Duplicate
         foreach (State leafState in leafStates)

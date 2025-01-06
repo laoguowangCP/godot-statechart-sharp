@@ -219,9 +219,9 @@ public partial class State : StatechartComposition
 		return StateImpl._IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
 	}
 
-	public bool _GetPromoteStates(List<State> states)
+	public bool _SubmitPromoteStates(List<State> states)
 	{
-		return StateImpl._GetPromoteStates(states);
+		return StateImpl._SubmitPromoteStates(states);
 	}
 
 	public bool _IsValidState()

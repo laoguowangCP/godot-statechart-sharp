@@ -19,8 +19,8 @@ public partial class StatechartBuilder<TDuct, TEvent>
 
         protected void Promote()
         {
-            if (PComp is Transition hostTransition)
-            if (hostTransition.PComp is State hostState)
+            if (PComp is Transition hostTransition
+                && hostTransition.PComp is State hostState)
             {
                 // No need extra flag to pend multiple promoter
                 // Unlike handled in node tree

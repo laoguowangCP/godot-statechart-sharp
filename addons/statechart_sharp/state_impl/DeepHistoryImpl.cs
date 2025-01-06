@@ -18,7 +18,7 @@ public class DeepHistoryImpl : StateImpl
         base._Setup(hostStateChart, ref parentOrderId, substateIdx);
     }
 
-    public override bool _GetPromoteStates(List<State> states)
+    public override bool _SubmitPromoteStates(List<State> states)
     {
         // History do not promote
         return false;
