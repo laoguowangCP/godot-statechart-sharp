@@ -9,12 +9,8 @@ public partial class StatechartBuilder<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public class Compound : State, IBuildComposition<CompoundInt<TDuct, TEvent>>
+    public class Compound : State
     {
-        public CompoundInt<TDuct, TEvent> GetComposition()
-        {
-            throw new NotImplementedException();
-        }
 
         public override bool SubmitPromoteStates(Action<State> submit)
         {
