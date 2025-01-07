@@ -16,6 +16,12 @@ public partial class StatechartBuilder<TDuct, TEvent>
         public void SubmitBuildAction(Action<Action> submit);
     }
 
+    public interface IBuildComposition<TComposition>
+        where TComposition : Composition<TDuct, TEvent>
+    {
+        public TComposition GetComposition();
+    }
+
     public abstract class BuildComposition<TSelf> : IBuildComposition
         where TSelf : BuildComposition<TSelf>
     {

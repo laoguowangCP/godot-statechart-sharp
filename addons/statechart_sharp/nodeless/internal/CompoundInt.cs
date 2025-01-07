@@ -3,14 +3,11 @@ using System;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
-public partial class StatechartInt<TDuct, TEvent>
+public class CompoundInt<TDuct, TEvent> : StateInt<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    protected class CompoundInt : StateInt
-    {
-        public CompoundInt() {}
+    public CompoundInt() {}
 
-        public CompoundInt(State state) {}
-    }
+    public CompoundInt(State state) {}
 }
