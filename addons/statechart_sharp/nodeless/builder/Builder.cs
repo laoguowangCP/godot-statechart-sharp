@@ -15,20 +15,10 @@ public partial class StatechartBuilder<TDuct, TEvent>
     public StatechartBuilder() {}
 
     // TODO: fill params
-    public State NewState(StateModeEnum mode = StateModeEnum.Compound)
+    public State NewState()
     {
-        var comp = GetState(mode);
+        var comp = new State();
         return comp;
-
-        static State GetState(StateModeEnum mode) => mode switch
-        {
-            StateModeEnum.Compound => new Compound(),
-            StateModeEnum.Parallel => new Parallel(),
-            StateModeEnum.History => new History(),
-            StateModeEnum.DeepHistory => new DeepHistory(),
-            // EXT: new state mode
-            _ => null
-        };
     }
 
     public Transition NewTransition()

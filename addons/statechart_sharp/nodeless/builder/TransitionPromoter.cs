@@ -20,13 +20,13 @@ public partial class StatechartBuilder<TDuct, TEvent>
         protected void Promote()
         {
             if (PComp is Transition hostTransition
-                && hostTransition.PComp is IState hostState)
+                && hostTransition.PComp is State hostState)
             {
                 // No need extra flag to pend multiple promoter
                 // Unlike handled in node tree
                 // Promoted transition leaves comps immediately
 
-                List<IBuildComposition> promoteStates = new();
+                List<State> promoteStates = new();
                 _ = hostState.SubmitPromoteStates(promoteStates.Add);
 
                 foreach (var s in promoteStates)
