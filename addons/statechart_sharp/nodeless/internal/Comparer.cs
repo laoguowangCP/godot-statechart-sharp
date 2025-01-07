@@ -8,7 +8,7 @@ public partial class StatechartInt<TDuct, TEvent>
     where TEvent : IEquatable<TEvent>
 {
     protected class StatechartComparer<TComposition> : IComparer<TComposition>
-        where TComposition : Composition
+        where TComposition : Composition<TDuct, TEvent>
     {
         public int Compare(TComposition x, TComposition y)
         {
@@ -17,7 +17,7 @@ public partial class StatechartInt<TDuct, TEvent>
     }
 
     protected class StatechartReversedComparer<TComposition> : IComparer<TComposition>
-        where TComposition : Composition
+        where TComposition : Composition<TDuct, TEvent>
     {
         public int Compare(TComposition x, TComposition y)
         {

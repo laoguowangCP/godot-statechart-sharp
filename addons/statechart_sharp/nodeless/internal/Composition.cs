@@ -2,36 +2,33 @@ using System;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
-public partial class StatechartInt<TDuct, TEvent>
+public interface IComposition {}
+
+public abstract class Composition<TDuct, TEvent> : IComposition
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    protected interface IComposition {}
+    // protected abstract void Setup();
+    public int OrderId;
+    public StatechartInt<TDuct, TEvent> HostStatechart;
 
-    public abstract class Composition : IComposition
+    public virtual void Setup() {}
+
+    public virtual void Setup(StatechartInt<TDuct, TEvent> hostStatechart, ref int orderId)
     {
-        // protected abstract void Setup();
-        public int OrderId;
-        public StatechartInt<TDuct, TEvent> HostStatechart;
+        HostStatechart = hostStatechart;
+        OrderId = orderId;
+        ++orderId;
+    }
 
-        public virtual void Setup() {}
+    public virtual void SetupPost() {}
 
-        public virtual void Setup(StatechartInt<TDuct, TEvent> hostStatechart, ref int orderId)
+    public static bool IsCommonHost(Composition<TDuct, TEvent> x, Composition<TDuct, TEvent> y)
+    {
+        if (x == null || y == null)
         {
-            HostStatechart = hostStatechart;
-            OrderId = orderId;
-            ++orderId;
+            return false;
         }
-
-        public virtual void SetupPost() {}
-
-        public static bool IsCommonHost(Composition x, Composition y)
-        {
-            if (x == null || y == null)
-            {
-                return false;
-            }
-            return x.HostStatechart == y.HostStatechart;
-        }
+        return x.HostStatechart == y.HostStatechart;
     }
 }

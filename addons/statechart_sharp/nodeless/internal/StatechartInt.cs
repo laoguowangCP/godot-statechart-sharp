@@ -11,34 +11,25 @@ public partial class StatechartInt<TDuct, TEvent>
 {
     protected int MaxInternalEventCount = 8;
     protected int MaxAutoTransitionRound = 8;
-    protected bool IsRunning;
-    protected int EventCount;
-    public StateInt RootState;
-    protected SortedSet<StateInt> ActiveStates;
-    protected Queue<TEvent> QueuedEvents;
-    protected SortedSet<TransitionInt> EnabledTransitions;
-    protected SortedSet<TransitionInt> EnabledFilteredTransitions;
-    protected SortedSet<StateInt> ExitSet;
-    protected SortedSet<StateInt> EnterSet;
-    protected SortedSet<ReactionInt> EnabledReactions;
-    protected List<int> SnapshotConfig;
-    protected TDuct Duct;
+    protected bool IsRunning = false;
+    protected int EventCount = 0;
+    public StateInt<TDuct, TEvent> RootState;
+    protected SortedSet<StateInt<TDuct, TEvent>> ActiveStates = new();
+    protected Queue<TEvent> QueuedEvents = new();
+    protected SortedSet<TransitionInt<TDuct, TEvent>> EnabledTransitions
+        = new(new StatechartComparer<TransitionInt<TDuct, TEvent>>());
+    protected SortedSet<TransitionInt<TDuct, TEvent>> EnabledFilteredTransitions
+        = new(new StatechartComparer<TransitionInt<TDuct, TEvent>>());
+    protected SortedSet<StateInt<TDuct, TEvent>> ExitSet
+        = new(new StatechartReversedComparer<StateInt<TDuct, TEvent>>());
+    protected SortedSet<StateInt<TDuct, TEvent>> EnterSet
+        = new(new StatechartComparer<StateInt<TDuct, TEvent>>());
+    protected SortedSet<ReactionInt<TDuct, TEvent>> EnabledReactions
+        = new(new StatechartComparer<ReactionInt<TDuct, TEvent>>());
+    protected List<int> SnapshotConfig = new();
+    protected TDuct Duct = new();
 
-    public StatechartInt()
-    {
-        Duct = new TDuct();
-        IsRunning = false;
-        EventCount = 0;
-
-        ActiveStates = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
-        QueuedEvents = new Queue<TEvent>();
-        EnabledTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
-        EnabledFilteredTransitions = new SortedSet<TransitionInt>(new StatechartComparer<TransitionInt>());
-        ExitSet = new SortedSet<StateInt>(new StatechartReversedComparer<StateInt>());
-        EnterSet = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
-        EnabledReactions = new SortedSet<ReactionInt>(new StatechartComparer<ReactionInt>());
-        SnapshotConfig = new List<int>();
-    }
+    public StatechartInt() {}
 
     public void Init()
     {
@@ -197,8 +188,8 @@ public partial class StatechartInt<TDuct, TEvent>
                 continue;
             }
 
-            SortedSet<StateInt> enterRegion = t.EnterRegion;
-            SortedSet<StateInt> deducedEnterStates = t.GetDeducedEnterStates();
+            SortedSet<StateInt<TDuct, TEvent>> enterRegion = t.EnterRegion;
+            SortedSet<StateInt<TDuct, TEvent>> deducedEnterStates = t.GetDeducedEnterStates();
             EnterSet.UnionWith(enterRegion);
             EnterSet.UnionWith(deducedEnterStates);
         }
@@ -216,6 +207,7 @@ public partial class StatechartInt<TDuct, TEvent>
         EnterSet.Clear();
     }
 
+    /*
     public static StateInt GetStateInt(StatechartBuilder<TDuct, TEvent>.State state) => state.Mode switch
     {
         StateModeEnum.Compound => new CompoundInt(),
@@ -223,4 +215,5 @@ public partial class StatechartInt<TDuct, TEvent>
         // StateModeEnum.History => new HistoryInt(),
         _ => null
     };
+    */
 }

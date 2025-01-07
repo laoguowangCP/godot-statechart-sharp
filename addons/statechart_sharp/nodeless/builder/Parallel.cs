@@ -8,7 +8,7 @@ public partial class StatechartBuilder<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public class Compound : State<Compound, CompoundInt<TDuct, TEvent>>
+    public class Parallel : State<Parallel, ParallelInt<TDuct, TEvent>>
     {
         public bool SubmitPromoteStates(Action<IState> submit)
         {
@@ -19,6 +19,7 @@ public partial class StatechartBuilder<TDuct, TEvent>
                     && state.SubmitPromoteStates(submit))
                 {
                     isPromote = false;
+                    break; // Parallel diff
                 }
             }
             if (isPromote)

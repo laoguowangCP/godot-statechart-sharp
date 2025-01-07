@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
@@ -10,15 +9,27 @@ public enum StateModeEnum : int
     Parallel,
     History,
     DeepHistory
+    // EXT: new state mode
 }
 
 public partial class StatechartBuilder<TDuct, TEvent>
     where TDuct : IStatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public class State : BuildComposition<State>
+    public interface IState
     {
-        public StateModeEnum Mode;
+        public bool SubmitPromoteStates(Action<IBuildComposition> submit)
+        {
+            // EXT: required if extend state mode
+            // return false by default;
+            return false;
+        }
+    }
+    
+    public class State<TState, TStateInt> : BuildComposition<State<TState, TStateInt>>, IState
+        where TState : State<TState, TStateInt>
+        where TStateInt : StateInt<TDuct, TEvent>
+    {
         public Action<TDuct>[] Enters;
         public Action<TDuct>[] Exits;
         public State Initial;
@@ -26,67 +37,16 @@ public partial class StatechartBuilder<TDuct, TEvent>
         public State() {}
 
         public State(
-            StateModeEnum mode,
             Action<TDuct>[] enters,
             Action<TDuct>[] exits,
             State initial = null)
         {
-            Mode = mode;
             Enters = enters;
             Exits = exits;
             Initial = initial;
         }
 
-        public virtual bool SubmitPromoteStates(Action<State> submit)
-        {
-            // Used by transition promoter
-            if (Mode is StateModeEnum.Compound)
-            {
-                bool isPromote = true;
-                foreach (var comp in _Comps)
-                {
-                    if (comp is State state
-                        && state.SubmitPromoteStates(submit))
-                    {
-                        isPromote = false;
-                    }
-                }
-                if (isPromote)
-                {
-                    submit(this);
-                }
-                // Make sure promoted
-                return true;
-            }
-            else if (Mode is StateModeEnum.Parallel)
-            {
-                bool isPromote = true;
-                foreach (var comp in _Comps)
-                {
-                    if (comp is State state)
-                    {
-                        if (state.SubmitPromoteStates(submit))
-                        {
-                            isPromote = false;
-                            break; // Parallel diff
-                        }
-                    }
-                }
-                if (isPromote)
-                {
-                    submit(this);
-                }
-                // Make sure promoted
-                return true;
-            }
-            // EXT: required if extend state mode
-            else // History
-            {
-                return false;
-            }
-        }
-
-        public override State Duplicate()
+        public override TState Duplicate()
         {
             // TODO: impl clone
             throw new NotImplementedException();
