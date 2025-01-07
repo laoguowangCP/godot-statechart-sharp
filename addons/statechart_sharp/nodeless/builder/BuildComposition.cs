@@ -10,7 +10,10 @@ public partial class StatechartBuilder<TDuct, TEvent>
 {
     public interface IBuildComposition : IDisposable
     {
-        public void SubmitBuildAction(Action<Action> submit) {}
+        public void Add(IBuildComposition child);
+        public void AddFirst(IBuildComposition child);
+        public void Detach();
+        public void SubmitBuildAction(Action<Action> submit);
     }
 
     public abstract class BuildComposition<TSelf> : IBuildComposition
@@ -74,5 +77,15 @@ public partial class StatechartBuilder<TDuct, TEvent>
         public void Dispose() {}
 
         public abstract TSelf Duplicate();
+
+        public void Add(IBuildComposition child)
+        {
+            CompIdx = _Comps.AddLast(child);
+        }
+
+        public void AddFirst(IBuildComposition child)
+        {
+            CompIdx = _Comps.AddFirst(child);
+        }
     }
 }
