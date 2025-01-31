@@ -5,22 +5,34 @@ using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 public partial class StatechartBuilder<TDuct, TEvent>
-    where TDuct : IStatechartDuct, new()
+    where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public class Transition : BuildComposition<Transition>
+    public class Transition : BuildComposition
     {
+        public TEvent Event;
+        public State[] Targets;
+        public bool IsAuto;
+        public Action<TDuct>[] Guards;
+        public Action<TDuct>[] Invokes;
 
-        public Transition() {}
-
-        public Transition(TEvent @event, State[] targets=null, bool isAuto=false, Action<TDuct>[] guards=null, Action<TDuct>[] invokes = null)
+        public Transition(
+            TEvent @event,
+            State[] targets=null,
+            bool isAuto=false,
+            Action<TDuct>[] guards=null,
+            Action<TDuct>[] invokes=null)
         {
+            Event = @event;
+            Targets = targets;
+            IsAuto = isAuto;
+            Guards = guards;
+            Invokes = invokes;
         }
 
         public override Transition Duplicate()
         {
-            // TODO: impl clone
-            throw new NotImplementedException();
+            return new Transition(Event, Targets, IsAuto, Guards, Invokes);
         }
     }
 }

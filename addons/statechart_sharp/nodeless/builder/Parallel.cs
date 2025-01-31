@@ -9,28 +9,19 @@ public partial class StatechartBuilder<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public class Compound : State
+    public class Parallel : State
     {
-        public State Initial;
-
-        public Compound(
+        public Parallel(
             Action<TDuct>[] enters,
-            Action<TDuct>[] exits,
-            State initial = null)
+            Action<TDuct>[] exits)
         {
             Enters = enters;
             Exits = exits;
-            Initial = initial;
         }
 
         public override BuildComposition Duplicate()
         {
-            return new Compound(Enters, Exits, Initial);
-        }
-
-        public override StatechartInt<TDuct, TEvent>.Composition _GetInternalComposition()
-        {
-            return new StatechartInt<TDuct, TEvent>.CompoundInt(this);
+            return new Parallel(Enters, Exits);
         }
     }
 }

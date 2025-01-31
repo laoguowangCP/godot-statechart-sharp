@@ -4,23 +4,23 @@ using LGWCP.Godot.StatechartSharp.Nodeless;
 
 public class Test
 {
-    protected Statechart<BaseStatechartDuct, string> Statechart;
+    protected Statechart<StatechartDuct, string> Statechart;
 
     public Test()
     {
-        var builder = new StatechartBuilder<BaseStatechartDuct, string>();
+        var builder = new StatechartBuilder<StatechartDuct, string>();
 
         // sb.GetNewState().SetAsRootState(sc);
         {
-            using var rootState = builder.NewState();
-            using var s1 = builder.NewState();
-            using var s2 = builder.NewState();
+            var rootState = builder.NewState();
+            var s1 = builder.NewState();
+            var s2 = builder.NewState();
 
-            using var t1 = builder.NewTransition();
-            using var t2 = builder.NewTransition();
+            var t1 = builder.NewTransition();
+            var t2 = builder.NewTransition();
 
-            using var a1 = builder.NewReaction();
-            using var a2 = builder.NewReaction();
+            var a1 = builder.NewReaction();
+            var a2 = builder.NewReaction();
 
             rootState
                 .Add(s1

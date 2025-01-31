@@ -10,41 +10,70 @@ public enum DeduceDescendantsModeEnum : int
     DeepHistory
 }
 
-public abstract class StateInt<TDuct, TEvent> : Composition<TDuct, TEvent>
-    where TDuct : IStatechartDuct, new()
+public partial class StatechartInt<TDuct, TEvent>
+    where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    protected delegate void EnterEvent(TDuct duct);
-    protected event EnterEvent Enter;
-    protected delegate void ExitEvent(TDuct duct);
-    protected event ExitEvent Exit;
 
-    protected StateInt InitialState;
+public abstract class StateInt : Composition
+{
+    public Action<TDuct>[] Enters;
+    public Action<TDuct>[] Exits;
     public StateInt ParentState;
-    public List<StateInt> Substates;
-    protected Dictionary<TEvent, List<TransitionInt>> Transitions = new();
-    protected List<TransitionInt> AutoTransitions = new();
-    protected Dictionary<TEvent, List<ReactionInt>> Reactions = new();
+    public StateInt[] Substates;
+    protected TEvent[] KTransitions;
+    protected TransitionInt[][] VTransitions;
+    protected TransitionInt[] AutoTransitions;
+    protected TEvent[] KReactions;
+    protected ReactionInt[][] VReactions;
     public StateInt LowerState;
     public StateInt UpperState;
     public int SubstateIdx; // The index of this state enlisted in parent state.
 
-    public override void Setup() {}
-
-    public virtual void Setup(StatechartInt<TDuct, TEvent> hostStatechart, ref int orderId, int substateIdx)
+    public override void Setup(
+        StatechartInt<TDuct, TEvent> hostStatechart,
+        StatechartBuilder<TDuct, TEvent>.BuildComposition buildComp,
+        ref int orderId)
     {
+        Setup(hostStatechart, buildComp, ref orderId, 0);
+    }
 
+    public virtual void Setup(
+        StatechartInt<TDuct, TEvent> hostStatechart,
+        StatechartBuilder<TDuct, TEvent>.BuildComposition buildComp,
+        ref int orderId,
+        int substateIdx)
+    {
+        base.Setup(hostStatechart, buildComp, ref orderId);
+
+        // Get parent state
+        var pComp = buildComp._PComp;
+        if (pComp is not null)
+        {
+            if (pComp._CompInt is StateInt parentState)
+            {
+                ParentState = parentState;
+            }
+        }
+
+        SubstateIdx = substateIdx;
     }
 
     public void StateEnter(TDuct duct)
     {
         ParentState?.HandleSubstateEnter(this);
-        Enter.Invoke(duct);
+        foreach (var action in Enters)
+        {
+            action(duct);
+        }
     }
 
     public void StateExit(TDuct duct)
     {
-        Exit.Invoke(duct);
+        foreach (var action in Exits)
+        {
+            action(duct);
+        }
     }
 
     public bool IsAncestorStateOf(StateInt state)
@@ -61,7 +90,7 @@ public abstract class StateInt<TDuct, TEvent> : Composition<TDuct, TEvent>
             && id <= UpperState.OrderId;
     }
 
-    public virtual void SubmitActiveState(SortedSet<StateInt> activeStates) {}
+    public virtual void SubmitActiveState(Func<StateInt, bool> submit) {}
 
     public virtual bool IsConflictToEnterRegion(StateInt substateToPend, SortedSet<StateInt> enterRegionUnextended)
     {
@@ -81,11 +110,16 @@ public abstract class StateInt<TDuct, TEvent> : Composition<TDuct, TEvent>
 
     public virtual void SelectReactions(SortedSet<ReactionInt> enabledReactions, TEvent @event)
     {
-        if (Reactions.TryGetValue(@event, out var eventReactions))
+
+        for (int i = 0; i < KReactions.Length; ++i)
         {
-            foreach (ReactionInt a in eventReactions)
+            if (KReactions[i].Equals(@event))
             {
-                enabledReactions.Add(a);
+                foreach (var a in VReactions[i])
+                {
+                    enabledReactions.Add(a);
+                }
+                break;
             }
         }
     }
@@ -97,4 +131,8 @@ public abstract class StateInt<TDuct, TEvent> : Composition<TDuct, TEvent>
     public virtual int LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
 
     public virtual int LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
+
+    public abstract bool IsValidState();
+}
+
 }

@@ -5,18 +5,26 @@ using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 public partial class StatechartBuilder<TDuct, TEvent>
-    where TDuct : IStatechartDuct, new()
+    where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
 
-    public class Reaction : BuildComposition<Reaction>
+    public class Reaction : BuildComposition
     {
-        public Reaction() {}
+        public TEvent Event;
+        public Action<TDuct>[] Invokes;
+
+        public Reaction(
+            TEvent @event,
+            Action<TDuct>[] invokes=null)
+        {
+            Event = @event;
+            Invokes = invokes;
+        }
 
         public override Reaction Duplicate()
         {
-            // TODO: impl clone
-            throw new NotImplementedException();
+            return new Reaction(Event, Invokes);
         }
     }
 }

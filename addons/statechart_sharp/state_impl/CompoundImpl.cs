@@ -154,8 +154,6 @@ public class CompoundImpl : StateImpl
 				}
 			}
 		}
-
-		base._SetupPost();
 	}
 
 	public override bool _IsConflictToEnterRegion(

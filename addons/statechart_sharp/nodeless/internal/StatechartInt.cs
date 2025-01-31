@@ -6,14 +6,14 @@ using System.Linq;
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public partial class StatechartInt<TDuct, TEvent>
-    where TDuct : IStatechartDuct, new()
+    where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
     protected int MaxInternalEventCount = 8;
     protected int MaxAutoTransitionRound = 8;
     protected bool IsRunning;
     protected int EventCount;
-    public StateInt RootState;
+    public StateInt Root;
     protected SortedSet<StateInt> ActiveStates;
     protected Queue<TEvent> QueuedEvents;
     protected SortedSet<TransitionInt> EnabledTransitions;
@@ -40,20 +40,48 @@ public partial class StatechartInt<TDuct, TEvent>
         SnapshotConfig = new List<int>();
     }
 
-    public void Init()
+    public static StatechartInt<TDuct, TEvent> Commit(StatechartBuilder<TDuct, TEvent>.State rootState)
     {
-        if (RootState is null)
+        /*
+        Build statechart from build comps
+        */
+        var statechartInt = new StatechartInt<TDuct, TEvent>();
+        var isValid = statechartInt.Setup(rootState);
+
+        return isValid ? statechartInt : null;
+    }
+
+    public bool Setup(StatechartBuilder<TDuct, TEvent>.State rootState)
+    {
+        if (rootState is null)
         {
-            return;
+            return false;
         }
 
-        RootState.Setup();
-        RootState.SubmitActiveState(ActiveStates);
-        RootState.SetupPost();
-        foreach (var state in ActiveStates)
+        var rootStateInt = (StateInt)(rootState._GetInternalComposition());
+        if (rootStateInt is null)
         {
-            state.StateEnter(Duct);
+            return false;
         }
+        if (!rootStateInt.IsValidState())
+        {
+            return false;
+        }
+
+        Root = rootStateInt;
+
+        // TODO: Setup comps
+        int orderId = -1;
+        Root.Setup(this, rootState, ref orderId);
+        Root.SubmitActiveState(ActiveStates.Add);
+        Root.SetupPost(rootState);
+
+        foreach (var s in ActiveStates)
+        {
+            s.StateEnter(Duct);
+        }
+
+        return true;
     }
 
     public void Step(TEvent @event)
@@ -103,7 +131,7 @@ public partial class StatechartInt<TDuct, TEvent>
         */
 
         // 1. Select transitions
-        RootState.SelectTransitions(EnabledTransitions, @event);
+        Root.SelectTransitions(EnabledTransitions, @event);
 
         // 2. Do transitions
         DoTransitions();
@@ -111,7 +139,7 @@ public partial class StatechartInt<TDuct, TEvent>
         // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
-            RootState.SelectTransitions(EnabledTransitions, @event);
+            Root.SelectTransitions(EnabledTransitions, @event);
 
             // Stop if active states are stable
             if (EnabledTransitions.Count == 0)
@@ -215,12 +243,4 @@ public partial class StatechartInt<TDuct, TEvent>
         ExitSet.Clear();
         EnterSet.Clear();
     }
-
-    public static StateInt GetStateInt(StatechartBuilder<TDuct, TEvent>.State state) => state.Mode switch
-    {
-        StateModeEnum.Compound => new CompoundInt(),
-        // StateModeEnum.Parallel => new ParallelInt(),
-        // StateModeEnum.History => new HistoryInt(),
-        _ => null
-    };
 }

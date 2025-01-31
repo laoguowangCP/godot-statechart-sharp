@@ -4,15 +4,13 @@ using System.Collections.Generic;
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 public partial class StatechartInt<TDuct, TEvent>
-    where TDuct : IStatechartDuct, new()
+    where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
     public class TransitionInt : Composition
     {
-        protected delegate void GuardEvent(TDuct duct);
-        protected event GuardEvent Guard;
-        protected delegate void InvokeEvent(TDuct duct);
-        protected event InvokeEvent Invoke;
+        protected Action<TDuct>[] Guards;
+        protected Action<TDuct>[] Invokes;
 
         public TEvent Event;
         protected List<StateInt> TargetStates;
@@ -22,10 +20,14 @@ public partial class StatechartInt<TDuct, TEvent>
         protected SortedSet<StateInt> EnterRegionEdge;
         protected SortedSet<StateInt> DeducedEnterStates;
         public bool IsTargetless;
+        public bool IsAuto;
 
         public void TransitionInvoke(TDuct duct)
         {
-            Invoke.Invoke(duct);
+            for (int i = 0; i < Invokes.Length; ++i)
+            {
+                Invokes[i](duct);
+            }
         }
 
         public SortedSet<StateInt> GetDeducedEnterStates()

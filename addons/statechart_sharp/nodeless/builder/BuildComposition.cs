@@ -5,43 +5,35 @@ using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 public partial class StatechartBuilder<TDuct, TEvent>
-    where TDuct : IStatechartDuct, new()
+    where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public interface IBuildComposition : IDisposable
+    public abstract class BuildComposition
     {
-        public void Add(IBuildComposition child);
-        public void AddFirst(IBuildComposition child);
-        public void Detach();
-        public void SubmitBuildAction(Action<Action> submit);
-    }
-
-    public abstract class BuildComposition<TSelf> : IBuildComposition
-        where TSelf : BuildComposition<TSelf>
-    {
-        public StatechartInt<TDuct, TEvent> _Statechart;
         // Child nodes
-        public LinkedList<IBuildComposition> _Comps { get; protected set; } = new();
+        public LinkedList<BuildComposition> _Comps { get; protected set; } = new();
         // LLN of this comp in parent comps. If reparent, use it to delist from former parent.
-        protected LinkedListNode<IBuildComposition> CompIdx;
+        protected LinkedListNode<BuildComposition> CompIdx;
         // Parent comp
-        public IBuildComposition PComp;
+        public BuildComposition _PComp;
+        // Internal composition: handle initial state, transition targets
+        public StatechartInt<TDuct, TEvent>.Composition _CompInt;
 
         public BuildComposition() {}
 
-        public TSelf Add<TChild>(TChild child)
-            where TChild : BuildComposition<TChild>
+        public BuildComposition Add<TChild>(TChild child)
+            where TChild : BuildComposition
         {
             // Add default add last
             CompIdx = _Comps.AddLast(child);
-            return (TSelf)this;
+            return this;
         }
 
-        public TSelf AddFirst<TChild>(TChild child)
-            where TChild : BuildComposition<TChild>
+        public BuildComposition AddFirst<TChild>(TChild child)
+            where TChild : BuildComposition
         {
             CompIdx = _Comps.AddFirst(child);
-            return (TSelf)this;
+            return this;
         }
 
         public void Detach()
@@ -57,11 +49,11 @@ public partial class StatechartBuilder<TDuct, TEvent>
         }
 
         // TODO: use BuildActionDetachInvalid in SubmitBuildAction
-        public virtual void SubmitBuildAction(Action<Action> submit)
+        public virtual void _SubmitBuildAction(Action<Action> submit)
         {
             foreach (var comp in _Comps)
             {
-                comp.SubmitBuildAction(submit);
+                comp._SubmitBuildAction(submit);
             }
         }
 
@@ -74,18 +66,8 @@ public partial class StatechartBuilder<TDuct, TEvent>
             Detach();
         }
 
-        public void Dispose() {}
+        public abstract BuildComposition Duplicate();
 
-        public abstract TSelf Duplicate();
-
-        public void Add(IBuildComposition child)
-        {
-            CompIdx = _Comps.AddLast(child);
-        }
-
-        public void AddFirst(IBuildComposition child)
-        {
-            CompIdx = _Comps.AddFirst(child);
-        }
+        public abstract StatechartInt<TDuct, TEvent>.Composition _GetInternalComposition();
     }
 }
