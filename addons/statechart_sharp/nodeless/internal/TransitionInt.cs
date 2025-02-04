@@ -7,38 +7,63 @@ public partial class StatechartInt<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public class TransitionInt : Composition
+
+public class TransitionInt : Composition
+{
+    protected Action<TDuct>[] Guards;
+    protected Action<TDuct>[] Invokes;
+
+    public TEvent Event;
+    protected List<StateInt> TargetStates;
+    public StateInt SourceState;
+    public StateInt LcaState;
+    public SortedSet<StateInt> EnterRegion;
+    protected SortedSet<StateInt> EnterRegionEdge;
+    protected SortedSet<StateInt> DeducedEnterStates;
+    public bool IsTargetless;
+    public bool IsAuto;
+    protected bool IsValid;
+
+    public void TransitionInvoke(TDuct duct)
     {
-        protected Action<TDuct>[] Guards;
-        protected Action<TDuct>[] Invokes;
-
-        public TEvent Event;
-        protected List<StateInt> TargetStates;
-        public StateInt SourceState;
-        public StateInt LcaState;
-        public SortedSet<StateInt> EnterRegion;
-        protected SortedSet<StateInt> EnterRegionEdge;
-        protected SortedSet<StateInt> DeducedEnterStates;
-        public bool IsTargetless;
-        public bool IsAuto;
-
-        public void TransitionInvoke(TDuct duct)
+        for (int i = 0; i < Invokes.Length; ++i)
         {
-            for (int i = 0; i < Invokes.Length; ++i)
-            {
-                Invokes[i](duct);
-            }
-        }
-
-        public SortedSet<StateInt> GetDeducedEnterStates()
-        {
-            DeducedEnterStates.Clear();
-            foreach (var edgeState in EnterRegionEdge)
-            {
-                edgeState.DeduceDescendants(DeducedEnterStates, false, true);
-            }
-            return DeducedEnterStates;
+            Invokes[i](duct);
         }
     }
+
+    public SortedSet<StateInt> GetDeducedEnterStates()
+    {
+        DeducedEnterStates.Clear();
+        foreach (var edgeState in EnterRegionEdge)
+        {
+            edgeState.DeduceDescendants(DeducedEnterStates.Add);
+        }
+        return DeducedEnterStates;
+    }
+
+    public bool Check(TDuct duct)
+    {
+        if (!IsValid)
+        {
+            return false;
+        }
+
+        duct.IsTransitionEnabled = true;
+        for (int i = 0; i < Guards.Length; ++i)
+        {
+            Guards[i](duct);
+        }
+        return duct.IsTransitionEnabled;
+    }
+
+    protected virtual void CustomTransitionInvoke(TDuct duct)
+    {
+        for (int i = 0; i < Invokes.Length; ++i)
+        {
+            Invokes[i](duct);
+        }
+    }
+}
 
 }

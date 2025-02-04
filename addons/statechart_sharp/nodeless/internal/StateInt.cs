@@ -97,14 +97,16 @@ public abstract class StateInt : Composition
         return false;
     }
 
-    public virtual int SelectTransitions(SortedSet<TransitionInt> enabledTransitions, TEvent @event)
+    public virtual int SelectTransitions(Func<TransitionInt, bool> submitEnabledTransition, TEvent @event, TDuct duct)
     {
         return 1;
     }
 
     public virtual void ExtendEnterRegion(SortedSet<StateInt> enterRegion, SortedSet<StateInt> enterRegionEdge, SortedSet<StateInt> extraEnterRegion, bool needCheckContain) {}
 
-    public virtual void DeduceDescendants(SortedSet<StateInt> deducedSet, bool isHistory, bool isEdgeState) {}
+    public virtual void DeduceDescendants(Func<StateInt, bool> submitDeducedSet) {}
+
+    public virtual void DeduceDescendantsRecur(Func<StateInt, bool> submitDeducedSet, DeduceDescendantsModeEnum deduceMode) {}
 
     public virtual void HandleSubstateEnter(StateInt substate) {}
 
@@ -124,9 +126,9 @@ public abstract class StateInt : Composition
         }
     }
 
-    public virtual void SaveAllStateConfig(List<int> snapshot) {}
+    public virtual void SaveAllStateConfig(Action<int> SubmitSnapshot) {}
 
-    public virtual void SaveActiveStateConfig(List<int> snapshot) {}
+    public virtual void SaveActiveStateConfig(Action<int> SubmitSnapshot) {}
 
     public virtual int LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
 

@@ -41,9 +41,29 @@ public class ArrayHelper
         List<List<TVal>> vals,
         out TKey[] keysArray,
         out TVal[][] valsArray)
+        where TKey : IEquatable<TKey>
     {
         keysArray = keys.ToArray();
         valsArray = vals.Select(ls => ls.ToArray()).ToArray();
+    }
+
+    public static int ArrayDictTryGet<TKey, TVal>(
+        TKey key,
+        TKey[] keys,
+        TVal[] vals,
+        ref TVal val)
+        where TKey : IEquatable<TKey>
+    {
+        for (int i = 0; i < keys.Length; ++i)
+        {
+            if (key.Equals(keys[i]))
+            {
+                val = vals[i];
+                return i;
+            }
+        }
+
+        return -1;
     }
 
 }

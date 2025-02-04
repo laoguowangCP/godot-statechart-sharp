@@ -13,7 +13,7 @@ public partial class StatechartInt<TDuct, TEvent>
     protected int MaxAutoTransitionRound = 8;
     protected bool IsRunning;
     protected int EventCount;
-    public StateInt Root;
+    public StateInt RootState;
     protected SortedSet<StateInt> ActiveStates;
     protected Queue<TEvent> QueuedEvents;
     protected SortedSet<TransitionInt> EnabledTransitions;
@@ -68,13 +68,13 @@ public partial class StatechartInt<TDuct, TEvent>
             return false;
         }
 
-        Root = rootStateInt;
+        RootState = rootStateInt;
 
         // TODO: Setup comps
         int orderId = -1;
-        Root.Setup(this, rootState, ref orderId);
-        Root.SubmitActiveState(ActiveStates.Add);
-        Root.SetupPost(rootState);
+        RootState.Setup(this, rootState, ref orderId);
+        RootState.SubmitActiveState(ActiveStates.Add);
+        RootState.SetupPost(rootState);
 
         foreach (var s in ActiveStates)
         {
@@ -131,7 +131,7 @@ public partial class StatechartInt<TDuct, TEvent>
         */
 
         // 1. Select transitions
-        Root.SelectTransitions(EnabledTransitions, @event);
+        RootState.SelectTransitions(EnabledTransitions.Add, @event, Duct);
 
         // 2. Do transitions
         DoTransitions();
@@ -139,7 +139,7 @@ public partial class StatechartInt<TDuct, TEvent>
         // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
-            Root.SelectTransitions(EnabledTransitions, @event);
+            RootState.SelectTransitions(EnabledTransitions.Add, @event, Duct);
 
             // Stop if active states are stable
             if (EnabledTransitions.Count == 0)
@@ -242,5 +242,30 @@ public partial class StatechartInt<TDuct, TEvent>
         EnabledFilteredTransitions.Clear();
         ExitSet.Clear();
         EnterSet.Clear();
+    }
+
+    public StatechartSnapshot Save(bool isAllStateConfig = false)
+    {
+        if (IsRunning)
+        {
+            return null;
+        }
+
+        StatechartSnapshot snapshot = new()
+        {
+            IsAllStateConfig = isAllStateConfig
+        };
+
+        if (isAllStateConfig)
+        {
+            RootState.SaveAllStateConfig(SnapshotConfig.Add);
+        }
+        else
+        {
+            RootState.SaveActiveStateConfig(SnapshotConfig.Add);
+        }
+        snapshot.Config = SnapshotConfig.ToArray();
+        SnapshotConfig.Clear();
+        return snapshot;
     }
 }

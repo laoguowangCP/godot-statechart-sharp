@@ -426,7 +426,7 @@ public class CompoundImpl : StateImpl
 			return configIdx;
 		}
 
-		if (configIdx > config.Length)
+		if (configIdx >= config.Length)
 		{
 			return -1;
 		}
