@@ -14,7 +14,7 @@ public class CompoundInt : StateInt
 {
     public StateInt InitialState;
     public StateInt CurrentState;
-    
+
     public CompoundInt(StatechartBuilder<TDuct, TEvent>.Compound state)
     {
         state._CompInt = this;
@@ -39,7 +39,7 @@ public class CompoundInt : StateInt
             if (childComp is StatechartBuilder<TDuct, TEvent>.State sComp)
             {
                 var s = (StateInt)sComp._GetInternalComposition();
-                s.Setup(hostStatechart, sComp, ref orderId, substates.Count);
+                s.Setup(hostStatechart, childComp, ref orderId, substates.Count);
                 substates.Add(s);
 
                 if (LowerState is null)
@@ -56,12 +56,12 @@ public class CompoundInt : StateInt
                     continue;
                 }
                 var t = (TransitionInt)tComp._GetInternalComposition();
-                t.Setup(hostStatechart, tComp, ref orderId);
+                t.Setup(hostStatechart, childComp, ref orderId);
             }
             else if (childComp is StatechartBuilder<TDuct, TEvent>.Reaction aComp)
             {
                 var a = (ReactionInt)aComp._GetInternalComposition();
-                a.Setup(hostStatechart, aComp, ref orderId);
+                a.Setup(hostStatechart, childComp, ref orderId);
             }
         }
 
@@ -114,7 +114,7 @@ public class CompoundInt : StateInt
         {
             if (childComp is StatechartBuilder<TDuct, TEvent>.State sComp)
             {
-                sComp._CompInt.SetupPost(sComp);
+                sComp._CompInt.SetupPost(childComp);
             }
             else if (childComp is StatechartBuilder<TDuct, TEvent>.Transition tComp)
             {
@@ -124,7 +124,7 @@ public class CompoundInt : StateInt
                 }
 
                 var t = (TransitionInt)tComp._CompInt;
-                t.SetupPost(tComp);
+                t.SetupPost(childComp);
 
                 // Add transition
                 if (t.IsAuto)
@@ -137,7 +137,7 @@ public class CompoundInt : StateInt
             else if (childComp is StatechartBuilder<TDuct, TEvent>.Reaction aComp)
             {
                 var a = (ReactionInt)aComp._CompInt;
-                a.SetupPost(aComp);
+                a.SetupPost(childComp);
 
                 // Add reaction
                 ArrayHelper.KVListInsert(a.Event, a, kReactions, vReactions);
@@ -145,6 +145,7 @@ public class CompoundInt : StateInt
         }
 
         // Convert to array
+        AutoTransitions = autoTransitions.ToArray();
         ArrayHelper.KVListToArray(kTransitions, vTransitions, out KTransitions, out VTransitions);
         ArrayHelper.KVListToArray(kReactions, vReactions, out KReactions, out VReactions);
     }

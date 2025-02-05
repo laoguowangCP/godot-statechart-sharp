@@ -39,7 +39,7 @@ public class ParallelImpl : StateImpl
 
 				if (s._IsValidState())
 				{
-					ValidSubstateCnt += 1;
+					++ValidSubstateCnt;
 				}
 			}
 			else if (child is Transition t)
@@ -58,9 +58,9 @@ public class ParallelImpl : StateImpl
 			}
 		}
 
-		if (lastSubstate != null)
+		if (lastSubstate is not null)
 		{
-			if (lastSubstate._UpperState != null)
+			if (lastSubstate._UpperState is not null)
 			{
 				// Last substate's upper is upper-state
 				UpperState = lastSubstate._UpperState;
@@ -76,7 +76,6 @@ public class ParallelImpl : StateImpl
 
 	public override void _SetupPost()
 	{
-
 		foreach (Node child in HostState.GetChildren())
 		{
 			if (child.IsQueuedForDeletion())
@@ -128,8 +127,6 @@ public class ParallelImpl : StateImpl
 				}
 			}
 		}
-
-		base._SetupPost();
 	}
 
 	public override bool _SubmitPromoteStates(List<State> states)

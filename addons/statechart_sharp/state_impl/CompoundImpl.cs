@@ -53,9 +53,9 @@ public class CompoundImpl : StateImpl
 			}
 		}
 
-		if (lastSubstate != null)
+		if (lastSubstate is not null)
 		{
-			if (lastSubstate._UpperState != null)
+			if (lastSubstate._UpperState is not null)
 			{
 				// Last substate's upper is upper-state
 				UpperState = lastSubstate._UpperState;
@@ -70,7 +70,7 @@ public class CompoundImpl : StateImpl
 
 		// Set initial state
 		InitialState = HostState.InitialState;
-		if (InitialState != null)
+		if (InitialState is not null)
 		{
 			// Check selected initial-state is non-history substate
 			if (InitialState._ParentState != HostState || !InitialState._IsValidState())
@@ -85,7 +85,7 @@ public class CompoundImpl : StateImpl
 		}
 
 		// No assigned initial state, use first non-history substate
-		if (InitialState == null)
+		if (InitialState is null)
 		{
 			foreach (State substate in Substates)
 			{
