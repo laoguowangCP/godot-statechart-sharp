@@ -34,5 +34,10 @@ public partial class StatechartBuilder<TDuct, TEvent>
         {
             return new Transition(Event, Targets, IsAuto, Guards, Invokes);
         }
+
+        public override StatechartInt<TDuct, TEvent>.Composition _GetInternalComposition()
+        {
+            return new StatechartInt<TDuct, TEvent>.TransitionInt(this);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LGWCP.Util;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless.Internal;
@@ -131,6 +132,294 @@ public class ParallelInt : StateInt
         AutoTransitions = autoTransitions.ToArray();
         ArrayHelper.KVListToArray(kTransitions, vTransitions, out KTransitions, out VTransitions);
         ArrayHelper.KVListToArray(kReactions, vReactions, out KReactions, out VReactions);
+    }
+
+    public override void SubmitActiveState(Func<StateInt, bool> submit)
+    {
+        _ = submit(this);
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            Substates[i].SubmitActiveState(submit);
+        }
+    }
+
+    public override bool IsConflictToEnterRegion(
+        StateInt substateToPend,
+        SortedSet<StateInt> enterRegionUnextended)
+    {
+        /*
+        Deals history cases:
+            1. Pending substate is history, conflicts if any descendant in region.
+            2. Any history substate in enter region, conflicts.
+        */
+        // At this point history is not excluded from enter region
+
+        // Pending substate is history
+        if (!substateToPend.IsValidState())
+        {
+            return enterRegionUnextended.Any<StateInt>(
+                state => IsAncestorStateOf(state));
+        }
+
+        // Any history substate in region, conflicts.
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            var substate = Substates[i];
+            if (!substate.IsValidState()
+                && enterRegionUnextended.Contains(substate))
+            {
+                return true;
+            }
+        }
+
+        // No conflicts.
+        return false;
+    }
+
+    public override void ExtendEnterRegion(
+        SortedSet<StateInt> enterRegion,
+        SortedSet<StateInt> enterRegionEdge,
+        SortedSet<StateInt> extraEnterRegion,
+        bool needCheckContain)
+    {
+        /*
+        if need check (state in region, checked by parent):
+            if any history substate in region:
+                extend this history
+                return
+            else (no history substate in region)
+                foreach substate:
+                    if substate in region:
+                        extend, still need check
+                    else (substate not in region)
+                        extend, need no check
+        else (state not in region)
+            add state to extra-region
+            foreach substate:
+                extend, need no check
+        */
+
+        // Need no check, add to extra
+        if (!needCheckContain)
+        {
+            extraEnterRegion.Add(this);
+        }
+
+        // Need check
+        if (needCheckContain)
+        {
+            for (int i = 0; i < Substates.Length; ++i)
+            {
+                var substate = Substates[i];
+                if (!substate.IsValidState()
+                    && enterRegion.Contains(substate))
+                {
+                    substate.ExtendEnterRegion(
+                        enterRegion, enterRegionEdge, extraEnterRegion, true);
+                    return;
+                }
+            }
+        }
+
+        // No history substate in region
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            var substate = Substates[i];
+            if (!substate.IsValidState())
+            {
+                continue;
+            }
+
+            // Need check && substate in region => still need check
+            bool stillNeedCheck =
+                needCheckContain && enterRegion.Contains(substate);
+            substate.ExtendEnterRegion(
+                enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
+        }
+    }
+
+    public override int SelectTransitions(
+        Func<TransitionInt, bool> submitEnabledTransition, TEvent @event, TDuct duct)
+    {
+        int handleInfo = -1;
+        if (ValidSubstateCnt > 0)
+        {
+            int negCnt = 0;
+            int posCnt = 0;
+            for (int i = 0; i < Substates.Length; ++i)
+            {
+                var substate = Substates[i];
+                if (!substate.IsValidState())
+                {
+                    continue;
+                }
+
+                int substateHandleInfo = substate.SelectTransitions(submitEnabledTransition, @event, duct);
+                if (substateHandleInfo < 0)
+                {
+                    negCnt += 1;
+                }
+                else if (substateHandleInfo > 0)
+                {
+                    posCnt += 1;
+                }
+            }
+
+            if (negCnt == ValidSubstateCnt) // No selected
+            {
+                handleInfo = -1;
+            }
+            else if (posCnt == ValidSubstateCnt) // All done
+            {
+                handleInfo = 1;
+            }
+            else // Selected but not all done
+            {
+                handleInfo = 0;
+            }
+        }
+
+        /*
+        Check source's transitions:
+            a) < 0, check any
+            b) == 0, check targetless
+            c) > 0, check none
+        */
+        if (handleInfo > 0)
+        {
+            return handleInfo;
+        }
+
+        if (@event is null)
+        {
+            for (int i = 0; i < AutoTransitions.Length; ++i)
+            {
+                var t = AutoTransitions[i];
+                // If == 0, only check targetless
+                if (handleInfo == 0)
+                {
+                    if (!t.IsTargetless)
+                    {
+                        continue;
+                    }
+                }
+
+                if (t.Check(duct))
+                {
+                    submitEnabledTransition(t);
+                    handleInfo = 1;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            TransitionInt[] eventTransitions = null;
+            if (ArrayHelper.ArrayDictTryGet(
+                @event, KTransitions, VTransitions, ref eventTransitions) >= 0)
+            {
+                for (int i = 0; i < eventTransitions.Length; ++i)
+                {
+                    var t = eventTransitions[i];
+                    // If == 0, only check targetless
+                    if (handleInfo == 0)
+                    {
+                        if (!t.IsTargetless)
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (t.Check(duct))
+                    {
+                        submitEnabledTransition(t);
+                        handleInfo = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return handleInfo;
+    }
+
+    public override void DeduceDescendantsRecur(
+        Func<StateInt, bool> submitDeducedSet, DeduceDescendantsModeEnum deduceMode)
+    {
+        DeduceDescendantsModeEnum substateDeduceMode;
+
+        switch (deduceMode)
+        {
+            case DeduceDescendantsModeEnum.Initial:
+                substateDeduceMode = DeduceDescendantsModeEnum.Initial;
+                break;
+            case DeduceDescendantsModeEnum.History:
+                substateDeduceMode = DeduceDescendantsModeEnum.Initial;
+                break;
+            case DeduceDescendantsModeEnum.DeepHistory:
+                substateDeduceMode = DeduceDescendantsModeEnum.DeepHistory;
+                break;
+            default:
+                substateDeduceMode = DeduceDescendantsModeEnum.Initial;
+                break;
+        }
+
+        
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            var substate = Substates[i];
+            // Ignore history states
+            if (!substate.IsValidState())
+            {
+                continue;
+            }
+            submitDeducedSet(substate);
+            substate.DeduceDescendantsRecur(submitDeducedSet, substateDeduceMode);
+        }
+    }
+
+    public override void SaveAllStateConfig(Action<int> submitSnapshot)
+    {
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            Substates[i].SaveAllStateConfig(submitSnapshot);
+        }
+    }
+
+    public override void SaveActiveStateConfig(Action<int> submitSnapshot)
+    {
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            Substates[i].SaveActiveStateConfig(submitSnapshot);
+        }
+    }
+
+    public override int LoadAllStateConfig(int[] config, int configIdx)
+    {
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            configIdx = Substates[i].LoadAllStateConfig(config, configIdx);
+            if (configIdx == -1)
+            {
+                return -1;
+            }
+        }
+
+        return configIdx;
+    }
+
+    public override int LoadActiveStateConfig(int[] config, int configIdx)
+    {
+        for (int i = 0; i < Substates.Length; ++i)
+        {
+            configIdx = Substates[i].LoadAllStateConfig(config, configIdx);
+            if (configIdx == -1)
+            {
+                return -1;
+            }
+        }
+
+        return configIdx;
     }
 
     public override bool IsValidState()

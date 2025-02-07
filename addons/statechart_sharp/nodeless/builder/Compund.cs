@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using LGWCP.Godot.StatechartSharp.Nodeless.Internal;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;

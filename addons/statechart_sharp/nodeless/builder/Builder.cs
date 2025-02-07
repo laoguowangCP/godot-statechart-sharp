@@ -49,4 +49,46 @@ public partial class StatechartBuilder<TDuct, TEvent>
     {
         BuildActions.Add(buildAction);
     }
+
+    public Compound GetCompound(
+        Action<TDuct>[] enters,
+        Action<TDuct>[] exits,
+        State initial = null)
+    {
+        return new Compound(enters, exits, initial);
+    }
+
+    public Parallel GetParallel(
+        Action<TDuct>[] enters,
+        Action<TDuct>[] exits)
+    {
+        return new Parallel(enters, exits);
+    }
+
+    public History GetHistory()
+    {
+        return new History();
+    }
+
+    public DeepHistory GetDeepHistory()
+    {
+        return new DeepHistory();
+    }
+
+    public Transition GetTransition(
+        TEvent @event,
+        State[] targets=null,
+        Action<TDuct>[] guards=null,
+        Action<TDuct>[] invokes=null)
+    {
+        return new Transition(@event, targets, false, guards, invokes);
+    }
+
+    public Transition GetAutoTransition(
+        State[] targets=null,
+        Action<TDuct>[] guards=null,
+        Action<TDuct>[] invokes=null)
+    {
+        return new Transition(default, targets, true, guards, invokes);
+    }
 }

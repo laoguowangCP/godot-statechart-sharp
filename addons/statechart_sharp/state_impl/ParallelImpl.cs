@@ -355,27 +355,6 @@ public class ParallelImpl : StateImpl
 	public override void _DeduceDescendantsRecur(
 		SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
 	{
-		/*
-		If is edge-state:
-			1. Called from history substate.
-			2. IsHistory arg represents IsDeepHistory
-
-		if (!isEdgeState)
-		{
-			deducedSet.Add(HostState);
-		}
-
-		foreach (State substate in Substates)
-		{
-			// Ignore history states
-			if (!substate._IsValidState())
-			{
-				continue;
-			}
-			substate._DeduceDescendants(deducedSet, isHistory, false);
-		}
-		*/
-
 		DeduceDescendantsModeEnum substateDeduceMode;
 
 		switch (deduceMode)

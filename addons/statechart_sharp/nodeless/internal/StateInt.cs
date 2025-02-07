@@ -126,9 +126,9 @@ public abstract class StateInt : Composition
         }
     }
 
-    public virtual void SaveAllStateConfig(Action<int> SubmitSnapshot) {}
+    public virtual void SaveAllStateConfig(Action<int> submitSnapshot) {}
 
-    public virtual void SaveActiveStateConfig(Action<int> SubmitSnapshot) {}
+    public virtual void SaveActiveStateConfig(Action<int> submitSnapshot) {}
 
     public virtual int LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
 

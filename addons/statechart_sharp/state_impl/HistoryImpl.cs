@@ -15,9 +15,9 @@ public class HistoryImpl : StateImpl
         return false;
     }
 
-    public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    public override void _Setup(Statechart hostStatechart, ref int parentOrderId, int substateIdx)
     {
-        base._Setup(hostStateChart, ref parentOrderId, substateIdx);
+        base._Setup(hostStatechart, ref parentOrderId, substateIdx);
     }
 
     public override bool _SubmitPromoteStates(List<State> states)
@@ -44,7 +44,6 @@ public class HistoryImpl : StateImpl
             1. Parent can be compound or parallel
             2. Let parent handles sibling(s) of this history state
             3. Should not be called recursively by other states
-            4. Parse IsDeepHistory in IsHistory arg
         */
         ParentState._DeduceDescendantsRecur(deducedSet, DeduceDescendantsModeEnum.History);
     }

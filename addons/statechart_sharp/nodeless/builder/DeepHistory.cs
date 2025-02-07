@@ -17,5 +17,10 @@ public partial class StatechartBuilder<TDuct, TEvent>
         {
             return new DeepHistory();
         }
+
+        public override StatechartInt<TDuct, TEvent>.Composition _GetInternalComposition()
+        {
+            return new StatechartInt<TDuct, TEvent>.DeepHistoryInt(this);
+        }
     }
 }

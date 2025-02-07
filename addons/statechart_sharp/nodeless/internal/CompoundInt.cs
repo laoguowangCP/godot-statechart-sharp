@@ -213,11 +213,9 @@ public class CompoundInt : StateInt
     }
 
     public override int SelectTransitions(
-        // SortedSet<TransitionInt> enabledTransitions, TEvent @event, TDuct duct)
         Func<TransitionInt, bool> submitEnabledTransition, TEvent @event, TDuct duct)
     {
         int handleInfo = -1;
-        // if (HostState._CurrentState != null)
         if (CurrentState != null)
         {
             handleInfo = CurrentState.SelectTransitions(submitEnabledTransition, @event, duct);
@@ -327,28 +325,28 @@ public class CompoundInt : StateInt
         CurrentState = substate;
     }
 
-    public override void SaveAllStateConfig(Action<int> SubmitSnapshot)
+    public override void SaveAllStateConfig(Action<int> submitSnapshot)
     {
         if (CurrentState is null)
         {
             return;
         }
-        SubmitSnapshot(CurrentState.SubstateIdx);
+        submitSnapshot(CurrentState.SubstateIdx);
         
         for (int i = 0; i < Substates.Length; ++i)
         {
-            Substates[i].SaveAllStateConfig(SubmitSnapshot);
+            Substates[i].SaveAllStateConfig(submitSnapshot);
         }
     }
 
-    public override void SaveActiveStateConfig(Action<int> SubmitSnapshot)
+    public override void SaveActiveStateConfig(Action<int> submitSnapshot)
     {
         if (CurrentState is null)
         {
             return;
         }
-        SubmitSnapshot(CurrentState.SubstateIdx);
-        CurrentState.SaveActiveStateConfig(SubmitSnapshot);
+        submitSnapshot(CurrentState.SubstateIdx);
+        CurrentState.SaveActiveStateConfig(submitSnapshot);
     }
 
     public override int LoadAllStateConfig(int[] config, int configIdx)
