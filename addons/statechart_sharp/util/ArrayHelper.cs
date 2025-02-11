@@ -47,6 +47,29 @@ public class ArrayHelper
         valsArray = vals.Select(ls => ls.ToArray()).ToArray();
     }
 
+    /// <summary>
+    /// Initialization of certain small frozen dictionary, where value is array of TVal
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TVal"></typeparam>
+    /// <param name="valCntPerKey"></param>
+    /// <param name="keys"></param>
+    /// <param name="vals"></param>
+    public static void KVArrayDictAlloc<TKey, TVal>(
+        Span<int> valCntPerKey,
+        out TKey[] keys,
+        out TVal[][] vals
+    )
+    {
+        int keyCnt = valCntPerKey.Length;
+        keys = new TKey[keyCnt];
+        vals = new TVal[keyCnt][];
+        for (int i = 0; i < keyCnt; ++i)
+        {
+            vals[i] = new TVal[valCntPerKey[i]];
+        }
+    }
+
     public static int ArrayDictTryGet<TKey, TVal>(
         TKey key,
         TKey[] keys,
