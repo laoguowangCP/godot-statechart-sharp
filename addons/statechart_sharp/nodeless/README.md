@@ -6,45 +6,16 @@
 
 ## TODO
 
-- No nested class, use internal spacename
+Rework:
 
-## Scratch
+- No safe wrapper classes (no State, StateInt, keep it simple)
+- Static memory alloc:
 
-```csharp
-// Get statechart and builder
-var (sc, sb) = Statechart<BaseStatechartDuct, string>.GetStatechartAndBuilder();
+    - Parse composition with array
+    - Assign array length when construct compositions (including KVDict size)
+    - For KVDicts, use span in setup stage (store iterate counters for each array)
 
-// Use build comp to config
-{
-    // Get some comps
-    using var rootState = sb.GetState();
-    using var s1 = sb.GetState();
-    using var s2 = sb.GetState();
-    using var t1 = sb.GetTransition();
-    using var t2 = sb.GetTransition();
-    using var a1 = sb.GetReaction();
-    using var a2 = sb.GetReaction();
-
-    // Builder duplicate comp
-    using var a3 = sb.Duplicate(a1);
-
-    // Config like node tree
-    rootstate
-        .Add(s1
-            .Add(t1)
-            .Add(a1))
-        .Add(s2
-            .Add(a2)
-            .Add(t2))
-    
-    sb.Commit(sc, rootState);
-}
-```
-
-Statechart commit procedure:
-
-- Process build: transition promoter will change build comps. Comps submit build action in depth-first order
-- Convert build comps to real comps
+- Don't parse func internally, slightly more costy than method call
 
 ## Annotation
 
