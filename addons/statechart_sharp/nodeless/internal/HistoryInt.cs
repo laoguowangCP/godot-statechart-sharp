@@ -40,7 +40,7 @@ public class HistoryInt : StateInt
         enterRegionEdge.Add(this);
     }
 
-    public override void DeduceDescendants(Func<StateInt, bool> submitDeducedSet)
+    public override void DeduceDescendants(SortedSet<StateInt> deducedSet)
     {
         /*
         History state(s) in region edge start the deduction:
@@ -48,7 +48,7 @@ public class HistoryInt : StateInt
             2. Let parent handles sibling(s) of this history state
             3. Should not be called recursively by other states
         */
-        ParentState.DeduceDescendantsRecur(submitDeducedSet, DeduceDescendantsModeEnum.History);
+        ParentState.DeduceDescendantsRecur(deducedSet, DeduceDescendantsModeEnum.History);
     }
 
     /*

@@ -40,7 +40,7 @@ public class TransitionInt : Composition
         IsValid = true;
     }
 
-    
+
     public override void Setup(
         StatechartInt<TDuct, TEvent> hostStatechart,
         StatechartBuilder<TDuct, TEvent>.BuildComposition buildComp,
@@ -108,22 +108,22 @@ public class TransitionInt : Composition
                 2. If target is already in enter region, conflicts
                 */
                 tgtToRoot.Clear();
-                bool isConflict = _EnterRegion.Contains(target);
+                bool isConflict = EnterRegion.Contains(target);
 
                 iterState = target;
                 bool isReachEnterRegion = false;
                 while (!isConflict && iterState != null)
                 {
                     // Check target conflicts
-                    State iterParent = iterState._ParentState;
+                    var iterParent = iterState.ParentState;
 
                     if (!isReachEnterRegion && iterParent != null)
                     {
-                        isReachEnterRegion = _EnterRegion.Contains(iterParent);
+                        isReachEnterRegion = EnterRegion.Contains(iterParent);
                         if (isReachEnterRegion)
                         {
-                            isConflict = iterParent._IsConflictToEnterRegion(
-                                iterState, _EnterRegion);
+                            isConflict = iterParent.IsConflictToEnterRegion(
+                                iterState, EnterRegion);
                         }
                     }
 
@@ -134,10 +134,6 @@ public class TransitionInt : Composition
                 // Target conflicts, disposed from enter region.
                 if (isConflict)
                 {
-    #if DEBUG
-                    GD.PushWarning(
-                        GetPath(), ": target ", target.GetPath(), " conflicts with previous target(s).");
-    #endif
                     continue;
                 }
 
@@ -145,11 +141,11 @@ public class TransitionInt : Composition
                 int maxReversedIdx = 1; // Reversed
                 int maxCountToRoot = srcToRoot.Count < tgtToRoot.Count
                     ? srcToRoot.Count : tgtToRoot.Count;
-                for (int i = 1; i < maxCountToRoot; ++i)
+                for (int j = 1; j < maxCountToRoot; ++j)
                 {
-                    if (srcToRoot[^i] == tgtToRoot[^i])
+                    if (srcToRoot[^j] == tgtToRoot[^j])
                     {
-                        maxReversedIdx = i;
+                        maxReversedIdx = j;
                     }
                     else
                     {
@@ -169,36 +165,30 @@ public class TransitionInt : Composition
                 1. Later target(s) need check conflict in local-LCA's ancestor
                 2. When extending, states need check if their substate in enter region
                 */
-                for (int i = 1; i <= tgtToRoot.Count; ++i)
+                for (int j = 1; j <= tgtToRoot.Count; ++j)
                 {
-                    _EnterRegion.Add(tgtToRoot[^i]);
+                    EnterRegion.Add(tgtToRoot[^j]);
                 }
             }
 
             // LCA
-            _LcaState = srcToRoot[^reversedLcaIdx];
+            LcaState = srcToRoot[^reversedLcaIdx];
 
             // Extend enter region under LCA
-            SortedSet<State> extraEnterRegion = new(new StatechartComparer<State>());
-            _LcaState._ExtendEnterRegion(_EnterRegion, EnterRegionEdge, extraEnterRegion, true);
-            _EnterRegion.UnionWith(extraEnterRegion);
+            var extraEnterRegion = new SortedSet<StateInt>(new StatechartComparer<StateInt>());
+            LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion, true);
+            EnterRegion.UnionWith(extraEnterRegion);
 
             // Remove states from root to LCA (include LCA)
             for (int i = 1; i <= reversedLcaIdx; ++i)
             {
-                _EnterRegion.Remove(srcToRoot[^i]);
+                EnterRegion.Remove(srcToRoot[^i]);
             }
 
             // Check auto-transition loop case
-            if (_IsAuto && _EnterRegion.Contains(_SourceState))
+            if (IsAuto && EnterRegion.Contains(SourceState))
             {
                 IsValid = false;
-    #if DEBUG
-                GD.PushWarning(
-                    GetPath(),
-                    ": auto transition's enter region contains source state ",
-                    "causes transition invalid, this may cause loop transition.");
-    #endif
             }
         }
         else
@@ -220,7 +210,7 @@ public class TransitionInt : Composition
         DeducedEnterStates.Clear();
         foreach (var edgeState in EnterRegionEdge)
         {
-            edgeState.DeduceDescendants(DeducedEnterStates.Add);
+            edgeState.DeduceDescendants(DeducedEnterStates);
         }
         return DeducedEnterStates;
     }

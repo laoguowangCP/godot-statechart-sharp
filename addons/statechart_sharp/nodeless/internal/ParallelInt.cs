@@ -92,7 +92,7 @@ public class ParallelInt : StateInt
         List<List<TransitionInt>> vTransitions = new();
         List<TEvent> kReactions = new();
         List<List<ReactionInt>> vReactions = new();
-        
+
         foreach (var childComp in buildComp._Comps)
         {
             if (childComp is StatechartBuilder<TDuct, TEvent>.State sComp)
@@ -127,19 +127,19 @@ public class ParallelInt : StateInt
                 ArrayHelper.KVListInsert(a.Event, a, kReactions, vReactions);
             }
         }
-        
+
         // Convert to array
         AutoTransitions = autoTransitions.ToArray();
         ArrayHelper.KVListToArray(kTransitions, vTransitions, out KTransitions, out VTransitions);
         ArrayHelper.KVListToArray(kReactions, vReactions, out KReactions, out VReactions);
     }
 
-    public override void SubmitActiveState(Func<StateInt, bool> submit)
+    public override void SubmitActiveState(SortedSet<StateInt> activeStates)
     {
-        _ = submit(this);
+        activeStates.Add(this);
         for (int i = 0; i < Substates.Length; ++i)
         {
-            Substates[i].SubmitActiveState(submit);
+            Substates[i].SubmitActiveState(activeStates);
         }
     }
 
@@ -239,7 +239,7 @@ public class ParallelInt : StateInt
     }
 
     public override int SelectTransitions(
-        Func<TransitionInt, bool> submitEnabledTransition, TEvent @event, TDuct duct)
+        SortedSet<TransitionInt> enabledTransition, TEvent @event, TDuct duct)
     {
         int handleInfo = -1;
         if (ValidSubstateCnt > 0)
@@ -254,7 +254,7 @@ public class ParallelInt : StateInt
                     continue;
                 }
 
-                int substateHandleInfo = substate.SelectTransitions(submitEnabledTransition, @event, duct);
+                int substateHandleInfo = substate.SelectTransitions(enabledTransition, @event, duct);
                 if (substateHandleInfo < 0)
                 {
                     negCnt += 1;
@@ -306,7 +306,7 @@ public class ParallelInt : StateInt
 
                 if (t.Check(duct))
                 {
-                    submitEnabledTransition(t);
+                    enabledTransition.Add(t);
                     handleInfo = 1;
                     break;
                 }
@@ -332,7 +332,7 @@ public class ParallelInt : StateInt
 
                     if (t.Check(duct))
                     {
-                        submitEnabledTransition(t);
+                        enabledTransition.Add(t);
                         handleInfo = 1;
                         break;
                     }
@@ -344,7 +344,7 @@ public class ParallelInt : StateInt
     }
 
     public override void DeduceDescendantsRecur(
-        Func<StateInt, bool> submitDeducedSet, DeduceDescendantsModeEnum deduceMode)
+        SortedSet<StateInt> deducedSet, DeduceDescendantsModeEnum deduceMode)
     {
         DeduceDescendantsModeEnum substateDeduceMode;
 
@@ -364,7 +364,7 @@ public class ParallelInt : StateInt
                 break;
         }
 
-        
+
         for (int i = 0; i < Substates.Length; ++i)
         {
             var substate = Substates[i];
@@ -373,24 +373,24 @@ public class ParallelInt : StateInt
             {
                 continue;
             }
-            submitDeducedSet(substate);
-            substate.DeduceDescendantsRecur(submitDeducedSet, substateDeduceMode);
+            deducedSet.Add(substate);
+            substate.DeduceDescendantsRecur(deducedSet, substateDeduceMode);
         }
     }
 
-    public override void SaveAllStateConfig(Action<int> submitSnapshot)
+    public override void SaveAllStateConfig(List<int> snapshotConfig)
     {
         for (int i = 0; i < Substates.Length; ++i)
         {
-            Substates[i].SaveAllStateConfig(submitSnapshot);
+            Substates[i].SaveAllStateConfig(snapshotConfig);
         }
     }
 
-    public override void SaveActiveStateConfig(Action<int> submitSnapshot)
+    public override void SaveActiveStateConfig(List<int> snapshotConfig)
     {
         for (int i = 0; i < Substates.Length; ++i)
         {
-            Substates[i].SaveActiveStateConfig(submitSnapshot);
+            Substates[i].SaveActiveStateConfig(snapshotConfig);
         }
     }
 

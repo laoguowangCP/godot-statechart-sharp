@@ -73,7 +73,7 @@ public partial class StatechartInt<TDuct, TEvent>
         // TODO: Setup comps
         int orderId = -1;
         RootState.Setup(this, rootState, ref orderId);
-        RootState.SubmitActiveState(ActiveStates.Add);
+        RootState.SubmitActiveState(ActiveStates);
         RootState.SetupPost(rootState);
 
         foreach (var s in ActiveStates)
@@ -131,7 +131,7 @@ public partial class StatechartInt<TDuct, TEvent>
         */
 
         // 1. Select transitions
-        RootState.SelectTransitions(EnabledTransitions.Add, @event, Duct);
+        RootState.SelectTransitions(EnabledTransitions, @event, Duct);
 
         // 2. Do transitions
         DoTransitions();
@@ -139,7 +139,7 @@ public partial class StatechartInt<TDuct, TEvent>
         // 3. Select and do automatic transitions
         for (int i = 1; i <= MaxAutoTransitionRound; ++i)
         {
-            RootState.SelectTransitions(EnabledTransitions.Add, @event, Duct);
+            RootState.SelectTransitions(EnabledTransitions, @event, Duct);
 
             // Stop if active states are stable
             if (EnabledTransitions.Count == 0)
@@ -258,11 +258,11 @@ public partial class StatechartInt<TDuct, TEvent>
 
         if (isAllStateConfig)
         {
-            RootState.SaveAllStateConfig(SnapshotConfig.Add);
+            RootState.SaveAllStateConfig(SnapshotConfig);
         }
         else
         {
-            RootState.SaveActiveStateConfig(SnapshotConfig.Add);
+            RootState.SaveActiveStateConfig(SnapshotConfig);
         }
         snapshot.Config = SnapshotConfig.ToArray();
         SnapshotConfig.Clear();

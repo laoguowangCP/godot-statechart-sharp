@@ -150,10 +150,10 @@ public class CompoundInt : StateInt
         ArrayHelper.KVListToArray(kReactions, vReactions, out KReactions, out VReactions);
     }
 
-    public override void SubmitActiveState(Func<StateInt, bool> submit)
+    public override void SubmitActiveState(SortedSet<StateInt> activeStates)
     {
-        _ = submit(this);
-        CurrentState?.SubmitActiveState(submit);
+        activeStates.Add(this);
+        CurrentState?.SubmitActiveState(activeStates);
     }
 
     public override bool IsConflictToEnterRegion(
@@ -165,7 +165,7 @@ public class CompoundInt : StateInt
             state => IsAncestorStateOf(state));
     }
 
-    
+
     public override void ExtendEnterRegion(
         SortedSet<StateInt> enterRegion,
         SortedSet<StateInt> enterRegionEdge,
@@ -213,12 +213,12 @@ public class CompoundInt : StateInt
     }
 
     public override int SelectTransitions(
-        Func<TransitionInt, bool> submitEnabledTransition, TEvent @event, TDuct duct)
+        SortedSet<TransitionInt> enabledTransition, TEvent @event, TDuct duct)
     {
         int handleInfo = -1;
         if (CurrentState != null)
         {
-            handleInfo = CurrentState.SelectTransitions(submitEnabledTransition, @event, duct);
+            handleInfo = CurrentState.SelectTransitions(enabledTransition, @event, duct);
         }
 
         /*
@@ -248,7 +248,7 @@ public class CompoundInt : StateInt
 
                 if (t.Check(duct))
                 {
-                    _ = submitEnabledTransition(t);
+                    enabledTransition.Add(t);
                     handleInfo = 1;
                     break;
                 }
@@ -274,7 +274,7 @@ public class CompoundInt : StateInt
 
                     if (t.Check(duct))
                     {
-                        _ = submitEnabledTransition(t);
+                        enabledTransition.Add(t);
                         handleInfo = 1;
                         break;
                     }
@@ -285,9 +285,9 @@ public class CompoundInt : StateInt
         return handleInfo;
     }
 
-    
+
     public override void DeduceDescendantsRecur(
-        Func<StateInt, bool> submitDeducedSet, DeduceDescendantsModeEnum deduceMode)
+        SortedSet<StateInt> deducedSet, DeduceDescendantsModeEnum deduceMode)
     {
         StateInt substateToAdd;
         DeduceDescendantsModeEnum substateDeduceMode;
@@ -316,8 +316,8 @@ public class CompoundInt : StateInt
         {
             return;
         }
-        submitDeducedSet(substateToAdd);
-        substateToAdd.DeduceDescendantsRecur(submitDeducedSet, substateDeduceMode);
+        deducedSet.Add(substateToAdd);
+        substateToAdd.DeduceDescendantsRecur(deducedSet, substateDeduceMode);
     }
 
     public override void HandleSubstateEnter(StateInt substate)
@@ -325,28 +325,28 @@ public class CompoundInt : StateInt
         CurrentState = substate;
     }
 
-    public override void SaveAllStateConfig(Action<int> submitSnapshot)
+    public override void SaveAllStateConfig(List<int> snapshotConfig)
     {
         if (CurrentState is null)
         {
             return;
         }
-        submitSnapshot(CurrentState.SubstateIdx);
-        
+        snapshotConfig.Add(CurrentState.SubstateIdx);
+
         for (int i = 0; i < Substates.Length; ++i)
         {
-            Substates[i].SaveAllStateConfig(submitSnapshot);
+            Substates[i].SaveAllStateConfig(snapshotConfig);
         }
     }
 
-    public override void SaveActiveStateConfig(Action<int> submitSnapshot)
+    public override void SaveActiveStateConfig(List<int> snapshotConfig)
     {
         if (CurrentState is null)
         {
             return;
         }
-        submitSnapshot(CurrentState.SubstateIdx);
-        CurrentState.SaveActiveStateConfig(submitSnapshot);
+        snapshotConfig.Add(CurrentState.SubstateIdx);
+        CurrentState.SaveActiveStateConfig(snapshotConfig);
     }
 
     public override int LoadAllStateConfig(int[] config, int configIdx)

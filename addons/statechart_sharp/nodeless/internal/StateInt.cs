@@ -90,23 +90,23 @@ public abstract class StateInt : Composition
             && id <= UpperState.OrderId;
     }
 
-    public virtual void SubmitActiveState(Func<StateInt, bool> submit) {}
+    public virtual void SubmitActiveState(SortedSet<StateInt> activeStates) {}
 
     public virtual bool IsConflictToEnterRegion(StateInt substateToPend, SortedSet<StateInt> enterRegionUnextended)
     {
         return false;
     }
 
-    public virtual int SelectTransitions(Func<TransitionInt, bool> submitEnabledTransition, TEvent @event, TDuct duct)
+    public virtual int SelectTransitions(SortedSet<TransitionInt> enabledTransition, TEvent @event, TDuct duct)
     {
         return 1;
     }
 
     public virtual void ExtendEnterRegion(SortedSet<StateInt> enterRegion, SortedSet<StateInt> enterRegionEdge, SortedSet<StateInt> extraEnterRegion, bool needCheckContain) {}
 
-    public virtual void DeduceDescendants(Func<StateInt, bool> submitDeducedSet) {}
+    public virtual void DeduceDescendants(SortedSet<StateInt> deducedSet) {}
 
-    public virtual void DeduceDescendantsRecur(Func<StateInt, bool> submitDeducedSet, DeduceDescendantsModeEnum deduceMode) {}
+    public virtual void DeduceDescendantsRecur(SortedSet<StateInt> deducedSet, DeduceDescendantsModeEnum deduceMode) {}
 
     public virtual void HandleSubstateEnter(StateInt substate) {}
 
@@ -126,9 +126,9 @@ public abstract class StateInt : Composition
         }
     }
 
-    public virtual void SaveAllStateConfig(Action<int> submitSnapshot) {}
+    public virtual void SaveAllStateConfig(List<int> snapshotConfig) {}
 
-    public virtual void SaveActiveStateConfig(Action<int> submitSnapshot) {}
+    public virtual void SaveActiveStateConfig(List<int> snapshotConfig) {}
 
     public virtual int LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
 
