@@ -19,7 +19,7 @@ public class Compound<TDuct, TEvent> : State<TDuct, TEvent>
         _Exits = exits;
     }
 
-    public override bool IsValidState()
+    public override bool _IsValidState()
     {
         return true;
     }
