@@ -14,13 +14,10 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
     public int _SubstateIdx;
     public Action<TDuct>[] _Enters;
     public Action<TDuct>[] _Exits;
-    public Composition<TDuct, TEvent>[] _Comps;
-    public State<TDuct, TEvent>[] _Substates;
-    protected Transition<TDuct, TEvent>[] AutoTransitions;
-    protected TEvent[] KTransitions;
-    protected Transition<TDuct, TEvent>[][] VTransitions;
-    protected TEvent[] KReactions;
-    protected Reaction<TDuct, TEvent>[][] VReactions;
+    public List<State<TDuct, TEvent>> _Substates;
+    public List<Transition<TDuct, TEvent>> _AutoTransitions;
+    public SmallListDictionary<TEvent, List<Transition<TDuct, TEvent>>> _TransitionsKV;
+    public SmallListDictionary<TEvent, List<Reaction<TDuct, TEvent>>> _ReactionsKV;
 
     public void StateEnter(TDuct duct)
     {
@@ -33,9 +30,9 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
 
     public void StateExit(TDuct duct)
     {
-        foreach (var action in _Exits)
+        for (int i = 0; i < _Exits.Length; i++)
         {
-            action(duct);
+            _Exits[i](duct);
         }
     }
 
@@ -44,7 +41,7 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
         int id = state._OrderId;
 
         // Leaf state
-        if (_LowerState is null || _UpperState is null)
+        if (_LowerState == null || _UpperState == null)
         {
             return false;
         }
@@ -75,16 +72,11 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
 
     public virtual void SelectReactions(SortedSet<Reaction<TDuct, TEvent>> enabledReactions, TEvent @event)
     {
-
-        for (int i = 0; i < KReactions.Length; ++i)
+        if (_ReactionsKV.TryGet(@event, out var reactions) >= 0)
         {
-            if (KReactions[i].Equals(@event))
+            for (int i = 0; i < reactions.Count; ++i)
             {
-                foreach (var a in VReactions[i])
-                {
-                    enabledReactions.Add(a);
-                }
-                break;
+                enabledReactions.Add(reactions[j]);
             }
         }
     }
