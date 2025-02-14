@@ -61,12 +61,12 @@ public class ParallelInt : StateInt
                     continue;
                 }
                 var t = (TransitionInt)tComp._GetInternalComposition();
-                t.Setup(hostStatechart, tComp, ref orderId);
+                t._Setup(hostStatechart, tComp, ref orderId);
             }
             else if (childComp is StatechartBuilder<TDuct, TEvent>.Reaction aComp)
             {
                 var a = (ReactionInt)aComp._GetInternalComposition();
-                a.Setup(hostStatechart, aComp, ref orderId);
+                a._Setup(hostStatechart, aComp, ref orderId);
             }
         }
 
@@ -92,7 +92,7 @@ public class ParallelInt : StateInt
         List<List<TransitionInt>> vTransitions = new();
         List<TEvent> kReactions = new();
         List<List<ReactionInt>> vReactions = new();
-        
+
         foreach (var childComp in buildComp._Comps)
         {
             if (childComp is StatechartBuilder<TDuct, TEvent>.State sComp)
@@ -127,7 +127,7 @@ public class ParallelInt : StateInt
                 ArrayHelper.KVListInsert(a.Event, a, kReactions, vReactions);
             }
         }
-        
+
         // Convert to array
         AutoTransitions = autoTransitions.ToArray();
         ArrayHelper.KVListToArray(kTransitions, vTransitions, out KTransitions, out VTransitions);
@@ -364,7 +364,7 @@ public class ParallelInt : StateInt
                 break;
         }
 
-        
+
         for (int i = 0; i < Substates.Length; ++i)
         {
             var substate = Substates[i];

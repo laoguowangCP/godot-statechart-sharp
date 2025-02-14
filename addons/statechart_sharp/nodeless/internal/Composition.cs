@@ -13,7 +13,7 @@ public partial class StatechartInt<TDuct, TEvent>
 public abstract class Composition : IComposition
 {
     // protected abstract void Setup();
-    public int OrderId;
+    public int _OrderId;
     // public StatechartInt<TDuct, TEvent> HostStatechart;
     // public TDuct Duct;
 
@@ -29,7 +29,7 @@ public abstract class Composition : IComposition
     {
         // HostStatechart = hostStatechart;
         // Duct = hostStatechart.Duct;
-        OrderId = orderId;
+        _OrderId = orderId;
         ++orderId;
     }
 

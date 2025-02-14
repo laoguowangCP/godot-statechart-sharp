@@ -72,7 +72,7 @@ public partial class StatechartInt<TDuct, TEvent>
 
         // TODO: Setup comps
         int orderId = -1;
-        RootState.Setup(this, rootState, ref orderId);
+        RootState._Setup(this, rootState, ref orderId);
         RootState.SubmitActiveState(ActiveStates.Add);
         RootState.SetupPost(rootState);
 

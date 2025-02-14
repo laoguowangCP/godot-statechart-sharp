@@ -20,6 +20,21 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
     public SmallListDictionary<TEvent, List<Transition<TDuct, TEvent>>> _TransitionsKV;
     public SmallListDictionary<TEvent, List<Reaction<TDuct, TEvent>>> _ReactionsKV;
 
+    public virtual void _Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId, int substateIdx)
+    {
+        base._Setup(hostStatechart, ref orderId);
+        // Get parent state when adding comps
+        _SubstateIdx = substateIdx;
+    }
+
+    public override void _BeAdded(Composition<TDuct, TEvent> pComp)
+    {
+        if (pComp is State<TDuct, TEvent> s && s._IsValidState())
+        {
+            _ParentState = s;
+        }
+    }
+
     public void _StateEnter(TDuct duct)
     {
         _ParentState?._HandleSubstateEnter(this);

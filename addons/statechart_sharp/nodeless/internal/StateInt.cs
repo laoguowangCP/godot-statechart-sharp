@@ -30,7 +30,7 @@ public abstract class StateInt : Composition
     public StateInt UpperState;
     public int SubstateIdx; // The index of this state enlisted in parent state.
 
-    public override void Setup(
+    public override void _Setup(
         StatechartInt<TDuct, TEvent> hostStatechart,
         StatechartBuilder<TDuct, TEvent>.BuildComposition buildComp,
         ref int orderId)
@@ -44,7 +44,7 @@ public abstract class StateInt : Composition
         ref int orderId,
         int substateIdx)
     {
-        base.Setup(hostStatechart, buildComp, ref orderId);
+        base._Setup(hostStatechart, buildComp, ref orderId);
 
         // Get parent state
         var pComp = buildComp._PComp;
@@ -78,7 +78,7 @@ public abstract class StateInt : Composition
 
     public bool IsAncestorStateOf(StateInt state)
     {
-        int id = state.OrderId;
+        int id = state._OrderId;
 
         // Leaf state
         if (LowerState is null || UpperState is null)
@@ -86,8 +86,8 @@ public abstract class StateInt : Composition
             return false;
         }
 
-        return id >= LowerState.OrderId
-            && id <= UpperState.OrderId;
+        return id >= LowerState._OrderId
+            && id <= UpperState._OrderId;
     }
 
     public virtual void SubmitActiveState(Func<StateInt, bool> submit) {}

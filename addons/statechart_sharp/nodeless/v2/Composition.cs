@@ -22,4 +22,13 @@ public abstract class Composition<TDuct, TEvent>
     }
 
     public virtual void _SetupPost() {}
+
+    public Composition<TDuct, TEvent> Add(Composition<TDuct, TEvent> comp)
+    {
+        _Comps.Add(comp);
+        comp._BeAdded(this);
+        return this;
+    }
+
+    public virtual void _BeAdded(Composition<TDuct, TEvent> pComp) {}
 }

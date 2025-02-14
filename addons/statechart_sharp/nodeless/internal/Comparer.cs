@@ -12,7 +12,7 @@ public partial class StatechartInt<TDuct, TEvent>
     {
         public int Compare(TComposition x, TComposition y)
         {
-            return x.OrderId - y.OrderId;
+            return x._OrderId - y._OrderId;
         }
     }
 
@@ -21,7 +21,7 @@ public partial class StatechartInt<TDuct, TEvent>
     {
         public int Compare(TComposition x, TComposition y)
         {
-            return y.OrderId - x.OrderId;
+            return y._OrderId - x._OrderId;
         }
     }
 }

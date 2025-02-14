@@ -40,13 +40,13 @@ public class TransitionInt : Composition
         IsValid = true;
     }
 
-    
-    public override void Setup(
+
+    public override void _Setup(
         StatechartInt<TDuct, TEvent> hostStatechart,
         StatechartBuilder<TDuct, TEvent>.BuildComposition buildComp,
         ref int orderId)
     {
-        base.Setup(hostStatechart, buildComp, ref orderId);
+        base._Setup(hostStatechart, buildComp, ref orderId);
 
         // Get source state
         var pComp = buildComp._PComp;

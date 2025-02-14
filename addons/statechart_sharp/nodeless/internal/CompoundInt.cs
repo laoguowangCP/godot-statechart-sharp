@@ -56,12 +56,12 @@ public class CompoundInt : StateInt
                     continue;
                 }
                 var t = (TransitionInt)tComp._GetInternalComposition();
-                t.Setup(hostStatechart, childComp, ref orderId);
+                t._Setup(hostStatechart, childComp, ref orderId);
             }
             else if (childComp is StatechartBuilder<TDuct, TEvent>.Reaction aComp)
             {
                 var a = (ReactionInt)aComp._GetInternalComposition();
-                a.Setup(hostStatechart, childComp, ref orderId);
+                a._Setup(hostStatechart, childComp, ref orderId);
             }
         }
 
@@ -165,7 +165,7 @@ public class CompoundInt : StateInt
             state => IsAncestorStateOf(state));
     }
 
-    
+
     public override void ExtendEnterRegion(
         SortedSet<StateInt> enterRegion,
         SortedSet<StateInt> enterRegionEdge,
@@ -285,7 +285,7 @@ public class CompoundInt : StateInt
         return handleInfo;
     }
 
-    
+
     public override void DeduceDescendantsRecur(
         Func<StateInt, bool> submitDeducedSet, DeduceDescendantsModeEnum deduceMode)
     {
@@ -332,7 +332,7 @@ public class CompoundInt : StateInt
             return;
         }
         submitSnapshot(CurrentState.SubstateIdx);
-        
+
         for (int i = 0; i < Substates.Length; ++i)
         {
             Substates[i].SaveAllStateConfig(submitSnapshot);
