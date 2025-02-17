@@ -5,31 +5,35 @@ using LGWCP.Util;
 
 namespace LGWCP.Godot.StatechartSharp.NodelessV2;
 
-public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
+
+public partial class Statechart<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
-    public State<TDuct, TEvent> _ParentState;
-    public State<TDuct, TEvent> _LowerState;
-    public State<TDuct, TEvent> _UpperState;
+
+public abstract class State : Composition
+{
+    public State _ParentState;
+    public State _LowerState;
+    public State _UpperState;
     public int _SubstateIdx;
     public Action<TDuct>[] _Enters;
     public Action<TDuct>[] _Exits;
-    public List<State<TDuct, TEvent>> _Substates;
-    public List<Transition<TDuct, TEvent>> _AutoTransitions;
-    public SmallListDictionary<TEvent, List<Transition<TDuct, TEvent>>> _TransitionsKV;
-    public SmallListDictionary<TEvent, List<Reaction<TDuct, TEvent>>> _ReactionsKV;
+    public List<State> _Substates = new();
+    public List<Transition> _AutoTransitions = new();
+    public SmallListDictionary<TEvent, List<Transition>> _TransitionsKV = new();
+    public SmallListDictionary<TEvent, List<Reaction>> _ReactionsKV = new();
 
-    public virtual void _Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId, int substateIdx)
+    public virtual void _Setup(ref int orderId, int substateIdx)
     {
-        base._Setup(hostStatechart, ref orderId);
+        base._Setup(ref orderId);
         // Get parent state when adding comps
         _SubstateIdx = substateIdx;
     }
 
-    public override void _BeAdded(Composition<TDuct, TEvent> pComp)
+    public override void _BeAdded(Composition pComp)
     {
-        if (pComp is State<TDuct, TEvent> s && s._IsValidState())
+        if (pComp is State s && s._IsValidState())
         {
             _ParentState = s;
         }
@@ -52,7 +56,7 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
         }
     }
 
-    public bool _IsAncestorStateOf(State<TDuct, TEvent> state)
+    public bool _IsAncestorStateOf(State state)
     {
         int id = state._OrderId;
 
@@ -66,27 +70,27 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
             && id <= _UpperState._OrderId;
     }
 
-    public virtual void _SubmitActiveState(SortedSet<State<TDuct, TEvent>> activeStates) {}
+    public virtual void _SubmitActiveState(SortedSet<State> activeStates) {}
 
-    public virtual bool _IsConflictToEnterRegion(State<TDuct, TEvent> substateToPend, SortedSet<State<TDuct, TEvent>> enterRegionUnextended)
+    public virtual bool _IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
     {
         return false;
     }
 
-    public virtual int _SelectTransitions(SortedSet<Transition<TDuct, TEvent>> enabledTransitions, TEvent @event, TDuct duct)
+    public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, TEvent @event, TDuct duct)
     {
         return 1;
     }
 
-    public virtual void _ExtendEnterRegion(SortedSet<State<TDuct, TEvent>> enterRegion, SortedSet<State<TDuct, TEvent>> enterRegionEdge, SortedSet<State<TDuct, TEvent>> extraEnterRegion, bool needCheckContain) {}
+    public virtual void _ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain) {}
 
-    public virtual void _DeduceDescendants(SortedSet<State<TDuct, TEvent>> deducedSet) {}
+    public virtual void _DeduceDescendants(SortedSet<State> deducedSet) {}
 
-    public virtual void _DeduceDescendantsRecur(SortedSet<State<TDuct, TEvent>> deducedSet, DeduceDescendantsModeEnum deduceMode) {}
+    public virtual void _DeduceDescendantsRecur(SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode) {}
 
-    public virtual void _HandleSubstateEnter(State<TDuct, TEvent> substate) {}
+    public virtual void _HandleSubstateEnter(State substate) {}
 
-    public virtual void _SelectReactions(SortedSet<Reaction<TDuct, TEvent>> enabledReactions, TEvent @event)
+    public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions, TEvent @event)
     {
         if (_ReactionsKV.TryGet(@event, out var reactions) >= 0)
         {
@@ -97,13 +101,15 @@ public abstract class State<TDuct, TEvent> : Composition<TDuct, TEvent>
         }
     }
 
-    public virtual void _SaveAllStateConfig(int[] snapshot) {}
+    public virtual void _SaveAllStateConfig(List<int> snapshot) {}
 
-    public virtual void _SaveActiveStateConfig(int[] snapshot) {}
+    public virtual void _SaveActiveStateConfig(List<int> snapshot) {}
 
     public virtual int _LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
 
     public virtual int _LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
 
     public abstract bool _IsValidState();
+}
+
 }

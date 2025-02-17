@@ -9,88 +9,77 @@ public partial class Statechart<TDuct, TEvent>
     where TEvent : IEquatable<TEvent>
 {
 
-public class Compound : State
+public class Parallel : State
 {
-    public State _InitialState;
-    public State _CurrentState;
+    protected int ValidSubstateCnt = 0;
 
-    public Compound(
+    public Parallel(
         Action<TDuct>[] enters,
-        Action<TDuct>[] exits,
-        State initialState)
+        Action<TDuct>[] exits)
     {
         _Enters = enters;
         _Exits = exits;
-        _InitialState = initialState;
     }
 
     public override bool _IsValidState() => true;
 
-    public override void _Setup(ref int orderId)
+    public override void _Setup(ref int parentOrderId, int substateIdx)
     {
-        base._Setup(ref orderId);
+        base._Setup(ref parentOrderId, substateIdx);
 
         // Init & collect states, transitions, actions
-        // Get lower state and upper state
+        // Get lower-state and upper-state
         State lastSubstate = null;
         for (int i = 0; i < _Comps.Count; ++i)
         {
             var comp = _Comps[i];
             if (comp is State s)
             {
-                s._Setup(ref orderId, _Substates.Count);
+                s._Setup(ref parentOrderId, _Substates.Count);
                 _Substates.Add(s);
 
+                // First substate is lower-state
                 if (_LowerState == null)
                 {
                     _LowerState = s;
                 }
                 lastSubstate = s;
+
+                if (s._IsValidState())
+                {
+                    ++ValidSubstateCnt;
+                }
             }
             else if (comp is Transition t)
             {
                 // Root state should not have transition
-                if (_ParentState is null)
+                if (_ParentState == null)
                 {
                     continue;
                 }
-                t._Setup(ref orderId);
+
+                t._Setup(ref parentOrderId);
             }
             else if (comp is Reaction a)
             {
-                a._Setup(ref orderId);
+                a._Setup(ref parentOrderId);
             }
         }
 
-        if (lastSubstate is not null)
+        if (lastSubstate != null)
         {
-            if (lastSubstate._UpperState is not null)
+            if (lastSubstate._UpperState != null)
             {
+                // Last substate's upper is upper-state
                 _UpperState = lastSubstate._UpperState;
             }
             else
             {
+                // Last substate is upper-state
                 _UpperState = lastSubstate;
             }
         }
-        // Else state is atomic, lower and upper are both null.
-
-        // Set initial state
-        if (_InitialState == null
-            || !_InitialState._IsValidState()
-            || _InitialState._ParentState != this)
-        {
-            for (int i = 0; i < _Substates.Count; ++i)
-            {
-                var s = _Substates[i];
-                if (s._IsValidState())
-                {
-                    _InitialState = s;
-                    break;
-                }
-            }
-        }
-        _CurrentState = _InitialState;
+        // Else state is atomic, lower and upper are null
     }
 
     public override void _SetupPost()
@@ -105,7 +94,7 @@ public class Compound : State
             else if (comp is Transition t)
             {
                 // Root state should not have transition
-                if (_ParentState is null)
+                if (_ParentState == null)
                 {
                     continue;
                 }
@@ -150,9 +139,33 @@ public class Compound : State
         State substateToPend,
         SortedSet<State> enterRegionUnextended)
     {
-        // Conflicts if any substate is already exist in region
-        return enterRegionUnextended.Any<State>(
-            state => _IsAncestorStateOf(state));
+        /*
+        Deals history cases:
+            1. Pending substate is history, conflicts if any descendant in region.
+            2. Any history substate in enter region, conflicts.
+        */
+        // At this point history is not excluded from enter region
+
+        // Pending substate is history
+        if (!substateToPend._IsValidState())
+        {
+            return enterRegionUnextended.Any<State>(
+                state => _IsAncestorStateOf(state));
+        }
+
+        // Any history substate in region, conflicts.
+        for (int i = 0; i < _Substates.Count; ++i)
+        {
+            var substate = _Substates[i];
+            if (!substate._IsValidState()
+                && enterRegionUnextended.Contains(substate))
+            {
+                return true;
+            }
+        }
+
+        // No conflicts.
+        return false;
     }
 
     public override void _ExtendEnterRegion(
@@ -162,14 +175,20 @@ public class Compound : State
         bool needCheckContain)
     {
         /*
-        if need check (state is in region, checked by parent):
-            if any substate in region:
-                extend this substate, still need check
-            else (no substate in region)
-                extend initial state, need no check
-        else (need no check)
+        if need check (state in region, checked by parent):
+            if any history substate in region:
+                extend this history
+                return
+            else (no history substate in region)
+                foreach substate:
+                    if substate in region:
+                        extend, still need check
+                    else (substate not in region)
+                        extend, need no check
+        else (state not in region)
             add state to extra-region
-            extend initial state, need no check
+            foreach substate:
+                extend, need no check
         */
 
         // Need no check, add to extra
@@ -184,7 +203,8 @@ public class Compound : State
             for (int i = 0; i < _Substates.Count; ++i)
             {
                 var substate = _Substates[i];
-                if (enterRegion.Contains(substate))
+                if (!substate._IsValidState()
+                    && enterRegion.Contains(substate))
                 {
                     substate._ExtendEnterRegion(
                         enterRegion, enterRegionEdge, extraEnterRegion, true);
@@ -193,42 +213,85 @@ public class Compound : State
             }
         }
 
-        // Need no check, or need check but no substate in region
-        if (_InitialState != null)
+        // No history substate in region
+        for (int i = 0; i < _Substates.Count; ++i)
         {
-            _InitialState._ExtendEnterRegion(
-                enterRegion, enterRegionEdge, extraEnterRegion, false);
+            var substate = _Substates[i];
+            if (!substate._IsValidState())
+            {
+                continue;
+            }
+
+            // Need check && substate in region => still need check
+            bool stillNeedCheck =
+                needCheckContain && enterRegion.Contains(substate);
+            substate._ExtendEnterRegion(
+                enterRegion, enterRegionEdge, extraEnterRegion, stillNeedCheck);
         }
     }
 
     public override void _SubmitActiveState(SortedSet<State> activeStates)
     {
         activeStates.Add(this);
-        _CurrentState?._SubmitActiveState(activeStates);
+        for (int i = 0; i < _Substates.Count; ++i)
+        {
+            _Substates[i]._SubmitActiveState(activeStates);
+        }
     }
 
     public override int _SelectTransitions(
         SortedSet<Transition> enabledTransitions, TEvent @event, TDuct duct)
     {
         int handleInfo = -1;
-        // if (HostState._CurrentState != null)
-        if (_CurrentState != null)
+        if (ValidSubstateCnt > 0)
         {
-            handleInfo = _CurrentState._SelectTransitions(enabledTransitions, @event, duct);
+            int negCnt = 0;
+            int posCnt = 0;
+            for (int i = 0; i < _Substates.Count; ++i)
+            {
+                var substate = _Substates[i];
+                if (!substate._IsValidState())
+                {
+                    continue;
+                }
+
+                int substateHandleInfo = substate._SelectTransitions(enabledTransitions, @event, duct);
+                if (substateHandleInfo < 0)
+                {
+                    negCnt += 1;
+                }
+                else if (substateHandleInfo > 0)
+                {
+                    posCnt += 1;
+                }
+            }
+
+            if (negCnt == ValidSubstateCnt) // No selected
+            {
+                handleInfo = -1;
+            }
+            else if (posCnt == ValidSubstateCnt) // All done
+            {
+                handleInfo = 1;
+            }
+            else // Selected but not all done
+            {
+                handleInfo = 0;
+            }
         }
 
         /*
         Check source's transitions:
-            - < 0, check any
-            - == 0, only check targetless
-            - > 0, do nothing
+            a) < 0, check any
+            b) == 0, check targetless
+            c) > 0, check none
         */
         if (handleInfo > 0)
         {
             return handleInfo;
         }
 
-        if (@event is null) // Auto transition
+        if (@event is null)
         {
             for (int i = 0; i < _AutoTransitions.Count; ++i)
             {
@@ -252,8 +315,7 @@ public class Compound : State
         }
         else
         {
-            var idx = _TransitionsKV.TryGet(@event, out var transitions);
-            if (idx >= 0)
+            if (_TransitionsKV.TryGet(@event, out var transitions) >= 0)
             {
                 for (int i = 0; i < transitions.Count; ++i)
                 {
@@ -266,6 +328,7 @@ public class Compound : State
                             continue;
                         }
                     }
+
                     if (t._Check(duct))
                     {
                         enabledTransitions.Add(t);
@@ -279,48 +342,42 @@ public class Compound : State
         return handleInfo;
     }
 
-
     public override void _DeduceDescendantsRecur(
         SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
     {
-        State substateToAdd;
         DeduceDescendantsModeEnum substateDeduceMode;
 
         switch (deduceMode)
         {
             case DeduceDescendantsModeEnum.Initial:
-                substateToAdd = _InitialState;
                 substateDeduceMode = DeduceDescendantsModeEnum.Initial;
                 break;
             case DeduceDescendantsModeEnum.History:
-                substateToAdd = _CurrentState;
                 substateDeduceMode = DeduceDescendantsModeEnum.Initial;
                 break;
             case DeduceDescendantsModeEnum.DeepHistory:
-                substateToAdd = _CurrentState;
                 substateDeduceMode = DeduceDescendantsModeEnum.DeepHistory;
                 break;
             default:
-                substateToAdd = _InitialState;
                 substateDeduceMode = DeduceDescendantsModeEnum.Initial;
                 break;
         }
 
-        if (substateToAdd == null)
+        for (int i = 0; i < _Substates.Count; ++i)
         {
-            return;
+            // Ignore history states
+            var substate = _Substates[i];
+            if (!substate._IsValidState())
+            {
+                continue;
+            }
+            deducedSet.Add(substate);
+            substate._DeduceDescendantsRecur(deducedSet, substateDeduceMode);
         }
-        _ = deducedSet.Add(substateToAdd);
-        substateToAdd._DeduceDescendantsRecur(deducedSet, substateDeduceMode);
     }
 
     public override void _SaveAllStateConfig(List<int> snapshot)
     {
-        if (_CurrentState is null)
-        {
-            return;
-        }
-        snapshot.Add(_CurrentState._SubstateIdx);
         for (int i = 0; i < _Substates.Count; ++i)
         {
             _Substates[i]._SaveAllStateConfig(snapshot);
@@ -329,28 +386,14 @@ public class Compound : State
 
     public override void _SaveActiveStateConfig(List<int> snapshot)
     {
-        if (_CurrentState is null)
+        for (int i = 0; i < _Substates.Count; ++i)
         {
-            return;
+            _Substates[i]._SaveActiveStateConfig(snapshot);
         }
-        snapshot.Add(_CurrentState._SubstateIdx);
-        _CurrentState._SaveActiveStateConfig(snapshot);
     }
 
     public override int _LoadAllStateConfig(int[] config, int configIdx)
     {
-        if (_Substates.Count == 0)
-        {
-            return configIdx;
-        }
-
-        if (configIdx >= config.Length)
-        {
-            return -1;
-        }
-
-        _CurrentState = _Substates[config[configIdx]];
-        ++configIdx;
         for (int i = 0; i < _Substates.Count; ++i)
         {
             configIdx = _Substates[i]._LoadAllStateConfig(config, configIdx);
@@ -365,20 +408,16 @@ public class Compound : State
 
     public override int _LoadActiveStateConfig(int[] config, int configIdx)
     {
-        if (_Substates.Count == 0)
+        for (int i = 0; i < _Substates.Count; ++i)
         {
-            return configIdx;
+            configIdx = _Substates[i]._LoadAllStateConfig(config, configIdx);
+            if (configIdx == -1)
+            {
+                return -1;
+            }
         }
 
-        if (configIdx >= config.Length)
-        {
-            return -1;
-        }
-
-        _CurrentState = _Substates[config[configIdx]];
-        ++configIdx;
-
-        return _CurrentState._LoadActiveStateConfig(config, configIdx);
+        return configIdx;
     }
 }
 

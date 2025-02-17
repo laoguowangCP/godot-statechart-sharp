@@ -4,16 +4,19 @@ using System.Collections.Generic;
 
 namespace LGWCP.Godot.StatechartSharp.NodelessV2;
 
-public abstract class Composition<TDuct, TEvent>
+public partial class Statechart<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
     where TEvent : IEquatable<TEvent>
 {
+
+public abstract class Composition
+{
     public int _OrderId;
-    public List<Composition<TDuct, TEvent>> _Comps = new();
+    public List<Composition> _Comps = new();
 
-    public virtual void _Setup(Statechart<TDuct, TEvent> hostStatechart) {}
+    public virtual void _Setup() {}
 
-    public virtual void _Setup(Statechart<TDuct, TEvent> hostStatechart, ref int orderId)
+    public virtual void _Setup(ref int orderId)
     {
         // HostStatechart = hostStatechart;
         // Duct = hostStatechart.Duct;
@@ -23,12 +26,14 @@ public abstract class Composition<TDuct, TEvent>
 
     public virtual void _SetupPost() {}
 
-    public Composition<TDuct, TEvent> Add(Composition<TDuct, TEvent> comp)
+    public Composition Add(Composition comp)
     {
         _Comps.Add(comp);
         comp._BeAdded(this);
         return this;
     }
 
-    public virtual void _BeAdded(Composition<TDuct, TEvent> pComp) {}
+    public virtual void _BeAdded(Composition pComp) {}
+}
+
 }

@@ -216,10 +216,10 @@ public class CompoundImpl : StateImpl
 		foreach (Node child in HostState.GetChildren())
 		{
 			if (child is State state
-			    && state._SubmitPromoteStates(states))
-            {
-                isPromote = false;
-            }
+				&& state._SubmitPromoteStates(states))
+			{
+				isPromote = false;
+			}
 		}
 
 		if (isPromote)
@@ -310,30 +310,6 @@ public class CompoundImpl : StateImpl
 	public override void _DeduceDescendantsRecur(
 		SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
 	{
-		/*
-		If is edge state:
-			1. It is called from history substate
-			2. IsHistory arg represents IsDeepHistory
-
-		if (isEdgeState)
-		{
-			if (CurrentState != null)
-			{
-				bool isDeepHistory = isHistory;
-				CurrentState._DeduceDescendants(deducedSet, isDeepHistory, false);
-			}
-			return;
-		}
-
-		// Not edge state
-		deducedSet.Add(HostState);
-		State deducedSubstate = isHistory ? CurrentState : InitialState;
-
-		if (deducedSubstate != null)
-		{
-			deducedSubstate._DeduceDescendants(deducedSet, isHistory, false);
-		}
-		*/
 		State substateToAdd;
 		DeduceDescendantsModeEnum substateDeduceMode;
 
