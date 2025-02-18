@@ -400,9 +400,13 @@ public class Compound : State
         return _CurrentState._LoadActiveStateConfig(config, configIdx);
     }
 
+    /// <summary>
+    /// Initial state won't duplicate
+    /// </summary>
+    /// <returns></returns>
     public override Composition Duplicate()
     {
-        return new Compound(_HostStatechart, _Enters, _Exits, _InitialState);
+        return new Compound(_HostStatechart, _Enters, _Exits, null);
     }
 
     /// <summary>

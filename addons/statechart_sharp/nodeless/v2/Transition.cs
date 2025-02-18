@@ -246,15 +246,20 @@ public class Transition : Composition
         return _DeducedEnterStates;
     }
 
+    /// <summary>
+    /// Target states won't duplicate.
+    /// </summary>
+    /// <returns></returns>
     public override Composition Duplicate()
     {
+        // target states won't duplicate
         if (_IsAuto)
         {
-            return new Transition(_HostStatechart, _Guards, _Invokes, _TargetStates);
+            return new Transition(_HostStatechart, _Guards, _Invokes, null);
         }
         else
         {
-            return new Transition(_HostStatechart, _Event, _Guards, _Invokes, _TargetStates);
+            return new Transition(_HostStatechart, _Event, _Guards, _Invokes, null);
         }
     }
 
