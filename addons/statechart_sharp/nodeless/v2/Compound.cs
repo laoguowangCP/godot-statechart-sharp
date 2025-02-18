@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LGWCP.Godot.StatechartSharp.NodelessV2;
+namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
@@ -15,9 +15,10 @@ public class Compound : State
     public State _CurrentState;
 
     public Compound(
+        Statechart<TDuct, TEvent> hostStatechart,
         Action<TDuct>[] enters,
         Action<TDuct>[] exits,
-        State initialState)
+        State initialState) : base(hostStatechart)
     {
         _Enters = enters;
         _Exits = exits;
@@ -26,9 +27,9 @@ public class Compound : State
 
     public override bool _IsValidState() => true;
 
-    public override void _Setup(ref int orderId)
+    public override void _Setup(ref int parentOrderId, int substateIdx)
     {
-        base._Setup(ref orderId);
+        base._Setup(ref parentOrderId, substateIdx);
 
         // Init & collect states, transitions, actions
         // Get lower state and upper state
@@ -38,7 +39,7 @@ public class Compound : State
             var comp = _Comps[i];
             if (comp is State s)
             {
-                s._Setup(ref orderId, _Substates.Count);
+                s._Setup(ref parentOrderId, _Substates.Count);
                 _Substates.Add(s);
 
                 if (_LowerState == null)
@@ -54,11 +55,11 @@ public class Compound : State
                 {
                     continue;
                 }
-                t._Setup(ref orderId);
+                t._Setup(ref parentOrderId);
             }
             else if (comp is Reaction a)
             {
-                a._Setup(ref orderId);
+                a._Setup(ref parentOrderId);
             }
         }
 
@@ -228,12 +229,13 @@ public class Compound : State
             return handleInfo;
         }
 
-        if (@event is null) // Auto transition
+        var idx = _TransitionsKV.TryGet(@event, out var transitions);
+        if (idx >= 0)
         {
-            for (int i = 0; i < _AutoTransitions.Count; ++i)
+            for (int i = 0; i < transitions.Count; ++i)
             {
                 // If == 0, only check targetless
-                var t = _AutoTransitions[i];
+                var t = transitions[i];
                 if (handleInfo == 0)
                 {
                     if (!t._IsTargetless)
@@ -241,7 +243,6 @@ public class Compound : State
                         continue;
                     }
                 }
-
                 if (t._Check(duct))
                 {
                     enabledTransitions.Add(t);
@@ -250,35 +251,53 @@ public class Compound : State
                 }
             }
         }
-        else
+
+        return handleInfo;
+    }
+
+    public override int _SelectAutoTransitions(
+        SortedSet<Transition> enabledTransitions, TDuct duct)
+    {
+        int handleInfo = -1;
+        // if (HostState._CurrentState != null)
+        if (_CurrentState != null)
         {
-            var idx = _TransitionsKV.TryGet(@event, out var transitions);
-            if (idx >= 0)
+            handleInfo = _CurrentState._SelectAutoTransitions(enabledTransitions, duct);
+        }
+
+        /*
+        Check source's transitions:
+            - < 0, check any
+            - == 0, only check targetless
+            - > 0, do nothing
+        */
+        if (handleInfo > 0)
+        {
+            return handleInfo;
+        }
+
+        for (int i = 0; i < _AutoTransitions.Count; ++i)
+        {
+            // If == 0, only check targetless
+            var t = _AutoTransitions[i];
+            if (handleInfo == 0)
             {
-                for (int i = 0; i < transitions.Count; ++i)
+                if (!t._IsTargetless)
                 {
-                    // If == 0, only check targetless
-                    var t = transitions[i];
-                    if (handleInfo == 0)
-                    {
-                        if (!t._IsTargetless)
-                        {
-                            continue;
-                        }
-                    }
-                    if (t._Check(duct))
-                    {
-                        enabledTransitions.Add(t);
-                        handleInfo = 1;
-                        break;
-                    }
+                    continue;
                 }
+            }
+
+            if (t._Check(duct))
+            {
+                enabledTransitions.Add(t);
+                handleInfo = 1;
+                break;
             }
         }
 
         return handleInfo;
     }
-
 
     public override void _DeduceDescendantsRecur(
         SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
@@ -379,6 +398,25 @@ public class Compound : State
         ++configIdx;
 
         return _CurrentState._LoadActiveStateConfig(config, configIdx);
+    }
+
+    public override Composition Duplicate()
+    {
+        return new Compound(_HostStatechart, _Enters, _Exits, _InitialState);
+    }
+
+    /// <summary>
+    /// Use it before statechart is ready.
+    /// </summary>
+    /// <param name="initialState"></param>
+    /// <returns></returns>
+    public Compound SetInitialState(State initialState)
+    {
+        if (_HostStatechart.IsReady)
+        {
+            _InitialState = initialState;
+        }
+        return this;
     }
 }
 

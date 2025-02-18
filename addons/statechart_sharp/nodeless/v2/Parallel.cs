@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LGWCP.Godot.StatechartSharp.NodelessV2;
+namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
@@ -14,8 +14,9 @@ public class Parallel : State
     protected int ValidSubstateCnt = 0;
 
     public Parallel(
+        Statechart<TDuct, TEvent> hostStatechart,
         Action<TDuct>[] enters,
-        Action<TDuct>[] exits)
+        Action<TDuct>[] exits) : base(hostStatechart)
     {
         _Enters = enters;
         _Exits = exits;
@@ -291,12 +292,12 @@ public class Parallel : State
             return handleInfo;
         }
 
-        if (@event is null)
+        if (_TransitionsKV.TryGet(@event, out var transitions) >= 0)
         {
-            for (int i = 0; i < _AutoTransitions.Count; ++i)
+            for (int i = 0; i < transitions.Count; ++i)
             {
                 // If == 0, only check targetless
-                var t = _AutoTransitions[i];
+                var t = transitions[i];
                 if (handleInfo == 0)
                 {
                     if (!t._IsTargetless)
@@ -313,29 +314,80 @@ public class Parallel : State
                 }
             }
         }
-        else
-        {
-            if (_TransitionsKV.TryGet(@event, out var transitions) >= 0)
-            {
-                for (int i = 0; i < transitions.Count; ++i)
-                {
-                    // If == 0, only check targetless
-                    var t = transitions[i];
-                    if (handleInfo == 0)
-                    {
-                        if (!t._IsTargetless)
-                        {
-                            continue;
-                        }
-                    }
 
-                    if (t._Check(duct))
-                    {
-                        enabledTransitions.Add(t);
-                        handleInfo = 1;
-                        break;
-                    }
+        return handleInfo;
+    }
+
+
+    public override int _SelectAutoTransitions(
+        SortedSet<Transition> enabledTransitions, TDuct duct)
+    {
+        int handleInfo = -1;
+        if (ValidSubstateCnt > 0)
+        {
+            int negCnt = 0;
+            int posCnt = 0;
+            for (int i = 0; i < _Substates.Count; ++i)
+            {
+                var substate = _Substates[i];
+                if (!substate._IsValidState())
+                {
+                    continue;
                 }
+
+                int substateHandleInfo = substate._SelectAutoTransitions(enabledTransitions, duct);
+                if (substateHandleInfo < 0)
+                {
+                    negCnt += 1;
+                }
+                else if (substateHandleInfo > 0)
+                {
+                    posCnt += 1;
+                }
+            }
+
+            if (negCnt == ValidSubstateCnt) // No selected
+            {
+                handleInfo = -1;
+            }
+            else if (posCnt == ValidSubstateCnt) // All done
+            {
+                handleInfo = 1;
+            }
+            else // Selected but not all done
+            {
+                handleInfo = 0;
+            }
+        }
+
+        /*
+        Check source's transitions:
+            a) < 0, check any
+            b) == 0, check targetless
+            c) > 0, check none
+        */
+        if (handleInfo > 0)
+        {
+            return handleInfo;
+        }
+
+        for (int i = 0; i < _AutoTransitions.Count; ++i)
+        {
+            // If == 0, only check targetless
+            var t = _AutoTransitions[i];
+            if (handleInfo == 0)
+            {
+                if (!t._IsTargetless)
+                {
+                    continue;
+                }
+            }
+
+            if (t._Check(duct))
+            {
+                enabledTransitions.Add(t);
+                handleInfo = 1;
+                break;
             }
         }
 
@@ -418,6 +470,11 @@ public class Parallel : State
         }
 
         return configIdx;
+    }
+
+    public override Composition Duplicate()
+    {
+        return new Parallel(_HostStatechart, _Enters, _Exits);
     }
 }
 

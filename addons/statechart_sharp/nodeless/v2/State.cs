@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LGWCP.Util;
 
-namespace LGWCP.Godot.StatechartSharp.NodelessV2;
+namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 
 public partial class Statechart<TDuct, TEvent>
@@ -24,14 +24,23 @@ public abstract class State : Composition
     public SmallListDictionary<TEvent, List<Transition>> _TransitionsKV = new();
     public SmallListDictionary<TEvent, List<Reaction>> _ReactionsKV = new();
 
+    protected State(Statechart<TDuct, TEvent> statechart) : base(statechart) {}
+    
+    public override void _Setup(ref int orderId)
+    {
+        _Setup(ref orderId, 0);
+    }
+
     public virtual void _Setup(ref int orderId, int substateIdx)
     {
         base._Setup(ref orderId);
+        _Enters ??= Array.Empty<Action<StatechartDuct>>();
+        _Exits ??= Array.Empty<Action<StatechartDuct>>();
         // Get parent state when adding comps
         _SubstateIdx = substateIdx;
     }
 
-    public override void _BeAdded(Composition pComp)
+    public override void _BeAppended(Composition pComp)
     {
         if (pComp is State s && s._IsValidState())
         {
@@ -78,6 +87,11 @@ public abstract class State : Composition
     }
 
     public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, TEvent @event, TDuct duct)
+    {
+        return 1;
+    }
+
+    public virtual int _SelectAutoTransitions(SortedSet<Transition> enabledTransitions, TDuct duct)
     {
         return 1;
     }

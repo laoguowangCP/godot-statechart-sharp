@@ -8,29 +8,28 @@ public class Test
 
     public Test()
     {
-        var builder = new StatechartBuilder<StatechartDuct, string>();
+        var sc = new Statechart<StatechartDuct, string>();
 
         // sb.GetNewState().SetAsRootState(sc);
-        {
-            var rootState = builder.NewState();
-            var s1 = builder.NewState();
-            var s2 = builder.NewState();
+        var rootState = sc.GetCompound();
+        var s1 = sc.GetParallel();
+        var s2 = sc.GetCompound();
 
-            var t1 = builder.NewTransition();
-            var t2 = builder.NewTransition();
+        var t1 = sc.GetTransition("go");
+        var t2 = sc.GetAutoTransition();
 
-            var a1 = builder.NewReaction();
-            var a2 = builder.NewReaction();
+        var a1 = sc.GetReaction("go");
+        var a2 = sc.GetReaction("stop");
 
-            rootState
-                .Add(s1
-                    .Add(a1)
-                    .Add(t1))
-                .Add(s2
-                    .Add(t2)
-                    .Add(a2));
-            Statechart = builder.Commit(rootState);
-        }
+        rootState
+            .Append(s1
+                .Append(a1)
+                .Append(t1))
+            .Append(s2
+                .Append(t2)
+                .Append(a2));
+        sc.Ready(rootState);
+        Statechart = sc;
 
         Statechart.Step("go");
     }

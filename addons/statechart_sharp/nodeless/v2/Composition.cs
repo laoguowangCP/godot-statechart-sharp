@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace LGWCP.Godot.StatechartSharp.NodelessV2;
+namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
@@ -12,7 +12,13 @@ public partial class Statechart<TDuct, TEvent>
 public abstract class Composition
 {
     public int _OrderId;
+    public Statechart<TDuct, TEvent> _HostStatechart;
     public List<Composition> _Comps = new();
+
+    public Composition(Statechart<TDuct, TEvent> statechart)
+    {
+        _HostStatechart = statechart;
+    }
 
     public virtual void _Setup() {}
 
@@ -26,14 +32,25 @@ public abstract class Composition
 
     public virtual void _SetupPost() {}
 
-    public Composition Add(Composition comp)
+    public Composition Append(Composition comp)
     {
         _Comps.Add(comp);
-        comp._BeAdded(this);
+        comp._BeAppended(this);
         return this;
     }
 
-    public virtual void _BeAdded(Composition pComp) {}
+    public virtual void _BeAppended(Composition pComp) {}
+
+    public static bool _IsCommonHost(Composition x, Composition y)
+    {
+        if (x == null || y == null)
+        {
+            return false;
+        }
+        return x._HostStatechart == y._HostStatechart;
+    }
+
+    public abstract Composition Duplicate();
 }
 
 }

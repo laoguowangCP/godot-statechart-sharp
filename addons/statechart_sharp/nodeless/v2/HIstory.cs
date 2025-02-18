@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LGWCP.Godot.StatechartSharp.NodelessV2;
+namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 public partial class Statechart<TDuct, TEvent>
     where TDuct : StatechartDuct, new()
@@ -10,7 +10,7 @@ public partial class Statechart<TDuct, TEvent>
 
 public class History : State
 {
-    public History() {}
+    public History(Statechart<TDuct, TEvent> statechart) : base(statechart) {}
 
     public override bool _IsValidState() => false;
 
@@ -45,6 +45,11 @@ public class History : State
         SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
     {
         return;
+    }
+
+    public override Composition Duplicate()
+    {
+        return new History(_HostStatechart);
     }
 }
 
