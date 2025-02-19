@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using LGWCP.Util;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
@@ -25,7 +24,7 @@ public abstract class State : Composition
     public SmallListDictionary<TEvent, List<Reaction>> _ReactionsKV = new();
 
     protected State(Statechart<TDuct, TEvent> statechart) : base(statechart) {}
-    
+
     public override void _Setup(ref int orderId)
     {
         _Setup(ref orderId, 0);
