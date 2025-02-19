@@ -47,7 +47,7 @@ public class History : State
         return;
     }
 
-    public override Composition Duplicate()
+    public override Composition Duplicate(bool isDeepDuplicate)
     {
         return new History(_HostStatechart);
     }

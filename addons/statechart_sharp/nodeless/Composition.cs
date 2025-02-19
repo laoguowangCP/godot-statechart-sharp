@@ -50,7 +50,7 @@ public abstract class Composition
         return x._HostStatechart == y._HostStatechart;
     }
 
-    public abstract Composition Duplicate();
+    public abstract Composition Duplicate(bool isDeepDuplicate);
 }
 
 }

@@ -1,18 +1,17 @@
 using Godot;
-using LGWCP.Godot.StatechartSharp;
 using System;
 using System.Diagnostics;
+using LGWCP.Godot.StatechartSharp.Nodeless;
 
-public partial class Benchmark : Node
+public partial class BenchmarkNodeless : Node
 {
     public int TransCnt = 0;
-    protected Statechart Statechart;
+    protected Statechart<StatechartDuct, string> Statechart;
 
     public override void _Ready()
     {
-        Statechart = GetNodeOrNull<Statechart>("Statechart");
         Stopwatch sw = new();
-        StringName goEvent = "go";
+        string goEvent = "go";
         int iterCnt = 100000;
         sw.Start();
         for(int i = 0; i < iterCnt; ++i)
@@ -28,5 +27,10 @@ public partial class Benchmark : Node
     {
         ++TransCnt;
     }
-}
 
+    public void BuildStatechart()
+    {
+        Statechart = new();
+        var root = Statechart.GetParallel();
+    }
+}

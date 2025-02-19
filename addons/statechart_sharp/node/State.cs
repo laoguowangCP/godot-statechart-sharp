@@ -95,22 +95,6 @@ public partial class State : StatechartComposition
 #endregion
 
 
-#region func cache
-	public Action<SortedSet<State>> _SubmitActiveState;
-	public Action<SortedSet<State>, SortedSet<State>, SortedSet<State>, bool> _ExtendEnterRegion;
-	public Func<SortedSet<Transition>, string, int> _SelectTransitions;
-	public Action<SortedSet<State>> _DeduceDescendants;
-	public Action<SortedSet<State>, DeduceDescendantsModeEnum> _DeduceDescendantsRecur;
-	public Action<State> _HandleSubstateEnter;
-	public Action<SortedSet<Reaction>, string> _SelectReactions;
-	public Action<List<int>> _SaveAllStateConfig;
-	public Action<List<int>> _SaveActiveStateConfig;
-	public Func<int[], int, int> _LoadAllStateConfig;
-	public Func<int[], int, int> _LoadActiveStateConfig;
-
-#endregion
-
-
 #region method
 
 	public override void _Ready()
@@ -118,23 +102,6 @@ public partial class State : StatechartComposition
 		_Substates = new List<State>();
 
 		StateImpl = GetStateImpl(StateMode);
-
-		// Cache methods
-		if (StateImpl is not null)
-		{
-			_SubmitActiveState = StateImpl._SubmitActiveState;
-			_ExtendEnterRegion = StateImpl._ExtendEnterRegion;
-			_SelectTransitions = StateImpl._SelectTransitions;
-			_DeduceDescendants = StateImpl._DeduceDescendants;
-			_DeduceDescendantsRecur = StateImpl._DeduceDescendantsRecur;
-			_HandleSubstateEnter = StateImpl._HandleSubstateEnter;
-			_SelectReactions = StateImpl._SelectReactions;
-
-			_SaveAllStateConfig = StateImpl._SaveAllStateConfig;
-			_SaveActiveStateConfig = StateImpl._SaveActiveStateConfig;
-			_LoadAllStateConfig = StateImpl._LoadAllStateConfig;
-			_LoadActiveStateConfig = StateImpl._LoadActiveStateConfig;
-		}
 
 #if TOOLS
 		if (Engine.IsEditorHint())
@@ -237,6 +204,65 @@ public partial class State : StatechartComposition
 		- For now, non-history state.
 		*/
 		return StateImpl._IsValidState();
+	}
+	
+	public void _SubmitActiveState(SortedSet<State> states)
+	{
+		StateImpl._SubmitActiveState(states);
+	}
+
+	public void _ExtendEnterRegion(
+		SortedSet<State> enterRegion,
+		SortedSet<State> enterRegionEdge,
+		SortedSet<State> extraEnterRegion,
+		bool needCheckContain)
+	{
+		StateImpl._ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
+	}
+
+	public int _SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+	{
+		return StateImpl._SelectTransitions(enabledTransitions, eventName);
+	}
+
+	public void _DeduceDescendants(SortedSet<State> deducedSet)
+	{
+		StateImpl._DeduceDescendants(deducedSet);
+	}
+
+	public void _DeduceDescendantsRecur(SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
+	{
+		StateImpl._DeduceDescendantsRecur(deducedSet, deduceMode);
+	}
+
+	public void _HandleSubstateEnter(State substate)
+	{
+		StateImpl._HandleSubstateEnter(substate);
+	}
+
+    public void _SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
+	{
+		StateImpl._SelectReactions(enabledReactions, eventName);
+	}
+
+	public void _SaveAllStateConfig(List<int> snapshot)
+	{
+		StateImpl._SaveAllStateConfig(snapshot);
+	}
+
+	public void _SaveActiveStateConfig(List<int> snapshot)
+	{
+		StateImpl._SaveActiveStateConfig(snapshot);
+	}
+
+	public int _LoadAllStateConfig(int[] config, int configIdx)
+	{
+		return StateImpl._LoadAllStateConfig(config, configIdx);
+	}
+
+	public int _LoadActiveStateConfig(int[] config, int configIdx)
+	{
+		return StateImpl._LoadActiveStateConfig(config, configIdx);
 	}
 
 #if TOOLS

@@ -108,14 +108,13 @@ public class Parallel : State
                 }
 
                 // Add transition
-                var idx = _TransitionsKV.TryGet(t._Event, out var transitions);
-                if (idx >= 0)
+                if (_TransitionsKV.TryGetValue(t._Event, out var eventTransitions))
                 {
-                    transitions.Add(t);
+                    eventTransitions.Add(t);
                 }
                 else
                 {
-                    _TransitionsKV.DirectInsert(t._Event, new() { t });
+                    _TransitionsKV[t._Event] = new() { t };
                 }
             }
             else if (comp is Reaction a)
@@ -123,14 +122,13 @@ public class Parallel : State
                 a._SetupPost();
 
                 // Add reaction
-                var idx = _ReactionsKV.TryGet(a._Event, out var reactions);
-                if (idx >= 0)
+                if (_ReactionsKV.TryGetValue(a._Event, out var eventReactions))
                 {
-                    reactions.Add(a);
+                    eventReactions.Add(a);
                 }
                 else
                 {
-                    _ReactionsKV.DirectInsert(a._Event, new() { a });
+                    _ReactionsKV[a._Event] = new() { a };
                 }
             }
         }
@@ -292,7 +290,7 @@ public class Parallel : State
             return handleInfo;
         }
 
-        if (_TransitionsKV.TryGet(@event, out var transitions) >= 0)
+        if (_TransitionsKV.TryGetValue(@event, out var transitions))
         {
             for (int i = 0; i < transitions.Count; ++i)
             {
@@ -472,9 +470,19 @@ public class Parallel : State
         return configIdx;
     }
 
-    public override Composition Duplicate()
+    public override Composition Duplicate(bool isDeepDuplicate)
     {
-        return new Parallel(_HostStatechart, _Enters, _Exits);
+        var duplicant = new Parallel(_HostStatechart, _Enters, _Exits);
+        
+        if (isDeepDuplicate)
+        {
+            foreach (var comp in _Comps)
+            {
+                duplicant.Append(comp.Duplicate(isDeepDuplicate));
+            }
+        }
+
+        return duplicant;
     }
 }
 

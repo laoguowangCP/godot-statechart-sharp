@@ -119,14 +119,13 @@ public class Compound : State
                 }
 
                 // Add transition
-                var idx = _TransitionsKV.TryGet(t._Event, out var transitions);
-                if (idx >= 0)
+                if (_TransitionsKV.TryGetValue(t._Event, out var transitions))
                 {
                     transitions.Add(t);
                 }
                 else
                 {
-                    _TransitionsKV.DirectInsert(t._Event, new() { t });
+                    _TransitionsKV[t._Event] = new() { t };
                 }
             }
             else if (comp is Reaction a)
@@ -134,14 +133,13 @@ public class Compound : State
                 a._SetupPost();
 
                 // Add reaction
-                var idx = _ReactionsKV.TryGet(a._Event, out var reactions);
-                if (idx >= 0)
+                if (_ReactionsKV.TryGetValue(a._Event, out var eventReactions))
                 {
-                    reactions.Add(a);
+                    eventReactions.Add(a);
                 }
                 else
                 {
-                    _ReactionsKV.DirectInsert(a._Event, new() { a });
+                    _ReactionsKV[a._Event] = new() { a };
                 }
             }
         }
@@ -229,8 +227,7 @@ public class Compound : State
             return handleInfo;
         }
 
-        var idx = _TransitionsKV.TryGet(@event, out var transitions);
-        if (idx >= 0)
+        if (_TransitionsKV.TryGetValue(@event, out var transitions))
         {
             for (int i = 0; i < transitions.Count; ++i)
             {
@@ -404,9 +401,19 @@ public class Compound : State
     /// Initial state won't duplicate
     /// </summary>
     /// <returns></returns>
-    public override Composition Duplicate()
+    public override Composition Duplicate(bool isDeepDuplicate)
     {
-        return new Compound(_HostStatechart, _Enters, _Exits, null);
+        var duplicant = new Compound(_HostStatechart, _Enters, _Exits, null);
+
+        if (isDeepDuplicate)
+        {
+            foreach (var comp in _Comps)
+            {
+                duplicant.Append(comp.Duplicate(isDeepDuplicate));
+            }
+        }
+
+        return duplicant;
     }
 
     /// <summary>

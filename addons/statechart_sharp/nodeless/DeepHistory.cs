@@ -43,7 +43,7 @@ public class DeepHistory : State
         return;
     }
     
-    public override Composition Duplicate()
+    public override Composition Duplicate(bool isDeepDuplicate)
     {
         return new DeepHistory(_HostStatechart);
     }

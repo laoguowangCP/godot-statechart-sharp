@@ -26,7 +26,7 @@ public partial class Statechart : StatechartComposition
 	protected int EventCount;
 	protected State RootState;
 	protected SortedSet<State> ActiveStates;
-	protected Queue<string> QueuedEvents;
+	protected Queue<StringName> QueuedEvents;
 	protected SortedSet<Transition> EnabledTransitions;
 	protected SortedSet<Transition> EnabledFilteredTransitions;
 	protected SortedSet<State> ExitSet;
@@ -49,7 +49,7 @@ public partial class Statechart : StatechartComposition
 		EventCount = 0;
 
 		ActiveStates = new SortedSet<State>(new StatechartComparer<State>());
-		QueuedEvents = new Queue<string>();
+		QueuedEvents = new Queue<StringName>();
 		EnabledTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
 		EnabledFilteredTransitions = new SortedSet<Transition>(new StatechartComparer<Transition>());
 		ExitSet = new SortedSet<State>(new StatechartReversedComparer<State>());
@@ -152,10 +152,10 @@ public partial class Statechart : StatechartComposition
 			return;
 		}
 
-		_Step(eventName.ToString());
+		_Step(eventName);
 	}
 
-	public void _Step(string eventName)
+	public void _Step(StringName eventName)
 	{
 		if (IsRunning)
 		{
@@ -175,7 +175,7 @@ public partial class Statechart : StatechartComposition
 
 		while (QueuedEvents.Count > 0)
 		{
-			string nextEvent = QueuedEvents.Dequeue();
+			StringName nextEvent = QueuedEvents.Dequeue();
 			HandleEvent(nextEvent);
 		}
 
@@ -293,7 +293,7 @@ public partial class Statechart : StatechartComposition
 		return true;
 	}
 
-	protected void HandleEvent(string eventName)
+	protected void HandleEvent(StringName eventName)
 	{
 		if (RootState == null)
 		{

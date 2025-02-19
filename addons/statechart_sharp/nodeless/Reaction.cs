@@ -37,7 +37,7 @@ public class Reaction : Composition
         }
     }
 
-    public override Composition Duplicate()
+    public override Composition Duplicate(bool isDeepDuplicate)
     {
         return new Reaction(_HostStatechart, _Event, _Invokes);
     }

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using LGWCP.Util;
+
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
@@ -20,8 +20,8 @@ public abstract class State : Composition
     public Action<TDuct>[] _Exits;
     public List<State> _Substates = new();
     public List<Transition> _AutoTransitions = new();
-    public SmallListDictionary<TEvent, List<Transition>> _TransitionsKV = new();
-    public SmallListDictionary<TEvent, List<Reaction>> _ReactionsKV = new();
+    public Dictionary<TEvent, List<Transition>> _TransitionsKV = new();
+    public Dictionary<TEvent, List<Reaction>> _ReactionsKV = new();
 
     protected State(Statechart<TDuct, TEvent> statechart) : base(statechart) {}
 
@@ -105,7 +105,7 @@ public abstract class State : Composition
 
     public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions, TEvent @event)
     {
-        if (_ReactionsKV.TryGet(@event, out var reactions) >= 0)
+        if (_ReactionsKV.TryGetValue(@event, out var reactions))
         {
             for (int i = 0; i < reactions.Count; ++i)
             {

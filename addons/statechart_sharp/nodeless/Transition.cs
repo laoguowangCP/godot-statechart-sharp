@@ -250,7 +250,7 @@ public class Transition : Composition
     /// Target states won't duplicate.
     /// </summary>
     /// <returns></returns>
-    public override Composition Duplicate()
+    public override Composition Duplicate(bool isDeepDuplicate)
     {
         // target states won't duplicate
         if (_IsAuto)
