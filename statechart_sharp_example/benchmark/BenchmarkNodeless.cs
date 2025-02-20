@@ -32,5 +32,10 @@ public partial class BenchmarkNodeless : Node
     {
         Statechart = new();
         var root = Statechart.GetParallel();
+        var a = Statechart.GetCompound();
+        var ax = Statechart.GetParallel();
+        var ax1 = Statechart.GetCompound();
+        var x1_y2 = Statechart.GetTransition("go", invokes: new[] { TI_AddTransCnt });
+        var ax1t1 = Statechart.GetTransition("go");
     }
 }
