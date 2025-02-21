@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartStepAsserter.cs" id="1_25sb2"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/util/StatechartSnapshot.cs" id="2_nct1a"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/StatechartProxy.cs" id="3_kujuu"]
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartProxy.cs" id="3_kujuu"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="4_0cram"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="5_i42ee"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="5_koc6q"]

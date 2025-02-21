@@ -1,6 +1,5 @@
 using Godot;
 using LGWCP.Godot.StatechartSharp;
-using System;
 using System.Diagnostics;
 
 public partial class Benchmark : Node

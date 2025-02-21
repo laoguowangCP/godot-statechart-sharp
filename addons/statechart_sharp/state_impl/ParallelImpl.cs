@@ -1,6 +1,5 @@
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace LGWCP.Godot.StatechartSharp;
@@ -165,8 +164,11 @@ public class ParallelImpl : StateImpl
 		// Pending substate is history
 		if (!substateToPend._IsValidState())
 		{
+			/*
 			return enterRegionUnextended.Any<State>(
 				state => HostState._IsAncestorStateOf(state));
+			*/
+			return HostState._IsAncestorStateOfAny(enterRegionUnextended);
 		}
 
 		// Any history substate in region, conflicts.

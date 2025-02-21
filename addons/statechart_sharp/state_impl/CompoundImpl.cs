@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
 
@@ -161,8 +160,11 @@ public class CompoundImpl : StateImpl
 		SortedSet<State> enterRegionUnextended)
 	{
 		// Conflicts if any substate is already exist in region
+		/*
 		return enterRegionUnextended.Any<State>(
 			state => HostState._IsAncestorStateOf(state));
+		*/
+		return HostState._IsAncestorStateOfAny(enterRegionUnextended);
 	}
 
 	public override void _ExtendEnterRegion(

@@ -1,6 +1,5 @@
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -371,9 +370,14 @@ public partial class Statechart : StatechartComposition
 				continue;
 			}
 
-			bool hasConfliction = ExitSet.Contains(transition._SourceState)
-				|| ExitSet.Any<State>(
-					state => transition._LcaState._IsAncestorStateOf(state));
+
+            /*
+            bool hasConfliction = ExitSet.Contains(transition._SourceState)
+                || ExitSet.Any<State>(
+                    state => transition._LcaState._IsAncestorStateOf(state));
+            */
+            bool hasConfliction = ExitSet.Contains(transition._SourceState)
+				|| transition._LcaState._IsAncestorStateOfAnyReversed(ExitSet);
 
 			if (hasConfliction)
 			{

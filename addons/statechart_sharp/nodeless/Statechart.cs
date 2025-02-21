@@ -174,6 +174,7 @@ public partial class Statechart<TDuct, TEvent>
                 || ExitSet.Any<State>(
                     state => transition._LcaState._IsAncestorStateOf(state));
 
+
             if (hasConfliction)
             {
                 continue;
