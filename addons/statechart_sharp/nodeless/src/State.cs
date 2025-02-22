@@ -78,6 +78,62 @@ public abstract class State : Composition
             && id <= _UpperState._OrderId;
     }
 
+    public bool _IsAncestorStateOfAny(SortedSet<State> states)
+    {
+        bool isAncestorStateOfAny = false;
+        if (_LowerState == null || _UpperState == null)
+        {
+            return false;
+        }
+        int lcaLowerId = _LowerState._OrderId;
+        int lcaUpperId = _UpperState._OrderId;
+        foreach (var state in states)
+        {
+            int orderId = state._OrderId;
+            if (orderId < lcaLowerId)
+            {
+                continue;
+            }
+            else if (orderId > lcaUpperId)
+            {
+                break;
+            }
+            else
+            {
+                isAncestorStateOfAny = true;
+                break;
+            }
+        }
+
+        return isAncestorStateOfAny;
+    }
+
+    public bool _IsAncestorStateOfAnyReversed(SortedSet<State> states)
+    {
+        bool isAncestorStateOfAny = false;
+        int lcaLowerId = _LowerState._OrderId;
+        int lcaUpperId = _UpperState._OrderId;
+        foreach (var state in states)
+        {
+            int orderId = state._OrderId;
+            if (orderId > lcaUpperId)
+            {
+                continue;
+            }
+            else if (orderId < lcaLowerId)
+            {
+                break;
+            }
+            else
+            {
+                isAncestorStateOfAny = true;
+                break;
+            }
+        }
+
+        return isAncestorStateOfAny;
+    }
+
     public virtual void _SubmitActiveState(SortedSet<State> activeStates) {}
 
     public virtual bool _IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)

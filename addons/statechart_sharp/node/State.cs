@@ -210,6 +210,7 @@ public partial class State : StatechartComposition
 
 		return isAncestorStateOfAny;
 	}
+
 	public bool _IsAncestorStateOfAnyReversed(SortedSet<State> states)
 	{
 		bool isAncestorStateOfAny = false;

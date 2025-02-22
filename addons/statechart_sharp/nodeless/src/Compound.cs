@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
@@ -150,8 +149,7 @@ public class Compound : State
         SortedSet<State> enterRegionUnextended)
     {
         // Conflicts if any substate is already exist in region
-        return enterRegionUnextended.Any<State>(
-            state => _IsAncestorStateOf(state));
+        return _IsAncestorStateOfAny(enterRegionUnextended);
     }
 
     public override void _ExtendEnterRegion(

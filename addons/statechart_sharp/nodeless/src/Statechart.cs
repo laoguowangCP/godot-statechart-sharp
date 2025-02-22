@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
@@ -26,11 +25,11 @@ public partial class Statechart<TDuct, TEvent>
     protected bool IsReady = false;
 
     public Statechart(
-        TDuct duct = default,
+        TDuct duct = null,
         int maxInternalEventCount = 8,
         int maxAutoTransitionRound = 8)
     {
-        Duct = duct;
+        Duct = duct ?? new();
         MaxInternalEventCount = maxInternalEventCount;
         MaxAutoTransitionRound = maxAutoTransitionRound;
 
@@ -171,8 +170,7 @@ public partial class Statechart<TDuct, TEvent>
             }
 
             bool hasConfliction = ExitSet.Contains(transition._SourceState)
-                || ExitSet.Any<State>(
-                    state => transition._LcaState._IsAncestorStateOf(state));
+                || transition._LcaState._IsAncestorStateOfAnyReversed(ExitSet);
 
 
             if (hasConfliction)

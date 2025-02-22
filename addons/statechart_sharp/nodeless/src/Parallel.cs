@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
@@ -148,8 +147,7 @@ public class Parallel : State
         // Pending substate is history
         if (!substateToPend._IsValidState())
         {
-            return enterRegionUnextended.Any<State>(
-                state => _IsAncestorStateOf(state));
+            return _IsAncestorStateOfAny(enterRegionUnextended);
         }
 
         // Any history substate in region, conflicts.

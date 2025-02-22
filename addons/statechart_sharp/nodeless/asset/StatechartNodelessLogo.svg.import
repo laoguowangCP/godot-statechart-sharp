@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drqq57fyijrvn"
-path="res://.godot/imported/StatechartProxy.svg-88f95a41c9e940dc391a254f3380ffaf.ctex"
+uid="uid://disngho088khr"
+path="res://.godot/imported/StatechartNodelessLogo.svg-0ccf367e8b4de662d925735254af4a8f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/statechart_sharp/icon/StatechartProxy.svg"
-dest_files=["res://.godot/imported/StatechartProxy.svg-88f95a41c9e940dc391a254f3380ffaf.ctex"]
+source_file="res://addons/statechart_sharp/nodeless/asset/StatechartNodelessLogo.svg"
+dest_files=["res://.godot/imported/StatechartNodelessLogo.svg-0ccf367e8b4de662d925735254af4a8f.ctex"]
 
 [params]
 
