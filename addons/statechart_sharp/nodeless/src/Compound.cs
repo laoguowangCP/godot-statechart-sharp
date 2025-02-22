@@ -144,7 +144,12 @@ public class Compound : State
         }
     }
 
-    public override bool _IsConflictToEnterRegion(
+        public override void _HandleSubstateEnter(State substate)
+        {
+            _CurrentState = substate;
+        }
+
+        public override bool _IsConflictToEnterRegion(
         State substateToPend,
         SortedSet<State> enterRegionUnextended)
     {
@@ -421,7 +426,7 @@ public class Compound : State
     /// <returns></returns>
     public Compound SetInitialState(State initialState)
     {
-        if (_HostStatechart.IsReady)
+        if (!_HostStatechart.IsReady)
         {
             _InitialState = initialState;
         }

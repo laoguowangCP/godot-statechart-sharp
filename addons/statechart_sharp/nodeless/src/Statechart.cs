@@ -115,7 +115,7 @@ public partial class Statechart<TDuct, TEvent>
         DoTransitions();
 
         // 3. Select and do automatic transitions
-        for (int i = 1; i <= MaxAutoTransitionRound; ++i)
+        for (int i = 0; i < MaxAutoTransitionRound; ++i)
         {
             RootState._SelectAutoTransitions(EnabledTransitions, Duct);
 

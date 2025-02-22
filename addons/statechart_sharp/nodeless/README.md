@@ -4,6 +4,6 @@
 
 # Statechart Sharp Nodeless
 
-## Diff to statechart sharp
+
 
 

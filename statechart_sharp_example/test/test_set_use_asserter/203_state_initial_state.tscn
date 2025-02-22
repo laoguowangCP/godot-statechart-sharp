@@ -34,7 +34,7 @@ IsWaitParentReady = false
 [node name="Root" type="Node" parent="StatechartProxy/Statechart"]
 script = ExtResource("5_tnorh")
 
-[node name="Hisotry" type="Node" parent="StatechartProxy/Statechart/Root"]
+[node name="History" type="Node" parent="StatechartProxy/Statechart/Root"]
 script = ExtResource("5_tnorh")
 StateMode = 2
 

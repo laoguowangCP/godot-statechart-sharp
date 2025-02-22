@@ -69,12 +69,12 @@ public partial class BenchmarkNodeless : Node
         var y2 = (Statechart<StatechartDuct, string>.State)y._Comps[1];
         ax1_y2.SetTargetState(new[] { y2 });
         x1._Comps.Insert(0, ax1_y2);
-        ax1_y2._SourceState = x1;
+        ax1_y2._BeAppended(x1);
 
         var ay2_x1 = Statechart.GetTransition(GoEvent, invokes: new[] { TI_AddTransCnt });
         ay2_x1.SetTargetState(new[] { x1 });
         y2._Comps.Insert(0, ay2_x1);
-        ay2_x1._SourceState = y2;
+        ay2_x1._BeAppended(y2);
 
         var bx1_y2 = Statechart.GetTransition(GoEvent, invokes: new[] { TI_AddTransCnt });
         var bx = b._Comps[0];
@@ -83,12 +83,12 @@ public partial class BenchmarkNodeless : Node
         var by2 = (Statechart<StatechartDuct, string>.State)by._Comps[1];
         bx1_y2.SetTargetState(new[] { by2 });
         bx1._Comps.Insert(0, bx1_y2);
-        bx1_y2._SourceState = bx1;
+        bx1_y2._BeAppended(bx1);
 
         var by2_x1 = Statechart.GetTransition(GoEvent, invokes: new[] { TI_AddTransCnt });
         by2_x1.SetTargetState(new[] { bx1 });
         by2._Comps.Insert(0, by2_x1);
-        by2_x1._SourceState = by2;
+        by2_x1._BeAppended(by2);
 
         Statechart.Ready(root);
     }
