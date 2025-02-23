@@ -216,6 +216,218 @@ public partial class TestNodeless : Node
             Tests.Add(snapshotTest);
         }
 
+        // 204 State Enter & Exit
+        {
+            var sc = new Statechart<StatechartDuct, string>();
+            var root = sc.GetCompound();
+            var a = sc.GetParallel();
+            var b = sc.GetParallel();
+            var t = sc.GetTransition(stepEvent, targetStates: new[] { b });
+            a
+                .Append(t)
+                .Append(sc.GetCompound())
+                .Append(sc.GetCompound());
+            b
+                .Append(sc.GetCompound())
+                .Append(sc.GetCompound());
+            root
+                .Append(a)
+                .Append(b);
+            sc.Ready(root);
+            
+            var snapshotTest = new SnapshotTest<StatechartDuct, string>(
+                "204 State Enter & Exit",
+                sc,
+                stepEvent,
+                new() {
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 0 }
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 1 }
+                    },
+                }
+            );
+            Tests.Add(snapshotTest);
+        }
+
+        // 205 State History 1
+        {
+            var sc = new Statechart<StatechartDuct, string>();
+            var root = sc.GetCompound();
+            var init = sc.GetCompound();
+            var a = sc.GetCompound();
+            var ax = sc.GetCompound();
+            var ay = sc.GetCompound();
+            var ay1 = sc.GetCompound();
+            var ay2 = sc.GetCompound();
+            var aHistory = sc.GetHistory();
+            var b = sc.GetCompound();
+            var bx = sc.GetCompound();
+            var by = sc.GetCompound();
+            var bHistory = sc.GetHistory();
+
+            var init_2_ay2 = sc.GetTransition(stepEvent, targetStates: new[] { ay2 });
+            var a_2_bHistory = sc.GetTransition(stepEvent, targetStates: new[] { bHistory });
+            var b_2_aHistory = sc.GetTransition(stepEvent, targetStates: new[] { aHistory });
+
+            root
+                .Append(init
+                    .Append(init_2_ay2))
+                .Append(a
+                    .Append(a_2_bHistory)
+                    .Append(ax)
+                    .Append(ay
+                        .Append(ay1)
+                        .Append(ay2))
+                    .Append(aHistory))
+                .Append(b
+                    .Append(bx)
+                    .Append(by)
+                    .Append(bHistory)
+                    .Append(b_2_aHistory));
+            
+            sc.Ready(root);
+
+            var snapshotTest = new SnapshotTest<StatechartDuct, string>(
+                "205 State History 1",
+                sc,
+                stepEvent,
+                new() {
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 0, 0, 0, 0 }
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 1, 1, 1, 0 }
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 2, 1, 1, 0 }
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 1, 1, 0, 0 }
+                    }
+                }
+            );
+            Tests.Add(snapshotTest);
+        }
+
+        // 206 State History 2
+        {
+            var sc = new Statechart<StatechartDuct, string>();
+            var root = sc.GetParallel();
+            var init = sc.GetCompound();
+            var a = sc.GetParallel();
+            var ax = sc.GetCompound();
+            var ay = sc.GetCompound();
+            var aHistory = sc.GetHistory();
+            var init_2_aHistory = sc.GetTransition(stepEvent, targetStates: new[] { aHistory });
+
+            root
+                .Append(init
+                    .Append(init_2_aHistory))
+                .Append(a
+                    .Append(ax)
+                    .Append(ay)
+                    .Append(aHistory));
+            
+            sc.Ready(root);
+
+            var snapshotTest = new SnapshotTest<StatechartDuct, string>(
+                "206 State History 2",
+                sc,
+                stepEvent,
+                new() {
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = Array.Empty<int>()
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = Array.Empty<int>()
+                    }
+                }
+            );
+            Tests.Add(snapshotTest);
+        }
+
+        // 207 State Deep Hsitory 1
+        {
+            var sc = new Statechart<StatechartDuct, string>();
+            var root = sc.GetCompound();
+            var init = sc.GetCompound();
+            var a = sc.GetCompound();
+            var ax = sc.GetCompound();
+            var ay = sc.GetCompound();
+            var ay1 = sc.GetCompound();
+            var ay2 = sc.GetCompound();
+            var aDeepHistory = sc.GetDeepHistory();
+            var b = sc.GetCompound();
+            var bx = sc.GetCompound();
+            var by = sc.GetCompound();
+            var by1 = sc.GetCompound();
+            var by2 = sc.GetCompound();
+            var bDeepHistory = sc.GetDeepHistory();
+
+            var init_2_ay2 = sc.GetTransition(stepEvent, targetStates: new[] { ay2 });
+            var a_2_bDeepHistory = sc.GetTransition(stepEvent, targetStates: new[] { bDeepHistory });
+            var b_2_aDeepHistory = sc.GetTransition(stepEvent, targetStates: new[] { aDeepHistory });
+
+            root
+                .Append(init
+                    .Append(init_2_ay2))
+                .Append(a
+                    .Append(ax)
+                    .Append(ay
+                        .Append(ay1)
+                        .Append(ay2))
+                    .Append(aDeepHistory)
+                    .Append(a_2_bDeepHistory))
+                .Append(b
+                    .SetInitialState(by)
+                    .Append(bx)
+                    .Append(by
+                        .SetInitialState(by2)
+                        .Append(by1)
+                        .Append(by2
+                            .Append(b_2_aDeepHistory)))
+                    .Append(bDeepHistory));
+
+            sc.Ready(root);
+
+            var snapshotTest = new SnapshotTest<StatechartDuct, string>(
+                "207 State Deep Hsitory 1",
+                sc,
+                stepEvent,
+                new() {
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 0, 0, 0, 1, 1 }
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 1, 1, 1, 1, 1 }
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 2, 1, 1, 1, 1 }
+                    },
+                    new StatechartSnapshot() {
+                        IsAllStateConfig = true,
+                        Config = new int[] { 1, 1, 1, 1, 1 }
+                    }
+                }
+            );
+            Tests.Add(snapshotTest);
+
+        }
+
+
 
     }
 
