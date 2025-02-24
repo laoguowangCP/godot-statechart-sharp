@@ -16,7 +16,12 @@ public class StatechartSnapshot : IEquatable<StatechartSnapshot>
         {
             return false;
         }
-        
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
         if (IsAllStateConfig != other.IsAllStateConfig)
         {
             return false;
