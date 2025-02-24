@@ -19,6 +19,11 @@ public partial class StatechartSnapshot : Resource, IEquatable<StatechartSnapsho
         {
             return false;
         }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
         
         if (IsAllStateConfig != other.IsAllStateConfig)
         {
