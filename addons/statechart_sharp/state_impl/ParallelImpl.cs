@@ -1,6 +1,5 @@
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace LGWCP.Godot.StatechartSharp;
@@ -103,13 +102,13 @@ public class ParallelImpl : StateImpl
 				}
 
 				// Add transition
-				if (Transitions.TryGetValue(t._EventName, out var eventTransitions))
+				if (TransitionsKV.TryGetValue(t._EventName, out var eventTransitions))
 				{
 					eventTransitions.Add(t);
 				}
 				else
 				{
-					Transitions[t._EventName] = new() { t };
+					TransitionsKV[t._EventName] = new() { t };
 				}
 			}
 			else if (child is Reaction a)
@@ -117,13 +116,13 @@ public class ParallelImpl : StateImpl
 				a._SetupPost();
 
 				// Add reaction
-				if (Reactions.TryGetValue(a._EventName, out var eventReactions))
+				if (ReactionsKV.TryGetValue(a._EventName, out var eventReactions))
 				{
 					eventReactions.Add(a);
 				}
 				else
 				{
-					Reactions[a._EventName] = new() { a };
+					ReactionsKV[a._EventName] = new() { a };
 				}
 			}
 		}
@@ -165,8 +164,11 @@ public class ParallelImpl : StateImpl
 		// Pending substate is history
 		if (!substateToPend._IsValidState())
 		{
+			/*
 			return enterRegionUnextended.Any<State>(
 				state => HostState._IsAncestorStateOf(state));
+			*/
+			return HostState._IsAncestorStateOfAny(enterRegionUnextended);
 		}
 
 		// Any history substate in region, conflicts.
@@ -253,7 +255,7 @@ public class ParallelImpl : StateImpl
 	}
 
 	public override int _SelectTransitions(
-		SortedSet<Transition> enabledTransitions, string eventName)
+		SortedSet<Transition> enabledTransitions, StringName eventName)
 	{
 		int handleInfo = -1;
 		if (ValidSubstateCnt > 0)
@@ -326,11 +328,12 @@ public class ParallelImpl : StateImpl
 		}
 		else
 		{
-			if (Transitions.TryGetValue(eventName, out var eventTransitions))
+			if (TransitionsKV.TryGetValue(eventName, out var transitions))
 			{
-				foreach (Transition t in eventTransitions)
+				for (int i = 0; i < transitions.Count; ++i)
 				{
 					// If == 0, only check targetless
+					var t = transitions[i];
 					if (handleInfo == 0)
 					{
 						if (!t._IsTargetless)

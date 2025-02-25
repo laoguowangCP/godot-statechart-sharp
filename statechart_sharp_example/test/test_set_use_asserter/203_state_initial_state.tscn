@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartStepAsserter.cs" id="1_3f172"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/util/StatechartSnapshot.cs" id="2_o240m"]
-[ext_resource type="Script" path="res://addons/statechart_sharp/node/StatechartProxy.cs" id="3_jmc1f"]
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartProxy.cs" id="3_jmc1f"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="4_j6luh"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="5_tnorh"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="6_i2mn7"]
@@ -34,7 +34,7 @@ IsWaitParentReady = false
 [node name="Root" type="Node" parent="StatechartProxy/Statechart"]
 script = ExtResource("5_tnorh")
 
-[node name="Hisotry" type="Node" parent="StatechartProxy/Statechart/Root"]
+[node name="History" type="Node" parent="StatechartProxy/Statechart/Root"]
 script = ExtResource("5_tnorh")
 StateMode = 2
 

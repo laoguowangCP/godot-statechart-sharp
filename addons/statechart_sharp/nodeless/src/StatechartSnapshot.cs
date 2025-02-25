@@ -1,17 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Godot;
 
 
-namespace LGWCP.Godot.StatechartSharp;
+namespace LGWCP.Godot.StatechartSharp.Nodeless;
 
 
-[Tool]
-[GlobalClass]
-public partial class StatechartSnapshot : Resource, IEquatable<StatechartSnapshot>
+public class StatechartSnapshot : IEquatable<StatechartSnapshot>
 {
-    [Export] public bool IsAllStateConfig;
-    [Export] public int[] Config;
+    public bool IsAllStateConfig;
+    public List<int> Config = new();
 
     public bool Equals(StatechartSnapshot other)
     {
@@ -24,7 +22,7 @@ public partial class StatechartSnapshot : Resource, IEquatable<StatechartSnapsho
         {
             return true;
         }
-        
+
         if (IsAllStateConfig != other.IsAllStateConfig)
         {
             return false;

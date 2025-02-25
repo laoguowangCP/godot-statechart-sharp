@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwnjxcytn34rb"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/benchmark/BenchmarkNodeless.cs" id="1_q6od5"]
+
+[node name="BenchmarkNodeless" type="Node"]
+script = ExtResource("1_q6od5")

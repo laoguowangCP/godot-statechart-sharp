@@ -58,7 +58,7 @@ public partial class StatechartStepAsserter : Node
         StatechartProxy.Step(StepName);
     }
 
-    protected bool GetNextSnapshotAsserter(out Statechart.SnapshotAsserter asserter)
+    protected bool GetNextSnapshotAsserter(out SnapshotAsserter asserter)
     {
         if (Snapshots.Count == 0)
         {

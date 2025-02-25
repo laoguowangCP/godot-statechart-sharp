@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
 
@@ -130,13 +129,13 @@ public class CompoundImpl : StateImpl
 				}
 
 				// Add transition
-				if (Transitions.TryGetValue(t._EventName, out var eventTransitions))
+				if (TransitionsKV.TryGetValue(t._EventName, out var transitions))
 				{
-					eventTransitions.Add(t);
+					transitions.Add(t);
 				}
 				else
 				{
-					Transitions[t._EventName] = new() { t };
+					TransitionsKV[t._EventName] = new() { t };
 				}
 			}
 			else if (child is Reaction a)
@@ -144,13 +143,13 @@ public class CompoundImpl : StateImpl
 				a._SetupPost();
 
 				// Add reaction
-				if (Reactions.TryGetValue(a._EventName, out var eventReactions))
+				if (ReactionsKV.TryGetValue(a._EventName, out var eventReactions))
 				{
 					eventReactions.Add(a);
 				}
 				else
 				{
-					Reactions[a._EventName] = new() { a };
+					ReactionsKV[a._EventName] = new() { a };
 				}
 			}
 		}
@@ -161,8 +160,11 @@ public class CompoundImpl : StateImpl
 		SortedSet<State> enterRegionUnextended)
 	{
 		// Conflicts if any substate is already exist in region
+		/*
 		return enterRegionUnextended.Any<State>(
 			state => HostState._IsAncestorStateOf(state));
+		*/
+		return HostState._IsAncestorStateOfAny(enterRegionUnextended);
 	}
 
 	public override void _ExtendEnterRegion(
@@ -216,10 +218,10 @@ public class CompoundImpl : StateImpl
 		foreach (Node child in HostState.GetChildren())
 		{
 			if (child is State state
-			    && state._SubmitPromoteStates(states))
-            {
-                isPromote = false;
-            }
+				&& state._SubmitPromoteStates(states))
+			{
+				isPromote = false;
+			}
 		}
 
 		if (isPromote)
@@ -238,7 +240,7 @@ public class CompoundImpl : StateImpl
 	}
 
 	public override int _SelectTransitions(
-		SortedSet<Transition> enabledTransitions, string eventName)
+		SortedSet<Transition> enabledTransitions, StringName eventName)
 	{
 		int handleInfo = -1;
 		// if (HostState._CurrentState != null)
@@ -281,11 +283,12 @@ public class CompoundImpl : StateImpl
 		}
 		else
 		{
-			if (Transitions.TryGetValue(eventName, out var eventTransitions))
+			if (TransitionsKV.TryGetValue(eventName, out var transitions))
 			{
-				foreach (Transition t in eventTransitions)
+				for (int i = 0; i < transitions.Count; ++i)
 				{
 					// If == 0, only check targetless
+					var t = transitions[i];
 					if (handleInfo == 0)
 					{
 						if (!t._IsTargetless)
@@ -310,30 +313,6 @@ public class CompoundImpl : StateImpl
 	public override void _DeduceDescendantsRecur(
 		SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
 	{
-		/*
-		If is edge state:
-			1. It is called from history substate
-			2. IsHistory arg represents IsDeepHistory
-
-		if (isEdgeState)
-		{
-			if (CurrentState != null)
-			{
-				bool isDeepHistory = isHistory;
-				CurrentState._DeduceDescendants(deducedSet, isDeepHistory, false);
-			}
-			return;
-		}
-
-		// Not edge state
-		deducedSet.Add(HostState);
-		State deducedSubstate = isHistory ? CurrentState : InitialState;
-
-		if (deducedSubstate != null)
-		{
-			deducedSubstate._DeduceDescendants(deducedSet, isHistory, false);
-		}
-		*/
 		State substateToAdd;
 		DeduceDescendantsModeEnum substateDeduceMode;
 

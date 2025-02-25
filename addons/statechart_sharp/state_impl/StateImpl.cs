@@ -20,9 +20,9 @@ public class StateImpl
         get => HostState._UpperState;
         set => HostState._UpperState = value;
     }
-	protected Dictionary<string, List<Transition>> Transitions = new();
+	protected Dictionary<StringName, List<Transition>> TransitionsKV = new();
     protected List<Transition> AutoTransitions = new();
-	protected Dictionary<string, List<Reaction>> Reactions = new();
+	protected Dictionary<StringName, List<Reaction>> ReactionsKV = new();
 
     public StateImpl(State state)
     {
@@ -63,7 +63,7 @@ public class StateImpl
         return false;
     }
 
-    public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, string eventName)
+    public virtual int _SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
     {
         return 1;
     }
@@ -76,13 +76,13 @@ public class StateImpl
 
     public virtual void _HandleSubstateEnter(State substate) {}
 
-    public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions, string eventName)
+    public virtual void _SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
     {
-        if (Reactions.TryGetValue(eventName, out var eventReactions))
+        if (ReactionsKV.TryGetValue(eventName, out var reactions))
         {
-            foreach (Reaction a in eventReactions)
+            for (int i = 0; i < reactions.Count; ++i)
             {
-                enabledReactions.Add(a);
+                enabledReactions.Add(reactions[i]);
             }
         }
     }

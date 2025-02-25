@@ -4,8 +4,6 @@ using Godot;
 namespace LGWCP.Godot.StatechartSharp;
 
 
-[GlobalClass]
-[Icon("res://addons/statechart_sharp/icon/StatechartProxy.svg")]
 public partial class StatechartProxy : Node
 {
 

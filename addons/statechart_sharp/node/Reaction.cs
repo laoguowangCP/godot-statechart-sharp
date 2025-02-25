@@ -58,7 +58,7 @@ public partial class Reaction : StatechartComposition
 #endif
         ;
 
-    public string _EventName;
+    public StringName _EventName;
     protected StatechartDuct Duct;
 
 #endregion
