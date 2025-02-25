@@ -9,7 +9,7 @@ namespace LGWCP.Godot.StatechartSharp.Nodeless;
 public class StatechartSnapshot : IEquatable<StatechartSnapshot>
 {
     public bool IsAllStateConfig;
-    public List<int> Config;
+    public List<int> Config = new();
 
     public bool Equals(StatechartSnapshot other)
     {

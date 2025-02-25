@@ -30,11 +30,11 @@ public partial class TestNodeless : Node
                 GD.PrintRich("[color=red]Snapshot ", currIdx, " is not expected.");
                 GD.PrintRich("[color=red]  Expected snapshot:[/color]");
                 GD.PrintRich("[color=red]  - IsAllStateConfig: ", snapshot.IsAllStateConfig, "[/color]");
-                GD.PrintRich("[color=red]  - Config: ", IntArrayToStr(snapshot.Config), "[/color]");
+                GD.PrintRich("[color=red]  - Config: ", IntListToStr(snapshot.Config), "[/color]");
                 var realSnapshot = test.RealSnapshot;
                 GD.PrintRich("[color=red]  Current snapshot:[/color]");
                 GD.PrintRich("[color=red]  - IsAllStateConfig: ", realSnapshot.IsAllStateConfig, "[/color]");
-                GD.PrintRich("[color=red]  - Config: ", IntArrayToStr(realSnapshot.Config), "[/color]\n");
+                GD.PrintRich("[color=red]  - Config: ", IntListToStr(realSnapshot.Config), "[/color]\n");
             }
         }
 
@@ -79,7 +79,7 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = Array.Empty<int>()
+                        Config = new()
                     }
                 }
             );
@@ -107,11 +107,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1 }
+                        Config = new() { 1 }
                     }
                 }
             );
@@ -164,7 +164,7 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     }
                 }
             );
@@ -205,11 +205,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1, 0 }
+                        Config = new() { 1, 1, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 2, 1, 0 }
+                        Config = new() { 2, 1, 0 }
                     },
                 }
             );
@@ -242,11 +242,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1 }
+                        Config = new() { 1 }
                     },
                 }
             );
@@ -298,19 +298,19 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0, 0, 0 }
+                        Config = new() { 0, 0, 0, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1, 1, 0 }
+                        Config = new() { 1, 1, 1, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 2, 1, 1, 0 }
+                        Config = new() { 2, 1, 1, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1, 0, 0 }
+                        Config = new() { 1, 1, 0, 0 }
                     }
                 }
             );
@@ -345,11 +345,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = Array.Empty<int>()
+                        Config = new()
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = Array.Empty<int>()
+                        Config = new()
                     }
                 }
             );
@@ -407,19 +407,19 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0, 0, 1, 1 }
+                        Config = new() { 0, 0, 0, 1, 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1, 1, 1, 1 }
+                        Config = new() { 1, 1, 1, 1, 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 2, 1, 1, 1, 1 }
+                        Config = new() { 2, 1, 1, 1, 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1, 1, 1, 1 }
+                        Config = new() { 1, 1, 1, 1, 1 }
                     }
                 }
             );
@@ -486,19 +486,19 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0, 0, 1, 1 }
+                        Config = new() { 0, 0, 0, 1, 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1, 1, 1, 1 }
+                        Config = new() { 1, 1, 1, 1, 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 2, 1, 1, 1, 1 }
+                        Config = new() { 2, 1, 1, 1, 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1, 1, 1, 1 }
+                        Config = new() { 1, 1, 1, 1, 1 }
                     }
                 }
             );
@@ -524,11 +524,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     }
                 }
             );
@@ -572,15 +572,15 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0, 0 }
+                        Config = new() { 0, 0, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 0, 1 }
+                        Config = new() { 1, 0, 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 1, 1 }
+                        Config = new() { 0, 1, 1 }
                     }
                 }
             );
@@ -607,11 +607,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     }
                 }
             );
@@ -645,11 +645,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0 }
+                        Config = new() { 0, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1 }
+                        Config = new() { 1, 1 }
                     }
                 }
             );
@@ -695,11 +695,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0, 0, 0 }
+                        Config = new() { 0, 0, 0, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 0, 1, 1 }
+                        Config = new() { 1, 0, 1, 1 }
                     }
                 }
             );
@@ -739,11 +739,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0 }
+                        Config = new() { 0, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1, 1 }
+                        Config = new() { 1, 1 }
                     }
                 }
             );
@@ -791,11 +791,11 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0, 0 }
+                        Config = new() { 0, 0, 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0, 0, 0 }
+                        Config = new() { 0, 0, 0 }
                     }
                 }
             );
@@ -843,19 +843,19 @@ public partial class TestNodeless : Node
                 new() {
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1 }
+                        Config = new() { 1 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 0 }
+                        Config = new() { 0 }
                     },
                     new StatechartSnapshot() {
                         IsAllStateConfig = true,
-                        Config = new int[] { 1 }
+                        Config = new() { 1 }
                     }
                 }
             );
@@ -913,7 +913,7 @@ public partial class TestNodeless : Node
         }
     }
 
-    public string IntArrayToStr(int[] config)
+    public string IntListToStr(List<int> config)
     {
         StringBuilder sb = new("[");
         foreach(int x in config)

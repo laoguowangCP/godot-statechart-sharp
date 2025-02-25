@@ -239,8 +239,6 @@ public partial class Statechart : StatechartComposition
 		  - Enter new states
 		3. Update active states
 		*/
-
-		List<State> statesToLoad = new();
 		var config = snapshot.Config;
 		if (config.Length == 0)
 		{

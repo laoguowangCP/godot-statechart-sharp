@@ -20,7 +20,6 @@ public partial class Statechart<TDuct, TEvent>
     protected SortedSet<State> ExitSet;
     protected SortedSet<State> EnterSet;
     protected SortedSet<Reaction> EnabledReactions;
-    protected List<int> SnapshotConfig = new();
     protected TDuct Duct;
     protected bool IsReady = false;
 
@@ -224,27 +223,32 @@ public partial class Statechart<TDuct, TEvent>
 
     public StatechartSnapshot Save(bool isAllStateConfig = false)
     {
-        if (IsRunning)
-        {
-            return null;
-        }
-
         StatechartSnapshot snapshot = new()
         {
             IsAllStateConfig = isAllStateConfig
         };
 
-        if (isAllStateConfig)
+        return Save(snapshot) ? snapshot : null;
+    }
+
+    public bool Save(StatechartSnapshot snapshot)
+    {
+        if (IsRunning)
         {
-            RootState._SaveAllStateConfig(SnapshotConfig);
+            return false;
+        }
+
+        var config = snapshot.Config;
+        config.Clear();
+        if (snapshot.IsAllStateConfig)
+        {
+            RootState._SaveAllStateConfig(config);
         }
         else
         {
-            RootState._SaveActiveStateConfig(SnapshotConfig);
+            RootState._SaveActiveStateConfig(config);
         }
-        snapshot.Config = SnapshotConfig;
-        SnapshotConfig.Clear();
-        return snapshot;
+        return true;
     }
 
     public bool Load(StatechartSnapshot snapshot, bool isExitOnLoad = false, bool isEnterOnLoad = false)
@@ -270,8 +274,6 @@ public partial class Statechart<TDuct, TEvent>
             - Enter new states
         3. Update active states
         */
-
-        List<State> statesToLoad = new();
         var config = snapshot.Config;
         if (config.Count == 0)
         {
