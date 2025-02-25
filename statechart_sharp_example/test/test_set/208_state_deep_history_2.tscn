@@ -101,8 +101,7 @@ script = ExtResource("3_1dvok")
 
 [node name="DeepHistory" type="Node" parent="Tester/Statechart/Root/A"]
 script = ExtResource("3_1dvok")
-StateMode = 2
-IsDeepHistory = true
+StateMode = 3
 
 [node name="->B-DeepHistory" type="Node" parent="Tester/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_uuslc")
@@ -137,8 +136,7 @@ script = ExtResource("3_1dvok")
 
 [node name="DeepHistory" type="Node" parent="Tester/Statechart/Root/B"]
 script = ExtResource("3_1dvok")
-StateMode = 2
-IsDeepHistory = true
+StateMode = 3
 
 [node name="->A-DeepHistory" type="Node" parent="Tester/Statechart/Root/B" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("4_uuslc")

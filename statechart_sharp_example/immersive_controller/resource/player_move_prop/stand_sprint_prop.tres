@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_bf6vq")
 MaxSpeed = 5.0
-ForwardRatio = 1.75
+ForwardRatio = 1.5
 BackwardRatio = 1.2
 Accel = 40.0
 Decel = 75.0

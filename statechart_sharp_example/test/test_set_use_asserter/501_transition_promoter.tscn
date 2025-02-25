@@ -1,0 +1,89 @@
+[gd_scene load_steps=10 format=3 uid="uid://c1f5mcnk4oy4f"]
+
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartStepAsserter.cs" id="1_tnbff"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/util/StatechartSnapshot.cs" id="2_33g1c"]
+[ext_resource type="Script" path="res://statechart_sharp_example/test/test_set_use_asserter/StatechartProxy.cs" id="3_1r047"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Statechart.cs" id="4_dl78v"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/State.cs" id="5_qlpnm"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="6_4xwih"]
+[ext_resource type="Script" path="res://addons/statechart_sharp/node/TransitionPromoter.cs" id="7_pfkbj"]
+
+[sub_resource type="Resource" id="Resource_af7x7"]
+script = ExtResource("2_33g1c")
+IsAllStateConfig = true
+Config = PackedInt32Array(0, 0, 0)
+
+[sub_resource type="Resource" id="Resource_v2lyf"]
+script = ExtResource("2_33g1c")
+IsAllStateConfig = true
+Config = PackedInt32Array(2, 0, 0)
+
+[node name="StepAsserter" type="Node" node_paths=PackedStringArray("StatechartProxy")]
+script = ExtResource("1_tnbff")
+TestName = &"501 Transition Promoter"
+StatechartProxy = NodePath("StatechartProxy")
+SnapshotBeforeSteps = Array[Object]([SubResource("Resource_af7x7"), SubResource("Resource_v2lyf")])
+
+[node name="StatechartProxy" type="Node" parent="." node_paths=PackedStringArray("Statechart")]
+script = ExtResource("3_1r047")
+Statechart = NodePath("Statechart")
+
+[node name="Statechart" type="Node" parent="StatechartProxy"]
+script = ExtResource("4_dl78v")
+IsWaitParentReady = false
+
+[node name="Root" type="Node" parent="StatechartProxy/Statechart"]
+script = ExtResource("5_qlpnm")
+
+[node name="A" type="Node" parent="StatechartProxy/Statechart/Root"]
+script = ExtResource("5_qlpnm")
+
+[node name="X" type="Node" parent="StatechartProxy/Statechart/Root/A"]
+script = ExtResource("5_qlpnm")
+
+[node name="1" type="Node" parent="StatechartProxy/Statechart/Root/A/X"]
+script = ExtResource("5_qlpnm")
+
+[node name="2" type="Node" parent="StatechartProxy/Statechart/Root/A/X"]
+script = ExtResource("5_qlpnm")
+
+[node name="Y" type="Node" parent="StatechartProxy/Statechart/Root/A"]
+script = ExtResource("5_qlpnm")
+StateMode = 1
+
+[node name="1" type="Node" parent="StatechartProxy/Statechart/Root/A/Y"]
+script = ExtResource("5_qlpnm")
+
+[node name="2" type="Node" parent="StatechartProxy/Statechart/Root/A/Y"]
+script = ExtResource("5_qlpnm")
+
+[node name="History" type="Node" parent="StatechartProxy/Statechart/Root/A"]
+script = ExtResource("5_qlpnm")
+StateMode = 2
+
+[node name="->B" type="Node" parent="StatechartProxy/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_4xwih")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../B")]
+
+[node name="Promoter0" type="Node" parent="StatechartProxy/Statechart/Root/A/->B"]
+script = ExtResource("7_pfkbj")
+
+[node name="Promoter1" type="Node" parent="StatechartProxy/Statechart/Root/A/->B"]
+script = ExtResource("7_pfkbj")
+
+[node name="->C" type="Node" parent="StatechartProxy/Statechart/Root/A" node_paths=PackedStringArray("TargetStatesArray")]
+script = ExtResource("6_4xwih")
+TransitionEvent = 6
+CustomEventName = &"test"
+TargetStatesArray = [NodePath("../../C")]
+
+[node name="Promoter" type="Node" parent="StatechartProxy/Statechart/Root/A/->C"]
+script = ExtResource("7_pfkbj")
+
+[node name="B" type="Node" parent="StatechartProxy/Statechart/Root"]
+script = ExtResource("5_qlpnm")
+
+[node name="C" type="Node" parent="StatechartProxy/Statechart/Root"]
+script = ExtResource("5_qlpnm")

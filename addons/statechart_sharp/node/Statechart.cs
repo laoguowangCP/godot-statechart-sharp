@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace LGWCP.Godot.StatechartSharp;
@@ -10,43 +10,39 @@ namespace LGWCP.Godot.StatechartSharp;
 [Icon("res://addons/statechart_sharp/icon/Statechart.svg")]
 public partial class Statechart : StatechartComposition
 {
-	#region properties
 
-	/// <summary>
-	/// MaxInternalEventCount
-	/// </summary>
+#region property
+
 	[Export(PropertyHint.Range, "0,32,")]
 	public int MaxInternalEventCount = 8;
 	[Export(PropertyHint.Range, "0,32,")]
 	public int MaxAutoTransitionRound = 8;
 	[Export(PropertyHint.Flags, "Process,Physics Process,Input,Shortcut Input,UnhandledKey Input,Unhandled Input")]
-	public EventFlagEnum EventFlag { get; set; } = 0;
+	public EventFlagEnum EventFlag = 0;
 	[Export]
 	public bool IsWaitParentReady = true;
-	public bool IsRunning { get; private set; }
+	protected bool IsRunning;
 	protected int EventCount;
-	protected State RootState { get; set; }
-	protected SortedSet<State> ActiveStates { get; set; }
-	protected Queue<StringName> QueuedEvents { get; set; }
-	protected SortedSet<Transition> EnabledTransitions { get; set; }
-	protected SortedSet<Transition> EnabledFilteredTransitions { get; set; }
-	protected SortedSet<State> ExitSet { get; set; }
-	protected SortedSet<State> EnterSet { get; set; }
-	protected SortedSet<Reaction> EnabledReactions { get; set; }
-	public StatechartDuct Duct { get; private set; }
-	protected List<int> SnapshotConfiguration;
-
-	#endregion
+	protected State RootState;
+	protected SortedSet<State> ActiveStates;
+	protected Queue<StringName> QueuedEvents;
+	protected SortedSet<Transition> EnabledTransitions;
+	protected SortedSet<Transition> EnabledFilteredTransitions;
+	protected SortedSet<State> ExitSet;
+	protected SortedSet<State> EnterSet;
+	protected SortedSet<Reaction> EnabledReactions;
+	protected List<int> SnapshotConfig;
+	public StatechartDuct _Duct;
 
 
-	#region methods
+#endregion
+
+
+#region method
 
 	public override void _Ready()
 	{
-		Duct = new StatechartDuct
-		{
-			HostStatechart = this
-		};
+		_Duct = new StatechartDuct(this);
 
 		IsRunning = false;
 		EventCount = 0;
@@ -58,27 +54,27 @@ public partial class Statechart : StatechartComposition
 		ExitSet = new SortedSet<State>(new StatechartReversedComparer<State>());
 		EnterSet = new SortedSet<State>(new StatechartComparer<State>());
 		EnabledReactions = new SortedSet<Reaction>(new StatechartComparer<Reaction>());
-		
-		SnapshotConfiguration = new List<int>();
 
-		#if TOOLS
+		SnapshotConfig = new List<int>();
+
+#if TOOLS
 		if (!Engine.IsEditorHint())
 		{
-		#endif
+#endif
 
 		// Statechart setup async
-		StartSetUp();
+		_ = StartSetUpAsync();
 
-		#if TOOLS
+#if TOOLS
 		}
 		else
 		{
 			UpdateConfigurationWarnings();
 		}
-		#endif
+#endif
 	}
 
-	protected async void StartSetUp()
+	protected async Task StartSetUpAsync()
 	{
 		if (IsWaitParentReady)
 		{
@@ -90,45 +86,47 @@ public partial class Statechart : StatechartComposition
 			}
 		}
 
-		Setup();
-		PostSetup();
+		_Setup();
+		_SetupPost();
 	}
 
-	public override void Setup()
+	public override void _Setup()
 	{
-		HostStatechart = this;
+		_HostStatechart = this;
 		foreach (Node child in GetChildren())
 		{
 			if (child is State state)
 			{
-				if (state.IsAvailableRootState())
+				if (state._IsValidState())
 				{
 					RootState = state;
 					break;
 				}
 			}
 		}
-		
-		OrderId = 0;
+
+		// Statechart node order id = -1
+		_OrderId = -1;
 		if (RootState is not null)
 		{
-			int parentOrderId = 0;
-			RootState.Setup(this, ref parentOrderId);
+			// Root state node order id = 0
+			int orderId = 0;
+			RootState._Setup(this, ref orderId);
 		}
 	}
 
-	public override void PostSetup()
+	public override void _SetupPost()
 	{
 		// Get and enter active states
 		if (RootState is not null)
 		{
-			RootState.RegisterActiveState(ActiveStates);
-			RootState.PostSetup();
+			RootState._SubmitActiveState(ActiveStates);
+			RootState._SetupPost();
 		}
 
 		foreach (State state in ActiveStates)
 		{
-			state.StateEnter();
+			state._StateEnter();
 		}
 
 		// Set node process according to flags
@@ -148,11 +146,16 @@ public partial class Statechart : StatechartComposition
 
 	public void Step(StringName eventName)
 	{
-		if (eventName == null || eventName == "")
+		if (eventName == null) // Empty StringName is not constructed
 		{
 			return;
 		}
 
+		_Step(eventName);
+	}
+
+	public void _Step(StringName eventName)
+	{
 		if (IsRunning)
 		{
 			if (EventCount <= MaxInternalEventCount)
@@ -166,7 +169,7 @@ public partial class Statechart : StatechartComposition
 		// Else is not running
 		++EventCount;
 		QueuedEvents.Enqueue(eventName);
-		
+
 		IsRunning = true;
 
 		while (QueuedEvents.Count > 0)
@@ -179,31 +182,31 @@ public partial class Statechart : StatechartComposition
 		EventCount = 0;
 	}
 
-	public StatechartSnapshot Save(bool isAllStateConfiguration = false)
+	public StatechartSnapshot Save(bool isAllStateConfig = false)
 	{
 		if (IsRunning)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Statechart is running, abort save.");
-			#endif
+#endif
 			return null;
 		}
 
 		StatechartSnapshot snapshot = new()
 		{
-			IsAllStateConfiguration = isAllStateConfiguration
+			IsAllStateConfig = isAllStateConfig
 		};
-		
-		if (isAllStateConfiguration)
+
+		if (isAllStateConfig)
 		{
-			RootState.SaveAllStateConfig(ref SnapshotConfiguration);
+			RootState._SaveAllStateConfig(SnapshotConfig);
 		}
 		else
 		{
-			RootState.SaveActiveStateConfig(ref SnapshotConfiguration);
+			RootState._SaveActiveStateConfig(SnapshotConfig);
 		}
-		snapshot.Configuration = SnapshotConfiguration.ToArray();
-		SnapshotConfiguration.Clear();
+		snapshot.Config = SnapshotConfig.ToArray();
+		SnapshotConfig.Clear();
 		return snapshot;
 	}
 
@@ -211,17 +214,17 @@ public partial class Statechart : StatechartComposition
 	{
 		if (IsRunning)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Statechart is running, abort load.");
-			#endif
+#endif
 			return false;
 		}
 
 		if (snapshot is null)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Snapshot is null, abort load.");
-			#endif
+#endif
 			return false;
 		}
 
@@ -236,39 +239,30 @@ public partial class Statechart : StatechartComposition
 		  - Enter new states
 		3. Update active states
 		*/
-		
-		List<State> statesToLoad = new();
-		int[] config = snapshot.Configuration;
+		var config = snapshot.Config;
 		if (config.Length == 0)
 		{
-			#if DEBUG
+#if DEBUG
 			GD.PushWarning(GetPath(), "Configuration is null, abort load.");
-			#endif
+#endif
 			return false;
 		}
 
-		bool isLoadSuccess;
-		int configIdx = 0;
-		if (snapshot.IsAllStateConfiguration)
+		int loadIdxResult;
+		if (snapshot.IsAllStateConfig)
 		{
-			isLoadSuccess = RootState.LoadAllStateConfig(
-				ref config, ref configIdx);
+			loadIdxResult = RootState._LoadAllStateConfig(config, 0);
 		}
 		else
 		{
-			isLoadSuccess = RootState.LoadActiveStateConfig(
-				ref config, ref configIdx);
+			loadIdxResult = RootState._LoadActiveStateConfig(config, 0);
 		}
 
-		if (!isLoadSuccess)
+		if (loadIdxResult == -1)
 		{
-			#if DEBUG
-			GD.PushWarning(
-				GetPath(),
-				"Load failed, configuration not aligned."
-			);
-			#endif
-
+#if DEBUG
+			GD.PushWarning(GetPath(), "Load failed, configuration not aligned.");
+#endif
 			return false;
 		}
 
@@ -277,19 +271,19 @@ public partial class Statechart : StatechartComposition
 		{
 			foreach (State state in ActiveStates.Reverse())
 			{
-				state.StateExit();
+				state._StateExit();
 			}
 		}
 
 		ActiveStates.Clear();
-		RootState.RegisterActiveState(ActiveStates);
+		RootState._SubmitActiveState(ActiveStates);
 
 		// Enter on load
 		if (isEnterOnLoad)
 		{
 			foreach (State state in ActiveStates)
 			{
-				state.StateEnter();
+				state._StateEnter();
 			}
 		}
 
@@ -314,33 +308,33 @@ public partial class Statechart : StatechartComposition
 		*/
 
 		// 1. Select transitions
-		RootState.SelectTransitions(EnabledTransitions, eventName);
+		RootState._SelectTransitions(EnabledTransitions, eventName);
 
 		// 2. Do transitions
 		DoTransitions();
 
 		// 3. Select and do automatic transitions
-		for (int i = 1; i <= MaxAutoTransitionRound; ++i)
+		for (int i = 0; i < MaxAutoTransitionRound; ++i)
 		{
-			RootState.SelectTransitions(EnabledTransitions);
+			RootState._SelectTransitions(EnabledTransitions, null);
 
 			// Stop if active states are stable
 			if (EnabledTransitions.Count == 0)
 			{
 				break;
 			}
-			DoTransitions(); 
+			DoTransitions();
 		}
 
 		// 4. Select and do reactions
 		foreach (State state in ActiveStates)
 		{
-			state.SelectReactions(EnabledReactions, eventName);
+			state._SelectReactions(EnabledReactions, eventName);
 		}
 
 		foreach (Reaction reaction in EnabledReactions)
 		{
-			reaction.ReactionInvoke();
+			reaction._ReactionInvoke();
 		}
 
 		EnabledReactions.Clear();
@@ -368,15 +362,20 @@ public partial class Statechart : StatechartComposition
 			*/
 
 			// Targetless has no confliction
-			if (transition.IsTargetless)
+			if (transition._IsTargetless)
 			{
 				EnabledFilteredTransitions.Add(transition);
 				continue;
 			}
 
-			bool hasConfliction = ExitSet.Contains(transition.SourceState)
-				|| ExitSet.Any<State>(
-					state => transition.LcaState.IsAncestorStateOf(state));
+
+            /*
+            bool hasConfliction = ExitSet.Contains(transition._SourceState)
+                || ExitSet.Any<State>(
+                    state => transition._LcaState._IsAncestorStateOf(state));
+            */
+            bool hasConfliction = ExitSet.Contains(transition._SourceState)
+				|| transition._LcaState._IsAncestorStateOfAnyReversed(ExitSet);
 
 			if (hasConfliction)
 			{
@@ -385,31 +384,31 @@ public partial class Statechart : StatechartComposition
 
 			EnabledFilteredTransitions.Add(transition);
 
-			SortedSet<State> exitStates = ActiveStates.GetViewBetween(
-				transition.LcaState.LowerState, transition.LcaState.UpperState);
+			var exitStates = ActiveStates.GetViewBetween(
+				transition._LcaState._LowerState, transition._LcaState._UpperState);
 			ExitSet.UnionWith(exitStates);
 		}
 
 		ActiveStates.ExceptWith(ExitSet);
 		foreach (State state in ExitSet)
 		{
-			state.StateExit();
+			state._StateExit();
 		}
 
 		// 2. Invoke transitions
 		// 3. Deduce and merge enter set
 		foreach (Transition transition in EnabledFilteredTransitions)
 		{
-			transition.TransitionInvoke();
-			
+			transition._TransitionInvoke();
+
 			// If transition is targetless, enter-region is null.
-			if (transition.IsTargetless)
+			if (transition._IsTargetless)
 			{
 				continue;
 			}
 
-			SortedSet<State> enterRegion = transition.EnterRegion;
-			SortedSet<State> deducedEnterStates = transition.GetDeducedEnterStates();
+			SortedSet<State> enterRegion = transition._EnterRegion;
+			SortedSet<State> deducedEnterStates = transition._GetDeducedEnterStates();
 			EnterSet.UnionWith(enterRegion);
 			EnterSet.UnionWith(deducedEnterStates);
 		}
@@ -417,7 +416,7 @@ public partial class Statechart : StatechartComposition
 		ActiveStates.UnionWith(EnterSet);
 		foreach (State state in EnterSet)
 		{
-			state.StateEnter();
+			state._StateEnter();
 		}
 
 		// 4. Clear
@@ -429,83 +428,96 @@ public partial class Statechart : StatechartComposition
 
 	public override void _Process(double delta)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
+#endif
 
-		Duct.Delta = delta;
-		Step(StatechartEventName.EVENT_PROCESS);
+		_Duct.Delta = delta;
+		_Step(StatechartEventName.EVENT_PROCESS);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
-		
-		Duct.PhysicsDelta = delta;
-		Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
+#endif
+
+		_Duct.PhysicsDelta = delta;
+		_Step(StatechartEventName.EVENT_PHYSICS_PROCESS);
 	}
 
 	public override void _Input(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
-		
-		Duct.Input = @event;
-		Step(StatechartEventName.EVENT_INPUT);
+#endif
+
+		using(@event)
+		{
+			_Duct.Input = @event;
+			_Step(StatechartEventName.EVENT_INPUT);
+		}
 	}
 
 	public override void _ShortcutInput(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
-		
-		Duct.ShortcutInput = @event;
-		Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
+#endif
+
+		using(@event)
+		{
+			_Duct.ShortcutInput = @event;
+			_Step(StatechartEventName.EVENT_SHORTCUT_INPUT);
+		}
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
-		
-		Duct.UnhandledKeyInput = @event;
-		Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
+#endif
+
+		using(@event)
+		{
+			_Duct.UnhandledKeyInput = @event;
+			_Step(StatechartEventName.EVENT_UNHANDLED_KEY_INPUT);
+		}
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
-		#endif
-		
-		Duct.UnhandledInput = @event;
-		Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
+#endif
+
+
+		using(@event)
+		{
+			_Duct.UnhandledInput = @event;
+			_Step(StatechartEventName.EVENT_UNHANDLED_INPUT);
+		}
 	}
 
-	#if TOOLS
+#if TOOLS
     public override string[] _GetConfigurationWarnings()
 	{
 		var warnings = new List<string>();
@@ -516,7 +528,7 @@ public partial class Statechart : StatechartComposition
 		{
 			if (child is State state)
 			{
-				if (state.IsHistory)
+				if (!state._IsValidState())
 				{
 					hasOtherChild = true;
 					continue;
@@ -540,7 +552,8 @@ public partial class Statechart : StatechartComposition
 
 		return warnings.ToArray();
 	}
-	#endif
+#endif
 
-	#endregion
+#endregion
+
 }

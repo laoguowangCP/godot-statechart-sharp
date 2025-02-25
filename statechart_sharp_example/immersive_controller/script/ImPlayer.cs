@@ -4,6 +4,7 @@ using LGWCP.Godot.StatechartSharp;
 using System.Collections.Generic;
 
 
+[GlobalClass]
 public partial class ImPlayer : CharacterBody3D
 {
 	[ExportGroup("Player Move Property")]
@@ -39,6 +40,9 @@ public partial class ImPlayer : CharacterBody3D
 	protected bool IsPrejump = false;
 	protected Vector3 Vel;
 
+	protected Statechart Statechart;
+	protected State RootState;
+
     public override void _Ready()
     {
 		Head = GetNode<Node3D>("Head");
@@ -62,9 +66,24 @@ public partial class ImPlayer : CharacterBody3D
 
 		ApplyPlayerMoveProp(StandWalkProp);
 		AirTopIntervalVel = MathF.Max(AirTopIntervalVel, 0.001f);
+
+		Statechart = GetNodeOrNull<Statechart>("Statechart");
+		RootState = Statechart.GetNodeOrNull<State>("Root");
+
+		GD.PrintT
+		(
+			"This is a junky controller, not supposed to be used in your game. ",
+			"You may need refactor the head/feet ray (make them aligned to your moving direction) ",
+			"so characterbody may handle the head/feet situation correctly."
+		);
     }
 
-	protected void ApplyPlayerMoveProp(PlayerMoveProp prop)
+    public override void _Process(double delta)
+    {
+        // GD.PrintT(RootState.OrderId);
+    }
+
+    protected void ApplyPlayerMoveProp(PlayerMoveProp prop)
 	{
 		MoveMaxSpeed = prop.MaxSpeed;
 		ForwardRatio = prop.ForwardRatio;
@@ -186,6 +205,11 @@ public partial class ImPlayer : CharacterBody3D
 				-CamMaxPitch, CamMaxPitch);
 			Head.Rotation = headRotation;
 		}
+
+		if (@event is InputEventMouseButton _)
+		{
+			PrintOrphanNodes();
+		}
     }
 	
     public void RI_StandWalk(StatechartDuct duct)
@@ -265,6 +289,8 @@ public partial class ImPlayer : CharacterBody3D
 		MoveAndSlide();
 	}
 
+
+	// Use gdscript instead, to avoid massive object gc
 	public void RI_MoveWithImpulse(StatechartDuct duct)
 	{
 		float delta = (float)(duct.PhysicsDelta);

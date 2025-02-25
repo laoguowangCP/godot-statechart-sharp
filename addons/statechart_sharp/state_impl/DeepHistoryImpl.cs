@@ -4,25 +4,27 @@ using System.Collections.Generic;
 
 namespace LGWCP.Godot.StatechartSharp;
 
-
-public class HistoryImpl : StateImpl
+public class DeepHistoryImpl : StateImpl
 {
-    private bool IsDeepHistory { get => HostState.IsDeepHistory; }
+    public DeepHistoryImpl(State state) : base(state) {}
 
-    public HistoryImpl(State state) : base(state) {}
-
-    public override void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    public override bool _IsValidState()
     {
-        base.Setup(hostStateChart, ref parentOrderId, substateIdx);
+        return false;
     }
 
-    public override bool GetPromoteStates(List<State> states)
+    public override void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+    {
+        base._Setup(hostStateChart, ref parentOrderId, substateIdx);
+    }
+
+    public override bool _SubmitPromoteStates(List<State> states)
     {
         // History do not promote
         return false;
     }
 
-    public override void ExtendEnterRegion(
+    public override void _ExtendEnterRegion(
         SortedSet<State> enterRegion,
         SortedSet<State> enterRegionEdge,
         SortedSet<State> extraEnterRegion,
@@ -32,35 +34,36 @@ public class HistoryImpl : StateImpl
         enterRegionEdge.Add(HostState);
     }
 
-    public override void DeduceDescendants(
-        SortedSet<State> deducedSet, bool isHistory, bool isEdgeState)
+    public override void _DeduceDescendants(
+        SortedSet<State> deducedSet)
     {
         /*
-        History state(s) in region nedge start the deduction:
+        History state(s) in region edge start the deduction:
             1. Parent can be compound or parallel
             2. Let parent handles sibling(s) of this history state
             3. Should not be called recursively by other states
             4. Parse IsDeepHistory in IsHistory arg
         */
-        if (isEdgeState)
-        {
-            ParentState.DeduceDescendants(deducedSet, IsDeepHistory, isEdgeState: true);
-        }
+        ParentState._DeduceDescendantsRecur(deducedSet, DeduceDescendantsModeEnum.DeepHistory);
     }
-    
-    #if TOOLS
-    public override void GetConfigurationWarnings(List<string> warnings)
+
+    public override void _DeduceDescendantsRecur(
+        SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
+    {
+        return;
+    }
+
+#if TOOLS
+    public override void _GetConfigurationWarnings(List<string> warnings)
     {
         // Check parent
         bool isParentWarning = true;
-        bool isParentParallel = false;
         Node parent = HostState.GetParentOrNull<Node>();
         if (parent != null)
         {
             if (parent is State state)
             {
-                isParentWarning = state.IsHistory;
-                isParentParallel = state.StateMode == StateModeEnum.Parallel;
+                isParentWarning = !state._IsValidState();
             }
         }
 
@@ -69,16 +72,12 @@ public class HistoryImpl : StateImpl
             warnings.Add("History state should be child to a non-history state.");
         }
 
-        if (isParentParallel && !IsDeepHistory)
-        {
-            warnings.Add("Parallel's shallow history is not recommended.");
-        }
-
         // Check children
         if (HostState.GetChildren().Count > 0)
         {
             warnings.Add("History state should not have child.");
         }
     }
-    #endif
+
+#endif
 }

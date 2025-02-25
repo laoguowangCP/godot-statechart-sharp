@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 
@@ -8,7 +9,15 @@ public enum StateModeEnum : int
 {
 	Compound,
 	Parallel,
-	History
+	History,
+	DeepHistory
+}
+
+public enum DeduceDescendantsModeEnum : int
+{
+	Initial,
+	History,
+	DeepHistory
 }
 
 [Tool]
@@ -16,132 +25,126 @@ public enum StateModeEnum : int
 [Icon("res://addons/statechart_sharp/icon/State.svg")]
 public partial class State : StatechartComposition
 {
-	#region signals
-	
+
+
+#region signal
+
 	[Signal]
 	public delegate void EnterEventHandler(StatechartDuct duct);
 	[Signal]
 	public delegate void ExitEventHandler(StatechartDuct duct);
-	
-	#endregion
+
+#endregion
 
 
-	#region properties
+#region property
 
 	[Export]
 	public StateModeEnum StateMode
+#if DEBUG
 	{
 		get => _stateMode;
 		set
 		{
 			_stateMode = value;
-
-			#if TOOLS
+#if TOOLS
 			if (Engine.IsEditorHint())
 			{
-				StateComponent = GetStateComponent(value);
+				StateImpl = GetStateImpl(value);
 				UpdateConfigurationWarnings();
 			}
-			#endif
+#endif
 		}
 	}
-	private StateModeEnum _stateMode = StateModeEnum.Compound;
-	[Export]
-	public bool IsDeepHistory { get; private set; }
+	private StateModeEnum _stateMode
+#endif
+		= StateModeEnum.Compound;
+
 	[Export]
 	public State InitialState
+#if DEBUG
 	{
-		get { return _initialState; }
+		get => _initialState;
 		set
 		{
 			_initialState = value;
 
-			#if TOOLS
+#if TOOLS
 			if (Engine.IsEditorHint())
 			{
 				UpdateConfigurationWarnings();
 			}
-			#endif
+#endif
 		}
 	}
-	private State _initialState;
-	public State ParentState { get; set; }
-	public State CurrentState { get; set; }
-	public List<State> Substates { get; set; }
-	public Dictionary<StringName, List<Transition>> Transitions { get; set; }
-	public List<Transition> AutoTransitions { get; set; }
-	public Dictionary<StringName, List<Reaction>> Reactions { get; set; }
-	protected StateImpl StateComponent { get; set; }
-	public State LowerState { get; set; }
-	public State UpperState { get; set; }
+	private State _initialState
+#endif
+		;
+
+	public State _ParentState;
+	public List<State> _Substates;
+	protected StateImpl StateImpl;
+	public State _LowerState;
+	public State _UpperState;
 	/// <summary>
-	/// The index of this state exists in parent state.
+	/// The index of this state enlisted in parent state.
 	/// </summary>
-	public int SubstateIdx;
-	protected StatechartDuct Duct { get => HostStatechart.Duct; }
-	public bool IsHistory { get => StateMode == StateModeEnum.History; }
-	
-	#endregion
+	public int _SubstateIdx;
+	protected StatechartDuct Duct;
+
+#endregion
 
 
-	#region methods
+#region method
 
 	public override void _Ready()
 	{
-		Substates = new List<State>();
-		Transitions = new Dictionary<StringName, List<Transition>>();
-		AutoTransitions = new List<Transition>();
-		Reactions = new Dictionary<StringName, List<Reaction>>();
+		_Substates = new List<State>();
 
-		StateComponent = GetStateComponent(StateMode);
+		StateImpl = GetStateImpl(StateMode);
 
-		#if TOOLS
+#if TOOLS
 		if (Engine.IsEditorHint())
 		{
 			UpdateConfigurationWarnings();
 		}
-		#endif
+#endif
 	}
 
-	protected StateImpl GetStateComponent(StateModeEnum mode) => mode switch
+	protected StateImpl GetStateImpl(StateModeEnum mode) => mode switch
 	{
 		StateModeEnum.Compound => new CompoundImpl(this),
 		StateModeEnum.Parallel => new ParallelImpl(this),
 		StateModeEnum.History => new HistoryImpl(this),
-		_ => null
+		StateModeEnum.DeepHistory => new DeepHistoryImpl(this),
+		_ => new CompoundImpl(this)
 	};
 
-	public bool GetPromoteStates(List<State> states)
+	public override void _Setup(Statechart hostStateChart, ref int parentOrderId)
 	{
-		return StateComponent.GetPromoteStates(states);
-	}
+		base._Setup(hostStateChart, ref parentOrderId);
+		Duct = _HostStatechart._Duct;
 
-	public bool IsAvailableRootState()
-	{
-		return StateComponent.IsAvailableRootState();
-	}
-
-	public override void Setup(Statechart hostStateChart, ref int parentOrderId)
-	{
-		base.Setup(hostStateChart, ref parentOrderId);
 		// Called from statechart node, root state substate index is 0
-		StateComponent.Setup(hostStateChart, ref parentOrderId, 0);
+		StateImpl._Setup(hostStateChart, ref parentOrderId, 0);
 	}
 
-	public void Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
+	public void _Setup(Statechart hostStateChart, ref int parentOrderId, int substateIdx)
 	{
-		base.Setup(hostStateChart, ref parentOrderId);
-		StateComponent.Setup(hostStateChart, ref parentOrderId, substateIdx);
+		base._Setup(hostStateChart, ref parentOrderId);
+		Duct = _HostStatechart._Duct;
+
+		StateImpl._Setup(hostStateChart, ref parentOrderId, substateIdx);
 	}
 
-	public override void PostSetup()
+	public override void _SetupPost()
 	{
-		StateComponent.PostSetup();
+		StateImpl._SetupPost();
 	}
 
-	public void StateEnter()
+	public void _StateEnter()
 	{
-		ParentState?.HandleSubstateEnter(this);
+		_ParentState?._HandleSubstateEnter(this);
 		CustomStateEnter(Duct);
 	}
 
@@ -152,7 +155,7 @@ public partial class State : StatechartComposition
 		EmitSignal(SignalName.Enter, duct);
 	}
 
-	public void StateExit()
+	public void _StateExit()
 	{
 		CustomStateExit(Duct);
 	}
@@ -164,92 +167,169 @@ public partial class State : StatechartComposition
 		EmitSignal(SignalName.Exit, duct);
 	}
 
-	public void RegisterActiveState(SortedSet<State> activeStates)
+	public bool _IsAncestorStateOf(State state)
 	{
-		StateComponent.RegisterActiveState(activeStates);
-	}
-
-	public bool IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
-	{
-		return StateComponent.IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
-	}
-
-	public bool IsAncestorStateOf(State state)
-	{
-		int id = state.OrderId;
+		int id = state._OrderId;
 
 		// Leaf state
-		if (LowerState is null || UpperState is null)
+		if (_LowerState is null || _UpperState is null)
 		{
 			return false;
 		}
 
-		return id >= LowerState.OrderId
-			&& id <= UpperState.OrderId;
+		return id >= _LowerState._OrderId
+			&& id <= _UpperState._OrderId;
 	}
 
-	public void ExtendEnterRegion(SortedSet<State> enterRegion, SortedSet<State> enterRegionEdge, SortedSet<State> extraEnterRegion, bool needCheckContain = true)
+	public bool _IsAncestorStateOfAny(SortedSet<State> states)
 	{
-		StateComponent.ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
-	}
-
-	public int SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName = null)
-	{
-		return StateComponent.SelectTransitions(enabledTransitions, eventName);
-	}
-
-	public void DeduceDescendants(SortedSet<State> deducedSet, bool isHistory = false, bool isEdgeState = false)
-	{
-		StateComponent.DeduceDescendants(deducedSet, isHistory, isEdgeState);
-	}
-
-	public void HandleSubstateEnter(State substate)
-	{
-		StateComponent.HandleSubstateEnter(substate);
-	}
-
-	public void SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
-	{
-		bool hasEventName = Reactions.TryGetValue(eventName, out var matchedReactions);
-		if (!hasEventName)
+		bool isAncestorStateOfAny = false;
+		if (_LowerState == null || _UpperState == null)
 		{
-			return;
+			return false;
+		}
+		int lcaLowerId = _LowerState._OrderId;
+		int lcaUpperId = _UpperState._OrderId;
+		foreach (var state in states)
+		{
+			int orderId = state._OrderId;
+			if (orderId < lcaLowerId)
+			{
+				continue;
+			}
+			else if (orderId > lcaUpperId)
+			{
+				break;
+			}
+			else
+			{
+				isAncestorStateOfAny = true;
+				break;
+			}
 		}
 
-		foreach (Reaction reaction in matchedReactions)
+		return isAncestorStateOfAny;
+	}
+
+	public bool _IsAncestorStateOfAnyReversed(SortedSet<State> states)
+	{
+		bool isAncestorStateOfAny = false;
+		int lcaLowerId = _LowerState._OrderId;
+		int lcaUpperId = _UpperState._OrderId;
+		foreach (var state in states)
 		{
-			enabledReactions.Add(reaction);
+			int orderId = state._OrderId;
+			if (orderId > lcaUpperId)
+			{
+				continue;
+			}
+			else if (orderId < lcaLowerId)
+			{
+				break;
+			}
+			else
+			{
+				isAncestorStateOfAny = true;
+				break;
+			}
 		}
+
+		return isAncestorStateOfAny;
 	}
 
-	public void SaveAllStateConfig(ref List<int> config)
+	public bool _IsConflictToEnterRegion(State substateToPend, SortedSet<State> enterRegionUnextended)
 	{
-		StateComponent.SaveAllStateConfig(ref config);
+		return StateImpl._IsConflictToEnterRegion(substateToPend, enterRegionUnextended);
 	}
 
-	public void SaveActiveStateConfig(ref List<int> config)
+	public bool _SubmitPromoteStates(List<State> states)
 	{
-		StateComponent.SaveActiveStateConfig(ref config);
+		return StateImpl._SubmitPromoteStates(states);
 	}
 
-	public bool LoadAllStateConfig(ref int[] config, ref int configIdx)
+	public bool _IsValidState()
 	{
-		return StateComponent.LoadAllStateConfig(ref config, ref configIdx);
+		/*
+		Valid state is virtual concept to divide compound and parallel from history. Being valid, the state:
+
+		- Can have transition and reaction as child.
+		- Can be active state.
+		- Can be initial state.
+		- Can be root state.
+		- Is stable, meaning if targeted in transition, enter region is determined.
+		- For now, non-history state.
+		*/
+		return StateImpl._IsValidState();
+	}
+	
+	public void _SubmitActiveState(SortedSet<State> states)
+	{
+		StateImpl._SubmitActiveState(states);
 	}
 
-	public bool LoadActiveStateConfig(ref int[] config, ref int configIdx)
+	public void _ExtendEnterRegion(
+		SortedSet<State> enterRegion,
+		SortedSet<State> enterRegionEdge,
+		SortedSet<State> extraEnterRegion,
+		bool needCheckContain)
 	{
-		return StateComponent.LoadActiveStateConfig(ref config, ref configIdx);
+		StateImpl._ExtendEnterRegion(enterRegion, enterRegionEdge, extraEnterRegion, needCheckContain);
+	}
+
+	public int _SelectTransitions(SortedSet<Transition> enabledTransitions, StringName eventName)
+	{
+		return StateImpl._SelectTransitions(enabledTransitions, eventName);
+	}
+
+	public void _DeduceDescendants(SortedSet<State> deducedSet)
+	{
+		StateImpl._DeduceDescendants(deducedSet);
+	}
+
+	public void _DeduceDescendantsRecur(SortedSet<State> deducedSet, DeduceDescendantsModeEnum deduceMode)
+	{
+		StateImpl._DeduceDescendantsRecur(deducedSet, deduceMode);
+	}
+
+	public void _HandleSubstateEnter(State substate)
+	{
+		StateImpl._HandleSubstateEnter(substate);
+	}
+
+    public void _SelectReactions(SortedSet<Reaction> enabledReactions, StringName eventName)
+	{
+		StateImpl._SelectReactions(enabledReactions, eventName);
+	}
+
+	public void _SaveAllStateConfig(List<int> snapshot)
+	{
+		StateImpl._SaveAllStateConfig(snapshot);
+	}
+
+	public void _SaveActiveStateConfig(List<int> snapshot)
+	{
+		StateImpl._SaveActiveStateConfig(snapshot);
+	}
+
+	public int _LoadAllStateConfig(int[] config, int configIdx)
+	{
+		return StateImpl._LoadAllStateConfig(config, configIdx);
+	}
+
+	public int _LoadActiveStateConfig(int[] config, int configIdx)
+	{
+		return StateImpl._LoadActiveStateConfig(config, configIdx);
 	}
 
 #if TOOLS
     public override string[] _GetConfigurationWarnings()
 	{
 		List<string> warnings = new List<string>();
-		StateComponent?.GetConfigurationWarnings(warnings);
+		StateImpl?._GetConfigurationWarnings(warnings);
 		return warnings.ToArray();
 	}
-	#endif
+#endif
 
-	#endregion
+#endregion
+
 }

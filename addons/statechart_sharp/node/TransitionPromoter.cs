@@ -15,13 +15,13 @@ public partial class TransitionPromoter : StatechartComposition
 
     public override void _Ready()
     {
-        #if TOOLS
+#if TOOLS
         if (Engine.IsEditorHint())
         {
             UpdateConfigurationWarnings();
             return;
         }
-        #endif
+#endif
 
         HostTransition = GetParentOrNull<Transition>();
 
@@ -33,15 +33,15 @@ public partial class TransitionPromoter : StatechartComposition
                 && transitionParent is State parentState)
             {
                 ParentState = parentState;
-                PromoteTransition();
+                _ = PromoteAsync();
                 return;
             }
         }
 
         QueueFree();
     }
-    
-    protected async void PromoteTransition()
+
+    protected async Task PromoteAsync()
     {
         // Wait transition is ready
         await ToSignal(ParentState, State.SignalName.Ready);
@@ -62,11 +62,12 @@ public partial class TransitionPromoter : StatechartComposition
         foreach(var child in HostTransition.GetChildren())
         {
             HostTransition.RemoveChild(child);
+            child.QueueFree();
         }
 
         // Get promote state(s)
         List<State> leafStates = new();
-        ParentState.GetPromoteStates(leafStates);
+        ParentState._SubmitPromoteStates(leafStates);
 
         // Duplicate
         foreach (State leafState in leafStates)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://b4dys3gs5yv55"]
+[gd_scene load_steps=20 format=3 uid="uid://b4dys3gs5yv55"]
 
 [ext_resource type="Shape3D" uid="uid://daw26slb52ktb" path="res://statechart_sharp_example/immersive_controller/resource/shape/shape_player_stand.tres" id="1_6ql00"]
 [ext_resource type="Script" path="res://statechart_sharp_example/immersive_controller/script/ImPlayer.cs" id="1_nsgnp"]
@@ -12,6 +12,7 @@
 [ext_resource type="Resource" uid="uid://cpgaoymw2mjfb" path="res://statechart_sharp_example/immersive_controller/resource/player_move_prop/air_top_prop.tres" id="5_sw2pr"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/Transition.cs" id="6_ap661"]
 [ext_resource type="Script" path="res://addons/statechart_sharp/node/TransitionPromoter.cs" id="12_nwm3j"]
+[ext_resource type="Script" path="res://statechart_sharp_example/immersive_controller/script/ImPlayerImpulse.gd" id="13_thp3s"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pnide"]
 
@@ -37,6 +38,8 @@ collision_priority = 0.1
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 slide_on_ceiling = false
+floor_constant_speed = true
+platform_wall_layers = 7
 script = ExtResource("1_nsgnp")
 StandWalkProp = ExtResource("2_mjiu7")
 StandSprintProp = ExtResource("3_fjjns")
@@ -91,10 +94,10 @@ continuous_cd = true
 shape = SubResource("SphereShape3D_h5ltx")
 
 [node name="BobCam" type="Camera3D" parent="Head/RigidBody3D"]
-current = true
 fov = 45.0
 
 [node name="SteadyCam" type="Camera3D" parent="Head"]
+current = true
 fov = 45.0
 
 [node name="CollisionHead1" type="CollisionShape3D" parent="."]
@@ -147,11 +150,11 @@ collision_mask = 7
 
 [node name="CoyoteTimer" type="Timer" parent="Timers"]
 process_callback = 0
-wait_time = 0.012
+wait_time = 0.02
 
 [node name="PrejumpTimer" type="Timer" parent="Timers"]
 process_callback = 0
-wait_time = 0.01
+wait_time = 0.02
 
 [node name="Statechart" type="Node" parent="."]
 script = ExtResource("3_8sun5")
@@ -178,7 +181,7 @@ script = ExtResource("4_hrigw")
 [node name="StandWalk" type="Node" parent="Statechart/Root/Move/Ground/Walk"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
 
 [node name="->Crouch" type="Node" parent="Statechart/Root/Move/Ground/Walk" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("6_ap661")
@@ -198,7 +201,7 @@ script = ExtResource("4_hrigw")
 [node name="StandSprint" type="Node" parent="Statechart/Root/Move/Ground/Sprint"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
 
 [node name="->Walk" type="Node" parent="Statechart/Root/Move/Ground/Sprint" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("6_ap661")
@@ -218,7 +221,7 @@ script = ExtResource("4_hrigw")
 [node name="CrouchWalk" type="Node" parent="Statechart/Root/Move/Ground/Crouch"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
 
 [node name="->Walk" type="Node" parent="Statechart/Root/Move/Ground/Crouch" node_paths=PackedStringArray("TargetStatesArray")]
 script = ExtResource("6_ap661")
@@ -318,7 +321,10 @@ CustomEventName = &""
 [node name="Impulse" type="Node" parent="Statechart/Root/Move"]
 script = ExtResource("5_e50wk")
 ReactionEvent = 1
-CustomEventName = &""
+CustomEventName = &"disabled"
+
+[node name="Impulse" type="Node" parent="."]
+script = ExtResource("13_thp3s")
 
 [connection signal="Invoke" from="Statechart/Root/Move/ViewRotate" to="." method="RI_ViewRotate"]
 [connection signal="Enter" from="Statechart/Root/Move/Ground/Walk" to="." method="Enter_Walk"]
@@ -350,4 +356,4 @@ CustomEventName = &""
 [connection signal="Enter" from="Statechart/Root/Move/Air/Top" to="." method="Enter_AirTop"]
 [connection signal="Guard" from="Statechart/Root/Move/Air/Top/->Descend" to="." method="TG_AirIsDescend"]
 [connection signal="Invoke" from="Statechart/Root/Move/Air/AirMove" to="." method="RI_AirMove"]
-[connection signal="Invoke" from="Statechart/Root/Move/Impulse" to="." method="RI_MoveWithImpulse"]
+[connection signal="Invoke" from="Statechart/Root/Move/Impulse" to="Impulse" method="_ri_player_impulse"]

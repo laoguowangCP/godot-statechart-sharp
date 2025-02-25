@@ -6,3 +6,15 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 indent_style = space
 indent_size = 4
+
+[*.cs]
+// Hide public field with underscore prefix
+dotnet_naming_symbols.public_field.applicable_kinds = property, event, method, field
+dotnet_naming_symbols.public_field.applicable_accessibilities = public
+
+dotnet_naming_style.no_underscore.required_prefix =
+dotnet_naming_style.no_underscore.capitalization = pascal_case
+
+dotnet_naming_rule.public_field_no_underscore.symbols = public_field
+dotnet_naming_rule.public_field_no_underscore.style = no_underscore
+dotnet_naming_rule.public_field_no_underscore.severity = none

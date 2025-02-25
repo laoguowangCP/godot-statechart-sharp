@@ -9,87 +9,88 @@ namespace LGWCP.Godot.StatechartSharp;
 [Icon("res://addons/statechart_sharp/icon/Reaction.svg")]
 public partial class Reaction : StatechartComposition
 {
-    #region signals
+#region signal
 
     [Signal] public delegate void InvokeEventHandler(StatechartDuct duct);
-    
-    #endregion
+
+#endregion
 
 
-    #region properties
+#region property
 
     [Export]
     public ReactionEventNameEnum ReactionEvent
+#if DEBUG
     {
         get => _reactionEvent;
         set
         {
             _reactionEvent = value;
-
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private ReactionEventNameEnum _reactionEvent = ReactionEventNameEnum.Process;
+    private ReactionEventNameEnum _reactionEvent
+#endif
+        = ReactionEventNameEnum.Process;
+
     [Export]
     public StringName CustomEventName
+#if DEBUG
     {
         get => _customEventName;
         set
         {
             _customEventName = value;
-
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private StringName _customEventName;
-    public StringName EventName { get; protected set; }
-    protected StatechartDuct Duct { get => HostStatechart.Duct; }
+    private StringName _customEventName
+#endif
+        ;
 
-    #endregion
+    public StringName _EventName;
+    protected StatechartDuct Duct;
+
+#endregion
 
 
-    #region methods
+#region method
 
     public override void _Ready()
     {
-        #if TOOLS
+#if TOOLS
         if (Engine.IsEditorHint())
         {
             UpdateConfigurationWarnings();
         }
-        #endif
+#endif
     }
 
-    public override void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public override void _Setup(Statechart hostStatechart, ref int parentOrderId)
     {
-        base.Setup(hostStatechart, ref parentOrderId);
+        base._Setup(hostStatechart, ref parentOrderId);
+        Duct = _HostStatechart._Duct;
 
-        #if DEBUG
+#if DEBUG
         if (ReactionEvent == ReactionEventNameEnum.Custom && CustomEventName == null)
         {
             GD.PushError(GetPath(), ": no event name for custom-event.");
         }
-        #endif
-
-        EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
+#endif
+        _EventName = StatechartEventName.GetReactionEventName(ReactionEvent, CustomEventName);
     }
 
-    public bool Check(StringName eventName)
-    {
-        return EventName == eventName;
-    }
-
-    public void ReactionInvoke()
+    public void _ReactionInvoke()
     {
         CustomReactionInvoke(Duct);
     }
@@ -101,7 +102,7 @@ public partial class Reaction : StatechartComposition
         EmitSignal(SignalName.Invoke, duct);
     }
 
-    #if TOOLS
+#if TOOLS
     public override string[] _GetConfigurationWarnings()
     {
         var warnings = new List<string>();
@@ -112,7 +113,7 @@ public partial class Reaction : StatechartComposition
 
         if (parent != null && parent is State state)
         {
-            isParentWarning = state.IsHistory;
+            isParentWarning = !state._IsValidState();
         }
 
         if (isParentWarning)
@@ -135,7 +136,8 @@ public partial class Reaction : StatechartComposition
 
         return warnings.ToArray();
     }
-    #endif
+#endif
 
-    #endregion
+#endregion
+
 }

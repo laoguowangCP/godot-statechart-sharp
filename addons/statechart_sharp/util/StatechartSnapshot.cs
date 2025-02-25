@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Godot;
 
 
@@ -6,8 +8,28 @@ namespace LGWCP.Godot.StatechartSharp;
 
 [Tool]
 [GlobalClass]
-public partial class StatechartSnapshot : Resource
+public partial class StatechartSnapshot : Resource, IEquatable<StatechartSnapshot>
 {
-    [Export] public bool IsAllStateConfiguration;
-    [Export] public int[] Configuration;
+    [Export] public bool IsAllStateConfig;
+    [Export] public int[] Config;
+
+    public bool Equals(StatechartSnapshot other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+        
+        if (IsAllStateConfig != other.IsAllStateConfig)
+        {
+            return false;
+        }
+
+        return Config.SequenceEqual(other.Config);
+    }
 }

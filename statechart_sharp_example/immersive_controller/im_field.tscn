@@ -94,6 +94,18 @@ use_collision = true
 collision_mask = 7
 material = ExtResource("3_6p65w")
 
+[node name="Pillar5" type="CSGBox3D" parent="World/Pillars"]
+transform = Transform3D(0.965926, -0.517638, 0, 0.258819, 1.93185, 0, 0, 0, 1, 2.3905, 1, 11)
+use_collision = true
+collision_mask = 7
+material = ExtResource("3_6p65w")
+
+[node name="Pillar6" type="CSGBox3D" parent="World/Pillars"]
+transform = Transform3D(0.965926, 0.517638, 0, -0.258819, 1.93185, 0, 0, 0, 1, 2.89582, 0.9895, 11)
+use_collision = true
+collision_mask = 7
+material = ExtResource("3_6p65w")
+
 [node name="Pillar2" type="CSGBox3D" parent="World/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 3, 0, 0, 0, 1, -3, 1, 11)
 use_collision = true
@@ -107,7 +119,7 @@ collision_mask = 7
 material = ExtResource("3_6p65w")
 
 [node name="Pillar4" type="CSGBox3D" parent="World/Pillars"]
-transform = Transform3D(1, 0, 0, 0, 5, 0, 0, 0, 1, -7, 1, 11)
+transform = Transform3D(0.609993, -9.50888, 0, 0.792407, 7.31992, 0, 0, 0, 1, -7, 4.31176, 14.6134)
 use_collision = true
 collision_mask = 7
 material = ExtResource("3_6p65w")
@@ -253,6 +265,22 @@ material = ExtResource("1_g62y5")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 4, 2)
 mass = 10.0
 
+[node name="RigidBody3D17" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.5, 14)
+mass = 10.0
+
+[node name="RigidBody3D18" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(0.999511, 0.0312538, 0, -0.0312538, 0.999511, 0, 0, 0, 1, 3.01, 1.5, 14)
+mass = 10.0
+
+[node name="RigidBody3D19" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(0.998982, 0.0451189, 0, -0.0451189, 0.998982, 0, 0, 0, 1, 4.02, 1.5, 14)
+mass = 10.0
+
+[node name="RigidBody3D20" parent="World/Boxs" instance=ExtResource("2_1154f")]
+transform = Transform3D(0.996557, 0.0829126, 0, -0.0829126, 0.996557, 0, 0, 0, 1, 5.03, 1.5, 14)
+mass = 10.0
+
 [node name="RigidBody3D2" parent="World/Boxs" instance=ExtResource("2_1154f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 4, 2)
 mass = 10.0
@@ -324,6 +352,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, 16)
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.377355, 0.32803, 0, 0.656059, 0.75471, -0.5, 0.653598, -0.568164, 0, 0, 0)
 shadow_enabled = true
+shadow_opacity = 0.9
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_jmqqk")

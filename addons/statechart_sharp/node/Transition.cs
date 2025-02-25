@@ -10,85 +10,96 @@ namespace LGWCP.Godot.StatechartSharp;
 [Icon("res://addons/statechart_sharp/icon/Transition.svg")]
 public partial class Transition : StatechartComposition
 {
-    #region signals
+
+#region signal
 
     [Signal]
     public delegate void GuardEventHandler(StatechartDuct duct);
     [Signal]
     public delegate void InvokeEventHandler(StatechartDuct duct);
 
-    #endregion
+#endregion
 
 
-    #region properties
+#region property
 
     [Export]
     public TransitionEventNameEnum TransitionEvent
+#if DEBUG
     {
         get => _transitionEvent;
         set
         {
             _transitionEvent = value;
 
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private TransitionEventNameEnum _transitionEvent = TransitionEventNameEnum.Process;
+    private TransitionEventNameEnum _transitionEvent
+#endif
+        = TransitionEventNameEnum.Process;
+
     [Export]
     public StringName CustomEventName
+#if DEBUG
     {
         get => _customEventName;
         set
         {
             _customEventName = value;
-
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private StringName _customEventName;
+    private StringName _customEventName
+#endif
+        ;
+
     [Export]
     public Array<State> TargetStatesArray
+#if DEBUG
     {
         get => _targetStatesArray;
         set
         {
             _targetStatesArray = value;
-
-            #if TOOLS
+#if TOOLS
             if (Engine.IsEditorHint())
             {
                 UpdateConfigurationWarnings();
             }
-            #endif
+#endif
         }
     }
-    private Array<State> _targetStatesArray = new();
-    public StringName EventName { get; set; }
-    private List<State> TargetStates { get; set; }
-    public State SourceState { get; set; }
-    public State LcaState { get; private set; }
-    public SortedSet<State> EnterRegion  { get; private set; }
-    private SortedSet<State> EnterRegionEdge { get; set; }
-    private SortedSet<State> DeducedEnterStates { get; set; }
-    protected StatechartDuct Duct { get => HostStatechart.Duct; }
-    public bool IsTargetless { get; private set; }
-    public bool IsAuto { get; private set; }
-    private bool IsValid { get; set; }
+    private Array<State> _targetStatesArray
+#endif
+        = new();
 
-    #endregion
+    public StringName _EventName;
+    protected List<State> TargetStates;
+    public State _SourceState;
+    public State _LcaState;
+    public SortedSet<State> _EnterRegion;
+    protected SortedSet<State> EnterRegionEdge;
+    protected SortedSet<State> DeducedEnterStates;
+    protected StatechartDuct Duct;
+    public bool _IsTargetless;
+    public bool _IsAuto;
+    protected bool IsValid;
+
+#endregion
 
 
-    #region methods
+#region method
 
     public override void _Ready()
     {
@@ -96,58 +107,57 @@ public partial class Transition : StatechartComposition
         TargetStates = new List<State>(TargetStatesArray);
 
         // Init Sets
-        EnterRegion = new SortedSet<State>(new StatechartComparer<State>());
+        _EnterRegion = new SortedSet<State>(new StatechartComparer<State>());
         EnterRegionEdge = new SortedSet<State>(new StatechartComparer<State>());
         DeducedEnterStates = new SortedSet<State>(new StatechartComparer<State>());
 
         IsValid = true;
 
-        #if TOOLS
+#if TOOLS
         if (Engine.IsEditorHint())
         {
             UpdateConfigurationWarnings();
         }
-        #endif
+#endif
     }
 
-    public override void Setup(Statechart hostStatechart, ref int parentOrderId)
+    public override void _Setup(Statechart hostStatechart, ref int parentOrderId)
     {
-        base.Setup(hostStatechart, ref parentOrderId);
+        base._Setup(hostStatechart, ref parentOrderId);
+		Duct = _HostStatechart._Duct;
 
         // Get source state
         Node parent = GetParentOrNull<Node>();
         if (parent != null && parent is State)
         {
-            SourceState = parent as State;
+            _SourceState = parent as State;
         }
 
         // Handle event name
-        if (TransitionEvent == TransitionEventNameEnum.Custom
-            &&  (CustomEventName == null || CustomEventName == ""))
+        if (TransitionEvent == TransitionEventNameEnum.Custom &&  CustomEventName == null)
         {
-            #if DEBUG
+#if DEBUG
             GD.PushError(GetPath(), ": no event name for custom event.");
-            #endif
+#endif
             IsValid = false;
         }
-        EventName = StatechartEventName.GetTransitionEventName(TransitionEvent, CustomEventName);
-        IsAuto = TransitionEvent == TransitionEventNameEnum.Auto;
+        _EventName = StatechartEventName.GetTransitionEventName(TransitionEvent, CustomEventName);
+        _IsAuto = TransitionEvent == TransitionEventNameEnum.Auto;
 
         // Set targetless
-        IsTargetless = TargetStates.Count == 0;
+        _IsTargetless = TargetStates.Count == 0;
 
-        if (IsTargetless && IsAuto)
+        if (_IsTargetless && _IsAuto)
         {
             IsValid = false;
-
-            #if DEBUG
+#if DEBUG
             GD.PushWarning(GetPath(),
                 ": targetless auto transition is invalid. This may cause loop transition.");
-            #endif
+#endif
         }
     }
 
-    public override void PostSetup()
+    public override void _SetupPost()
     {
         /*
         Post setup:
@@ -157,19 +167,19 @@ public partial class Transition : StatechartComposition
         */
 
         // Targetless transition's LCA is source's parent state as defined
-        if (IsTargetless)
+        if (_IsTargetless)
         {
-            LcaState = SourceState.ParentState;
+            _LcaState = _SourceState._ParentState;
             return;
         }
 
         // Record source-to-root
-        State iterState = SourceState;
+        State iterState = _SourceState;
         List<State> srcToRoot = new();
         while (iterState != null)
         {
             srcToRoot.Add(iterState);
-            iterState = iterState.ParentState;
+            iterState = iterState._ParentState;
         }
 
         // Init LCA as source state, the first state in srcToRoot
@@ -178,13 +188,12 @@ public partial class Transition : StatechartComposition
         foreach (State target in TargetStates)
         {
             // Check under same statechart
-            if (!IsCommonHost(target, SourceState))
+            if (!_IsCommonHost(target, _SourceState))
             {
-                #if DEBUG
+#if DEBUG
                 GD.PushWarning(
                     GetPath(), ": target ", target.GetPath(), " is not under same statechart as source state.");
-                #endif
-
+#endif
                 continue;
             }
 
@@ -194,22 +203,22 @@ public partial class Transition : StatechartComposition
             2. If target is already in enter region, conflicts
             */
             tgtToRoot.Clear();
-            bool isConflict = EnterRegion.Contains(target);
+            bool isConflict = _EnterRegion.Contains(target);
 
             iterState = target;
             bool isReachEnterRegion = false;
             while (!isConflict && iterState != null)
             {
                 // Check target conflicts
-                State iterParent = iterState.ParentState;
+                State iterParent = iterState._ParentState;
 
                 if (!isReachEnterRegion && iterParent != null)
                 {
-                    isReachEnterRegion = EnterRegion.Contains(iterParent);
+                    isReachEnterRegion = _EnterRegion.Contains(iterParent);
                     if (isReachEnterRegion)
                     {
-                        isConflict = iterParent.IsConflictToEnterRegion(
-                            iterState, EnterRegion);
+                        isConflict = iterParent._IsConflictToEnterRegion(
+                            iterState, _EnterRegion);
                     }
                 }
 
@@ -220,11 +229,10 @@ public partial class Transition : StatechartComposition
             // Target conflicts, disposed from enter region.
             if (isConflict)
             {
-                #if DEBUG
+#if DEBUG
                 GD.PushWarning(
                     GetPath(), ": target ", target.GetPath(), " conflicts with previous target(s).");
-                #endif
-
+#endif
                 continue;
             }
 
@@ -258,45 +266,43 @@ public partial class Transition : StatechartComposition
             */
             for (int i = 1; i <= tgtToRoot.Count; ++i)
             {
-                EnterRegion.Add(tgtToRoot[^i]);
+                _EnterRegion.Add(tgtToRoot[^i]);
             }
         }
 
         // LCA
-        LcaState = srcToRoot[^reversedLcaIdx];
+        _LcaState = srcToRoot[^reversedLcaIdx];
 
         // Extend enter region under LCA
         SortedSet<State> extraEnterRegion = new(new StatechartComparer<State>());
-        LcaState.ExtendEnterRegion(EnterRegion, EnterRegionEdge, extraEnterRegion);
-        EnterRegion.UnionWith(extraEnterRegion);
+        _LcaState._ExtendEnterRegion(_EnterRegion, EnterRegionEdge, extraEnterRegion, true);
+        _EnterRegion.UnionWith(extraEnterRegion);
 
         // Remove states from root to LCA (include LCA)
         for (int i = 1; i <= reversedLcaIdx; ++i)
         {
-            EnterRegion.Remove(srcToRoot[^i]);
+            _EnterRegion.Remove(srcToRoot[^i]);
         }
 
         // Check auto-transition loop case
-        if (IsAuto && EnterRegion.Contains(SourceState))
+        if (_IsAuto && _EnterRegion.Contains(_SourceState))
         {
             IsValid = false;
-
-            #if DEBUG
+#if DEBUG
             GD.PushWarning(
                 GetPath(),
                 ": auto transition's enter region contains source state ",
                 "causes transition invalid, this may cause loop transition.");
-            #endif
+#endif
         }
     }
 
-    public bool Check()
+    public bool _Check()
     {
         if (!IsValid)
         {
             return false;
         }
-
         return CustomTransitionGuard(Duct);
     }
 
@@ -309,7 +315,7 @@ public partial class Transition : StatechartComposition
         return duct.IsTransitionEnabled;
     }
 
-    public void TransitionInvoke()
+    public void _TransitionInvoke()
     {
         CustomTransitionInvoke(Duct);
     }
@@ -321,28 +327,28 @@ public partial class Transition : StatechartComposition
         EmitSignal(SignalName.Invoke, duct);
     }
 
-    public SortedSet<State> GetDeducedEnterStates()
+    public SortedSet<State> _GetDeducedEnterStates()
     {
         DeducedEnterStates.Clear();
         foreach (State edgeState in EnterRegionEdge)
         {
-            edgeState.DeduceDescendants(DeducedEnterStates, isEdgeState: true);
+            edgeState._DeduceDescendants(DeducedEnterStates);
         }
         return DeducedEnterStates;
     }
 
-    #if TOOLS
+#if TOOLS
     public override string[] _GetConfigurationWarnings()
     {
         var warnings = new List<string>();
-        
+
         // Check parent
         bool isParentWarning = true;
         Node parent = GetParentOrNull<Node>();
 
         if (parent != null && parent is State state)
         {
-            isParentWarning = state.IsHistory;
+            isParentWarning = !state._IsValidState();
         }
 
         if (isParentWarning)
@@ -388,7 +394,8 @@ public partial class Transition : StatechartComposition
 
         return warnings.ToArray();
     }
-    #endif
+#endif
 
-    #endregion
+#endregion
+
 }

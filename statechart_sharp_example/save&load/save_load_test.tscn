@@ -11,6 +11,7 @@ is_all_state_config = true
 enter_on_load = true
 
 [node name="BoxContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(600, 500)
 anchors_preset = 8
 anchor_left = 0.5
@@ -70,7 +71,6 @@ text = "Go
 
 [node name="Statechart" type="Node" parent="."]
 script = ExtResource("2_sviad")
-IsWaitParentReady = false
 
 [node name="Root" type="Node" parent="Statechart"]
 script = ExtResource("3_gi8w8")
