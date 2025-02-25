@@ -174,9 +174,9 @@ public abstract class State : Composition
 
     public virtual void _SaveActiveStateConfig(List<int> snapshot) {}
 
-    public virtual int _LoadAllStateConfig(int[] config, int configIdx) { return configIdx; }
+    public virtual int _LoadAllStateConfig(List<int> config, int configIdx) { return configIdx; }
 
-    public virtual int _LoadActiveStateConfig(int[] config, int configIdx) { return configIdx; }
+    public virtual int _LoadActiveStateConfig(List<int> config, int configIdx) { return configIdx; }
 
     public abstract bool _IsValidState();
 }

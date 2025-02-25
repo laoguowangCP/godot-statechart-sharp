@@ -242,7 +242,7 @@ public partial class Statechart<TDuct, TEvent>
         {
             RootState._SaveActiveStateConfig(SnapshotConfig);
         }
-        snapshot.Config = SnapshotConfig.ToArray();
+        snapshot.Config = SnapshotConfig;
         SnapshotConfig.Clear();
         return snapshot;
     }
@@ -273,7 +273,7 @@ public partial class Statechart<TDuct, TEvent>
 
         List<State> statesToLoad = new();
         var config = snapshot.Config;
-        if (config.Length == 0)
+        if (config.Count == 0)
         {
             return false;
         }

@@ -440,7 +440,7 @@ public class Parallel : State
         }
     }
 
-    public override int _LoadAllStateConfig(int[] config, int configIdx)
+    public override int _LoadAllStateConfig(List<int> config, int configIdx)
     {
         for (int i = 0; i < _Substates.Count; ++i)
         {
@@ -454,7 +454,7 @@ public class Parallel : State
         return configIdx;
     }
 
-    public override int _LoadActiveStateConfig(int[] config, int configIdx)
+    public override int _LoadActiveStateConfig(List<int> config, int configIdx)
     {
         for (int i = 0; i < _Substates.Count; ++i)
         {
@@ -471,7 +471,7 @@ public class Parallel : State
     public override Composition Duplicate(bool isDeepDuplicate)
     {
         var duplicant = new Parallel(_HostStatechart, _Enters, _Exits);
-        
+
         if (isDeepDuplicate)
         {
             foreach (var comp in _Comps)

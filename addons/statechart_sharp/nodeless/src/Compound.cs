@@ -356,14 +356,14 @@ public class Compound : State
         _CurrentState._SaveActiveStateConfig(snapshot);
     }
 
-    public override int _LoadAllStateConfig(int[] config, int configIdx)
+    public override int _LoadAllStateConfig(List<int> config, int configIdx)
     {
         if (_Substates.Count == 0)
         {
             return configIdx;
         }
 
-        if (configIdx >= config.Length)
+        if (configIdx >= config.Count)
         {
             return -1;
         }
@@ -382,14 +382,14 @@ public class Compound : State
         return configIdx;
     }
 
-    public override int _LoadActiveStateConfig(int[] config, int configIdx)
+    public override int _LoadActiveStateConfig(List<int> config, int configIdx)
     {
         if (_Substates.Count == 0)
         {
             return configIdx;
         }
 
-        if (configIdx >= config.Length)
+        if (configIdx >= config.Count)
         {
             return -1;
         }

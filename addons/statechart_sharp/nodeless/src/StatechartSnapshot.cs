@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 
@@ -8,7 +9,7 @@ namespace LGWCP.Godot.StatechartSharp.Nodeless;
 public class StatechartSnapshot : IEquatable<StatechartSnapshot>
 {
     public bool IsAllStateConfig;
-    public int[] Config;
+    public List<int> Config;
 
     public bool Equals(StatechartSnapshot other)
     {

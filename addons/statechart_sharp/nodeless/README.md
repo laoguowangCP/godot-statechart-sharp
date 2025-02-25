@@ -74,7 +74,23 @@ For convenience, you can get different compositions from statechart.
 
 **Statechart<TDuct, TEvent>.Reaction GetTransition(TEvent @event, Action<TDuct>[] invokes = null)**: get a reaction.
 
+Notice that something changed:
+
+- Get direct state types, instead of setting state mode.
+- Get auto transition or (not auto) transition, instead of setting event `IsAuto`.
+
+Some composition has extra method, so you can set their property after construction:
+
+- Compound: **Compound SetInitialState(State initialState)** set initial state, return compound itself.
+- Transition: **Transition SetTargetState(State[] targetStates)** set target states, return transition itself.
+
+
 ## Duplicate composition
 
+You can duplicate composition. This may help you build statechart faster:
 
+**Composition Duplicate(bool isDeepDuplicate)**: If `isDeepDuplicate`, appended descendant comps will be copied too. Notice that not all composition property is copied:
+
+- `Compound` won't copy initial state.
+- `Transition` won't copy target states.
 
