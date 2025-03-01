@@ -75,6 +75,8 @@ func handle(event):
 
 **`bool IsWaitParentReady`** : If true, statechart setup process will wait parent node to be ready.
 
+**`bool IsInitInvokeEnter`** : If true, statechart setup process will invoke states' enter signal.
+
 ### Methods of Statechart
 
 **`void Step(StringName)`** : Make statechart run a step with given event.

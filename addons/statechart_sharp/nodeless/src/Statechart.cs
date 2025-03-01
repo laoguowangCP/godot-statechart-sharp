@@ -43,7 +43,7 @@ public partial class Statechart<TDuct, TEvent>
         EnabledReactions = new (new StatechartComparer<Reaction>());
     }
 
-    public void Ready(State rootState)
+    public void Ready(State rootState, bool isInitInvokeEnter = true)
     {
         // Setup
         RootState = rootState;
@@ -53,9 +53,19 @@ public partial class Statechart<TDuct, TEvent>
         RootState._SubmitActiveState(ActiveStates);
         RootState._SetupPost();
 
-        foreach (State state in ActiveStates)
+        if (isInitInvokeEnter)
         {
-            state._StateEnter(Duct);
+            foreach (State state in ActiveStates)
+            {
+                state._StateEnter(Duct);
+            }
+        }
+        else
+        {
+            foreach (State state in ActiveStates)
+            {
+                state._ParentState?._HandleSubstateEnter(state);
+            }
         }
 
         IsReady = true;

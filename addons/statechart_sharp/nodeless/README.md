@@ -95,3 +95,9 @@ You can duplicate composition. This may help you build statechart faster:
 
 - `Compound` won't copy initial state.
 - `Transition` won't copy target states.
+
+## Get statechart ready
+
+Nodeless statechart need to set ready manually:
+
+**void Ready(State rootState, bool isInitInvokeEnter = true)**: Make statechart ready with root state. Note it should be invoked after all comps are appended. If `isInitInvokeEnter` is true, statechart ready process will invoke states' enters.

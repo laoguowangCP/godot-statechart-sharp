@@ -21,6 +21,8 @@ public partial class Statechart : StatechartComposition
 	public EventFlagEnum EventFlag = 0;
 	[Export]
 	public bool IsWaitParentReady = true;
+	[Export]
+	public bool IsInitInvokeEnter = true;
 	protected bool IsRunning;
 	protected int EventCount;
 	protected State RootState;
@@ -124,10 +126,20 @@ public partial class Statechart : StatechartComposition
 			RootState._SetupPost();
 		}
 
-		foreach (State state in ActiveStates)
-		{
-			state._StateEnter();
-		}
+        if (IsInitInvokeEnter)
+        {
+            foreach (State state in ActiveStates)
+            {
+                state._StateEnter();
+            }
+        }
+        else
+        {
+            foreach (State state in ActiveStates)
+            {
+                state._ParentState?._HandleSubstateEnter(state);
+            }
+        }
 
 		// Set node process according to flags
 		SetProcess(
