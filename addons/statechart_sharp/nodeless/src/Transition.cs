@@ -71,8 +71,8 @@ public class Transition : Composition
     public override void _Setup(ref int parentOrderId)
     {
         base._Setup(ref parentOrderId);
-        _Guards ??= Array.Empty<Action<StatechartDuct>>();
-        _Invokes ??= Array.Empty<Action<StatechartDuct>>();
+        _Guards ??= Array.Empty<Action<TDuct>>();
+        _Invokes ??= Array.Empty<Action<TDuct>>();
         _TargetStates ??= Array.Empty<State>();
 
         // Set targetless

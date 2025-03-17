@@ -33,8 +33,8 @@ public abstract class State : Composition
     public virtual void _Setup(ref int orderId, int substateIdx)
     {
         base._Setup(ref orderId);
-        _Enters ??= Array.Empty<Action<StatechartDuct>>();
-        _Exits ??= Array.Empty<Action<StatechartDuct>>();
+        _Enters ??= Array.Empty<Action<TDuct>>();
+        _Exits ??= Array.Empty<Action<TDuct>>();
         // Get parent state when adding comps
         _SubstateIdx = substateIdx;
     }

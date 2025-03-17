@@ -25,7 +25,7 @@ public class Reaction : Composition
     public override void _Setup(ref int parentOrderId)
     {
         base._Setup(ref parentOrderId);
-        _Invokes ??= Array.Empty<Action<StatechartDuct>>();
+        _Invokes ??= Array.Empty<Action<TDuct>>();
     }
 
 
